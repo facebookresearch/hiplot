@@ -1,0 +1,122 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+jobs:
+  mypy_pytest:
+    docker:
+      # specify the version you desire here
+      - image: circleci/python:3.6
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v2-mypy_pytest-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install .[dev]
+      - save_cache:
+          paths:
+            - ./venv
+          key: v2-mypy_pytest-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: "Run mypy"
+          when: always
+          command: |
+            . venv/bin/activate
+            mypy --strict --implicit-reexport hiplot
+      - run:
+          name: Run tests
+          when: always
+          command: |
+            . venv/bin/activate
+            pytest hiplot --durations=10
+
+  browser_ci:
+    docker:
+      - image: selenium/standalone-chrome
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v2-browser_ci-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: install dependencies (incl NPM)
+          command: |
+            sudo apt-get update
+            sudo apt-get install python3-venv nodejs git -y
+            curl -L https://npmjs.org/install.sh | sudo sh
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade -e .[dev]
+      - save_cache:
+          paths:
+            - ./venv
+          key: v2-browser_ci-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: Generate pages and end to end testing (provided bundle)
+          when: always
+          command: |
+            . venv/bin/activate
+            rm -rf .circleci/demo_pages
+            mkdir artifacts
+            python .circleci/generate_demo_pages.py
+            pytest -s .circleci/test_e2e.py
+      - run:
+          name: Collect artifacts...
+          command: mv .circleci/demo_pages artifacts/provided
+      - run:
+          name: Test webpack build
+          when: always
+          command: |
+            . venv/bin/activate
+            sudo chown -R 1000:1000 "/home/seluser/.npm"
+            npm install
+            du -h hiplot/static/built/hiplot.bundle.js
+            md5sum hiplot/static/built/hiplot.bundle.js
+            npx webpack --display-error-details --mode production
+            md5sum hiplot/static/built/hiplot.bundle.js
+            cp -r hiplot/static/built artifacts/built-prod
+            # Make sure git diff is empty
+            git diff-index HEAD
+            git status
+            if ! git diff-index --quiet HEAD --; then
+                echo "Make sure you update / commit the bundle when modifying the TypeScript source"
+                echo "I tried to rebuilt it, and the git diff is not empty :("
+                git status
+                exit 1
+            fi
+      - run:
+          name: Generate pages and end to end testing (updated/dev bundle)
+          when: always
+          command: |
+            . venv/bin/activate
+            rm hiplot/static/built/*
+            npx webpack --display-error-details -d
+            cp -r hiplot/static/built artifacts/built-dev
+            pip install --upgrade -e .[dev]
+            rm -rf .circleci/demo_pages
+            python .circleci/generate_demo_pages.py
+            pytest -s .circleci/test_e2e.py
+      - run:
+          name: Collect artifacts...
+          when: always
+          command: mv .circleci/demo_pages artifacts/dev
+      - store_artifacts:
+          when: always
+          path: ~/repo/artifacts
+
+workflows:
+  version: 2
+  all_ci:
+    jobs:
+      - mypy_pytest
+      - browser_ci

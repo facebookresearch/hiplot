@@ -1,0 +1,5 @@
+pytest
+mypy
+ipykernel
+wheel
+selenium
