@@ -269,11 +269,8 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         this.comm = comm_;
         console.log("Setting up communication channel", comm_);
     }
-    setup_notebook(data) {
-        $(this.domRoot.current).find(".sample-table-container").removeClass('min-height-100');
-        this.loadWithPromise(new Promise(function(rs, rj) {
-            rs(data);
-        }));
+    setup_notebook() {
+        $(this.domRoot.current).find(".sample-table-container").removeClass(style["min-height-100"]);
     }
 
 

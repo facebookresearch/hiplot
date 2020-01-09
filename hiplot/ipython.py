@@ -46,15 +46,14 @@ var load_when_ready = function() {{
         }}
         var set_scale_dynamic = function() {{
             if (ifr.contentWindow) {{
-                var content_h = ifr.contentWindow.document.getElementById('body-content-wrapper').style.height;
-                var css_h = ifr.clientHeight;
-                if (css_h < content_h - 5) {{
-                    ifr.style.height = ifr.contentWindow.document.body.scrollHeight + "px";
-                    ifr_container.style.height = ifr.contentWindow.document.body.scrollHeight + "px";
-                }}
-                else if (css_h > content_h + 20) {{
-                    ifr.style.height = content_h + "px";
-                    ifr_container.style.height = ifr.contentWindow.document.body.scrollHeight + "px";
+                if(ifr.contentWindow.document.body){{
+                    var framefenster_size = ifr.contentWindow.document.body.offsetHeight;
+                    if(document.all && !window.opera) {{
+                    framefenster_size = ifr.contentWindow.document.body.scrollHeight;
+                    }}
+                    console.log(framefenster_size);
+                    ifr_container.style.height = framefenster_size + "px";
+                    ifr.style.height = framefenster_size + 'px';
                 }}
             }}
         }};
@@ -91,7 +90,7 @@ load_when_ready();
 """
 
     if not force_full_width:
-        IPython.display.display(IPython.display.HTML(f'''<iframe id="{iframe_id}" style="width: 100%; height: 100vh" srcdoc="{html.escape(page_html)}"></iframe>'''))
+        IPython.display.display(IPython.display.HTML(f'''<div /><iframe id="{iframe_id}" style="width: 100%; height: 100vh" srcdoc="{html.escape(page_html)}"></iframe>'''))
         IPython.display.display(IPython.display.Javascript(js))
         return iframe_id
 
@@ -171,10 +170,13 @@ def display_exp(xp: exp.Experiment, force_full_width: bool = False) -> IPythonEx
         on_load_js=f"""
 (function () {{
 const comm_id = {escapejs(comm_id)};
+const force_full_width = {escapejs(force_full_width)};
 try {{
     console.log("Setting up communication channel with Jupyter: ", comm_id);
     var comm = Jupyter.notebook.kernel.comm_manager.new_comm(comm_id, {{'type': 'hello'}});
     ifr.contentWindow.globalHiPlot.setup_comm(comm);
+    if (force_full_width)
+        ifr.contentWindow.globalHiPlot.setup_notebook();
 }}
 catch(err) {{
     console.warn('Unable to create Javascript <-> Python communication channel (are you in a Jupyter notebook? Jupyter labs is *not* supported!)');
