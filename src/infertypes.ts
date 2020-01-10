@@ -201,8 +201,9 @@ export function infertypes(url_states: State, table: Array<Datapoint>, hints): P
                 var scale = create_d3_scale_without_outliers();
                 scale.range([0, 1]);
                 var colr = scale(val);
-                var code = d3.interpolateViridis(colr);
-                //var code = d3.interpolateTurbo(colr);
+                //var code = d3.interpolateViridis(colr);
+                //@ts-ignore
+                var code = d3.interpolateTurbo(colr);
                 var rgb = toRgb(code);
                 return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
             };
