@@ -33,7 +33,7 @@ def demo_basic_usage() -> hip.Experiment:
 
 def demo_line_xy() -> hip.Experiment:
     exp = hip.Experiment().set_line_xy(x='generation', y='loss')
-    for i in range(100):
+    for i in range(200):
         dp = hip.Datapoint(
             uid=str(i),
             values={
