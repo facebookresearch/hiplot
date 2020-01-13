@@ -216,7 +216,6 @@ def load_fairseq(uri: str) -> hip.Experiment:
                     continue
                 key = prefix + p[::-1].split(' ', 1)[1][::-1].strip()
                 value = p[::-1].split(' ', 1)[0][::-1].strip()
-                print(epoch, key, value)
                 try:
                     epoch_to_dp[epoch].values[key] = float(value)
                 except ValueError:
