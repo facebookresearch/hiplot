@@ -114,9 +114,52 @@ jobs:
           when: always
           path: ~/repo/artifacts
 
+  docs-build:
+    docker:
+      - image: python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install -r requirements/main.txt
+            pip install -r requirements/dev.txt
+      - run:
+          name: Build docs
+          command: cd docs/ && make html
+      - persist_to_workspace:
+          root: docs/_build
+          paths: html
+
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: docs/_build
+      - run:
+          name: Install and configure dependencies
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "ci-build"
+            git config user.name "ci-build"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dist docs/_build/html
+
 workflows:
   version: 2
   all_ci:
     jobs:
       - mypy_pytest
       - browser_ci
+      - docs-build
+      - docs-deploy:
+          requires:
+            #- mypy_pytest
+            #- browser_ci
+            - docs-build
+          filters:
+            branches:
+              only: master

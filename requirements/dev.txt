@@ -3,3 +3,4 @@ mypy
 ipykernel
 wheel
 selenium
+sphinx
