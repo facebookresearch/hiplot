@@ -149,7 +149,7 @@ jobs:
             git config user.name "ci-build"
       - run:
           name: Deploy docs to gh-pages branch
-          command: gh-pages --dist docs/_build/html
+          command: gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/_build/html
 
 workflows:
   version: 2
