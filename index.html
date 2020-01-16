@@ -37,7 +37,56 @@
 <dl class="class">
 <dt id="hiplot.Experiment">
 <em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param">datapoints: Optional[List[hiplot.experiment.Datapoint]] = None</em>, <em class="sig-param">parameters_definition: Optional[Dict[str</em>, <em class="sig-param">hiplot.experiment.ValueDef]] = None</em>, <em class="sig-param">line_display: Optional[hiplot.experiment.LineDisplay] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="method">
+<dt id="hiplot.Experiment.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param">force_full_width: bool = False</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ExperimentDisplayed<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays an experiment in an ipython notebook.
+:force_full_width: allows to force to have 100% width on Jupyter Notebooks only.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hiplot.Experiment.from_iterable">
+<em class="property">static </em><code class="sig-name descname">from_iterable</code><span class="sig-paren">(</span><em class="sig-param">it: Iterable[Dict[str, Any]]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.from_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.from_iterable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a HiPlot experiment from an iterable/list of dictionnaries.
+This is the easiest way to generate an <cite>Experiment</cite> object.
+Example:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">hip.Experiment.from_iterable([{&quot;p&quot;:</span> <span class="pre">&quot;a&quot;},</span> <span class="pre">{&quot;p&quot;:</span> <span class="pre">&quot;b&quot;}])</span>
+<span class="pre">`</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hiplot.Experiment.merge">
+<em class="property">static </em><code class="sig-name descname">merge</code><span class="sig-paren">(</span><em class="sig-param">xp_dict: Dict[str, Experiment]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge several experiments into a single one</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hiplot.Experiment.to_html">
+<code class="sig-name descname">to_html</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the content of a standalone .html file that displays this experiment
+without any dependency to HiPlot server or static files.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hiplot.Experiment.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure we don’t have any circular reference
+Call “validate” on sub-objects</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="hiplot.ExperimentDisplayed">
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ExperimentDisplayed</code><a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentDisplayed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ExperimentDisplayed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hiplot.ExperimentDisplayed.get_selected">
+<em class="property">abstract </em><code class="sig-name descname">get_selected</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[hiplot.experiment.Datapoint]<a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentDisplayed.get_selected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ExperimentDisplayed.get_selected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of currently rendered datapoints in the parallel plot</p>
+</dd></dl>
+
+</dd></dl>
 
 </div>
 <div class="section" id="indices-and-tables">

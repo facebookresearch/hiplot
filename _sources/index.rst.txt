@@ -11,6 +11,10 @@ Welcome to HiPlot's documentation!
    :caption: Contents:
 
 .. autoclass:: hiplot.Experiment
+   :members:
+
+.. autoclass:: hiplot.ExperimentDisplayed
+   :members:
 
 Indices and tables
 ==================
