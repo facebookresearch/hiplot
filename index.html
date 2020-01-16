@@ -42,17 +42,26 @@ See <cite>Experiment.display</cite> for ipython notebook case, or <cite>Experime
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>datapoints</strong> – All the measurements in this experiment: datapoints</p></li>
-<li><p><strong>parameters_definition</strong> – Characteristics of the columns (ordering, type, etc…): parameters_definition</p></li>
-<li><p><strong>line_display</strong> – Characteristics of the XY graph (lines thickness, initial x/y axis…): line_display</p></li>
+<li><p><strong>datapoints</strong> – All the measurements we have. One datapoint corresponds to one line in the parallel plot and to one line in the table.</p></li>
+<li><p><strong>parameters_definition</strong> – Characteristics of the columns (ordering, type, etc…)</p></li>
+<li><p><strong>line_display</strong> – Characteristics of the XY graph (lines thickness, initial x/y axis…)</p></li>
 </ul>
 </dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><p></p></dd>
 </dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;hidden_field&#39;</span><span class="p">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">},</span>
+<span class="go">    {&#39;param&#39;: 2, &#39;loss&#39;: 5, &#39;hidden_field&#39;: &#39;value2&#39;, &#39;c&#39;: &#39;black&#39;}]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="hiplot.Experiment.display">
 <code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param">force_full_width: bool = False</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ExperimentDisplayed<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays an experiment in an ipython notebook.
-:force_full_width: allows to force to have 100% width on Jupyter Notebooks only.</p>
+:param force_full_width: allows to force to have 100% width on Jupyter Notebooks only.
+:returns: An <cite>ExperimentDisplayed</cite> object that can be used to fetch a list of <cite>Datapoint</cite> - only implemented for Jupyter notebook.</p>
 </dd></dl>
 
 <dl class="method">

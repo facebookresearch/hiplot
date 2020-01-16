@@ -136,9 +136,16 @@
 <span class="sd">    Object that can be rendered by HiPlot.</span>
 <span class="sd">    See `Experiment.display` for ipython notebook case, or `ExperimentFetcher` for the web-server case.</span>
 
-<span class="sd">    :ivar datapoints: All the measurements in this experiment: datapoints</span>
-<span class="sd">    :ivar parameters_definition: Characteristics of the columns (ordering, type, etc...): parameters_definition</span>
-<span class="sd">    :ivar line_display: Characteristics of the XY graph (lines thickness, initial x/y axis...): line_display</span>
+<span class="sd">    :ivar datapoints: All the measurements we have. One datapoint corresponds to one line in the parallel plot and to one line in the table.</span>
+<span class="sd">    :ivar parameters_definition: Characteristics of the columns (ordering, type, etc...)</span>
+<span class="sd">    :ivar line_display: Characteristics of the XY graph (lines thickness, initial x/y axis...)</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; import hiplot as hip</span>
+<span class="sd">    &gt;&gt;&gt; data = [{&#39;param&#39;: 1, &#39;loss&#39;: 10, &#39;hidden_field&#39;: &#39;value1&#39;, &#39;c&#39;: &#39;red&#39;},</span>
+<span class="sd">        {&#39;param&#39;: 2, &#39;loss&#39;: 5, &#39;hidden_field&#39;: &#39;value2&#39;, &#39;c&#39;: &#39;black&#39;}]</span>
+<span class="sd">    &gt;&gt;&gt; exp = hip.Experiment.from_iterable(data)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
         <span class="n">datapoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -188,7 +195,8 @@
 <div class="viewcode-block" id="Experiment.display"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentDisplayed&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays an experiment in an ipython notebook.</span>
-<span class="sd">        :force_full_width: allows to force to have 100% width on Jupyter Notebooks only.</span>
+<span class="sd">        :param force_full_width: allows to force to have 100% width on Jupyter Notebooks only.</span>
+<span class="sd">        :returns: An `ExperimentDisplayed` object that can be used to fetch a list of `Datapoint` - only implemented for Jupyter notebook.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.ipython</span> <span class="k">import</span> <span class="n">display_exp</span>  <span class="c1"># pylint: disable=cyclic-import</span>
 
