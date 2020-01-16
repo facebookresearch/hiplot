@@ -27,7 +27,9 @@ def demo_change_column_properties() -> hip.Experiment:
 
 
 def demo_basic_usage() -> hip.Experiment:
-    data = [{"param": 1, "loss": 10}, {"param": 2, "loss": 5}]
+    data = [{'dropout':0.1, 'lr': 0.001, 'loss': 10.0, 'optimizer': 'SGD'},
+         {'dropout':0.15, 'lr': 0.01, 'loss': 3.5, 'optimizer': 'Adam'},
+        {'dropout':0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
     return hip.Experiment.from_iterable(data)
 
 

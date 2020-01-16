@@ -4,8 +4,9 @@
 ![Logo](hiplot/static/logo.svg)
 
 
-HiPlot makes understanding high dimensional data easy.
-Set it up with:
+HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.
+
+Get started with:
 ```bash
 pip install git+ssh://git@github.com/facebookresearch/hiplot.git
 ```
@@ -27,8 +28,9 @@ Provide a list of dictionnaries to build a HiPlot `Experiment` that you can disp
 ```python
 # In a Jupyter notebook
 import hiplot as hip
-data = [{'param': 1, 'loss': 10},
-    {'param': 2, 'loss': 5}]
+data = [{'dropout':0.1, 'lr': 0.001, 'loss': 10.0, 'optimizer': 'SGD'},
+    {'dropout':0.15, 'lr': 0.01, 'loss': 3.5, 'optimizer': 'Adam'},
+    {'dropout':0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
 hip.Experiment.from_iterable(data).display()
 ```
 
@@ -36,7 +38,7 @@ It is also possible to load a CSV directly:
 ```python
 import csv
 import hiplot as hip
-with open('/checkpoint/dhaziza/data.csv') as csvfile: # FAIRINTERNAL
+with open('/path/to/data.csv') as csvfile:
     hip.Experiment.from_iterable(csv.DictReader(csvfile)).display()
 ```
 
