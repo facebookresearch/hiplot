@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Welcome to HiPlot’s documentation! &#8212; HiPlot 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-hiplot-s-documentation">
+<h1>Welcome to HiPlot’s documentation!<a class="headerlink" href="#welcome-to-hiplot-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-hiplot.experiment"></span><dl class="class">
+<dt id="hiplot.experiment.Datapoint">
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">Datapoint</code><span class="sig-paren">(</span><em class="sig-param">uid: str, values: Dict[str, Union[bool, int, float, str]], from_uid: Optional[str] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Datapoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Datapoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="hiplot.experiment.DictSerializable">
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">DictSerializable</code><a class="reference internal" href="_modules/hiplot/experiment.html#DictSerializable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.DictSerializable" title="Permalink to this definition">¶</a></dt>
+<dd><p>All classes that are transmitted to Javascript must subclass this</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="hiplot.experiment.Experiment">
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param">datapoints: Optional[List[hiplot.experiment.Datapoint]] = None</em>, <em class="sig-param">parameters_definition: Optional[Dict[str</em>, <em class="sig-param">hiplot.experiment.ValueDef]] = None</em>, <em class="sig-param">line_display: Optional[hiplot.experiment.LineDisplay] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Experiment" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="hiplot.experiment.Experiment.to_html">
+<code class="sig-name descname">to_html</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the content of a standalone .html file that displays this experiment
+without any dependency to HiPlot server or static files.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hiplot.experiment.Experiment.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Experiment.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure we don’t have any circular reference
+Call “validate” on sub-objects</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="hiplot.experiment.ExperimentFetcherDoesntApply">
+<em class="property">exception </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">ExperimentFetcherDoesntApply</code><a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentFetcherDoesntApply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.ExperimentFetcherDoesntApply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="hiplot.experiment.ExperimentValidationCircularRef">
+<em class="property">exception </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">ExperimentValidationCircularRef</code><a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentValidationCircularRef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.ExperimentValidationCircularRef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="hiplot.experiment.ExperimentValidationError">
+<em class="property">exception </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">ExperimentValidationError</code><a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentValidationError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.ExperimentValidationError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="hiplot.experiment.ExperimentValidationMissingParent">
+<em class="property">exception </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">ExperimentValidationMissingParent</code><a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentValidationMissingParent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.ExperimentValidationMissingParent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="hiplot.experiment.LineDisplay">
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">LineDisplay</code><span class="sig-paren">(</span><em class="sig-param">axis_x: Optional[str] = None</em>, <em class="sig-param">axis_y: Optional[str] = None</em>, <em class="sig-param">lines_thickness: float = 1.2</em>, <em class="sig-param">lines_opacity: float = 0.8</em>, <em class="sig-param">dots_thickness: float = 1.4</em>, <em class="sig-param">dots_opacity: float = 0.8</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#LineDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.LineDisplay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="hiplot.experiment.ValueDef">
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">ValueDef</code><span class="sig-paren">(</span><em class="sig-param">type: Optional[str] = None</em>, <em class="sig-param">colors: Optional[Dict[Any</em>, <em class="sig-param">str]] = None</em>, <em class="sig-param">parallel_plot_order: Optional[int] = None</em>, <em class="sig-param">parallel_plot_inverted: Optional[bool] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#ValueDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.ValueDef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">HiPlot</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Facebook AI Research (FAIR).
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
