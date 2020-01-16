@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>hiplot.server &#8212; HiPlot 0.1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for hiplot.server</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Facebook, Inc. and its affiliates.</span>
+<span class="c1"># This source code is licensed under the MIT license found in the</span>
+<span class="c1"># LICENSE file in the root directory of this source tree.</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">experiment</span> <span class="k">as</span> <span class="n">exp</span>
+<span class="kn">from</span> <span class="nn">.fetchers</span> <span class="k">import</span> <span class="n">load_demo</span><span class="p">,</span> <span class="n">load_csv</span><span class="p">,</span> <span class="n">load_json</span><span class="p">,</span> <span class="n">load_fairseq</span><span class="p">,</span> <span class="n">load_wav2letter</span><span class="p">,</span> <span class="n">MultipleFetcher</span><span class="p">,</span> <span class="n">NoFetcherFound</span><span class="p">,</span> <span class="n">load_xp_with_fetchers</span>
+<span class="kn">from</span> <span class="nn">.render</span> <span class="k">import</span> <span class="n">get_index_html_template</span><span class="p">,</span> <span class="n">html_inlinize</span>
+
+
+<div class="viewcode-block" id="run_server"><a class="viewcode-back" href="../../index.html#hiplot.run_server">[docs]</a><span class="k">def</span> <span class="nf">run_server</span><span class="p">(</span><span class="n">add_fetchers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5005</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Runs the HiPlot server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span>
+    <span class="kn">from</span> <span class="nn">flask_compress</span> <span class="k">import</span> <span class="n">Compress</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">xp_fetchers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">exp</span><span class="o">.</span><span class="n">ExperimentFetcher</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">load_demo</span><span class="p">,</span> <span class="n">load_csv</span><span class="p">,</span> <span class="n">load_json</span><span class="p">,</span> <span class="n">load_fairseq</span><span class="p">,</span> <span class="n">load_wav2letter</span><span class="p">]</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pylint: disable=unused-variable</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">get_index_html_template</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">template</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/data&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pylint: disable=unused-variable</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uri&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">xp</span> <span class="o">=</span> <span class="n">load_xp_with_fetchers</span><span class="p">(</span><span class="n">xp_fetchers</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+            <span class="n">xp</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;experiment&quot;</span><span class="p">:</span> <span class="n">xp</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()})</span>
+        <span class="k">except</span> <span class="n">NoFetcherFound</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">f</span><span class="s2">&quot;No fetcher found for this experiment: </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">})</span>
+
+    <span class="k">for</span> <span class="n">fetcher_spec</span> <span class="ow">in</span> <span class="n">add_fetchers</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">fetcher_spec</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">fetcher</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">xp_fetchers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fetcher</span><span class="p">)</span>
+    <span class="n">xp_fetchers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MultipleFetcher</span><span class="p">(</span><span class="n">xp_fetchers</span><span class="p">))</span>
+    <span class="n">Compress</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">HiPlot</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Facebook AI Research (FAIR).
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

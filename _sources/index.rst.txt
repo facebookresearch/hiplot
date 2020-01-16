@@ -16,6 +16,8 @@ Welcome to HiPlot's documentation!
 .. autoclass:: hiplot.ExperimentDisplayed
    :members:
 
+.. autofunction:: hiplot.run_server
+
 Indices and tables
 ==================
 
