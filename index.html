@@ -37,7 +37,9 @@
 <span class="target" id="module-hiplot.experiment"></span><dl class="class">
 <dt id="hiplot.experiment.Datapoint">
 <em class="property">class </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">Datapoint</code><span class="sig-paren">(</span><em class="sig-param">uid: str, values: Dict[str, Union[bool, int, float, str]], from_uid: Optional[str] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Datapoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Datapoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A datapoint represents a single measurement of metrics - for instance a model checkpoint that is evaluated.
+It can have a parent <cite>from_uid</cite> if this <cite>Datapoint</cite> originates from another one (offspring).</p>
+</dd></dl>
 
 <dl class="class">
 <dt id="hiplot.experiment.DictSerializable">
@@ -49,6 +51,30 @@
 <dt id="hiplot.experiment.Experiment">
 <em class="property">class </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param">datapoints: Optional[List[hiplot.experiment.Datapoint]] = None</em>, <em class="sig-param">parameters_definition: Optional[Dict[str</em>, <em class="sig-param">hiplot.experiment.ValueDef]] = None</em>, <em class="sig-param">line_display: Optional[hiplot.experiment.LineDisplay] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Experiment" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="hiplot.experiment.Experiment.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param">force_full_width: bool = False</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ExperimentDisplayed<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Experiment.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays an experiment in an ipython notebook.
+:force_full_width: allows to force to have 100% width on Jupyter Notebooks only.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hiplot.experiment.Experiment.from_iterable">
+<em class="property">static </em><code class="sig-name descname">from_iterable</code><span class="sig-paren">(</span><em class="sig-param">it: Iterable[Dict[str, Any]]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.from_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Experiment.from_iterable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a HiPlot experiment from an iterable/list of dictionnaries.
+This is the easiest way to generate an <cite>Experiment</cite> object.
+Example:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">hip.Experiment.from_iterable([{&quot;p&quot;:</span> <span class="pre">&quot;a&quot;},</span> <span class="pre">{&quot;p&quot;:</span> <span class="pre">&quot;b&quot;}])</span>
+<span class="pre">`</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="hiplot.experiment.Experiment.merge">
+<em class="property">static </em><code class="sig-name descname">merge</code><span class="sig-paren">(</span><em class="sig-param">xp_dict: Dict[str, Experiment]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Experiment.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge several experiments into a single one</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="hiplot.experiment.Experiment.to_html">
 <code class="sig-name descname">to_html</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the content of a standalone .html file that displays this experiment
@@ -87,7 +113,8 @@ Call “validate” on sub-objects</p>
 <dl class="class">
 <dt id="hiplot.experiment.LineDisplay">
 <em class="property">class </em><code class="sig-prename descclassname">hiplot.experiment.</code><code class="sig-name descname">LineDisplay</code><span class="sig-paren">(</span><em class="sig-param">axis_x: Optional[str] = None</em>, <em class="sig-param">axis_y: Optional[str] = None</em>, <em class="sig-param">lines_thickness: float = 1.2</em>, <em class="sig-param">lines_opacity: float = 0.8</em>, <em class="sig-param">dots_thickness: float = 1.4</em>, <em class="sig-param">dots_opacity: float = 0.8</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#LineDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.experiment.LineDisplay" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Settings for the XY graph (optional)</p>
+</dd></dl>
 
 <dl class="class">
 <dt id="hiplot.experiment.ValueDef">
