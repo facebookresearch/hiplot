@@ -224,10 +224,13 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a HiPlot experiment from an iterable/list of dictionnaries.</span>
 <span class="sd">        This is the easiest way to generate an `Experiment` object.</span>
-<span class="sd">        Example:</span>
-<span class="sd">        ```</span>
-<span class="sd">        hip.Experiment.from_iterable([{&quot;p&quot;: &quot;a&quot;}, {&quot;p&quot;: &quot;b&quot;}])</span>
-<span class="sd">        ```</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; import hiplot as hip</span>
+<span class="sd">        &gt;&gt;&gt; hip.Experiment.from_iterable([{&quot;p&quot;: &quot;a&quot;}, {&quot;p&quot;: &quot;b&quot;}])</span>
+<span class="sd">        &lt;hiplot.experiment.Experiment object at 0x7f0f2e13c590&gt;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Experiment</span><span class="p">(</span>
             <span class="n">datapoints</span><span class="o">=</span><span class="p">[</span>

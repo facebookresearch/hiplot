@@ -74,11 +74,16 @@ See <cite>Experiment.display</cite> for ipython notebook case, or <cite>Experime
 <dt id="hiplot.Experiment.from_iterable">
 <em class="property">static </em><code class="sig-name descname">from_iterable</code><span class="sig-paren">(</span><em class="sig-param">it: Iterable[Dict[str, Any]]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.from_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.from_iterable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a HiPlot experiment from an iterable/list of dictionnaries.
-This is the easiest way to generate an <cite>Experiment</cite> object.
-Example:
-<code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">hip.Experiment.from_iterable([{&quot;p&quot;:</span> <span class="pre">&quot;a&quot;},</span> <span class="pre">{&quot;p&quot;:</span> <span class="pre">&quot;b&quot;}])</span>
-<span class="pre">`</span></code></p>
+This is the easiest way to generate an <cite>Experiment</cite> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">([{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">}])</span>
+<span class="go">&lt;hiplot.experiment.Experiment object at 0x7f0f2e13c590&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
