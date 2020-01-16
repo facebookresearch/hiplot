@@ -63,6 +63,10 @@ class ValueDef(DictSerializable):
 
 
 class Datapoint(DictSerializable):
+    """
+    A datapoint represents a single measurement of metrics - for instance a model checkpoint that is evaluated.
+    It can have a parent `from_uid` if this `Datapoint` originates from another one (offspring).
+    """
     def __init__(self, uid: str, values: Dict[str, DisplayableType], from_uid: Optional[str] = None) -> None:
         self.uid = uid
         self.values = values
@@ -75,6 +79,9 @@ class Datapoint(DictSerializable):
 
 
 class LineDisplay(DictSerializable):
+    """
+    Settings for the XY graph (optional)
+    """
     def __init__(self,
         axis_x: Optional[str] = None,
         axis_y: Optional[str] = None,
@@ -92,6 +99,9 @@ class LineDisplay(DictSerializable):
 
 
 class Experiment(DictSerializable):
+    """
+
+    """
     def __init__(self,
         datapoints: Optional[List[Datapoint]] = None,
         parameters_definition: Optional[Dict[str, ValueDef]] = None,
@@ -138,6 +148,10 @@ class Experiment(DictSerializable):
         return self
 
     def display(self, force_full_width: bool = False) -> "ExperimentDisplayed":
+        """
+        Displays an experiment in an ipython notebook.
+        :force_full_width: allows to force to have 100% width on Jupyter Notebooks only.
+        """
         from .ipython import display_exp  # pylint: disable=cyclic-import
 
         self.validate()
@@ -160,6 +174,14 @@ class Experiment(DictSerializable):
 
     @staticmethod
     def from_iterable(it: Iterable[Dict[str, Any]]) -> "Experiment":
+        """
+        Creates a HiPlot experiment from an iterable/list of dictionnaries.
+        This is the easiest way to generate an `Experiment` object.
+        Example:
+        ```
+        hip.Experiment.from_iterable([{"p": "a"}, {"p": "b"}])
+        ```
+        """
         return Experiment(
             datapoints=[
                 Datapoint(uid=str(row.get("uid", k)), values={mk: mv for mk, mv in row.items() if mk != "uid"}) for k, row in enumerate(it)
@@ -168,6 +190,9 @@ class Experiment(DictSerializable):
 
     @staticmethod
     def merge(xp_dict: Dict[str, "Experiment"]) -> "Experiment":
+        """
+        Merge several experiments into a single one
+        """
         xp = Experiment(datapoints=[])
         assert xp.parameters_definition is not None  # for mypy
         for k, subxp in xp_dict.items():
@@ -196,4 +221,6 @@ ExperimentFetcher = Callable[[str], Experiment]
 class ExperimentDisplayed(metaclass=ABCMeta):
     @abstractmethod
     def get_selected(self) -> List[Datapoint]:
-        pass
+        """
+        Returns a list of currently selected datapoints
+        """
