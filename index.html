@@ -37,7 +37,16 @@
 <dl class="class">
 <dt id="hiplot.Experiment">
 <em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param">datapoints: Optional[List[hiplot.experiment.Datapoint]] = None</em>, <em class="sig-param">parameters_definition: Optional[Dict[str</em>, <em class="sig-param">hiplot.experiment.ValueDef]] = None</em>, <em class="sig-param">line_display: Optional[hiplot.experiment.LineDisplay] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datapoints</strong> – All the measurements in this experiment: datapoints</p></li>
+<li><p><strong>parameters_definition</strong> – Characteristics of the columns (ordering, type, etc…): parameters_definition</p></li>
+<li><p><strong>line_display</strong> – Characteristics of the XY graph (lines thickness, initial x/y axis…): line_display</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
 <dt id="hiplot.Experiment.display">
 <code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param">force_full_width: bool = False</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ExperimentDisplayed<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays an experiment in an ipython notebook.
@@ -71,8 +80,8 @@ without any dependency to HiPlot server or static files.</p>
 <dl class="method">
 <dt id="hiplot.Experiment.validate">
 <code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make sure we don’t have any circular reference
-Call “validate” on sub-objects</p>
+<dd><p>Makes sure that this object is valid. Raises a <cite>hip.ExperimentValidationError</cite> otherwise.
+Experiments with circular references, non-existent parents, or without datapoints are invalid.</p>
 </dd></dl>
 
 </dd></dl>

@@ -133,7 +133,9 @@
 
 <div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../index.html#hiplot.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">    :ivar datapoints: All the measurements in this experiment: datapoints</span>
+<span class="sd">    :ivar parameters_definition: Characteristics of the columns (ordering, type, etc...): parameters_definition</span>
+<span class="sd">    :ivar line_display: Characteristics of the XY graph (lines thickness, initial x/y axis...): line_display</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
         <span class="n">datapoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -152,8 +154,8 @@
 
 <div class="viewcode-block" id="Experiment.validate"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Make sure we don&#39;t have any circular reference</span>
-<span class="sd">        Call &quot;validate&quot; on sub-objects</span>
+<span class="sd">        Makes sure that this object is valid. Raises a `hip.ExperimentValidationError` otherwise.</span>
+<span class="sd">        Experiments with circular references, non-existent parents, or without datapoints are invalid.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">seen</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">dp_lookup</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Datapoint</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">dp</span><span class="o">.</span><span class="n">uid</span><span class="p">:</span> <span class="n">dp</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">}</span>
