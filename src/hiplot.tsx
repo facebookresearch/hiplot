@@ -41,11 +41,18 @@ interface HiPlotComponentProps {
     experiment: HiPlotExperiment | null;
 };
 
+enum HiPlotLoadStatus {
+    None,
+    Loading,
+    Loaded,
+    Error
+};
+
 interface HiPlotComponentState {
     experiment: HiPlotExperiment | null;
     webserver: boolean;
     version: number;
-    loading: boolean;
+    load_status: HiPlotLoadStatus;
     error: string;
 }
 
@@ -75,7 +82,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             experiment: props.experiment,
             webserver: props.experiment === null,
             version: 0,
-            loading: false,
+            load_status: HiPlotLoadStatus.None,
             error: null,
         };
         var selection_id = 0;
@@ -122,7 +129,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         var rows = this.rows;
         var jroot = $(me.domRoot.current);
         console.assert(this.state.experiment == experiment);
-        console.assert(this.state.loading == false);
+        console.assert(this.state.load_status != HiPlotLoadStatus.Loading);
         jroot.find('.hiplot-loaded-change-class').each(function(_, n) {
             $(n).removeClass($(n).attr('data-hiplot-loaded-remove-class'));
             $(n).addClass($(n).attr('data-hiplot-loaded-add-class'));
@@ -238,13 +245,11 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
     loadWithPromise(prom: Promise<any>) {
         var me = this;
         var jroot = $(me.domRoot.current);
-        jroot.find('.display-when-loaded').addClass('collapse');
-        me.setState({loading: true, error: null});
+        me.setState({load_status: HiPlotLoadStatus.Loading});
         prom.then(function(data) {
-            jroot.find('.display-when-loaded').removeClass('collapse');
             if (data.experiment === undefined) {
                 me.setState({
-                    loading: false,
+                    load_status: HiPlotLoadStatus.Error,
                     experiment: null,
                     error: data.error !== undefined ? data.error : 'Unable to load experiment',
                 });
@@ -253,14 +258,13 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             me.setState(function(state, props) { return {
                 experiment: data.experiment,
                 version: state.version + 1,
-                loading: false,
-                error: null,
+                load_status: HiPlotLoadStatus.Loaded,
             }; });
         })
         .catch(
             error => {
                 console.log('Error', error);
-                me.setState({loading: false, experiment: null, error: 'HTTP error, check server logs / javascript console'});
+                me.setState({load_status: HiPlotLoadStatus.Error, experiment: null, error: 'HTTP error, check server logs / javascript console'});
                 throw error;
             }
         );
@@ -294,15 +298,10 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         }
     }
     componentDidUpdate() {
-        if (this.state.experiment && !this.state.loading) {
+        if (this.state.experiment && this.state.load_status != HiPlotLoadStatus.Loading) {
             this._loadExperiment(this.state.experiment);
         }
         var jroot = $(this.domRoot.current);
-        if (this.state.loading || this.state.experiment === null) {
-            jroot.find('.display-when-loaded').addClass('collapse');
-        } else {
-            jroot.find('.display-when-loaded').removeClass('collapse');
-        }
     }
     loadURI(uri: string) {
         this.loadWithPromise(new Promise(function(resolve, reject) {
@@ -336,60 +335,66 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             {this.state.webserver &&
                 <RunsSelectionTextArea
                     initialValue={this.url_state.get(URL_LOAD_URI, '')}
-                    enabled={!this.state.loading}
-                    minimizeWhenOutOfFocus={this.state.experiment != null && !this.state.loading}
+                    enabled={this.state.load_status != HiPlotLoadStatus.Loading}
+                    minimizeWhenOutOfFocus={this.state.load_status == HiPlotLoadStatus.Loaded}
                     onSubmit={this.onRunsTextareaSubmitted.bind(this)} />
             }
         
-            <div ref={this.controls} className="col-md-8 display-when-loaded collapse">
-                <RestoreDataBtn rows={this.rows} />
-                <KeepDataBtn rows={this.rows} />
-                <ExcludeDataBtn rows={this.rows} />
-                {this.state.webserver &&
-                    <button title="Refresh + restore data removed" className="refresh-data">Refresh</button>
-                }
-                <ExportDataCSVBtn rows={this.rows} />
-                <div className="controls">
-                    <strong className="rendered-count"></strong>/<strong className="selected-count"></strong>
-                    {false && <div>Lines at <strong className="opacity"></strong> opacity.</div>}
-                    <span className={style.settings}>
-                        <button className="hide-ticks">Hide Ticks</button>
-                        <button className="show-ticks" disabled={true}>Show Ticks</button>
-                        <ThemeToggle root={this.domRoot} />
-                    </span>
-                </div>
-                <div style={{clear:'both'}}></div>
+            <div ref={this.controls} className="col-md-8">
+            {this.state.load_status == HiPlotLoadStatus.Loaded &&
+                <React.Fragment>
+                    <RestoreDataBtn rows={this.rows} />
+                    <KeepDataBtn rows={this.rows} />
+                    <ExcludeDataBtn rows={this.rows} />
+                    {this.state.webserver &&
+                        <button title="Refresh + restore data removed" className="refresh-data">Refresh</button>
+                    }
+                    <ExportDataCSVBtn rows={this.rows} />
+                    <div className="controls">
+                        <strong className="rendered-count"></strong>/<strong className="selected-count"></strong>
+                        {false && <div>Lines at <strong className="opacity"></strong> opacity.</div>}
+                        <span className={style.settings}>
+                            <button className="hide-ticks">Hide Ticks</button>
+                            <button className="show-ticks" disabled={true}>Show Ticks</button>
+                            <ThemeToggle root={this.domRoot} />
+                        </span>
+                    </div>
+                    <div style={{clear:'both'}}></div>
+                </React.Fragment>
+            }
             </div>
             </HeaderBar>
-            {this.state.error !== null &&
+            {this.state.load_status == HiPlotLoadStatus.Error &&
                 <ErrorDisplay error={this.state.error} />
             }
-            {this.state.experiment === null &&
+            {this.state.load_status != HiPlotLoadStatus.Loaded &&
                 <DocAndCredits />
             }
-            <div className="display-when-loaded collapse">
-            <div ref={this.parallelPlotRef} className={cn("parallel-plot-chart")} style={{height: '600px'}}>
-                <React.Fragment key={'pp_' + this.state.version}>
-                    <canvas className={cn("background-canvas")}></canvas>
-                    <canvas className={cn("foreground-canvas")}></canvas>
-                    <canvas className={cn("highlight-canvas")}></canvas>
-                    <svg></svg>
-                    <div className="dropdown-menu dropdown-menu-sm context-menu"></div>
-                </React.Fragment>
-            </div>
-            <div key={'line_' + this.state.version} ref={this.datapointsGraphRef} className="checkpoints-graph display-when-dp-enabled">
-                <canvas className={cn("checkpoints-graph-lines")} style={{position: 'absolute'}}></canvas>
-                <canvas className={cn("checkpoints-graph-highlights")} style={{position: 'absolute'}}></canvas>
-                <svg className={cn("checkpoints-graph-svg")} style={{position: 'absolute'}}></svg>
-            </div>
-        
-            <div className={`${style.wrap} row`}>
-                <div className={`col-md-12 ${style["min-height-100"]} sample-table-container`}>
-                <table ref={this.datatableRef} className="sample-rows-table display table table-striped table-bordered dataTable">
-                </table>
+            {this.state.load_status == HiPlotLoadStatus.Loaded &&
+            <div>
+                <div ref={this.parallelPlotRef} className={style["parallel-plot-chart"]} style={{height: '600px'}}>
+                    <React.Fragment key={'pp_' + this.state.version}>
+                        <canvas className={cn("background-canvas")}></canvas>
+                        <canvas className={cn("foreground-canvas")}></canvas>
+                        <canvas className={cn("highlight-canvas")}></canvas>
+                        <svg></svg>
+                        <div className="dropdown-menu dropdown-menu-sm context-menu"></div>
+                    </React.Fragment>
+                </div>
+                <div key={'line_' + this.state.version} ref={this.datapointsGraphRef} className="checkpoints-graph display-when-dp-enabled">
+                    <canvas className={cn("checkpoints-graph-lines")} style={{position: 'absolute'}}></canvas>
+                    <canvas className={cn("checkpoints-graph-highlights")} style={{position: 'absolute'}}></canvas>
+                    <svg className={cn("checkpoints-graph-svg")} style={{position: 'absolute'}}></svg>
+                </div>
+            
+                <div className={`${style.wrap} row`}>
+                    <div className={`col-md-12 ${style["min-height-100"]} sample-table-container`}>
+                    <table ref={this.datatableRef} className="sample-rows-table display table table-striped table-bordered dataTable">
+                    </table>
+                    </div>
                 </div>
             </div>
-            </div>
+            }
             </div>
         </div>
         );

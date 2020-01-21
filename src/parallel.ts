@@ -10,6 +10,7 @@
 
 /// <reference path="./lib/resizable.ts"/>
 import $ from "jquery";
+import React from "react";
 import * as d3 from "d3";
 import * as _ from 'underscore';
 
