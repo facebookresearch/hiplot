@@ -15,6 +15,34 @@ from pathlib import Path
 from . import experiment as hip
 
 
+class NoFetcherFound(Exception):
+    pass
+
+
+def load_xp_with_fetchers(fetchers: List[hip.ExperimentFetcher], uri: str) -> hip.Experiment:
+    for f in fetchers:
+        try:
+            return f(uri)
+        except hip.ExperimentFetcherDoesntApply:
+            continue
+    raise NoFetcherFound(uri)
+
+
+class MultipleFetcher:
+    MULTI_PREFIX = "multi://"
+
+    def __init__(self, fetchers: List[hip.ExperimentFetcher]) -> None:
+        self.fetchers: List[hip.ExperimentFetcher] = fetchers + [self]
+
+    def __call__(self, uri: str) -> hip.Experiment:
+        if not uri.startswith(self.MULTI_PREFIX):
+            raise hip.ExperimentFetcherDoesntApply()
+        defs = json.loads(uri[len(self.MULTI_PREFIX) :])
+        if isinstance(defs, list):
+            return hip.Experiment.merge({v: load_xp_with_fetchers(self.fetchers, v) for v in defs})
+        return hip.Experiment.merge({k: load_xp_with_fetchers(self.fetchers, v) for k, v in defs.items()})
+
+
 # Demos from the README. If one of those is modified, please modify the readme as well
 def demo_change_column_properties() -> hip.Experiment:
     data = [{"param": 1, "loss": 10, "hidden_field": "value1", "c": "red"}, {"param": 2, "loss": 5, "hidden_field": "value2", "c": "black"}]

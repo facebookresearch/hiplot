@@ -33,7 +33,7 @@ data = [{'dropout':0.1, 'lr': 0.001, 'loss': 10.0, 'optimizer': 'SGD'},
     {'dropout':0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
 hip.Experiment.from_iterable(data).display()
 ```
-[see it live](https://facebookresearch.github.io/hiplot/assets/demo/demo_basic_usage.html)
+[see it live](https://facebookresearch.github.io/hiplot/_static/demo/demo_basic_usage.html)
 
 It is also possible to load a CSV directly:
 ```python
@@ -70,7 +70,7 @@ exp.line_display.lines_opacity = 1.0  # Decrease this value if you have too many
 exp.display()
 ```
 ![demo_line_xy](assets/demo_line_xy.png)
-[see it live](https://facebookresearch.github.io/hiplot/assets/demo/demo_line_xy.html)
+[see it live](https://facebookresearch.github.io/hiplot/_static/demo/demo_line_xy.html)
 
 #### Retrieve currently selected rows
 *Only supported on Jupyter Notebook - does not work on Jupyter Lab*
@@ -98,7 +98,7 @@ exp.parameters_definition['loss'].type = 'numericlog'
 exp.display()
 ```
 ![demo_change_column_properties](assets/demo_change_column_properties.png)
-[see it live](https://facebookresearch.github.io/hiplot/assets/demo/demo_change_column_properties.html)
+[see it live](https://facebookresearch.github.io/hiplot/_static/demo/demo_change_column_properties.html)
 
 ## License
 HiPlot is [MIT](LICENSE) licensed, as found in the [LICENSE](LICENSE) file.

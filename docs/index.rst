@@ -10,8 +10,13 @@ Welcome to HiPlot's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: hiplot.experiment
+.. autoclass:: hiplot.Experiment
    :members:
+
+.. autoclass:: hiplot.ExperimentDisplayed
+   :members:
+
+.. autofunction:: hiplot.run_server
 
 Indices and tables
 ==================

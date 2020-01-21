@@ -24,14 +24,14 @@ class ExperimentValidationMissingParent(ExperimentValidationError):
     pass
 
 
-class DictSerializable:
+class _DictSerializable:
     """
     All classes that are transmitted to Javascript must subclass this
     """
     def _asdict(self) -> Dict[str, Any]:
         return self.__dict__
 
-class ValueDef(DictSerializable):
+class ValueDef(_DictSerializable):
     CATEGORICAL = 'categorical'
     NUMERIC = 'numeric'
     NUMERIC_LOG = 'numericlog'
@@ -62,7 +62,7 @@ class ValueDef(DictSerializable):
                     )
 
 
-class Datapoint(DictSerializable):
+class Datapoint(_DictSerializable):
     """
     A datapoint represents a single measurement of metrics - for instance a model checkpoint that is evaluated.
     It can have a parent `from_uid` if this `Datapoint` originates from another one (offspring).
@@ -78,7 +78,7 @@ class Datapoint(DictSerializable):
                 raise ExperimentValidationError(f'Datapoint {self.uid} contains a value for "{reserved_kw}"')
 
 
-class LineDisplay(DictSerializable):
+class LineDisplay(_DictSerializable):
     """
     Settings for the XY graph (optional)
     """
@@ -98,9 +98,21 @@ class LineDisplay(DictSerializable):
         self.dots_opacity = dots_opacity
 
 
-class Experiment(DictSerializable):
+class Experiment(_DictSerializable):
     """
+    Object that can be rendered by HiPlot.
+    See `Experiment.display` for ipython notebook case, or `ExperimentFetcher` for the web-server case.
 
+    :ivar datapoints: All the measurements we have. One datapoint corresponds to one line in the parallel plot and to one line in the table.
+    :ivar parameters_definition: Characteristics of the columns (ordering, type, etc...)
+    :ivar line_display: Characteristics of the XY graph (lines thickness, initial x/y axis...)
+
+    :Example:
+
+    >>> import hiplot as hip
+    >>> data = [{'param': 1, 'loss': 10, 'hidden_field': 'value1', 'c': 'red'},
+        {'param': 2, 'loss': 5, 'hidden_field': 'value2', 'c': 'black'}]
+    >>> exp = hip.Experiment.from_iterable(data)
     """
     def __init__(self,
         datapoints: Optional[List[Datapoint]] = None,
@@ -119,8 +131,8 @@ class Experiment(DictSerializable):
 
     def validate(self) -> "Experiment":
         """
-        Make sure we don't have any circular reference
-        Call "validate" on sub-objects
+        Makes sure that this object is valid. Raises a `hip.ExperimentValidationError` otherwise.
+        Experiments with circular references, non-existent parents, or without datapoints are invalid.
         """
         seen: Set[str] = set()
         dp_lookup: Dict[str, Datapoint] = {dp.uid: dp for dp in self.datapoints}
@@ -150,7 +162,9 @@ class Experiment(DictSerializable):
     def display(self, force_full_width: bool = False) -> "ExperimentDisplayed":
         """
         Displays an experiment in an ipython notebook.
-        :force_full_width: allows to force to have 100% width on Jupyter Notebooks only.
+
+        :param force_full_width: allows to force to have 100% width on Jupyter Notebooks only.
+        :returns: An `ExperimentDisplayed` object that can be used to fetch a list of `Datapoint` - only implemented for Jupyter notebook.
         """
         from .ipython import display_exp  # pylint: disable=cyclic-import
 
@@ -176,11 +190,14 @@ class Experiment(DictSerializable):
     def from_iterable(it: Iterable[Dict[str, Any]]) -> "Experiment":
         """
         Creates a HiPlot experiment from an iterable/list of dictionnaries.
-        This is the easiest way to generate an `Experiment` object.
-        Example:
-        ```
-        hip.Experiment.from_iterable([{"p": "a"}, {"p": "b"}])
-        ```
+        This is the easiest way to generate an `hiplot.Experiment` object.
+
+        :Example:
+
+        >>> import hiplot as hip
+        >>> hip.Experiment.from_iterable([{"p": "a"}, {"p": "b"}])
+        <hiplot.experiment.Experiment object at 0x7f0f2e13c590>
+
         """
         return Experiment(
             datapoints=[
@@ -222,5 +239,5 @@ class ExperimentDisplayed(metaclass=ABCMeta):
     @abstractmethod
     def get_selected(self) -> List[Datapoint]:
         """
-        Returns a list of currently selected datapoints
+        Returns a list of currently rendered datapoints in the parallel plot
         """
