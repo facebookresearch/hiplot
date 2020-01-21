@@ -125,12 +125,6 @@ export enum ParamType {
     NUMERICPERCENTILE = "numericpercentile",
 };
 
-export interface HiPlotDatapoint {
-    uid: string;
-    from_uid: string | null;
-    values: {[key: string]: any};
-};
-
 export interface HiPlotValueDef {
     type: ParamType;
     colors: {[value: string]: string};
@@ -148,7 +142,7 @@ export interface HiPlotGraphConfig {
 };
 
 export interface HiPlotExperiment {
-    datapoints: Array<HiPlotDatapoint>,
+    datapoints: Array<Datapoint>,
     parameters_definition: {[key: string]: HiPlotValueDef},
     line_display: HiPlotGraphConfig,
 }

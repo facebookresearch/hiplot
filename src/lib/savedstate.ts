@@ -27,7 +27,7 @@ export class State {
 
 class GlobalPageState {
     params = {}; // In case history doesnt work, like when we are embedded in an iframe
-    create_state(name: string) {
+    create_state(name: string): State {
         return new State(name);
     }
     get(name: string, default_value?: any) {

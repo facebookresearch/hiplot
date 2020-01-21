@@ -6,6 +6,7 @@
  */
 
 import $ from "jquery";
+import React from "react";
 //@ts-ignore
 import dt from "datatables.net-bs4";
 dt(window, $);
@@ -17,13 +18,10 @@ import { AllDatasets, Datapoint, DatapointLookup } from "./types";
 import { ParamDefMap } from './infertypes';
 //@ts-ignore
 import style from "./hiplot.css";
+import { HiPlotData } from "./plugin";
 
-interface Config {
+interface Config extends HiPlotData {
     root: HTMLDivElement,
-    params_def: ParamDefMap,
-    rows: AllDatasets,
-    get_color_for_uid: (uid: string, opacity: number) => string,
-    dp_lookup: DatapointLookup,
 }
 
 

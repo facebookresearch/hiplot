@@ -13,26 +13,55 @@ import { WatchedProperty, AllDatasets, DatapointLookup, Datapoint, HiPlotGraphCo
 import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
+import { HiPlotData } from "./plugin";
 
-export interface DatapointsGraphConfig {
-  params_def: ParamDefMap,
-  dp_lookup: DatapointLookup,
+export interface DatapointsGraphConfig extends HiPlotData {
   root: HTMLDivElement,
-  axis_x: WatchedProperty,
-  axis_y: WatchedProperty,
-  rows: AllDatasets,
-  render_row_text: (rows: Datapoint) => string,
-  get_color_for_row: (row: Datapoint, opacity: number) => string,
   graph_display_config: HiPlotGraphConfig,
-}
+};
 
 export class DatapointsGraph {
   params_def: ParamDefMap;
   svg: any;
   clear_canvas: () => void;
+  axis_x = new WatchedProperty('axis_x');
+  axis_y = new WatchedProperty('axis_y');
+  experiment_provided_config: HiPlotGraphConfig;
   constructor(config: DatapointsGraphConfig) {
     var me = this;
+    me.experiment_provided_config = config.experiment.line_display;
     me.params_def = config.params_def;
+
+    // Load default X/Y axis
+    function init_line_display_axis(axis, default_value) {
+        axis.set(config.url_state.get(axis.name, default_value));
+        if (config.params_def[axis.get()] === undefined) {
+            axis.set(null);
+        }
+        axis.on_change(function(v) {
+            config.url_state.set(axis.name, v);
+        });
+    }
+    init_line_display_axis(this.axis_x, me.experiment_provided_config.axis_x);
+    init_line_display_axis(this.axis_y, me.experiment_provided_config.axis_y);
+
+    config.context_menu_ref.current.addCallback(function(column, cm) {
+      var contextmenu = $(cm);
+      contextmenu.append($('<div class="dropdown-divider"></div>'));
+      contextmenu.append($('<h6 class="dropdown-header">Line display</h6>'));
+      [me.axis_x, me.axis_y].forEach(function(dat, index) {
+        var label = "Set as " + ['X', 'Y'][index] + ' axis';
+        var option = $('<a class="dropdown-item" href="#">').text(label);
+        if (dat.get() == column) {
+          option.addClass('disabled').css('pointer-events', 'none');
+        }
+        option.click(function(event) {
+          dat.set(column);
+          event.preventDefault();
+        });
+        contextmenu.append(option);
+      });
+    })
 
     var div = d3.select(config.root);
     me.svg = div.select("svg");
@@ -84,8 +113,8 @@ export class DatapointsGraph {
       width = document.body.clientWidth;
       height = d3.min([d3.max([document.body.clientHeight-540, 240]), 500]);
       margin = {top: 20, right: 20, bottom: 50, left: 60};
-      x_scale_orig = x_scale = create_scale(config.axis_x.get(), [margin.left, width - margin.right]);
-      y_scale_orig = y_scale = create_scale(config.axis_y.get(), [height - margin.bottom, margin.top]);
+      x_scale_orig = x_scale = create_scale(me.axis_x.get(), [margin.left, width - margin.right]);
+      y_scale_orig = y_scale = create_scale(me.axis_y.get(), [height - margin.bottom, margin.top]);
       zoom_brush = d3.brush().extent([[margin.left, margin.top], [width - margin.right, height - margin.bottom]]).on("end", brushended);
 
       yAxis = g => g
@@ -96,7 +125,7 @@ export class DatapointsGraph {
             .attr("x", 3)
             .attr("text-anchor", "start")
             .attr("font-weight", "bold")
-            .text(config.axis_y.get()));
+            .text(me.axis_y.get()));
       xAxis = g => g
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(d3.axisBottom(x_scale).ticks(1+width / 40).tickSizeInner(margin.bottom + margin.top - height))
@@ -104,7 +133,7 @@ export class DatapointsGraph {
             .attr("y", 22)
             .attr("text-anchor", "end")
             .attr("font-weight", "bold")
-            .text(config.axis_x.get()));
+            .text(me.axis_x.get()));
       div.selectAll("canvas")
         .attr("width", width - margin.left - margin.right)
         .attr("height", height - margin.top - margin.bottom);
@@ -130,12 +159,12 @@ export class DatapointsGraph {
       } else {
         if (x_scale.invert !== undefined) {
           var xrange = [x_scale.invert(s[0][0]), x_scale.invert(s[1][0])];
-          x_scale = create_scale(config.axis_x.get(), [margin.left, width - margin.right]);
+          x_scale = create_scale(me.axis_x.get(), [margin.left, width - margin.right]);
           x_scale.domain(xrange);
         }
         if (y_scale.invert !== undefined) {
           var yrange = [y_scale.invert(s[1][1]), y_scale.invert(s[0][1])];
-          y_scale = create_scale(config.axis_y.get(), [height - margin.bottom, margin.top]);
+          y_scale = create_scale(me.axis_y.get(), [height - margin.bottom, margin.top]);
           y_scale.domain(yrange);
         }
       }
@@ -204,18 +233,18 @@ export class DatapointsGraph {
       if (c.lines_color) ctx.strokeStyle = c.lines_color;
       if (c.dots_color) ctx.fillStyle = c.dots_color;
       if (c.lines_width) ctx.lineWidth = c.lines_width;
-      var pdx = me.params_def[config.axis_x.get()];
-      var pdy = me.params_def[config.axis_y.get()];
+      var pdx = me.params_def[me.axis_x.get()];
+      var pdy = me.params_def[me.axis_y.get()];
       function is_err(value, scaled_value, def) {
         return value === undefined || value === null || isNaN(scaled_value) || (def.numeric && (value == 'inf' || value == '-inf'));
       }
       function render_point_position(dp) {
-        var x = x_scale(dp[config.axis_x.get()]);
-        var y = y_scale(dp[config.axis_y.get()]);
+        var x = x_scale(dp[me.axis_x.get()]);
+        var y = y_scale(dp[me.axis_y.get()]);
         x -= margin.left;
         y -= margin.top;
 
-        var err = is_err(dp[config.axis_x.get()], x, pdx) || is_err(dp[config.axis_y.get()], y, pdy);
+        var err = is_err(dp[me.axis_x.get()], x, pdx) || is_err(dp[me.axis_y.get()], y, pdy);
         if (err) {
           return null;
         }
@@ -259,14 +288,15 @@ export class DatapointsGraph {
     });
     
     // Render at the same pace as parallel plot
+    var xp_config = config.experiment.line_display;
     config.rows['rendered'].on_append(function(new_rows) {
       new_rows.forEach(function(dp) {
         var call_render = function() {
           render_dp(dp, graph_lines, {
-            'lines_color': config.get_color_for_row(dp, config.graph_display_config.lines_opacity),
-            'lines_width': config.graph_display_config.lines_thickness,
-            'dots_color': config.get_color_for_row(dp, config.graph_display_config.dots_opacity),
-            'dots_thickness': config.graph_display_config.dots_thickness,
+            'lines_color': config.get_color_for_row(dp, xp_config.lines_opacity),
+            'lines_width': xp_config.lines_thickness,
+            'dots_color': config.get_color_for_row(dp, xp_config.dots_opacity),
+            'dots_thickness': xp_config.dots_thickness,
             'remember': true,
           });
         };
@@ -323,8 +353,8 @@ export class DatapointsGraph {
 
     // Change axis
     function update_axis() {
-      var new_x_axis = config.axis_x.get();
-      var new_y_axis = config.axis_y.get();
+      var new_x_axis = me.axis_x.get();
+      var new_y_axis = me.axis_y.get();
       if (new_x_axis === undefined || new_y_axis === undefined ||
           new_x_axis === null || new_y_axis === null) {
         return;
@@ -340,8 +370,8 @@ export class DatapointsGraph {
       });
       rerender_all_points = rerender_all_points_before;
     };
-    config.axis_x.on_change(update_axis);
-    config.axis_y.on_change(update_axis);
+    me.axis_x.on_change(update_axis);
+    me.axis_y.on_change(update_axis);
     update_axis();
   }
   destroy() {

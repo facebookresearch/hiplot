@@ -18,120 +18,24 @@ import { WatchedProperty, AllDatasets, Datapoint, ParamType } from "./types";
 import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
+import { HiPlotData } from "./plugin";
 
 
-const VAR_TYPE_TO_NAME = {
-  [ParamType.CATEGORICAL]: 'Categorical',
-  [ParamType.NUMERIC]: 'Number',
-  [ParamType.NUMERICLOG]: 'Number (log-scale)',
-  [ParamType.NUMERICPERCENTILE]: 'Number (percentile-scale)',
-};
-
-export interface ParallelPlotConfig {
+export interface ParallelPlotConfig extends HiPlotData {
   root: HTMLDivElement,
   controls: HTMLDivElement,
-
-  colorby: WatchedProperty,
-  rows: AllDatasets,
-  params_def: ParamDefMap,
-  line_display_x_axis: WatchedProperty,
-  line_display_y_axis: WatchedProperty,
-  get_color_for_row: (dp: Datapoint, opacity: number) => string,
 };
 
 export interface ParallelPlotInternalState {
   colorby: WatchedProperty,
   rows: AllDatasets,
   params_def: ParamDefMap,
-  line_display_x_axis: WatchedProperty,
-  line_display_y_axis: WatchedProperty,
 };
-
-
-class ContextualMenu {
-  hide: () => void;
-  constructor(public contextmenu: JQuery, public state: ParallelPlotInternalState) {
-    var me = this;
-    this.hide = function() {
-      me.contextmenu.css('display', 'none');
-    }
-    $(window).on("click", this.hide);
-  }
-  destroy() {
-    $(window).off("click", this.hide);
-  }
-  generate_context_menu(d: string) {
-    var state = this.state;
-    var params_def = state.params_def;
-    var contextmenu = this.contextmenu;
-
-    var top = d3.event.pageY - 10;
-    var left = d3.event.pageX - 90;
-    this.contextmenu.css({
-      display: "block",
-      top: top,
-      left: Math.max(0, left),
-    }).addClass("show");
-    this.contextmenu.empty();
-
-
-    function make_item_active(o: JQuery) {
-      o.addClass('disabled');
-      o.css('pointer-events', 'none');
-    }
-
-    // Data scaling
-    contextmenu.append($('<h6 class="dropdown-header">Data scaling</h6>'));
-    params_def[d].type_options.forEach(function(possible_type) {
-      var option = $('<a class="dropdown-item" href="#">').text(VAR_TYPE_TO_NAME[possible_type]);
-      if (possible_type == params_def[d].type) {
-        make_item_active(option);
-      }
-      option.click(function(event) {
-        contextmenu.css('display', 'none');
-        params_def[d].type = possible_type;
-        params_def[d].__url_state__.set('type', possible_type);
-        state.rows['all'].append([]); // Trigger recomputation of the parameters + rerendering
-        event.preventDefault();
-      });
-      contextmenu.append(option);
-    });
-    contextmenu.append($('<div class="dropdown-divider"></div>'));
-
-    // Color by
-    var link_colorize = $('<a class="dropdown-item" href="#">Use for coloring</a>');
-    link_colorize.click(function(event) {
-      state.colorby.set(d);
-      event.preventDefault();
-    });
-    if (state.colorby.get() == d) {
-      make_item_active(link_colorize);
-    }
-    contextmenu.append(link_colorize);
-
-    // Select line display XY axis
-    contextmenu.append($('<div class="dropdown-divider"></div>'));
-    contextmenu.append($('<h6 class="dropdown-header">Line display</h6>'));
-    [state.line_display_x_axis, state.line_display_y_axis].forEach(function(dat, index) {
-      var label = "Set as " + ['X', 'Y'][index] + ' axis';
-      var option = $('<a class="dropdown-item" href="#">').text(label);
-      if (dat.get() == d) {
-        make_item_active(option);
-      }
-      option.click(function(event) {
-        dat.set(d);
-        event.preventDefault();
-      });
-      contextmenu.append(option);
-    });
-  }
-}
 
 export interface StringMapping<V> { [key: string]: V; };
 
 
 export class ParallelPlot {
-  contextmenu: ContextualMenu;
   on_resize: () => void;
   m = [75, 0, 10, 0]; // Margins
   // Available space for rendering
@@ -168,8 +72,6 @@ export class ParallelPlot {
       'colorby': config.colorby,
       'rows': config.rows,
       'params_def': config.params_def,
-      'line_display_x_axis': config.line_display_x_axis,
-      'line_display_y_axis': config.line_display_y_axis,
     };
 
     var dragging: {[dim: string]: number} = {},
@@ -182,7 +84,6 @@ export class ParallelPlot {
     var div = this.div = d3.select(config.root);
     var svg = this.svg = div.select('svg');
     var svgg = this.svgg = svg.append("svg:g");
-    this.contextmenu = new ContextualMenu($(config.root).find('.context-menu'), state);
 
     // Foreground canvas for primary view
     me.foreground = (<HTMLCanvasElement>div.select('.foreground-canvas').node()).getContext('2d');
@@ -294,7 +195,7 @@ export class ParallelPlot {
           .attr("class", style.label)
           .text(String)
           .on("contextmenu", function(d) {
-            me.contextmenu.generate_context_menu(d);
+            me.config.context_menu_ref.current.show(d3.event.pageX, d3.event.pageY, d);
             d3.event.preventDefault();
           })
           .append("title")
@@ -356,7 +257,7 @@ export class ParallelPlot {
       }
       div.select(".foreground-canvas").style("opacity", "0.25");
       highlighted_rows.forEach(function(dp) {
-        path(dp, me.highlighted, config.get_color_for_row(dp,1));
+        path(dp, me.highlighted, config.get_color_for_row(dp, 1));
       })
     });
 
@@ -450,7 +351,7 @@ export class ParallelPlot {
     // Handles a brush event, toggling the display of foreground lines.
     // TODO refactor
     function brush() {
-      me.contextmenu.hide();
+      me.config.context_menu_ref.current.hide();
       brush_count++;
       var extents = brush_extends();
       var actives = me.dimensions.filter(function(p) { return extents[p] !== null; });
@@ -698,7 +599,6 @@ export class ParallelPlot {
     this.svg.selectAll("*").remove();
     $(this.config.root).off("resize", this.on_resize);
     $(window).off("resize", this.on_resize);
-    this.contextmenu.destroy();
   };
 
   setScaleRange(k: string) {

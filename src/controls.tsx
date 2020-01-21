@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
- import $ from "jquery";
+import $ from "jquery";
 import * as d3 from "d3";
 import * as _ from 'underscore';
 import React from "react";
