@@ -259,7 +259,7 @@ export class ParallelPlot {
       highlighted_rows.forEach(function(dp) {
         path(dp, me.highlighted, config.get_color_for_row(dp, 1));
       })
-    });
+    }, me);
 
     function invert_axis(d: string) {
       // save extent before inverting
@@ -413,7 +413,7 @@ export class ParallelPlot {
     config.rows['selected'].on_change(function(selected) {
       // Render selected lines
       paths(selected, me.foreground, brush_count);
-    })
+    }, me);
 
     // render a set of polylines on a canvas
     function paths(selected: Array<Datapoint>, ctx: CanvasRenderingContext2D, count: number) {
@@ -506,7 +506,7 @@ export class ParallelPlot {
 
       // Render selected data
       paths(new_data, me.foreground, brush_count);
-    });
+    }, me);
 
     // scale to window size
     this.on_resize = _.debounce(function() {
@@ -592,13 +592,15 @@ export class ParallelPlot {
     me.compute_dimensions();
     _loadWithProvidedData();
 
-    config.colorby.on_change(brush);
+    config.colorby.on_change(brush, me);
   }
 
-  clear() {
+  componentWillUnmount() {
     this.svg.selectAll("*").remove();
     $(this.config.root).off("resize", this.on_resize);
     $(window).off("resize", this.on_resize);
+    this.config.rows.off(this);
+    this.config.colorby.off(this);
   };
 
   setScaleRange(k: string) {

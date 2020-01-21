@@ -27,8 +27,11 @@ export class DatapointsGraph {
   axis_x = new WatchedProperty('axis_x');
   axis_y = new WatchedProperty('axis_y');
   experiment_provided_config: HiPlotGraphConfig;
+  data: DatapointsGraphConfig;
+
   constructor(config: DatapointsGraphConfig) {
     var me = this;
+    me.data = config;
     me.experiment_provided_config = config.experiment.line_display;
     me.params_def = config.params_def;
 
@@ -40,7 +43,7 @@ export class DatapointsGraph {
         }
         axis.on_change(function(v) {
             config.url_state.set(axis.name, v);
-        });
+        }, this);
     }
     init_line_display_axis(this.axis_x, me.experiment_provided_config.axis_x);
     init_line_display_axis(this.axis_y, me.experiment_provided_config.axis_y);
@@ -285,7 +288,7 @@ export class DatapointsGraph {
 
     config.rows['all'].on_change(function(new_data) {
         recompute_scale();
-    });
+    }, this);
     
     // Render at the same pace as parallel plot
     var xp_config = config.experiment.line_display;
@@ -305,7 +308,7 @@ export class DatapointsGraph {
           call_render();
         }
       });
-    });
+    }, this);
 
     this.clear_canvas = function() {
       graph_lines.clearRect(0, 0, width, height);
@@ -318,7 +321,7 @@ export class DatapointsGraph {
       if (new_rows.length == 0) {
         me.clear_canvas();
       }
-    });
+    }, this);
 
     // Draw highlights
     config.rows['highlighted'].on_change(function(highlighted) {
@@ -349,7 +352,7 @@ export class DatapointsGraph {
           dp = dp_lookup[dp.from_uid];
         }
       });
-    });
+    }, this);
 
     // Change axis
     function update_axis() {
@@ -361,7 +364,6 @@ export class DatapointsGraph {
       }
       is_enabled = true;
 
-
       var rerender_all_points_before = rerender_all_points;
       recompute_scale();
       me.clear_canvas();
@@ -370,12 +372,15 @@ export class DatapointsGraph {
       });
       rerender_all_points = rerender_all_points_before;
     };
-    me.axis_x.on_change(update_axis);
-    me.axis_y.on_change(update_axis);
+    this.axis_x.on_change(update_axis, this);
+    this.axis_y.on_change(update_axis, this);
     update_axis();
   }
-  destroy() {
+  componentWillUnmount() {
     this.clear_canvas();
     this.svg.selectAll("*").remove();
+    this.axis_x.off(this);
+    this.axis_y.off(this);
+    this.data.rows.off(this);
   };
 }

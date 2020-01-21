@@ -32,7 +32,7 @@ export class RowsDisplayTable {
     config: Config;
     empty: boolean;
     setup(c: Config) {
-        this.destroy();
+        this.componentWillUnmount();
         this.dom = $(c.root);
         this.config = c;
         this.ordered_cols = ['uid'];
@@ -90,6 +90,10 @@ export class RowsDisplayTable {
                 $(me.dt.row(rowIdx).nodes()).removeClass(style.highlight);
                 me.config.rows['highlighted'].set([]);
             });
+
+        c.rows['selected'].on_change(function(selection) {
+            me.set_selected(selection);
+        }, this);
     }
     set_selected(selected: Array<Datapoint>) {
         var dt = this.dt;
@@ -102,7 +106,7 @@ export class RowsDisplayTable {
         dt.draw();
         this.empty = selected.length == 0;
     }
-    destroy() {
+    componentWillUnmount() {
         if (this.dt) {
             this.dt.destroy();
         }

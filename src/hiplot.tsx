@@ -121,20 +121,15 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             me.parallelPlot.state.params_def = me.data.params_def;
             me.line_display.params_def = me.data.params_def;
         });
-        rows['selected'].on_change(function(selection) {
-            if (me.table !== null) {
-                me.table.set_selected(selection);
-            }
-        });
     }
     clear_dom() {
         // Reset old plots if any
         if (this.parallelPlot) {
-            this.parallelPlot.clear();
+            this.parallelPlot.componentWillUnmount();
             this.parallelPlot = null;
         }
         if (this.line_display) {
-            this.line_display.destroy();
+            this.line_display.componentWillUnmount();
             this.line_display = null;
         }
     }
@@ -203,7 +198,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
 
         // Table visualization below
         if (this.table !== null) {
-            this.table.destroy();
+            this.table.componentWillUnmount();
         }
         this.table = new RowsDisplayTable();
         this.table.setup({
@@ -301,19 +296,16 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             }
             contextmenu.append(link_colorize);
         });
-        // Some DOM callbacks
-        var me = this;
-        var jcontrols = me.jcontrols = $(this.controls.current);
-        jcontrols.find('.refresh-data').click(function() {
-            if (me.parallelPlot) {
-                me.parallelPlot.clear();
-            }
-            me.loadURI(me.data.url_state.get(URL_LOAD_URI));
-        });
-        var load_uri = me.data.url_state.get(URL_LOAD_URI);
+        var load_uri = this.data.url_state.get(URL_LOAD_URI);
         if (load_uri !== undefined) {
-            me.loadURI(load_uri);
+            this.loadURI(load_uri);
         }
+    }
+    onRefreshDataBtn() {
+        if (this.parallelPlot) {
+            this.parallelPlot.componentWillUnmount();
+        }
+        this.loadURI(this.data.url_state.get(URL_LOAD_URI));
     }
     componentDidUpdate() {
         if (this.state.experiment && this.state.load_status != HiPlotLoadStatus.Loading) {
@@ -364,7 +356,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
                     <KeepDataBtn rows={this.data.rows} />
                     <ExcludeDataBtn rows={this.data.rows} />
                     {this.state.webserver &&
-                        <button title="Refresh + restore data removed" className="refresh-data">Refresh</button>
+                        <button title="Refresh + restore data removed" onClick={this.onRefreshDataBtn.bind(this)}>Refresh</button>
                     }
                     <ExportDataCSVBtn rows={this.data.rows} />
                     <div className="controls">
