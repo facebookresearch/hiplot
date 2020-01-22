@@ -1,4 +1,4 @@
-# HiPlot - High dimensional Interactive Plotting [![CircleCI](https://circleci.com/gh/fairinternal/hiplot.svg?style=svg&circle-token=d595f421d1232dff950fc62c4001388f175a5d8b)](https://circleci.com/gh/fairinternal/hiplot)
+# HiPlot - High dimensional Interactive Plotting [![CircleCI](https://circleci.com/gh/facebookresearch/hiplot/tree/master.svg?style=svg&circle-token=c89b6825078e174cf35bdc18e4ad4a16e28876f9)](https://circleci.com/gh/facebookresearch/hiplot/tree/master)
 
 
 ![Logo](hiplot/static/logo.svg)
