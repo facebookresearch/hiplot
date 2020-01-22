@@ -14,30 +14,30 @@ dt(window, $);
 import dtReorder from "datatables.net-colreorder-bs4";
 dtReorder(window, $);
 
-import { AllDatasets, Datapoint, DatapointLookup } from "./types";
-import { ParamDefMap } from './infertypes';
+import { Datapoint } from "./types";
 //@ts-ignore
 import style from "./hiplot.css";
 import { HiPlotData } from "./plugin";
+import _ from "underscore";
 
-interface Config extends HiPlotData {
-    root: HTMLDivElement,
-}
+interface RowsDisplayTableState {
+};
 
-
-export class RowsDisplayTable {
+export class RowsDisplayTable extends React.Component<HiPlotData, RowsDisplayTableState> {
+    table_ref: React.RefObject<HTMLTableElement> = React.createRef();
     dt = null;
     dom: JQuery;
     ordered_cols: Array<string> = [];
-    config: Config;
     empty: boolean;
-    setup(c: Config) {
-        this.componentWillUnmount();
-        this.dom = $(c.root);
-        this.config = c;
+    constructor(props: HiPlotData) {
+        super(props);
+        this.state = {};
+    }
+    componentDidMount() {
+        this.dom = $(this.table_ref.current);
         this.ordered_cols = ['uid'];
         var me = this;
-        $.each(this.config.params_def, function(k: string, def) {
+        $.each(this.props.params_def, function(k: string, def) {
             if (k == me.ordered_cols[0]) {
                 return;
             }
@@ -51,7 +51,7 @@ export class RowsDisplayTable {
                         'title': x,
                         'defaultContent': 'null',
                         'createdCell': function (td, cellData, rowData, row, col) {
-                            var color = me.config.get_color_for_uid(cellData, 1.0);
+                            var color = me.props.get_color_for_uid(cellData, 1.0);
                             // <span class="color-block" style="background: rgba(105, 230, 25, 0.85);"></span><span>099918_g1</span>
                             $(td).prepend($('<span>').addClass('color-block').css('background-color', color));
                         }
@@ -80,7 +80,7 @@ export class RowsDisplayTable {
 
                 $(me.dt.cells().nodes()).removeClass(style.highlight);
                 $(row.nodes()).addClass(style.highlight);
-                me.config.rows['highlighted'].set([me.config.dp_lookup[row.data()[individualUidColIdx]]]);
+                me.props.rows['highlighted'].set([me.props.dp_lookup[row.data()[individualUidColIdx]]]);
             })
             .on("mouseout", "td", function() {
                 if (!me.dt || me.empty) {
@@ -88,10 +88,11 @@ export class RowsDisplayTable {
                 }
                 var rowIdx = me.dt.cell(this).index().row;
                 $(me.dt.row(rowIdx).nodes()).removeClass(style.highlight);
-                me.config.rows['highlighted'].set([]);
+                me.props.rows['highlighted'].set([]);
             });
 
-        c.rows['selected'].on_change(function(selection) {
+        me.set_selected(me.props.rows['selected'].get());
+        me.props.rows['selected'].on_change(function(selection) {
             me.set_selected(selection);
         }, this);
     }
@@ -106,9 +107,20 @@ export class RowsDisplayTable {
         dt.draw();
         this.empty = selected.length == 0;
     }
+    render() {
+        return (
+        <div className={`${style.wrap} row`}>
+            <div className={`col-md-12 ${style["min-height-100"]} ${this.props.is_notebook ? "" : "sample-table-container"}`}>
+            <table ref={this.table_ref} className="sample-rows-table display table table-striped table-bordered dataTable">
+            </table>
+            </div>
+        </div>
+        );
+    }
     componentWillUnmount() {
         if (this.dt) {
             this.dt.destroy();
         }
+        this.props.rows.off(this);
     }
 }

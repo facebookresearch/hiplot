@@ -22,7 +22,7 @@ interface ContextMenuState {
 
 export class ContextMenu extends React.Component<ContextMenuProps, ContextMenuState> {
     context_menu_div: React.RefObject<HTMLDivElement> = React.createRef();
-    trigger_callbacks: Array<(column: string, element: HTMLDivElement) => void> = [];
+    trigger_callbacks: Array<{cb: (column: string, element: HTMLDivElement) => void, obj: any}> = [];
     hide: any;
     constructor(props: ContextMenuProps) {
         super(props);
@@ -37,8 +37,11 @@ export class ContextMenu extends React.Component<ContextMenuProps, ContextMenuSt
         }.bind(this);
         $(window).on("click", this.hide);
     }
-    addCallback(fn: (column: string, element: HTMLDivElement) => void) {
-        this.trigger_callbacks.push(fn);
+    addCallback(fn: (column: string, element: HTMLDivElement) => void, obj: any) {
+        this.trigger_callbacks.push({cb: fn, obj: obj});
+    }
+    removeCallbacks(obj: any) {
+        this.trigger_callbacks = this.trigger_callbacks.filter(trigger => trigger.obj != obj);
     }
     show(x: number, y: number, column: string) {
         this.setState({
@@ -60,8 +63,8 @@ export class ContextMenu extends React.Component<ContextMenuProps, ContextMenuSt
         if (this.state.visible && !prevState.visible) {
             cm.innerHTML = '';
             var me = this;
-            this.trigger_callbacks.forEach(function(callback_fn) {
-                callback_fn(me.state.column, cm);
+            this.trigger_callbacks.forEach(function(trigger) {
+                trigger.cb(me.state.column, cm);
             });
         }
     }

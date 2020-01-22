@@ -164,19 +164,16 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
 def display_exp(xp: exp.Experiment, force_full_width: bool = False) -> IPythonExperimentDisplayed:
     comm_id = f"comm_{uuid.uuid4().hex[:6]}"
     displayed_xp = IPythonExperimentDisplayed(xp, comm_id)
-    index_html = make_experiment_standalone_page(xp._asdict())
+    index_html = make_experiment_standalone_page(xp._asdict(), call_js_fn='setup_hiplot_notebook' if force_full_width else 'setup_hiplot_website')
     jupyter_render_iframe(
         page_html=index_html,
         on_load_js=f"""
 (function () {{
 const comm_id = {escapejs(comm_id)};
-const force_full_width = {escapejs(force_full_width)};
 try {{
     console.log("Setting up communication channel with Jupyter: ", comm_id);
     var comm = Jupyter.notebook.kernel.comm_manager.new_comm(comm_id, {{'type': 'hello'}});
     ifr.contentWindow.globalHiPlot.setup_comm(comm);
-    if (force_full_width)
-        ifr.contentWindow.globalHiPlot.setup_notebook();
 }}
 catch(err) {{
     console.warn('Unable to create Javascript <-> Python communication channel (are you in a Jupyter notebook? Jupyter labs is *not* supported!)');

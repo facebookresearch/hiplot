@@ -28,7 +28,7 @@ export class WatchedProperty {
     get() {
         return this.value;
     }
-    on_change(cb: (value: any) => void, obj: any = null) {
+    on_change(cb: (value: any) => void, obj: any) {
         this.__on_change_handlers.push({cb: cb, obj: obj});
     }
     off(obj: any) {
@@ -74,10 +74,10 @@ export class Dataset {
     get(): Array<Datapoint> {
         return this.rows;
     }
-    on_change(cb: (rows: Array<Datapoint>) => void, obj: any = null) {
+    on_change(cb: (rows: Array<Datapoint>) => void, obj: any) {
         this.on_change_fn.push({cb: cb, obj: obj});
     }
-    on_append(cb: (new_rows: Array<Datapoint>) => void, obj: any = null) {
+    on_append(cb: (new_rows: Array<Datapoint>) => void, obj: any) {
         this.on_append_fn.push({cb: cb, obj: obj});
     }
     off(obj: any) {

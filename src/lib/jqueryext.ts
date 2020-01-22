@@ -8,15 +8,15 @@
 // From https://stackoverflow.com/questions/18743144/jquery-event-listen-on-position-changed
 import $ from "jquery";
 
-export function on_position_changed(obj, trigger, millis?) {
+export function on_position_changed(obj, trigger, millis?): NodeJS.Timeout {
     if (millis == null) millis = 100;
     var o = $(obj[0]); // our jquery object
-    if (o.length < 1) return o;
+    if (o.length < 1) return null;
     var lastPos = o.position();
     var lastOff = o.offset();
     var lastWidth = o.width();
     var lastOffWidth = o[0].offsetWidth;
-    setInterval(function () {
+    return setInterval(function () {
         if (o == null || o.length < 1) return o; // abort if element is non existend any more
         var newPos = o.position();
         var newOff = o.offset();
@@ -43,5 +43,4 @@ export function on_position_changed(obj, trigger, millis?) {
             lastWidth= o.width();
         }
     }, millis);
-    return o;
 };

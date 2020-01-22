@@ -14,41 +14,46 @@ import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
 import { HiPlotData } from "./plugin";
+import React from "react";
 
-export interface DatapointsGraphConfig extends HiPlotData {
-  root: HTMLDivElement,
-  graph_display_config: HiPlotGraphConfig,
-};
+interface DatapointsGraphState {};
 
-export class DatapointsGraph {
+export class DatapointsGraph extends React.Component<HiPlotData, DatapointsGraphState> {
   params_def: ParamDefMap;
   svg: any;
   clear_canvas: () => void;
   axis_x = new WatchedProperty('axis_x');
   axis_y = new WatchedProperty('axis_y');
   experiment_provided_config: HiPlotGraphConfig;
-  data: DatapointsGraphConfig;
+  root_ref: React.RefObject<HTMLDivElement> = React.createRef();
+  canvas_lines_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
+  canvas_highlighted_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
+  on_position_changed_timeout: NodeJS.Timeout = null;
 
-  constructor(config: DatapointsGraphConfig) {
+  constructor(props: HiPlotData) {
+    super(props);
+    this.state = {};
+  }
+  componentDidMount() {
     var me = this;
-    me.data = config;
-    me.experiment_provided_config = config.experiment.line_display;
-    me.params_def = config.params_def;
+    var props = this.props;
+    me.experiment_provided_config = props.experiment.line_display;
+    me.params_def = props.params_def;
 
     // Load default X/Y axis
     function init_line_display_axis(axis, default_value) {
-        axis.set(config.url_state.get(axis.name, default_value));
-        if (config.params_def[axis.get()] === undefined) {
+        axis.set(props.url_state.get(axis.name, default_value));
+        if (props.params_def[axis.get()] === undefined) {
             axis.set(null);
         }
         axis.on_change(function(v) {
-            config.url_state.set(axis.name, v);
+            props.url_state.set(axis.name, v);
         }, this);
     }
     init_line_display_axis(this.axis_x, me.experiment_provided_config.axis_x);
     init_line_display_axis(this.axis_y, me.experiment_provided_config.axis_y);
 
-    config.context_menu_ref.current.addCallback(function(column, cm) {
+    props.context_menu_ref.current.addCallback(function(column, cm) {
       var contextmenu = $(cm);
       contextmenu.append($('<div class="dropdown-divider"></div>'));
       contextmenu.append($('<h6 class="dropdown-header">Line display</h6>'));
@@ -64,11 +69,11 @@ export class DatapointsGraph {
         });
         contextmenu.append(option);
       });
-    })
+    }, me);
 
-    var div = d3.select(config.root);
+    var div = d3.select(this.root_ref.current);
     me.svg = div.select("svg");
-    var dp_lookup = config.dp_lookup;
+    var dp_lookup = props.dp_lookup;
     var currently_displayed = [];
     var rerender_all_points = [];
     var zoom_brush;
@@ -76,11 +81,11 @@ export class DatapointsGraph {
     var is_enabled = false;
 
     // Lines
-    var graph_lines = (<HTMLCanvasElement>div.select('.checkpoints-graph-lines').node()).getContext('2d');
+    var graph_lines = this.canvas_lines_ref.current.getContext('2d');
     graph_lines.globalCompositeOperation = "destination-over";
 
     // Highlights
-    var highlights = (<HTMLCanvasElement>div.select('.checkpoints-graph-highlights').node()).getContext('2d');
+    var highlights = this.canvas_highlighted_ref.current.getContext('2d');
     highlights.globalCompositeOperation = "destination-over";
 
     var width, height, x_scale, y_scale, yAxis, xAxis, margin;
@@ -149,8 +154,8 @@ export class DatapointsGraph {
       redraw_axis();
     }
     function on_move() {
-      var pos_top = $(config.root).position().top;
-      var pos_left = $(config.root).position().left;
+      var pos_top = $(me.root_ref.current).position().top;
+      var pos_left = $(me.root_ref.current).position().left;
       div.selectAll("canvas").style("top", pos_top + "px").style("left", pos_left + "px");
       me.svg.style("top", pos_top + "px").style("left", pos_left + "px");
     }
@@ -174,7 +179,7 @@ export class DatapointsGraph {
       redraw_axis_and_rerender();
     }
     on_move();
-    on_position_changed($(config.root), on_move);
+    this.on_position_changed_timeout = on_position_changed($(this.root_ref.current), on_move);
 
     function hover(svg, path) {
       var dot = me.svg.append("g")
@@ -215,9 +220,9 @@ export class DatapointsGraph {
           dot.select("text").text("No point found?!");
           return;
         }
-        config.rows['highlighted'].set([config.dp_lookup[closest['dp'].uid]]);
+        props.rows['highlighted'].set([props.dp_lookup[closest['dp'].uid]]);
         dot.attr("transform", `translate(${closest["layerX"]},${closest["layerY"]})`);
-        dot.select("text").text(config.render_row_text(closest['dp']));
+        dot.select("text").text(props.render_row_text(closest['dp']));
       }
 
       function entered() {
@@ -225,7 +230,7 @@ export class DatapointsGraph {
       }
 
       function left() {
-        config.rows['highlighted'].set([]);
+        props.rows['highlighted'].set([]);
         dot.attr("display", "none");
       }
     };
@@ -286,19 +291,19 @@ export class DatapointsGraph {
       }
     };
 
-    config.rows['all'].on_change(function(new_data) {
+    props.rows['all'].on_change(function(new_data) {
         recompute_scale();
     }, this);
     
     // Render at the same pace as parallel plot
-    var xp_config = config.experiment.line_display;
-    config.rows['rendered'].on_append(function(new_rows) {
+    var xp_config = props.experiment.line_display;
+    function render_new_rows(new_rows) {
       new_rows.forEach(function(dp) {
         var call_render = function() {
           render_dp(dp, graph_lines, {
-            'lines_color': config.get_color_for_row(dp, xp_config.lines_opacity),
+            'lines_color': props.get_color_for_row(dp, xp_config.lines_opacity),
             'lines_width': xp_config.lines_thickness,
-            'dots_color': config.get_color_for_row(dp, xp_config.dots_opacity),
+            'dots_color': props.get_color_for_row(dp, xp_config.dots_opacity),
             'dots_thickness': xp_config.dots_thickness,
             'remember': true,
           });
@@ -308,7 +313,9 @@ export class DatapointsGraph {
           call_render();
         }
       });
-    }, this);
+    }
+    props.rows['rendered'].on_append(render_new_rows, this);
+    render_new_rows(props.rows['selected'].get());
 
     this.clear_canvas = function() {
       graph_lines.clearRect(0, 0, width, height);
@@ -317,14 +324,14 @@ export class DatapointsGraph {
       rerender_all_points = [];
     };
     // Draw selected
-    config.rows['rendered'].on_change(function(new_rows) {
+    props.rows['rendered'].on_change(function(new_rows) {
       if (new_rows.length == 0) {
         me.clear_canvas();
       }
     }, this);
 
     // Draw highlights
-    config.rows['highlighted'].on_change(function(highlighted) {
+    props.rows['highlighted'].on_change(function(highlighted) {
       if (!is_enabled) {
         return;
       }
@@ -339,11 +346,11 @@ export class DatapointsGraph {
       // Find all runs + parents
       highlighted.forEach(function(dp) {
         while (dp !== undefined) {
-          var color = config.get_color_for_row(dp, 1.0).split(',');
+          var color = props.get_color_for_row(dp, 1.0).split(',');
           render_dp(dp, highlights, {
-            'lines_color': [color[0], color[1], color[2], config.graph_display_config.lines_opacity + ')'].join(','),
+            'lines_color': [color[0], color[1], color[2], me.experiment_provided_config.lines_opacity + ')'].join(','),
             'lines_width': 4,
-            'dots_color': [color[0], color[1], color[2], config.graph_display_config.dots_opacity + ')'].join(','),
+            'dots_color': [color[0], color[1], color[2], me.experiment_provided_config.dots_opacity + ')'].join(','),
             'dots_thickness': 5,
           });
           if (dp.from_uid === null) {
@@ -376,11 +383,21 @@ export class DatapointsGraph {
     this.axis_y.on_change(update_axis, this);
     update_axis();
   }
+  render() {
+    return (<div ref={this.root_ref} className="checkpoints-graph display-when-dp-enabled">
+        <canvas ref={this.canvas_lines_ref} className={style["checkpoints-graph-lines"]} style={{position: 'absolute'}}></canvas>
+        <canvas ref={this.canvas_highlighted_ref} className={style["checkpoints-graph-highlights"]} style={{position: 'absolute'}}></canvas>
+        <svg className={style["checkpoints-graph-svg"]} style={{position: 'absolute'}}></svg>
+    </div>
+    );
+  }
   componentWillUnmount() {
     this.clear_canvas();
     this.svg.selectAll("*").remove();
     this.axis_x.off(this);
     this.axis_y.off(this);
-    this.data.rows.off(this);
+    this.props.rows.off(this);
+    clearInterval(this.on_position_changed_timeout);
+    this.props.context_menu_ref.current.removeCallbacks(this);
   };
 }
