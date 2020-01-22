@@ -136,9 +136,9 @@ jobs:
       - image: node:8.10.0
     steps:
       - checkout
-      #- add_ssh_keys:
-      #    fingerprints:
-      #      - "25:76:4d:1b:f0:5b:72:cb:97:43:fd:35:c9:16:85:2c"
+      - add_ssh_keys:
+          fingerprints:
+            - "25:76:4d:1b:f0:5b:72:cb:97:43:fd:35:c9:16:85:2c"
       - attach_workspace:
           at: docs/_build
       - run:
