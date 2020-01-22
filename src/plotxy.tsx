@@ -16,9 +16,9 @@ import style from "./hiplot.css";
 import { HiPlotData } from "./plugin";
 import React from "react";
 
-interface DatapointsGraphState {};
+interface PlotXYState {};
 
-export class DatapointsGraph extends React.Component<HiPlotData, DatapointsGraphState> {
+export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
   params_def: ParamDefMap;
   svg: any;
   clear_canvas: () => void;
@@ -56,7 +56,7 @@ export class DatapointsGraph extends React.Component<HiPlotData, DatapointsGraph
     props.context_menu_ref.current.addCallback(function(column, cm) {
       var contextmenu = $(cm);
       contextmenu.append($('<div class="dropdown-divider"></div>'));
-      contextmenu.append($('<h6 class="dropdown-header">Line display</h6>'));
+      contextmenu.append($('<h6 class="dropdown-header">XY plot</h6>'));
       [me.axis_x, me.axis_y].forEach(function(dat, index) {
         var label = "Set as " + ['X', 'Y'][index] + ' axis';
         var option = $('<a class="dropdown-item" href="#">').text(label);

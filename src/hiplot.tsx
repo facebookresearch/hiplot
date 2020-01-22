@@ -13,46 +13,31 @@ import ReactDOM from "react-dom";
 import JSON5 from "json5";
 import './global';
 
-import { WatchedProperty, Datapoint, ParamType, HiPlotExperiment, AllDatasets } from "./types";
+import { WatchedProperty, Datapoint, ParamType, HiPlotExperiment, AllDatasets, HiPlotLoadStatus, URL_COLOR_BY, URL_LOAD_URI } from "./types";
 import { RowsDisplayTable } from "./rowsdisplaytable";
 import { infertypes } from "./infertypes";
 import { PageState } from "./lib/savedstate";
 import { ParallelPlot } from "./parallel";
-import { DatapointsGraph } from "./datapointsgraph";
-import { KeepDataBtn, ExcludeDataBtn, RestoreDataBtn, ExportDataCSVBtn, ThemeToggle, SelectedCountProgressBar } from "./controls";
-import { RunsSelectionTextArea, ErrorDisplay } from "./elements";
+import { PlotXY } from "./plotxy";
+import { SelectedCountProgressBar } from "./controls";
+import { ErrorDisplay, HeaderBar } from "./elements";
 import { HiPlotData } from "./plugin";
 
-
-//@ts-ignore
-import IconSVG from "../hiplot/static/icon.svg";
 //@ts-ignore
 import LogoSVG from "../hiplot/static/logo.svg";
 //@ts-ignore
 import style from "./hiplot.css";
 import { ContextMenu } from "./contextmenu";
 
-const URL_LOAD_URI = 'load_uri';
-const URL_COLOR_BY = 'color_by';
-
-
 interface HiPlotComponentProps {
     experiment: HiPlotExperiment | null;
     is_notebook: boolean;
 };
 
-enum HiPlotLoadStatus {
-    None,
-    Loading,
-    Loaded,
-    Error
-};
-
 interface HiPlotComponentState {
     experiment: HiPlotExperiment | null;
-    webserver: boolean;
     version: number;
-    load_status: HiPlotLoadStatus;
+    loadStatus: HiPlotLoadStatus;
     error: string;
 }
 
@@ -71,31 +56,30 @@ function make_hiplot_data(): HiPlotData {
         experiment: null,
         url_state: PageState.create_state('hip'),
         is_notebook: false,
+        is_webserver: true,
     };
 }
+
 export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlotComponentState> {
     // React refs
     domRoot: React.RefObject<HTMLDivElement> = React.createRef();
-    controls: React.RefObject<HTMLDivElement> = React.createRef();
-    parallelPlotRef: React.RefObject<HTMLDivElement> = React.createRef();
 
-    parallelPlot: ParallelPlot = null;
     comm = null;
     table: RowsDisplayTable = null;
 
-    jcontrols: JQuery;
     data: HiPlotData = make_hiplot_data();
 
     constructor(props: HiPlotComponentProps) {
         super(props);
         this.state = {
             experiment: props.experiment,
-            webserver: props.experiment === null,
             version: 0,
-            load_status: HiPlotLoadStatus.None,
+            loadStatus: HiPlotLoadStatus.None,
             error: null,
         };
         this.data.is_notebook = props.is_notebook;
+        this.data.is_webserver = props.experiment === null;
+
         var selection_id = 0;
         var rows = this.data.rows;
         var me = this;
@@ -110,12 +94,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             }
         }, me);
         rows['all'].on_change(function(new_data) {
-            if (me.parallelPlot === null) {
-                return;
-            }
-            me.data.params_def = infertypes(me.data.url_state.children('params'), new_data, me.data.params_def);
-            //me.parallelPlot.state.params_def = me.data.params_def; // TODO
-            //me.line_display.params_def = me.data.params_def; // TODO
+            Object.assign(me.data.params_def, infertypes(me.data.url_state.children('params'), new_data, me.data.params_def));
         }, me);
         if (this.props.experiment !== null) {
             this._loadExperiment(this.props.experiment);
@@ -127,10 +106,6 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         me.data.experiment = experiment;
         var rows = this.data.rows;
         var jroot = $(me.domRoot.current);
-        jroot.find('.hiplot-loaded-change-class').each(function(_, n) {
-            $(n).removeClass($(n).attr('data-hiplot-loaded-remove-class'));
-            $(n).addClass($(n).attr('data-hiplot-loaded-add-class'));
-        });
 
         // Generate dataset for Parallel Plot
         me.data.dp_lookup = {};
@@ -183,11 +158,11 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
     }
     loadWithPromise(prom: Promise<any>) {
         var me = this;
-        me.setState({load_status: HiPlotLoadStatus.Loading});
+        me.setState({loadStatus: HiPlotLoadStatus.Loading});
         prom.then(function(data) {
             if (data.experiment === undefined) {
                 me.setState({
-                    load_status: HiPlotLoadStatus.Error,
+                    loadStatus: HiPlotLoadStatus.Error,
                     experiment: null,
                     error: data.error !== undefined ? data.error : 'Unable to load experiment',
                 });
@@ -197,13 +172,13 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             me.setState(function(state, props) { return {
                 experiment: data.experiment,
                 version: state.version + 1,
-                load_status: HiPlotLoadStatus.Loaded,
+                loadStatus: HiPlotLoadStatus.Loaded,
             }; });
         })
         .catch(
             error => {
                 console.log('Error', error);
-                me.setState({load_status: HiPlotLoadStatus.Error, experiment: null, error: 'HTTP error, check server logs / javascript console'});
+                me.setState({loadStatus: HiPlotLoadStatus.Error, experiment: null, error: 'HTTP error, check server logs / javascript console'});
                 throw error;
             }
         );
@@ -263,7 +238,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         }
     }
     componentDidUpdate() {
-        if (this.state.load_status == HiPlotLoadStatus.None) {
+        if (this.state.loadStatus == HiPlotLoadStatus.None) {
             this.data = make_hiplot_data();
         }
     }
@@ -275,7 +250,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             $.get( "/data?uri=" + encodeURIComponent(uri), resolve, "json").fail(function(data) {
                 //console.log("Data loading failed", data);
                 if (data.readyState == 4 && data.status == 200) {
-                    console.log('Unable to parse JSON :( Trying custom decoder...');
+                    console.log('Unable to parse JSON with JS default decoder (Maybe it contains NaNs?). Trying custom decoder');
                     var decoded = JSON5.parse(data.responseText);
                     resolve(decoded);
                     return;
@@ -295,51 +270,23 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         <div className="scoped_css_bootstrap">
             <div ref={this.domRoot} className={style.hiplot}>
             <SelectedCountProgressBar rows={this.data.rows} />
-            <HeaderBar>
-            {this.state.webserver &&
-                <RunsSelectionTextArea
-                    initialValue={this.data.url_state.get(URL_LOAD_URI, '')}
-                    enabled={this.state.load_status != HiPlotLoadStatus.Loading}
-                    minimizeWhenOutOfFocus={this.state.load_status == HiPlotLoadStatus.Loaded}
-                    onSubmit={this.onRunsTextareaSubmitted.bind(this)} />
-            }
-        
-            <div ref={this.controls} className="col-md-8">
-            {this.state.load_status == HiPlotLoadStatus.Loaded &&
-                <React.Fragment>
-                    <RestoreDataBtn rows={this.data.rows} />
-                    <KeepDataBtn rows={this.data.rows} />
-                    <ExcludeDataBtn rows={this.data.rows} />
-                    <button onClick={() => this.setState({load_status: HiPlotLoadStatus.None, experiment: null})}>UNLOAD</button>
-                    {this.state.webserver &&
-                        <button title="Refresh + restore data removed" onClick={this.onRefreshDataBtn.bind(this)}>Refresh</button>
-                    }
-                    <ExportDataCSVBtn rows={this.data.rows} />
-                    <div className="controls">
-                        <strong className="rendered-count"></strong>/<strong className="selected-count"></strong>
-                        {false && <div>Lines at <strong className="opacity"></strong> opacity.</div>}
-                        <span className={style.settings}>
-                            <button className="hide-ticks">Hide Ticks</button>
-                            <button className="show-ticks" disabled={true}>Show Ticks</button>
-                            <ThemeToggle root={this.domRoot} />
-                        </span>
-                    </div>
-                    <div style={{clear:'both'}}></div>
-                </React.Fragment>
-            }
-            </div>
-            </HeaderBar>
-            {this.state.load_status == HiPlotLoadStatus.Error &&
+            <HeaderBar
+                onRequestLoadExperiment={this.data.is_webserver ? this.onRunsTextareaSubmitted.bind(this) : null}
+                onRequestRefreshExperiment={this.data.is_webserver ? this.onRefreshDataBtn.bind(this) : null}
+                loadStatus={this.state.loadStatus}
+                {...this.data}
+            />
+            {this.state.loadStatus == HiPlotLoadStatus.Error &&
                 <ErrorDisplay error={this.state.error} />
             }
-            {this.state.load_status != HiPlotLoadStatus.Loaded &&
+            {this.state.loadStatus != HiPlotLoadStatus.Loaded &&
                 <DocAndCredits />
             }
             <ContextMenu ref={this.data.context_menu_ref}/>
-            {this.state.load_status == HiPlotLoadStatus.Loaded &&
+            {this.state.loadStatus == HiPlotLoadStatus.Loaded &&
             <div>
                 <ParallelPlot {...this.data} />
-                <DatapointsGraph {...this.data} />
+                <PlotXY {...this.data} />
                 <RowsDisplayTable {...this.data} />
             </div>
             }
@@ -348,17 +295,6 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         );
     }
 }
-
-class HeaderBar extends React.Component {
-    render() {
-        return (<div className={"form-row " + style.header}>
-          <div className="col-md-1">
-            <img style={{height: '55px'}} src={IconSVG} />
-          </div>
-          {this.props.children}
-        </div>);
-    }
-};
 
 class DocAndCredits extends React.Component {
     render() {

@@ -9,7 +9,6 @@ import $ from "jquery";
 import * as d3 from "d3";
 import * as _ from 'underscore';
 import React from "react";
-import ReactDOM from "react-dom";
 
 import { AllDatasets } from "./types";
 //@ts-ignore
@@ -20,21 +19,24 @@ interface HiPlotDataControlProps {
 };
 
 interface HiPlotDataControlState {
+    btnEnabled: boolean;
 }
 
 
 export class KeepDataBtn extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
     btnRef: React.RefObject<HTMLButtonElement> = React.createRef();
+    constructor(props: HiPlotDataControlProps) {
+        super(props);
+        this.state = {
+            btnEnabled: false
+        };
+    }
     componentDidMount() {
+        var me = this;
         var rows = this.props.rows;
         var btn = this.btnRef.current;
         rows['selected'].on_change(function(cb) {
-            if (0 < cb.length && cb.length < rows['all'].get().length) {
-                btn.removeAttribute('disabled');
-            }
-            else {
-                btn.setAttribute('disabled', 'disabled');
-            }
+            me.setState({btnEnabled: 0 < cb.length && cb.length < rows['all'].get().length});
         }, this);
         $(btn).click(function(ev) {
             rows['all'].set(rows['selected'].get());
@@ -45,22 +47,22 @@ export class KeepDataBtn extends React.Component<HiPlotDataControlProps, HiPlotD
     }
 
     render() {
-        return (<button title="Zoom in on selected data" ref={this.btnRef} className={style.keepData} disabled={true}>Keep</button>);
+        return (<button title="Zoom in on selected data" ref={this.btnRef} className={style.keepData} disabled={!this.state.btnEnabled}>Keep</button>);
     }
 };
 
 export class ExcludeDataBtn extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
-    btnRef: React.RefObject<HTMLButtonElement> = React.createRef();
+    constructor(props: HiPlotDataControlProps) {
+        super(props);
+        this.state = {
+            btnEnabled: false
+        };
+    }
     componentDidMount() {
+        var me = this;
         var rows = this.props.rows;
-        var btn = this.btnRef.current;
         rows['selected'].on_change(function(cb) {
-            if (0 < cb.length && cb.length < rows['all'].get().length) {
-                btn.removeAttribute('disabled');
-            }
-            else {
-                btn.setAttribute('disabled', 'disabled');
-            }
+            me.setState({btnEnabled: 0 < cb.length && cb.length < rows['all'].get().length});
         }, this);
     }
     onClick() {
@@ -72,12 +74,11 @@ export class ExcludeDataBtn extends React.Component<HiPlotDataControlProps, HiPl
     }
 
     render() {
-        return (<button title="Remove selected data" ref={this.btnRef} className={style.excludeData} disabled={true} onClick={this.onClick.bind(this)}>Exclude</button>);
+        return (<button title="Remove selected data" className={style.excludeData} disabled={!this.state.btnEnabled} onClick={this.onClick.bind(this)}>Exclude</button>);
     }
 };
 
 export class ExportDataCSVBtn extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
-    btnRef: React.RefObject<HTMLButtonElement> = React.createRef();
     onClick() {
         var csv: string = d3.csvFormat(this.props.rows['selected'].get()).replace(/\n/g,"<br/>\n");
         var styles = "<style>body { font-family: sans-serif; font-size: 12px; }</style>";
@@ -85,34 +86,36 @@ export class ExportDataCSVBtn extends React.Component<HiPlotDataControlProps, Hi
     }
 
     render() {
-        return (<button title="Export data as CSV" ref={this.btnRef} className={style.exportData} onClick={this.onClick.bind(this)}>Export</button>);
+        return (<button title="Export data as CSV" className={style.exportData} onClick={this.onClick.bind(this)}>Export</button>);
     }
 };
 
 export class RestoreDataBtn extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
-    btnRef: React.RefObject<HTMLButtonElement> = React.createRef();
+    constructor(props: HiPlotDataControlProps) {
+        super(props);
+        this.state = {
+            btnEnabled: false
+        };
+    }
     componentDidMount() {
+        var me = this;
         var rows = this.props.rows;
-        var btn = this.btnRef.current;
 
         function update() {
-            if (rows['all'].get().length != rows['experiment_all'].get().length) {
-                btn.removeAttribute('disabled');
-            }
-            else {
-                btn.setAttribute('disabled', 'disabled');
-            }
-
+            me.setState({btnEnabled: rows['all'].get().length != rows['experiment_all'].get().length});
         }
         rows['all'].on_change(update, this);
         rows['experiment_all'].on_change(update, this);
+    }
+    componentWillUnmount() {
+        this.props.rows.off(this);
     }
     onClick() {
         this.props.rows['all'].set(this.props.rows['experiment_all'].get());
     }
 
     render() {
-        return (<button title="Remove all applied filters" ref={this.btnRef} className={style.restoreData} disabled={true} onClick={this.onClick.bind(this)}>Restore</button>);
+        return (<button title="Remove all applied filters" className={style.restoreData} disabled={!this.state.btnEnabled} onClick={this.onClick.bind(this)}>Restore</button>);
     }
 };
 

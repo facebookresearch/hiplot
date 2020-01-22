@@ -168,23 +168,6 @@
   width: 268px;
   float: left;
 }
-.header {
-  border-bottom: 1px solid rgba(100,100,100,0.35);
-  background: #e2e2e2;
-  padding: 6px 24px 4px;
-  line-height: 24px;
-}
-.dark .header {
-  background: #040404;
-  color: #f3f3f3;
-}
-.header h1 {
-  display: inline-block;
-  margin: 0px 14px 0 0;
-}
-.header button {
-  vertical-align: top;
-}
 .controls {
   float: right;
   height: 24px;

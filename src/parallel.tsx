@@ -261,19 +261,6 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
       return (new Date()).getTime();
     }
 
-    // Feedback on rendering progress
-    function render_stats(i,n,render_speed) {
-      controls.select(".rendered-count").text(i);
-      controls.select(".render-speed").text(render_speed);
-    }
-
-    // Feedback on selection
-    function selection_stats(opacity, n, total) {
-      controls.select(".data-count").text(total);
-      controls.select(".selected-count").text(n);
-      controls.select(".opacity").text((""+(opacity*100)).slice(0,4) + "%");
-    }
-
     // Highlight polylines
     props.rows['highlighted'].on_change(function(highlighted_rows) {
       me.highlighted.clearRect(0, 0, me.w, me.h);
@@ -448,8 +435,6 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
           opacity = d3.min([2/Math.pow(n,0.3),1]),
           timer = (new Date()).getTime();
 
-      selection_stats(opacity, n, props.rows['all'].get().length)
-
       var shuffled_data: Array<Datapoint> = _.shuffle(selected);
 
       props.rows['rendered'].set([]);
@@ -460,7 +445,6 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
         if (i >= n || count < brush_count) return true;
         var max = d3.min([i+render_speed, n]);
         render_range(shuffled_data, i, max, opacity);
-        render_stats(max,n,render_speed);
         i = max;
         timer = optimize(timer);  // adjusts render_speed
       };
@@ -485,7 +469,9 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
 
       brush_count++;
 
-      show_ticks();
+      // show ticks
+      div.selectAll("." + style.axis + " g").style("display", null);
+      div.selectAll(".background").style("visibility", null);
 
       // update axes
       div.selectAll("." + style.axis)
@@ -581,40 +567,6 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
       g.attr("transform", function(p) { return "translate(" + position(p) + ")"; });
       dimensions_dom.filter(function(p) { return p == d; }).remove();
       update_ticks();
-    }
-
-    // Appearance toggles
-    controls.select(".hide-ticks").on("click", hide_ticks);
-    controls.select(".show-ticks").on("click", show_ticks);
-    controls.select(".dark-theme").on("click", dark_theme);
-    controls.select(".light-theme").on("click", light_theme);
-
-    function hide_ticks() {
-      div.selectAll("." + style.axis + " g").style("display", "none");
-      //div.selectAll(".axis path").style("display", "none");
-      div.selectAll(".background").style("visibility", "hidden");
-      controls.selectAll(".hide-ticks").attr("disabled", "disabled");
-      controls.selectAll(".show-ticks").attr("disabled", null);
-    };
-
-    function show_ticks() {
-      div.selectAll("." + style.axis + " g").style("display", null);
-      //div.selectAll(".axis path").style("display", null);
-      div.selectAll(".background").style("visibility", null);
-      controls.selectAll(".show-ticks").attr("disabled", "disabled");
-      controls.selectAll(".hide-ticks").attr("disabled", null);
-    };
-
-    function dark_theme() {
-      div.classed(style.dark, true);
-      controls.selectAll(".dark-theme").attr("disabled", "disabled");
-      controls.selectAll(".light-theme").attr("disabled", null);
-    }
-
-    function light_theme() {
-      div.classed(style.dark, false);
-      controls.selectAll(".light-theme").attr("disabled", "disabled");
-      controls.selectAll(".dark-theme").attr("disabled", null);
     }
 
     me.compute_dimensions();

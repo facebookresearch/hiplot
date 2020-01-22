@@ -149,3 +149,13 @@ export interface HiPlotExperiment {
     parameters_definition: {[key: string]: HiPlotValueDef},
     line_display: HiPlotGraphConfig,
 }
+
+export enum HiPlotLoadStatus {
+    None,
+    Loading,
+    Loaded,
+    Error
+};
+
+export const URL_LOAD_URI = 'load_uri';
+export const URL_COLOR_BY = 'color_by';
