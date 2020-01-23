@@ -65,6 +65,8 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
     domRoot: React.RefObject<HTMLDivElement> = React.createRef();
 
     comm = null;
+    comm_selection_id: number = 0;
+
     table: RowsDisplayTable = null;
 
     data: HiPlotData = make_hiplot_data();
@@ -80,32 +82,28 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         this.data.is_notebook = props.is_notebook;
         this.data.is_webserver = props.experiment === null;
 
-        var selection_id = 0;
         var rows = this.data.rows;
-        var me = this;
-        rows['selected'].on_change(function(selection) {
-            selection_id += 1;
-            if (me.comm !== null) {
-                me.comm.send({
-                    'type': 'selection',
-                    'selection_id': selection_id,
-                    'selected': selection.map(row => '' + row['uid'])
-                });
-            }
-        }, me);
-        rows['all'].on_change(function(new_data) {
-            Object.assign(me.data.params_def, infertypes(me.data.url_state.children('params'), new_data, me.data.params_def));
-        }, me);
-        if (this.props.experiment !== null) {
-            this._loadExperiment(this.props.experiment);
+        rows['selected'].on_change(this.onSelectedChange.bind(this), this);
+        rows['all'].on_change(this.recomputeParamsDef.bind(this), this);
+    }
+    onSelectedChange(selection: Array<Datapoint>): void {
+        this.comm_selection_id += 1;
+        if (this.comm !== null) {
+            this.comm.send({
+                'type': 'selection',
+                'selection_id': this.comm_selection_id,
+                'selected': selection.map(row => '' + row['uid'])
+            });
         }
+    }
+    recomputeParamsDef(all_data: Array<Datapoint>): void {
+        Object.assign(this.data.params_def, infertypes(this.data.url_state.children('params'), all_data, this.data.params_def));
     }
     _loadExperiment(experiment: HiPlotExperiment) {
         //console.log('Load xp', experiment);
         var me = this;
         me.data.experiment = experiment;
         var rows = this.data.rows;
-        var jroot = $(me.domRoot.current);
 
         // Generate dataset for Parallel Plot
         me.data.dp_lookup = {};
@@ -161,6 +159,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         me.setState({loadStatus: HiPlotLoadStatus.Loading});
         prom.then(function(data) {
             if (data.experiment === undefined) {
+                console.log("Experiment loading failed", data);
                 me.setState({
                     loadStatus: HiPlotLoadStatus.Error,
                     experiment: null,
@@ -186,6 +185,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
     setup_comm(comm_) {
         this.comm = comm_;
         console.log("Setting up communication channel", comm_);
+        this.onSelectedChange(this.data.rows['selected'].get());
     }
     componentWillUnmount() {
         this.data.context_menu_ref.current.removeCallbacks(this);
@@ -232,9 +232,18 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             }
             contextmenu.append(link_colorize);
         }, this);
-        var load_uri = this.data.url_state.get(URL_LOAD_URI);
-        if (load_uri !== undefined) {
-            this.loadURI(load_uri);
+
+        // Load experiment provided in constructor if any
+        if (this.props.experiment !== null) {
+            this.loadWithPromise(new Promise(function(resolve, reject) {
+                resolve({experiment: this.props.experiment});
+            }.bind(this)));
+        }
+        else {
+            var load_uri = this.data.url_state.get(URL_LOAD_URI);
+            if (load_uri !== undefined) {
+                this.loadURI(load_uri);
+            }
         }
     }
     componentDidUpdate() {

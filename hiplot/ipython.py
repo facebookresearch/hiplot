@@ -44,16 +44,21 @@ var load_when_ready = function() {{
         if (!force_full_width) {{
             return;
         }}
+        var currentFrameHeight = 0;
         var set_scale_dynamic = function() {{
             if (ifr.contentWindow) {{
                 if(ifr.contentWindow.document.body){{
-                    var framefenster_size = ifr.contentWindow.document.body.offsetHeight;
-                    if(document.all && !window.opera) {{
-                    framefenster_size = ifr.contentWindow.document.body.scrollHeight;
+                    var frameWindowSize = ifr.contentWindow.document.body.offsetHeight;
+                    if (document.all && !window.opera) {{
+                        frameWindowSize = ifr.contentWindow.document.body.scrollHeight;
                     }}
-                    console.log(framefenster_size);
-                    ifr_container.style.height = framefenster_size + "px";
-                    ifr.style.height = framefenster_size + 'px';
+                    console.log('currentFrameHeight:', currentFrameHeight, 'frameWindowSize:', frameWindowSize);
+                    if (frameWindowSize < currentFrameHeight - 400 || frameWindowSize > currentFrameHeight) {{
+                        console.log("Resize frame -> ", frameWindowSize);
+                        ifr_container.style.height = frameWindowSize + "px";
+                        ifr.style.height = frameWindowSize + 'px';
+                        currentFrameHeight = frameWindowSize;
+                    }}
                 }}
             }}
         }};
@@ -90,7 +95,7 @@ load_when_ready();
 """
 
     if not force_full_width:
-        IPython.display.display(IPython.display.HTML(f'''<div /><iframe id="{iframe_id}" style="width: 100%; height: 100vh" srcdoc="{html.escape(page_html)}"></iframe>'''))
+        IPython.display.display(IPython.display.HTML(f'''<div /><iframe id="{iframe_id}" style="width: 100%; height: 100vh; border: 0px" srcdoc="{html.escape(page_html)}"></iframe>'''))
         IPython.display.display(IPython.display.Javascript(js))
         return iframe_id
 

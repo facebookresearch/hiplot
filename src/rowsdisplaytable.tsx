@@ -52,7 +52,6 @@ export class RowsDisplayTable extends React.Component<HiPlotData, RowsDisplayTab
                         'defaultContent': 'null',
                         'createdCell': function (td, cellData, rowData, row, col) {
                             var color = me.props.get_color_for_uid(cellData, 1.0);
-                            // <span class="color-block" style="background: rgba(105, 230, 25, 0.85);"></span><span>099918_g1</span>
                             $(td).prepend($('<span>').addClass('color-block').css('background-color', color));
                         }
                     }
@@ -109,11 +108,13 @@ export class RowsDisplayTable extends React.Component<HiPlotData, RowsDisplayTab
     }
     render() {
         return (
-        <div className={`${style.wrap} row`}>
-            <div className={`col-md-12 ${style["min-height-100"]} ${this.props.is_notebook ? "" : "sample-table-container"}`}>
+        <div className={`${style.wrap} container-fluid`}>
+        <div className={"row"}>
+            <div className={`col-md-12 sample-table-container`}>
             <table ref={this.table_ref} className="sample-rows-table display table table-striped table-bordered dataTable">
             </table>
             </div>
+        </div>
         </div>
         );
     }

@@ -106,7 +106,8 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         };
     }
     render() {
-        return (<div className={"form-row " + style.header}>
+        return (<div className={"container-fluid " + style.header}>
+        <div className={"form-row"}>
             <div className="col-md-1">
                 <img style={{height: '55px'}} src={IconSVG} />
             </div>
@@ -136,7 +137,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                 </React.Fragment>
             }
             </div>
-        </div>);
+        </div></div>);
     }
 };
 
