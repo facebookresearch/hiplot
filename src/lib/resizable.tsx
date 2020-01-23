@@ -5,18 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
-// Give a div the class "resizable-h" and you'll be able to resize it :)
 //@ts-ignore
 import style from "./resizable.css";
 import $ from "jquery";
 import React from "react";
 
-const BORDER_SIZE = 4;
 
 interface ResizableHProps {
     initialHeight: number;
     onResize: (height: number) => void;
+    borderSize: number;
 };
 
 interface ResizableHState {
@@ -33,10 +31,13 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
             height: this.props.initialHeight,
         };
     }
+    static defaultProps = {
+        borderSize: 4,   
+    }
     componentDidMount() {
         var div = $(this.div_ref.current);
-        div.on("mousedown", function(e){
-            if (e.offsetY > div.height() - BORDER_SIZE) {
+        div.on("mousedown", function(e: MouseEvent) {
+            if (e.offsetY > div.height() - this.props.borderSize) {
                 this.m_pos = e.clientY;
                 document.addEventListener("mousemove", this.onMouseMove, false);
             }
