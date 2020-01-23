@@ -8,7 +8,6 @@
 // This file is largely inspired from the snippet by Kai Chang
 // available in http://bl.ocks.org/syntagmatic/3150059
 
-/// <reference path="./lib/resizable.ts"/>
 import $ from "jquery";
 import React from "react";
 import * as d3 from "d3";
@@ -19,7 +18,7 @@ import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
 import { HiPlotData } from "./plugin";
-import { make_resizable } from "./lib/resizable";
+import { ResizableH } from "./lib/resizable";
 
 
 export interface ParallelPlotInternalState {
@@ -30,15 +29,15 @@ export interface ParallelPlotInternalState {
 
 export interface StringMapping<V> { [key: string]: V; };
 
-interface ParallelPlotState {}
+interface ParallelPlotState {
+  height: number;
+  width: number;
+};
 
 export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState> {
-  on_resize: () => void;
+  on_resize: () => void = null;
   on_unmount: Array<() => void> = [];
   m = [75, 0, 10, 0]; // Margins
-  // Available space for rendering
-  width: number;
-  height: number;
   // Available space minus margins
   w: number;
   h: number;
@@ -66,38 +65,47 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
   d3brush = d3.brushY();
   constructor(props: HiPlotData) {
     super(props);
-    this.state = {};
+    this.state = {
+      height: 600,
+      width: document.body.clientWidth,
+    };
   }
 
   componentWillUnmount() {
     this.svg.selectAll("*").remove();
-    $(this.root_ref.current).off("resize", this.on_resize);
-    $(window).off("resize", this.on_resize);
+    $(window).off("resize", this.onWindowResize);
     this.props.rows.off(this);
     this.props.colorby.off(this);
     this.on_unmount.forEach(fn => fn());
     this.on_unmount = [];
   };
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.height != this.state.height || prevState.width != this.state.width) {
+        if (this.on_resize != null) {
+          this.on_resize();
+        }
+    }
+  }
+  onResizeH(height: number): void {
+    this.setState({height: height});
+  }
+  onWindowResize = function() {
+    this.setState({width: document.body.clientWidth});
+  }.bind(this)
   render() {
-    return (<div ref={this.root_ref} className={style["parallel-plot-chart"]} style={{height: '600px'}}>
-      <React.Fragment key={'pp_version'}>
+    return (
+    <ResizableH initialHeight={this.state.height} onResize={this.onResizeH.bind(this)}>
+    <div ref={this.root_ref} className={style["parallel-plot-chart"]} style={{"height": this.state.height}}>
           <canvas ref={this.foreground_ref} className={style["background-canvas"]}></canvas>
           <canvas ref={this.background_ref} className={style["foreground-canvas"]}></canvas>
           <canvas ref={this.highlighted_ref} className={style["highlight-canvas"]}></canvas>
           <svg></svg>
-      </React.Fragment>
-  </div>);
+    </div>
+    </ResizableH>);
   }
   componentDidMount() {
-    make_resizable(this.root_ref.current);
     var me = this;
     var props = this.props;
-
-    var state = this.state = {
-      'colorby': props.colorby,
-      'rows': props.rows,
-      'params_def': props.params_def,
-    };
 
     var dragging: {[dim: string]: number} = {},
         axis,
@@ -126,22 +134,22 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
     function _loadWithProvidedData() {
       function save_dimension_order() {
         me.dimensions.forEach(function(k, idx) {
-          state.params_def[k].parallel_plot_order = idx;
-          state.params_def[k].__url_state__.set('order', idx);
+          props.params_def[k].parallel_plot_order = idx;
+          props.params_def[k].__url_state__.set('order', idx);
         });
       }
 
       // Extract the list of numerical dimensions and create a scale for each.
-      me.xscale.domain(me.dimensions = d3.keys(state.params_def).filter(function(k) {
-        var pd = state.params_def[k];
+      me.xscale.domain(me.dimensions = d3.keys(props.params_def).filter(function(k) {
+        var pd = props.params_def[k];
         if (pd.parallel_plot_order < 0) {
           return false;
         }
         me.yscale[k] = me.createScale(k);
         return true;
       }).sort(function(a, b) {
-        var pda = state.params_def[a];
-        var pdb = state.params_def[b];
+        var pda = props.params_def[a];
+        var pdb = props.params_def[b];
         return pda.parallel_plot_order - pdb.parallel_plot_order;
       }));
       save_dimension_order();
@@ -279,7 +287,7 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
       var extents = brush_extends();
       var extent = extents[d] !== null ? [me.h - extents[d][1], me.h - extents[d][0]] : null;
 
-      var pd = state.params_def[d];
+      var pd = props.params_def[d];
       if (pd.parallel_plot_inverted) {
         pd.parallel_plot_inverted = false;
         me.setScaleRange(d);
@@ -302,7 +310,7 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
       var x0: number, y0: number;
       me.dimensions.map(function(p,i) {
         var err = d[p] === undefined;
-        if (!err && (d[p] == 'inf' || d[p] == '-inf') && state.params_def[p].numeric) {
+        if (!err && (d[p] == 'inf' || d[p] == '-inf') && props.params_def[p].numeric) {
           err = true;
         }
         var x = me.xscale(p),
@@ -524,13 +532,6 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
 
     // scale to window size
     this.on_resize = _.debounce(function() {
-
-      var new_width = document.body.clientWidth;
-      var new_height = parseInt($(me.root_ref.current).css('height'));
-      if (me.width == new_width && me.height == new_height) {
-        return;
-      }
-
       me.compute_dimensions();
 
       div.selectAll(".dimension")
@@ -543,7 +544,7 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
       brush_count++;
 
       // update axis placement
-      me.axis = me.axis.ticks(1+me.height/50);
+      me.axis = me.axis.ticks(1+me.state.height/50);
       div.selectAll("." + style.axis)
         .each(function(d: string) {
           d3.select(this).call(me.axis.scale(me.yscale[d]));
@@ -552,11 +553,10 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
       // render data
       brush();
     }, 100);
-    $(me.root_ref.current).on("resize", this.on_resize);
-    $(window).on("resize", this.on_resize);
+    $(window).on("resize", this.onWindowResize);
 
     function remove_axis(d) {
-      var pd = state.params_def[d];
+      var pd = props.params_def[d];
       if (pd !== undefined) {
         pd.parallel_plot_order = -1;
         pd.__url_state__.set('order', -1);
@@ -600,21 +600,19 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
   }
 
   compute_dimensions() {
-    this.width = document.body.clientWidth;
-    this.height = parseInt($(this.root_ref.current).css('height'));
-    this.w = this.width - this.m[1] - this.m[3];
-    this.h = this.height - this.m[0] - this.m[2];
-    this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */).ticks(1+this.height/50);
+    this.w = this.state.width - this.m[1] - this.m[3];
+    this.h = this.state.height - this.m[0] - this.m[2];
+    this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */).ticks(1+this.state.height/50);
     this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.debounced_brush).on("end", this.debounced_brush);
     // Scale chart and canvas height
-    this.div.style("height", (this.height) + "px")
+    this.div.style("height", (this.state.height) + "px")
 
     this.div.selectAll("canvas")
         .attr("width", this.w)
         .attr("height", this.h)
         .style("padding", this.m.join("px ") + "px");
-    this.svg.attr("width", this.width)
-      .attr("height", this.height)
+    this.svg.attr("width", this.state.width)
+      .attr("height", this.state.height)
       .select("g")
      .attr("transform", "translate(" + this.m[3] + "," + this.m[0] + ")");
     this.xscale = d3.scalePoint().range([40, this.w - 40]).domain(this.dimensions);

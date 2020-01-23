@@ -7,13 +7,13 @@
 
 .resizableH {
     padding-bottom: 4px;
+    position: relative;
 }
 
 .resizableH:after {
- content: " ";
+    content: " ";
     background-color: #ccc;
     position: absolute;
-    left: 0;
     bottom: 0;
     width: 100%;
     height: 4px;
