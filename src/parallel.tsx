@@ -8,8 +8,8 @@
 // This file is largely inspired from the snippet by Kai Chang
 // available in http://bl.ocks.org/syntagmatic/3150059
 
-/// <reference path="./lib/resizable.ts"/>
 import $ from "jquery";
+import React from "react";
 import * as d3 from "d3";
 import * as _ from 'underscore';
 
@@ -17,138 +17,42 @@ import { WatchedProperty, AllDatasets, Datapoint, ParamType } from "./types";
 import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
+import { HiPlotData } from "./plugin";
+import { ResizableH } from "./lib/resizable";
 
-
-const VAR_TYPE_TO_NAME = {
-  [ParamType.CATEGORICAL]: 'Categorical',
-  [ParamType.NUMERIC]: 'Number',
-  [ParamType.NUMERICLOG]: 'Number (log-scale)',
-  [ParamType.NUMERICPERCENTILE]: 'Number (percentile-scale)',
-};
-
-export interface ParallelPlotConfig {
-  root: HTMLDivElement,
-  controls: HTMLDivElement,
-
-  colorby: WatchedProperty,
-  rows: AllDatasets,
-  params_def: ParamDefMap,
-  line_display_x_axis: WatchedProperty,
-  line_display_y_axis: WatchedProperty,
-  get_color_for_row: (dp: Datapoint, opacity: number) => string,
-};
 
 export interface ParallelPlotInternalState {
   colorby: WatchedProperty,
   rows: AllDatasets,
   params_def: ParamDefMap,
-  line_display_x_axis: WatchedProperty,
-  line_display_y_axis: WatchedProperty,
 };
-
-
-class ContextualMenu {
-  hide: () => void;
-  constructor(public contextmenu: JQuery, public state: ParallelPlotInternalState) {
-    var me = this;
-    this.hide = function() {
-      me.contextmenu.css('display', 'none');
-    }
-    $(window).on("click", this.hide);
-  }
-  destroy() {
-    $(window).off("click", this.hide);
-  }
-  generate_context_menu(d: string) {
-    var state = this.state;
-    var params_def = state.params_def;
-    var contextmenu = this.contextmenu;
-
-    var top = d3.event.pageY - 10;
-    var left = d3.event.pageX - 90;
-    this.contextmenu.css({
-      display: "block",
-      top: top,
-      left: Math.max(0, left),
-    }).addClass("show");
-    this.contextmenu.empty();
-
-
-    function make_item_active(o: JQuery) {
-      o.addClass('disabled');
-      o.css('pointer-events', 'none');
-    }
-
-    // Data scaling
-    contextmenu.append($('<h6 class="dropdown-header">Data scaling</h6>'));
-    params_def[d].type_options.forEach(function(possible_type) {
-      var option = $('<a class="dropdown-item" href="#">').text(VAR_TYPE_TO_NAME[possible_type]);
-      if (possible_type == params_def[d].type) {
-        make_item_active(option);
-      }
-      option.click(function(event) {
-        contextmenu.css('display', 'none');
-        params_def[d].type = possible_type;
-        params_def[d].__url_state__.set('type', possible_type);
-        state.rows['all'].append([]); // Trigger recomputation of the parameters + rerendering
-        event.preventDefault();
-      });
-      contextmenu.append(option);
-    });
-    contextmenu.append($('<div class="dropdown-divider"></div>'));
-
-    // Color by
-    var link_colorize = $('<a class="dropdown-item" href="#">Use for coloring</a>');
-    link_colorize.click(function(event) {
-      state.colorby.set(d);
-      event.preventDefault();
-    });
-    if (state.colorby.get() == d) {
-      make_item_active(link_colorize);
-    }
-    contextmenu.append(link_colorize);
-
-    // Select line display XY axis
-    contextmenu.append($('<div class="dropdown-divider"></div>'));
-    contextmenu.append($('<h6 class="dropdown-header">Line display</h6>'));
-    [state.line_display_x_axis, state.line_display_y_axis].forEach(function(dat, index) {
-      var label = "Set as " + ['X', 'Y'][index] + ' axis';
-      var option = $('<a class="dropdown-item" href="#">').text(label);
-      if (dat.get() == d) {
-        make_item_active(option);
-      }
-      option.click(function(event) {
-        dat.set(d);
-        event.preventDefault();
-      });
-      contextmenu.append(option);
-    });
-  }
-}
 
 export interface StringMapping<V> { [key: string]: V; };
 
-
-export class ParallelPlot {
-  contextmenu: ContextualMenu;
-  on_resize: () => void;
-  m = [75, 0, 10, 0]; // Margins
-  // Available space for rendering
-  width: number;
+interface ParallelPlotState {
   height: number;
+  width: number;
+};
+
+export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState> {
+  on_resize: () => void = null;
+  on_unmount: Array<() => void> = [];
+  m = [75, 0, 10, 0]; // Margins
   // Available space minus margins
   w: number;
   h: number;
 
   xscale: any;
-  state: ParallelPlotInternalState;
-  config: ParallelPlotConfig;
 
   debounced_brush: any;
 
   // Rendering
+  root_ref: React.RefObject<HTMLDivElement> = React.createRef();
+  foreground_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
   foreground: CanvasRenderingContext2D;
+  background_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
   background: CanvasRenderingContext2D;
+  highlighted_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
   highlighted: CanvasRenderingContext2D;
   svg: any;
   svgg: any;
@@ -159,17 +63,49 @@ export class ParallelPlot {
   yscale: StringMapping<any> = {}; // d3.scale
   axis: any; // d3.scale
   d3brush = d3.brushY();
-  constructor(config: ParallelPlotConfig) {
-    var me = this;
-
-    this.config = config;
-    var state = this.state = {
-      'colorby': config.colorby,
-      'rows': config.rows,
-      'params_def': config.params_def,
-      'line_display_x_axis': config.line_display_x_axis,
-      'line_display_y_axis': config.line_display_y_axis,
+  constructor(props: HiPlotData) {
+    super(props);
+    this.state = {
+      height: 600,
+      width: document.body.clientWidth,
     };
+  }
+
+  componentWillUnmount() {
+    this.svg.selectAll("*").remove();
+    $(window).off("resize", this.onWindowResize);
+    this.props.rows.off(this);
+    this.props.colorby.off(this);
+    this.on_unmount.forEach(fn => fn());
+    this.on_unmount = [];
+  };
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.height != this.state.height || prevState.width != this.state.width) {
+        if (this.on_resize != null) {
+          this.on_resize();
+        }
+    }
+  }
+  onResizeH(height: number): void {
+    this.setState({height: height});
+  }
+  onWindowResize = function() {
+    this.setState({width: document.body.clientWidth});
+  }.bind(this)
+  render() {
+    return (
+    <ResizableH initialHeight={this.state.height} onResize={this.onResizeH.bind(this)}>
+    <div ref={this.root_ref} className={style["parallel-plot-chart"]} style={{"height": this.state.height}}>
+          <canvas ref={this.foreground_ref} className={style["background-canvas"]}></canvas>
+          <canvas ref={this.background_ref} className={style["foreground-canvas"]}></canvas>
+          <canvas ref={this.highlighted_ref} className={style["highlight-canvas"]}></canvas>
+          <svg></svg>
+    </div>
+    </ResizableH>);
+  }
+  componentDidMount() {
+    var me = this;
+    var props = this.props;
 
     var dragging: {[dim: string]: number} = {},
         axis,
@@ -177,21 +113,20 @@ export class ParallelPlot {
         render_speed = 10,
         brush_count = 0;
 
-    var controls = d3.select(config.controls);
-    var div = this.div = d3.select(config.root);
+    var controls = d3.select(".sadasdsadsaTODOTODO"); //config.controls);
+    var div = this.div = d3.select(me.root_ref.current);
     var svg = this.svg = div.select('svg');
     var svgg = this.svgg = svg.append("svg:g");
-    this.contextmenu = new ContextualMenu($(config.root).find('.context-menu'), state);
 
     // Foreground canvas for primary view
-    me.foreground = (<HTMLCanvasElement>div.select('.foreground-canvas').node()).getContext('2d');
+    me.foreground = this.foreground_ref.current.getContext('2d');
     me.foreground.globalCompositeOperation = "destination-over";
 
     // Highlight canvas for temporary interactions
-    me.highlighted = (<HTMLCanvasElement>div.select('.highlight-canvas').node()).getContext('2d');
+    me.highlighted = this.highlighted_ref.current.getContext('2d');
 
     // Background canvas
-    me.background = (<HTMLCanvasElement>div.select('.background-canvas').node()).getContext('2d');
+    me.background = this.background_ref.current.getContext('2d');
 
     // SVG for ticks, labels, and interactions
 
@@ -199,22 +134,22 @@ export class ParallelPlot {
     function _loadWithProvidedData() {
       function save_dimension_order() {
         me.dimensions.forEach(function(k, idx) {
-          state.params_def[k].parallel_plot_order = idx;
-          state.params_def[k].__url_state__.set('order', idx);
+          props.params_def[k].parallel_plot_order = idx;
+          props.params_def[k].__url_state__.set('order', idx);
         });
       }
 
       // Extract the list of numerical dimensions and create a scale for each.
-      me.xscale.domain(me.dimensions = d3.keys(state.params_def).filter(function(k) {
-        var pd = state.params_def[k];
+      me.xscale.domain(me.dimensions = d3.keys(props.params_def).filter(function(k) {
+        var pd = props.params_def[k];
         if (pd.parallel_plot_order < 0) {
           return false;
         }
         me.yscale[k] = me.createScale(k);
         return true;
       }).sort(function(a, b) {
-        var pda = state.params_def[a];
-        var pdb = state.params_def[b];
+        var pda = props.params_def[a];
+        var pdb = props.params_def[b];
         return pda.parallel_plot_order - pdb.parallel_plot_order;
       }));
       save_dimension_order();
@@ -226,7 +161,7 @@ export class ParallelPlot {
         return d3.drag().on("start", function(d: string) {
           dragging[d] = drag_origin[d] = me.xscale(d);
           is_dragged[d] = false;
-          div.select(".foreground-canvas").style("opacity", "0.35");
+          d3.select(me.foreground_ref.current).style("opacity", "0.35");
         })
         .on("drag", function(d: string) {
           dragging[d] = Math.min(me.w, Math.max(0, drag_origin[d] += d3.event.dx));
@@ -267,7 +202,7 @@ export class ParallelPlot {
           update_ticks(d, extent);
   
           // rerender
-          div.select(".foreground-canvas").style("opacity", null);
+          d3.select(me.foreground_ref.current).style("opacity", null);
           brush();
           delete is_dragged[d];
           delete drag_origin[d];
@@ -279,7 +214,8 @@ export class ParallelPlot {
         .enter().append("svg:g")
           .attr("class", "dimension")
           .attr("transform", function(d) { return "translate(" + me.xscale(d) + ")"; })
-          .call(<any>create_drag_beh());
+          //@ts-ignore
+          .call(create_drag_beh());
 
       // Add an axis and title.
       dimensions_dom.append("svg:g")
@@ -293,7 +229,7 @@ export class ParallelPlot {
           .attr("class", style.label)
           .text(String)
           .on("contextmenu", function(d) {
-            me.contextmenu.generate_context_menu(d);
+            me.props.context_menu_ref.current.show(d3.event.pageX, d3.event.pageY, d);
             d3.event.preventDefault();
           })
           .append("title")
@@ -319,9 +255,9 @@ export class ParallelPlot {
     // render polylines i to i+render_speed
     function render_range(selection: Array<Datapoint>, i: number, max: number, opacity: number) {
       var s = selection.slice(i,max);
-      config.rows['rendered'].append(s);
+      props.rows['rendered'].append(s);
       s.forEach(function(d) {
-        path(d, me.foreground, config.get_color_for_row(d, opacity));
+        path(d, me.foreground, props.get_color_for_row(d, opacity));
       });
     };
 
@@ -333,38 +269,25 @@ export class ParallelPlot {
       return (new Date()).getTime();
     }
 
-    // Feedback on rendering progress
-    function render_stats(i,n,render_speed) {
-      controls.select(".rendered-count").text(i);
-      controls.select(".render-speed").text(render_speed);
-    }
-
-    // Feedback on selection
-    function selection_stats(opacity, n, total) {
-      controls.select(".data-count").text(total);
-      controls.select(".selected-count").text(n);
-      controls.select(".opacity").text((""+(opacity*100)).slice(0,4) + "%");
-    }
-
     // Highlight polylines
-    config.rows['highlighted'].on_change(function(highlighted_rows) {
+    props.rows['highlighted'].on_change(function(highlighted_rows) {
       me.highlighted.clearRect(0, 0, me.w, me.h);
       if (highlighted_rows.length == 0) {
-        div.select(".foreground-canvas").style("opacity", null);
+        d3.select(me.foreground_ref.current).style("opacity", null);
         return;
       }
-      div.select(".foreground-canvas").style("opacity", "0.25");
+      d3.select(me.foreground_ref.current).style("opacity", "0.25");
       highlighted_rows.forEach(function(dp) {
-        path(dp, me.highlighted, config.get_color_for_row(dp,1));
+        path(dp, me.highlighted, props.get_color_for_row(dp, 1));
       })
-    });
+    }, me);
 
     function invert_axis(d: string) {
       // save extent before inverting
       var extents = brush_extends();
       var extent = extents[d] !== null ? [me.h - extents[d][1], me.h - extents[d][0]] : null;
 
-      var pd = state.params_def[d];
+      var pd = props.params_def[d];
       if (pd.parallel_plot_inverted) {
         pd.parallel_plot_inverted = false;
         me.setScaleRange(d);
@@ -387,7 +310,7 @@ export class ParallelPlot {
       var x0: number, y0: number;
       me.dimensions.map(function(p,i) {
         var err = d[p] === undefined;
-        if (!err && (d[p] == 'inf' || d[p] == '-inf') && state.params_def[p].numeric) {
+        if (!err && (d[p] == 'inf' || d[p] == '-inf') && props.params_def[p].numeric) {
           err = true;
         }
         var x = me.xscale(p),
@@ -449,7 +372,7 @@ export class ParallelPlot {
     // Handles a brush event, toggling the display of foreground lines.
     // TODO refactor
     function brush() {
-      me.contextmenu.hide();
+      me.props.context_menu_ref.current.hide();
       brush_count++;
       var extents = brush_extends();
       var actives = me.dimensions.filter(function(p) { return extents[p] !== null; });
@@ -493,7 +416,7 @@ export class ParallelPlot {
 
       // Get lines within extents
       var selected = [];
-      var all_data = config.rows['all'].get();
+      var all_data = props.rows['all'].get();
       all_data
         .map(function(d) {
           return actives.every(function(dimension) {
@@ -504,14 +427,14 @@ export class ParallelPlot {
           }) ? selected.push(d) : null;
         });
 
-      config.rows['selected'].set(selected);
+      props.rows['selected'].set(selected);
     }
     this.debounced_brush = _.throttle(brush, 75);
 
-    config.rows['selected'].on_change(function(selected) {
+    props.rows['selected'].on_change(function(selected) {
       // Render selected lines
       paths(selected, me.foreground, brush_count);
-    })
+    }, me);
 
     // render a set of polylines on a canvas
     function paths(selected: Array<Datapoint>, ctx: CanvasRenderingContext2D, count: number) {
@@ -520,11 +443,9 @@ export class ParallelPlot {
           opacity = d3.min([2/Math.pow(n,0.3),1]),
           timer = (new Date()).getTime();
 
-      selection_stats(opacity, n, config.rows['all'].get().length)
-
       var shuffled_data: Array<Datapoint> = _.shuffle(selected);
 
-      config.rows['rendered'].set([]);
+      props.rows['rendered'].set([]);
       ctx.clearRect(0,0,me.w+1,me.h+1);
 
       // render all lines until finished or a new brush event
@@ -532,12 +453,12 @@ export class ParallelPlot {
         if (i >= n || count < brush_count) return true;
         var max = d3.min([i+render_speed, n]);
         render_range(shuffled_data, i, max, opacity);
-        render_stats(max,n,render_speed);
         i = max;
         timer = optimize(timer);  // adjusts render_speed
       };
 
-      d3.timer(animloop);
+      var t = d3.timer(animloop);
+      me.on_unmount.push(function() {t.stop();});
     }
 
     // transition ticks for reordering, rescaling and inverting
@@ -546,7 +467,8 @@ export class ParallelPlot {
       if (d) {
         var brush_el = svg.selectAll("." + style.brush)
             .filter(function(key) { return key == d; });
-        me.d3brush.move(<any>brush_el, extent);
+        //@ts-ignore
+        me.d3brush.move(brush_el, extent);
       } else {
         // all ticks
         svg.selectAll("." + style.brush)
@@ -555,7 +477,9 @@ export class ParallelPlot {
 
       brush_count++;
 
-      show_ticks();
+      // show ticks
+      div.selectAll("." + style.axis + " g").style("display", null);
+      div.selectAll(".background").style("visibility", null);
 
       // update axes
       div.selectAll("." + style.axis)
@@ -581,7 +505,7 @@ export class ParallelPlot {
     }
 
     // Rescale to new dataset domain
-    config.rows['all'].on_change(function(new_data) {
+    props.rows['all'].on_change(function(new_data) {
       brush_clear_all();
 
       // reset yscales, preserving inverted state
@@ -604,17 +528,10 @@ export class ParallelPlot {
 
       // Render selected data
       paths(new_data, me.foreground, brush_count);
-    });
+    }, me);
 
     // scale to window size
     this.on_resize = _.debounce(function() {
-
-      var new_width = document.body.clientWidth;
-      var new_height = parseInt($(config.root).css('height'));
-      if (me.width == new_width && me.height == new_height) {
-        return;
-      }
-
       me.compute_dimensions();
 
       div.selectAll(".dimension")
@@ -627,7 +544,7 @@ export class ParallelPlot {
       brush_count++;
 
       // update axis placement
-      me.axis = me.axis.ticks(1+me.height/50);
+      me.axis = me.axis.ticks(1+me.state.height/50);
       div.selectAll("." + style.axis)
         .each(function(d: string) {
           d3.select(this).call(me.axis.scale(me.yscale[d]));
@@ -636,11 +553,10 @@ export class ParallelPlot {
       // render data
       brush();
     }, 100);
-    $(config.root).on("resize", this.on_resize);
-    $(window).on("resize", this.on_resize);
+    $(window).on("resize", this.onWindowResize);
 
     function remove_axis(d) {
-      var pd = state.params_def[d];
+      var pd = props.params_def[d];
       if (pd !== undefined) {
         pd.parallel_plot_order = -1;
         pd.__url_state__.set('order', -1);
@@ -653,55 +569,14 @@ export class ParallelPlot {
       update_ticks();
     }
 
-    // Appearance toggles
-    controls.select(".hide-ticks").on("click", hide_ticks);
-    controls.select(".show-ticks").on("click", show_ticks);
-    controls.select(".dark-theme").on("click", dark_theme);
-    controls.select(".light-theme").on("click", light_theme);
-
-    function hide_ticks() {
-      div.selectAll("." + style.axis + " g").style("display", "none");
-      //div.selectAll(".axis path").style("display", "none");
-      div.selectAll(".background").style("visibility", "hidden");
-      controls.selectAll(".hide-ticks").attr("disabled", "disabled");
-      controls.selectAll(".show-ticks").attr("disabled", null);
-    };
-
-    function show_ticks() {
-      div.selectAll("." + style.axis + " g").style("display", null);
-      //div.selectAll(".axis path").style("display", null);
-      div.selectAll(".background").style("visibility", null);
-      controls.selectAll(".show-ticks").attr("disabled", "disabled");
-      controls.selectAll(".hide-ticks").attr("disabled", null);
-    };
-
-    function dark_theme() {
-      div.classed(style.dark, true);
-      controls.selectAll(".dark-theme").attr("disabled", "disabled");
-      controls.selectAll(".light-theme").attr("disabled", null);
-    }
-
-    function light_theme() {
-      div.classed(style.dark, false);
-      controls.selectAll(".light-theme").attr("disabled", "disabled");
-      controls.selectAll(".dark-theme").attr("disabled", null);
-    }
-
     me.compute_dimensions();
     _loadWithProvidedData();
 
-    config.colorby.on_change(brush);
+    me.props.colorby.on_change(brush, me);
   }
 
-  clear() {
-    this.svg.selectAll("*").remove();
-    $(this.config.root).off("resize", this.on_resize);
-    $(window).off("resize", this.on_resize);
-    this.contextmenu.destroy();
-  };
-
   setScaleRange(k: string) {
-    var pd = this.state.params_def[k];
+    var pd = this.props.params_def[k];
     var range = [this.h, 0];
     if (pd.parallel_plot_inverted) {
       range = [0, this.h];
@@ -710,7 +585,7 @@ export class ParallelPlot {
   }
 
   createScale(k: string) {
-    var pd = this.state.params_def[k];
+    var pd = this.props.params_def[k];
     if (pd === undefined) {
       return null;
     }
@@ -725,21 +600,19 @@ export class ParallelPlot {
   }
 
   compute_dimensions() {
-    this.width = document.body.clientWidth;
-    this.height = parseInt($(this.config.root).css('height'));
-    this.w = this.width - this.m[1] - this.m[3];
-    this.h = this.height - this.m[0] - this.m[2];
-    this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */).ticks(1+this.height/50);
+    this.w = this.state.width - this.m[1] - this.m[3];
+    this.h = this.state.height - this.m[0] - this.m[2];
+    this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */).ticks(1+this.state.height/50);
     this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.debounced_brush).on("end", this.debounced_brush);
     // Scale chart and canvas height
-    this.div.style("height", (this.height) + "px")
+    this.div.style("height", (this.state.height) + "px")
 
     this.div.selectAll("canvas")
         .attr("width", this.w)
         .attr("height", this.h)
         .style("padding", this.m.join("px ") + "px");
-    this.svg.attr("width", this.width)
-      .attr("height", this.height)
+    this.svg.attr("width", this.state.width)
+      .attr("height", this.state.height)
       .select("g")
      .attr("transform", "translate(" + this.m[3] + "," + this.m[0] + ")");
     this.xscale = d3.scalePoint().range([40, this.w - 40]).domain(this.dimensions);

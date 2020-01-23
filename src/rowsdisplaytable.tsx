@@ -6,6 +6,7 @@
  */
 
 import $ from "jquery";
+import React from "react";
 //@ts-ignore
 import dt from "datatables.net-bs4";
 dt(window, $);
@@ -13,33 +14,30 @@ dt(window, $);
 import dtReorder from "datatables.net-colreorder-bs4";
 dtReorder(window, $);
 
-import { AllDatasets, Datapoint, DatapointLookup } from "./types";
-import { ParamDefMap } from './infertypes';
+import { Datapoint } from "./types";
 //@ts-ignore
 import style from "./hiplot.css";
+import { HiPlotData } from "./plugin";
+import _ from "underscore";
 
-interface Config {
-    root: HTMLDivElement,
-    params_def: ParamDefMap,
-    rows: AllDatasets,
-    get_color_for_uid: (uid: string, opacity: number) => string,
-    dp_lookup: DatapointLookup,
-}
+interface RowsDisplayTableState {
+};
 
-
-export class RowsDisplayTable {
+export class RowsDisplayTable extends React.Component<HiPlotData, RowsDisplayTableState> {
+    table_ref: React.RefObject<HTMLTableElement> = React.createRef();
     dt = null;
     dom: JQuery;
     ordered_cols: Array<string> = [];
-    config: Config;
     empty: boolean;
-    setup(c: Config) {
-        this.destroy();
-        this.dom = $(c.root);
-        this.config = c;
+    constructor(props: HiPlotData) {
+        super(props);
+        this.state = {};
+    }
+    componentDidMount() {
+        this.dom = $(this.table_ref.current);
         this.ordered_cols = ['uid'];
         var me = this;
-        $.each(this.config.params_def, function(k: string, def) {
+        $.each(this.props.params_def, function(k: string, def) {
             if (k == me.ordered_cols[0]) {
                 return;
             }
@@ -53,8 +51,7 @@ export class RowsDisplayTable {
                         'title': x,
                         'defaultContent': 'null',
                         'createdCell': function (td, cellData, rowData, row, col) {
-                            var color = me.config.get_color_for_uid(cellData, 1.0);
-                            // <span class="color-block" style="background: rgba(105, 230, 25, 0.85);"></span><span>099918_g1</span>
+                            var color = me.props.get_color_for_uid(cellData, 1.0);
                             $(td).prepend($('<span>').addClass('color-block').css('background-color', color));
                         }
                     }
@@ -82,7 +79,7 @@ export class RowsDisplayTable {
 
                 $(me.dt.cells().nodes()).removeClass(style.highlight);
                 $(row.nodes()).addClass(style.highlight);
-                me.config.rows['highlighted'].set([me.config.dp_lookup[row.data()[individualUidColIdx]]]);
+                me.props.rows['highlighted'].set([me.props.dp_lookup[row.data()[individualUidColIdx]]]);
             })
             .on("mouseout", "td", function() {
                 if (!me.dt || me.empty) {
@@ -90,8 +87,13 @@ export class RowsDisplayTable {
                 }
                 var rowIdx = me.dt.cell(this).index().row;
                 $(me.dt.row(rowIdx).nodes()).removeClass(style.highlight);
-                me.config.rows['highlighted'].set([]);
+                me.props.rows['highlighted'].set([]);
             });
+
+        me.set_selected(me.props.rows['selected'].get());
+        me.props.rows['selected'].on_change(function(selection) {
+            me.set_selected(selection);
+        }, this);
     }
     set_selected(selected: Array<Datapoint>) {
         var dt = this.dt;
@@ -104,9 +106,22 @@ export class RowsDisplayTable {
         dt.draw();
         this.empty = selected.length == 0;
     }
-    destroy() {
+    render() {
+        return (
+        <div className={`${style.wrap} container-fluid`}>
+        <div className={"row"}>
+            <div className={`col-md-12 sample-table-container`}>
+            <table ref={this.table_ref} className="sample-rows-table display table table-striped table-bordered dataTable">
+            </table>
+            </div>
+        </div>
+        </div>
+        );
+    }
+    componentWillUnmount() {
         if (this.dt) {
             this.dt.destroy();
         }
+        this.props.rows.off(this);
     }
 }

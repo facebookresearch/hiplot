@@ -44,16 +44,21 @@ var load_when_ready = function() {{
         if (!force_full_width) {{
             return;
         }}
+        var currentFrameHeight = 0;
         var set_scale_dynamic = function() {{
             if (ifr.contentWindow) {{
                 if(ifr.contentWindow.document.body){{
-                    var framefenster_size = ifr.contentWindow.document.body.offsetHeight;
-                    if(document.all && !window.opera) {{
-                    framefenster_size = ifr.contentWindow.document.body.scrollHeight;
+                    var frameWindowSize = ifr.contentWindow.document.body.offsetHeight;
+                    if (document.all && !window.opera) {{
+                        frameWindowSize = ifr.contentWindow.document.body.scrollHeight;
                     }}
-                    console.log(framefenster_size);
-                    ifr_container.style.height = framefenster_size + "px";
-                    ifr.style.height = framefenster_size + 'px';
+                    console.log('currentFrameHeight:', currentFrameHeight, 'frameWindowSize:', frameWindowSize);
+                    if (frameWindowSize < currentFrameHeight - 400 || frameWindowSize > currentFrameHeight) {{
+                        console.log("Resize frame -> ", frameWindowSize);
+                        ifr_container.style.height = frameWindowSize + "px";
+                        ifr.style.height = frameWindowSize + 'px';
+                        currentFrameHeight = frameWindowSize;
+                    }}
                 }}
             }}
         }};
@@ -90,7 +95,7 @@ load_when_ready();
 """
 
     if not force_full_width:
-        IPython.display.display(IPython.display.HTML(f'''<div /><iframe id="{iframe_id}" style="width: 100%; height: 100vh" srcdoc="{html.escape(page_html)}"></iframe>'''))
+        IPython.display.display(IPython.display.HTML(f'''<div /><iframe id="{iframe_id}" style="width: 100%; height: 100vh; border: 0px" srcdoc="{html.escape(page_html)}"></iframe>'''))
         IPython.display.display(IPython.display.Javascript(js))
         return iframe_id
 
@@ -164,19 +169,16 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
 def display_exp(xp: exp.Experiment, force_full_width: bool = False) -> IPythonExperimentDisplayed:
     comm_id = f"comm_{uuid.uuid4().hex[:6]}"
     displayed_xp = IPythonExperimentDisplayed(xp, comm_id)
-    index_html = make_experiment_standalone_page(xp._asdict())
+    index_html = make_experiment_standalone_page(xp._asdict(), call_js_fn='setup_hiplot_notebook' if force_full_width else 'setup_hiplot_website')
     jupyter_render_iframe(
         page_html=index_html,
         on_load_js=f"""
 (function () {{
 const comm_id = {escapejs(comm_id)};
-const force_full_width = {escapejs(force_full_width)};
 try {{
     console.log("Setting up communication channel with Jupyter: ", comm_id);
     var comm = Jupyter.notebook.kernel.comm_manager.new_comm(comm_id, {{'type': 'hello'}});
     ifr.contentWindow.globalHiPlot.setup_comm(comm);
-    if (force_full_width)
-        ifr.contentWindow.globalHiPlot.setup_notebook();
 }}
 catch(err) {{
     console.warn('Unable to create Javascript <-> Python communication channel (are you in a Jupyter notebook? Jupyter labs is *not* supported!)');

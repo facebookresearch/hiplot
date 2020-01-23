@@ -14,29 +14,32 @@ export interface Datapoint {
 export interface DatapointLookup { [key: string]: Datapoint};
 
 export class WatchedProperty {
-    __on_change_handlers: Array<(value: any) => void> = [];
+    __on_change_handlers: Array<{cb: (value: any) => void, obj: any}> = [];
     value = undefined;
     constructor(public name: string) {
 
     }
     set(value: any) {
         this.value = value;
-        this.__on_change_handlers.forEach(function(cb) {
-            cb(value);
+        this.__on_change_handlers.forEach(function(trigger) {
+            trigger.cb(value);
         });
     }
     get() {
         return this.value;
     }
-    on_change(cb: (value: any) => void) {
-        this.__on_change_handlers.push(cb);
+    on_change(cb: (value: any) => void, obj: any) {
+        this.__on_change_handlers.push({cb: cb, obj: obj});
+    }
+    off(obj: any) {
+        this.__on_change_handlers = this.__on_change_handlers.filter(trigger => trigger.obj != obj);
     }
 }
 
 export class Dataset {
     rows: Array<Datapoint> = [];
-    on_change_fn = [];
-    on_append_fn = [];
+    on_change_fn: Array<{cb: (rows: Array<Datapoint>) => void, obj: any}> = [];
+    on_append_fn: Array<{cb: (rows: Array<Datapoint>) => void, obj: any}> = [];
     named_childs: {[key: string]: Dataset} = {};
     constructor(public name: string) {
 
@@ -49,8 +52,8 @@ export class Dataset {
     }
     _set(new_rows: Array<Datapoint>) {
         var rows = this.rows = new_rows;
-        this.on_change_fn.forEach(function(cb) {
-            cb(rows);
+        this.on_change_fn.forEach(function(trigger) {
+            trigger.cb(rows);
         });
         Object.entries(this.named_childs).forEach(function(val) {
             val[1]._set(new_rows);
@@ -58,11 +61,11 @@ export class Dataset {
     }
     _append(new_rows: Array<Datapoint>) {
         var rows = this.rows = this.rows.concat(new_rows);
-        this.on_change_fn.forEach(function(cb) {
-            cb(rows);
+        this.on_change_fn.forEach(function(trigger) {
+            trigger.cb(rows);
         });
-        this.on_append_fn.forEach(function(cb) {
-            cb(new_rows);
+        this.on_append_fn.forEach(function(trigger) {
+            trigger.cb(new_rows);
         });
         Object.entries(this.named_childs).forEach(function(val) {
             val[1]._append(new_rows);
@@ -71,17 +74,19 @@ export class Dataset {
     get(): Array<Datapoint> {
         return this.rows;
     }
-    on_change(cb: (rows: Array<Datapoint>) => void) {
-        this.on_change_fn.push(cb);
+    on_change(cb: (rows: Array<Datapoint>) => void, obj: any) {
+        this.on_change_fn.push({cb: cb, obj: obj});
     }
-    on_append(cb: (new_rows: Array<Datapoint>) => void) {
-        this.on_append_fn.push(cb);
+    on_append(cb: (new_rows: Array<Datapoint>) => void, obj: any) {
+        this.on_append_fn.push({cb: cb, obj: obj});
     }
-    replace_child(child_name: string): Dataset {
-        var w = new DatasetMirror(this, this.name + '_' + child_name);
-        w.rows = this.rows;
-        this.named_childs[child_name] = w;
-        return w;
+    off(obj: any) {
+        this.on_change_fn = this.on_change_fn.filter(function(value) {
+            return value.obj != obj;
+        });
+        this.on_append_fn = this.on_append_fn.filter(function(value) {
+            return value.obj != obj;
+        });
     }
 }
 
@@ -107,14 +112,12 @@ export class AllDatasets {
     ) {
 
     }
-    replace_child(child_name: string): AllDatasets {
-        return new AllDatasets(
-            this.experiment_all.replace_child(child_name),
-            this.all.replace_child(child_name),
-            this.selected.replace_child(child_name),
-            this.rendered.replace_child(child_name),
-            this.highlighted.replace_child(child_name),
-        )
+    off(obj: any) {
+        this.experiment_all.off(obj);
+        this.all.off(obj);
+        this.selected.off(obj);
+        this.rendered.off(obj);
+        this.highlighted.off(obj);
     }
 }
 
@@ -123,12 +126,6 @@ export enum ParamType {
     NUMERIC = "numeric",
     NUMERICLOG = "numericlog",
     NUMERICPERCENTILE = "numericpercentile",
-};
-
-export interface HiPlotDatapoint {
-    uid: string;
-    from_uid: string | null;
-    values: {[key: string]: any};
 };
 
 export interface HiPlotValueDef {
@@ -148,7 +145,17 @@ export interface HiPlotGraphConfig {
 };
 
 export interface HiPlotExperiment {
-    datapoints: Array<HiPlotDatapoint>,
+    datapoints: Array<Datapoint>,
     parameters_definition: {[key: string]: HiPlotValueDef},
     line_display: HiPlotGraphConfig,
 }
+
+export enum HiPlotLoadStatus {
+    None,
+    Loading,
+    Loaded,
+    Error
+};
+
+export const URL_LOAD_URI = 'load_uri';
+export const URL_COLOR_BY = 'color_by';

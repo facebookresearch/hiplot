@@ -8,17 +8,26 @@
 //@ts-ignore
 import style from "./elements.css";
 import React from "react";
+import { HiPlotLoadStatus, URL_LOAD_URI } from "./types";
+import { HiPlotData } from "./plugin";
+import { RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
+
+//@ts-ignore
+import IconSVG from "../hiplot/static/icon.svg";
+
 
 interface Props {
     onSubmit: (content: string) => void;
     enabled: boolean;
     initialValue: string;
     minimizeWhenOutOfFocus: boolean;
+
+    onFocusChange: (hasFocus: boolean) => void;
+    hasFocus: boolean;
 };
 
 interface State {
     value: string;
-    hasFocus: boolean;
 }
 
 export class RunsSelectionTextArea extends React.Component<Props, State> {
@@ -29,12 +38,11 @@ export class RunsSelectionTextArea extends React.Component<Props, State> {
         super(props);
         this.state = {
             value: props.initialValue,
-            hasFocus: false,
         };
     }
     onInput() {
         var elem = this.textarea.current;
-        if (this.state.hasFocus || !this.props.minimizeWhenOutOfFocus) {
+        if (this.props.hasFocus || !this.props.minimizeWhenOutOfFocus) {
             elem.style.height = 'auto';
             elem.style.height = elem.scrollHeight + 'px';
             return;
@@ -44,15 +52,15 @@ export class RunsSelectionTextArea extends React.Component<Props, State> {
     onKeyDown(evt: React.KeyboardEvent<HTMLTextAreaElement>) {
         if (evt.which === 13 && !evt.shiftKey) {
             this.props.onSubmit(this.textarea.current.value);
-            this.setState({hasFocus: false});
+            this.props.onFocusChange(false);
             evt.preventDefault();
         }
     }
     onFocusChange(evt: React.FocusEvent<HTMLTextAreaElement>) {
         if (evt.type == "focus") {
-            this.setState({hasFocus: true});
+            this.props.onFocusChange(true);
         } else if (evt.type == "blur") {
-            this.setState({hasFocus: false});
+            this.props.onFocusChange(false);
         }
     }
     componentDidMount() {
@@ -63,7 +71,7 @@ export class RunsSelectionTextArea extends React.Component<Props, State> {
     }
     render() {
         return (
-        <div ref={this.container} className={this.state.hasFocus || !this.props.minimizeWhenOutOfFocus ? " col-md-11" : " col-md-3"}>
+        <div ref={this.container} className={this.props.hasFocus || !this.props.minimizeWhenOutOfFocus ? " col-md-11" : " col-md-3"}>
             <textarea
                 ref={this.textarea}
                 className={style.runsSelectionTextarea}
@@ -78,6 +86,60 @@ export class RunsSelectionTextArea extends React.Component<Props, State> {
         </div>);
     }
 }
+
+
+interface HeaderBarProps extends HiPlotData {
+    onRequestLoadExperiment?: (uri: string) => void;
+    onRequestRefreshExperiment?: () => void;
+    loadStatus: HiPlotLoadStatus;
+};
+
+interface HeaderBarState {
+    isTextareaFocused: boolean;
+};
+
+export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
+    constructor(props: HeaderBarProps) {
+        super(props);
+        this.state = {
+            isTextareaFocused: false
+        };
+    }
+    render() {
+        return (<div className={"container-fluid " + style.header}>
+        <div className={"form-row"}>
+            <div className="col-md-1">
+                <img style={{height: '55px'}} src={IconSVG} />
+            </div>
+            {this.props.onRequestLoadExperiment != null &&
+                <RunsSelectionTextArea
+                    initialValue={this.props.url_state.get(URL_LOAD_URI, '')}
+                    enabled={this.props.loadStatus != HiPlotLoadStatus.Loading}
+                    minimizeWhenOutOfFocus={this.props.loadStatus == HiPlotLoadStatus.Loaded}
+                    onSubmit={this.props.onRequestLoadExperiment}
+                    onFocusChange={(hasFocus: boolean) => this.setState({isTextareaFocused: hasFocus})}
+                    hasFocus={this.state.isTextareaFocused}
+                />
+            }
+        
+            <div className="col-md-8">
+            {this.props.loadStatus == HiPlotLoadStatus.Loaded && !this.state.isTextareaFocused && 
+                <React.Fragment>
+                    <RestoreDataBtn rows={this.props.rows} />
+                    <KeepDataBtn rows={this.props.rows} />
+                    <ExcludeDataBtn rows={this.props.rows} />
+                    {this.props.onRequestRefreshExperiment != null &&
+                        <button title="Refresh + restore data removed" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
+                    }
+                    <ExportDataCSVBtn rows={this.props.rows} />
+                    {/* TODO: Selected count stats */}
+                    <div style={{clear:'both'}}></div>
+                </React.Fragment>
+            }
+            </div>
+        </div></div>);
+    }
+};
 
 
 interface ErrorDisplayProps {
