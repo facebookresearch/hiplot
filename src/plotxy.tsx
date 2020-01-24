@@ -8,8 +8,7 @@
 import $ from "jquery";
 import * as d3 from "d3";
 
-import { on_position_changed } from "./lib/jqueryext";
-import { WatchedProperty, AllDatasets, DatapointLookup, Datapoint, HiPlotGraphConfig } from "./types";
+import { WatchedProperty, HiPlotGraphConfig } from "./types";
 import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
@@ -21,6 +20,7 @@ import _ from "underscore";
 interface PlotXYState {
   width: number,
   height: number,
+  enabled: boolean,
 };
 
 export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
@@ -39,7 +39,8 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
     super(props);
     this.state = {
       width: document.body.clientWidth,
-      height: d3.min([d3.max([document.body.clientHeight-540, 240]), 500])
+      height: d3.min([d3.max([document.body.clientHeight-540, 240]), 500]),
+      enabled: false,
     };
   }
   componentDidMount() {
@@ -87,8 +88,6 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
     var rerender_all_points = [];
     var zoom_brush;
 
-    var is_enabled = false;
-
     // Lines
     var graph_lines = this.canvas_lines_ref.current.getContext('2d');
     graph_lines.globalCompositeOperation = "destination-over";
@@ -122,11 +121,10 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
       me.svg.append("g").attr('class', 'axis_render').call(yAxis);
       me.svg.append("g").attr("class", "brush").call(zoom_brush);
     }
-    function recompute_scale() {
-      if (!is_enabled) {
+    function recompute_scale(force: boolean = false) {
+      if (!force && !me.state.enabled) {
         return;
       }
-      $('.display-when-dp-enabled').removeClass('collapse');
       margin = {top: 20, right: 20, bottom: 50, left: 60};
       x_scale_orig = x_scale = create_scale(me.axis_x.get(), [margin.left, me.state.width - margin.right]);
       y_scale_orig = y_scale = create_scale(me.axis_y.get(), [me.state.height - margin.bottom, margin.top]);
@@ -315,7 +313,7 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
           });
         };
         rerender_all_points.push(call_render);
-        if (is_enabled) {
+        if (me.state.enabled) {
           call_render();
         }
       });
@@ -338,17 +336,17 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
 
     // Draw highlights
     props.rows['highlighted'].on_change(function(highlighted) {
-      if (!is_enabled) {
+      if (!me.state.enabled) {
         return;
       }
       highlights.clearRect(0, 0, me.state.width, me.state.height);
-      div.select(".checkpoints-graph-highlights").style("opacity", "0");
-      div.select(".checkpoints-graph-lines").style("opacity", "1.0");
+      d3.select(me.canvas_highlighted_ref.current).style("opacity", "0");
+      d3.select(me.canvas_lines_ref.current).style("opacity", "1.0");
       if (!highlighted.length) {  // Stop highlight
         return;
       }
-      div.select(".checkpoints-graph-highlights").style("opacity", "1.0");
-      div.select(".checkpoints-graph-lines").style("opacity", "0.5");
+      d3.select(me.canvas_highlighted_ref.current).style("opacity", "1.0");
+      d3.select(me.canvas_lines_ref.current).style("opacity", "0.5");
       // Find all runs + parents
       highlighted.forEach(function(dp) {
         while (dp !== undefined) {
@@ -375,10 +373,12 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
           new_x_axis === null || new_y_axis === null) {
         return;
       }
-      is_enabled = true;
+      if (!me.state.enabled) {
+        me.setState({enabled: true});
+      }
 
       var rerender_all_points_before = rerender_all_points;
-      recompute_scale();
+      recompute_scale(true);
       me.clear_canvas();
       $.each(rerender_all_points_before, function(_, fn) {
         fn();
@@ -394,20 +394,26 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
     }, 75);
   }
   onResizeH(height: number): void {
-    this.setState({height: height});
+    if (this.state.height != height) {
+      this.setState({height: height});
+    }
   }
   onWindowResize = function() {
-    this.setState({width: document.body.clientWidth});
+    if (document.body.clientWidth != this.state.width) {
+      this.setState({width: document.body.clientWidth});
+    }
   }.bind(this)
   render() {
     return (
-    <ResizableH initialHeight={this.state.height} onResize={this.onResizeH.bind(this)}>
-      <div ref={this.root_ref} className="checkpoints-graph display-when-dp-enabled" style={{"height": this.state.height}}>
-          <canvas ref={this.canvas_lines_ref} className={style["checkpoints-graph-lines"]} style={{position: 'absolute'}}></canvas>
-          <canvas ref={this.canvas_highlighted_ref} className={style["checkpoints-graph-highlights"]} style={{position: 'absolute'}}></canvas>
-          <svg className={style["checkpoints-graph-svg"]} style={{position: 'absolute'}}></svg>
-      </div>
-    </ResizableH>
+    <div className={this.state.enabled ? "" : "collapse"}>
+      <ResizableH initialHeight={this.state.height} onResize={this.onResizeH.bind(this)}>
+        <div ref={this.root_ref} className="checkpoints-graph" style={{"height": this.state.height}}>
+            <canvas ref={this.canvas_lines_ref} className={style["checkpoints-graph-lines"]} style={{position: 'absolute'}}></canvas>
+            <canvas ref={this.canvas_highlighted_ref} className={style["checkpoints-graph-highlights"]} style={{position: 'absolute'}}></canvas>
+            <svg className={style["checkpoints-graph-svg"]} style={{position: 'absolute'}}></svg>
+        </div>
+      </ResizableH>
+    </div>
     );
   }
   componentWillUnmount() {
