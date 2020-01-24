@@ -4,3 +4,4 @@ ipykernel
 wheel
 selenium
 sphinx
+m2r

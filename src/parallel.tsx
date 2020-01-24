@@ -108,12 +108,10 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
     var props = this.props;
 
     var dragging: {[dim: string]: number} = {},
-        axis,
         dimensions_dom = null,
         render_speed = 10,
         brush_count = 0;
 
-    var controls = d3.select(".sadasdsadsaTODOTODO"); //config.controls);
     var div = this.div = d3.select(me.root_ref.current);
     var svg = this.svg = div.select('svg');
     var svgg = this.svgg = svg.append("svg:g");
@@ -197,7 +195,6 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
           }
           save_dimension_order();
   
-          // TODO required to avoid a bug
           me.xscale.domain(me.dimensions);
           update_ticks(d, extent);
   
@@ -370,7 +367,6 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
     }
 
     // Handles a brush event, toggling the display of foreground lines.
-    // TODO refactor
     function brush() {
       me.props.context_menu_ref.current.hide();
       brush_count++;
@@ -504,12 +500,12 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
         });
     }
 
-    // Rescale to new dataset domain
+    // Rescale to new dataset domain:
+    // reset yscales, preserving inverted state
     props.rows['all'].on_change(function(new_data) {
       brush_clear_all();
 
-      // reset yscales, preserving inverted state
-      // TODO: When removing data, some columns might no longer exist
+      // When removing data, some columns might no longer exist
       // and we want to remove those
       var drop_scales = [];
       me.dimensions.forEach(function(d) {

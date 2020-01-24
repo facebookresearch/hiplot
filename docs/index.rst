@@ -30,7 +30,7 @@ Option 1: In an ipython notebook
 Option 2: HiPlot webserver
 --------------------------
 
->>> python -m hiplot
+>>> hiplot
 
 
 
