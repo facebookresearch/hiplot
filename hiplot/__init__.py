@@ -3,6 +3,6 @@
 # LICENSE file in the root directory of this source tree.
 
 from .experiment import Experiment, ExperimentFetcherDoesntApply, Datapoint, LineDisplay, ExperimentDisplayed
-from .server import run_server
+from .server import run_server, run_server_main
 
 __version__ = "0.1.0"

@@ -46,3 +46,14 @@ def run_server(add_fetchers: List[str], host: str = '127.0.0.1', port: int = 500
     xp_fetchers.append(MultipleFetcher(xp_fetchers))
     Compress(app)
     app.run(debug=True, host=host, port=port)
+
+
+def run_server_main() -> int:
+    parser = argparse.ArgumentParser(prog="HiPlot", description="Start HiPlot webserver")
+    parser.add_argument("--host", type=str, default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=5005)
+    parser.add_argument("fetchers", nargs="*", type=str)
+    args = parser.parse_args()
+    run_server(add_fetchers=args.fetchers, host=args.host, port=args.port)
+    return 0
+
