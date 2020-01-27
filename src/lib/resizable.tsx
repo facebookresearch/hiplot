@@ -42,14 +42,8 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
                 document.addEventListener("mousemove", this.onMouseMove, false);
             }
         }.bind(this));
-    
-        div.on("mouseup", function(){
-            if (this.m_pos == null) {
-                return;
-            }
-            this.m_pos = null;
-            document.removeEventListener("mousemove", this.onMouseMove, false);
-        }.bind(this));
+
+        document.addEventListener("mouseup", this.onMouseUp);
     }
     componentDidUpdate(prevProps, prevState) {
         if (prevState.height != this.state.height) {
@@ -58,6 +52,7 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
     }
     componentWillUnmount() {
         document.removeEventListener("mousemove", this.onMouseMove, false);
+        document.removeEventListener("mouseup", this.onMouseUp);
     }
     render() {
         return (
@@ -73,5 +68,12 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
                 position: e.clientY,
             });
         }
+    }.bind(this)
+    onMouseUp = function(e: MouseEvent) {
+        if (this.m_pos == null) {
+            return;
+        }
+        this.m_pos = null;
+        document.removeEventListener("mousemove", this.onMouseMove, false);
     }.bind(this)
 }
