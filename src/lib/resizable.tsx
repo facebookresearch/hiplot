@@ -15,10 +15,12 @@ interface ResizableHProps {
     initialHeight: number;
     onResize: (height: number) => void;
     borderSize: number;
+    minHeight: number;
 };
 
 interface ResizableHState {
     height: number;
+    internalHeight: number;
 };
 
 export class ResizableH extends React.Component<ResizableHProps, ResizableHState> {
@@ -29,10 +31,12 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
         super(props);
         this.state = {
             height: this.props.initialHeight,
+            internalHeight: this.props.initialHeight,
         };
     }
     static defaultProps = {
-        borderSize: 4,   
+        borderSize: 4,
+        minHeight: 50,
     }
     componentDidMount() {
         var div = $(this.div_ref.current);
@@ -63,8 +67,10 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
         const dy = e.clientY - this.m_pos;
         this.m_pos = e.clientY;
         if (dy != 0) {
+            var internalHeight = this.state.internalHeight + dy
             this.setState({
-                height: this.state.height + dy,
+                height: Math.max(this.props.minHeight, internalHeight),
+                internalHeight: internalHeight,
                 position: e.clientY,
             });
         }

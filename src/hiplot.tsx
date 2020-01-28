@@ -31,7 +31,7 @@ import { ContextMenu } from "./contextmenu";
 
 interface HiPlotComponentProps {
     experiment: HiPlotExperiment | null;
-    is_notebook: boolean;
+    is_webserver: boolean;
 };
 
 interface HiPlotComponentState {
@@ -55,8 +55,6 @@ function make_hiplot_data(): HiPlotData {
         colorby: new WatchedProperty('colorby'),
         experiment: null,
         url_state: PageState.create_state('hip'),
-        is_notebook: false,
-        is_webserver: true,
     };
 }
 
@@ -79,8 +77,6 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             loadStatus: HiPlotLoadStatus.None,
             error: null,
         };
-        this.data.is_notebook = props.is_notebook;
-        this.data.is_webserver = props.experiment === null;
 
         var rows = this.data.rows;
         rows['selected'].on_change(this.onSelectedChange.bind(this), this);
@@ -262,9 +258,17 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
                     console.log('Unable to parse JSON with JS default decoder (Maybe it contains NaNs?). Trying custom decoder');
                     var decoded = JSON5.parse(data.responseText);
                     resolve(decoded);
+                }
+                else if (data.status == 0) {
+                    resolve({
+                        'experiment': undefined,
+                        'error': 'Network error'
+                    });
                     return;
                 }
-                reject(data);
+                else {
+                    reject(data);
+                }
             });
         }));
     }
@@ -280,8 +284,8 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             <div ref={this.domRoot} className={style.hiplot}>
             <SelectedCountProgressBar rows={this.data.rows} />
             <HeaderBar
-                onRequestLoadExperiment={this.data.is_webserver ? this.onRunsTextareaSubmitted.bind(this) : null}
-                onRequestRefreshExperiment={this.data.is_webserver ? this.onRefreshDataBtn.bind(this) : null}
+                onRequestLoadExperiment={this.props.is_webserver ? this.onRunsTextareaSubmitted.bind(this) : null}
+                onRequestRefreshExperiment={this.props.is_webserver ? this.onRefreshDataBtn.bind(this) : null}
                 loadStatus={this.state.loadStatus}
                 {...this.data}
             />
@@ -341,32 +345,17 @@ class DocAndCredits extends React.Component {
     }
 };
 
-export function setup_hiplot_website(element: HTMLElement, experiment?: HiPlotExperiment, extra?: object) {
+export function hiplot_setup(element: HTMLElement, extra?: object) {
     var props: HiPlotComponentProps = {
         experiment: null,
-        is_notebook: false,
+        is_webserver: true,
     };
-    if (experiment !== undefined) {
-        props.experiment = experiment;
-    }
     if (extra !== undefined) {
-        //@ts-ignore
-        if (extra.is_notebook !== undefined) {
-            //@ts-ignore
-            props.is_notebook = extra.is_notebook;
-        }
+        Object.assign(props, extra);
     }
     return ReactDOM.render(<HiPlotComponent {...props} />, element);
 }
 
-export function setup_hiplot_notebook(element: HTMLElement, experiment: HiPlotExperiment) {
-    if (experiment === undefined) {
-        experiment = null;
-    }
-    return ReactDOM.render(<HiPlotComponent experiment={experiment} is_notebook={true} />, element);
-}
-
 Object.assign(window, {
-    'setup_hiplot_website': setup_hiplot_website,
-    'setup_hiplot_notebook': setup_hiplot_notebook,
+    'hiplot_setup': hiplot_setup,
 });

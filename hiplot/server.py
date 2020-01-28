@@ -12,7 +12,7 @@ from .fetchers import load_demo, load_csv, load_json, load_fairseq, load_wav2let
 from .render import get_index_html_template, html_inlinize
 
 
-def run_server(add_fetchers: List[str], host: str = '127.0.0.1', port: int = 5005) -> None:
+def run_server(add_fetchers: List[str], host: str = '127.0.0.1', port: int = 5005, debug: bool = False) -> None:
     """
     Runs the HiPlot server
     """
@@ -45,15 +45,16 @@ def run_server(add_fetchers: List[str], host: str = '127.0.0.1', port: int = 500
         xp_fetchers.append(fetcher)
     xp_fetchers.append(MultipleFetcher(xp_fetchers))
     Compress(app)
-    app.run(debug=True, host=host, port=port)
+    app.run(debug=debug, host=host, port=port)
 
 
 def run_server_main() -> int:
     parser = argparse.ArgumentParser(prog="HiPlot", description="Start HiPlot webserver")
     parser.add_argument("--host", type=str, default="127.0.0.1")
     parser.add_argument("--port", type=int, default=5005)
+    parser.add_argument("--dev", action='store_true', help="Enable Flask Debug mode (watches for files modifications, etc..)")
     parser.add_argument("fetchers", nargs="*", type=str)
     args = parser.parse_args()
-    run_server(add_fetchers=args.fetchers, host=args.host, port=args.port)
+    run_server(add_fetchers=args.fetchers, host=args.host, port=args.port, debug=args.dev)
     return 0
 

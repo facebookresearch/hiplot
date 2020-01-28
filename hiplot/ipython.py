@@ -169,7 +169,9 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
 def display_exp(xp: exp.Experiment, force_full_width: bool = False) -> IPythonExperimentDisplayed:
     comm_id = f"comm_{uuid.uuid4().hex[:6]}"
     displayed_xp = IPythonExperimentDisplayed(xp, comm_id)
-    index_html = make_experiment_standalone_page(xp._asdict(), call_js_fn='setup_hiplot_notebook' if force_full_width else 'setup_hiplot_website')
+    index_html = make_experiment_standalone_page(options={
+        'experiment': xp._asdict(),
+    })
     jupyter_render_iframe(
         page_html=index_html,
         on_load_js=f"""

@@ -177,7 +177,9 @@ class Experiment(_DictSerializable):
         without any dependency to HiPlot server or static files.
         """
         self.validate()
-        return make_experiment_standalone_page(self._asdict())
+        return make_experiment_standalone_page(options={
+            'experiment': self._asdict()
+        })
 
     def _asdict(self) -> Dict[str, Any]:
         return {

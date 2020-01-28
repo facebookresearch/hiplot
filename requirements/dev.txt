@@ -5,3 +5,4 @@ wheel
 selenium
 sphinx
 m2r
+twine

@@ -1,8 +1,8 @@
 {
   "name": "hiplot",
-  "version": "0.0.1",
-  "description": "High dImensional plotting",
-  "main": "app.js",
+  "version": "0.0.0",
+  "description": "HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.",
+  "main": "src/hiplot.tsx",
   "dependencies": {
     "@babel/cli": "^7.7.4",
     "@babel/core": "^7.7.4",
@@ -45,16 +45,17 @@
     "webpack-cli": "^3.3.10"
   },
   "scripts": {
-    "webpack": "webpack --display-error-details --progress -d"
+    "build": "webpack --display-error-details --progress",
+    "build-dev": "webpack --display-error-details --progress -d"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fairinternal/hiplot.git"
+    "url": "https://github.com/facebookresearch/hiplot.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/fairinternal/hiplot/issues"
+    "url": "https://github.com/facebookresearch/hiplot/issues"
   },
-  "homepage": "https://github.com/fairinternal/hiplot#readme"
+  "homepage": "https://github.com/facebookresearch/hiplot#readme"
 }

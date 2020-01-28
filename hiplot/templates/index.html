@@ -11,8 +11,11 @@
     <script type="text/javascript">
     var globalHiPlot = undefined;
     document.addEventListener("DOMContentLoaded", function() {
+      var options = {
+        is_webserver: true,
+      };
       /*ON_LOAD_SCRIPT_INJECT*/
-      globalHiPlot = setup_hiplot_website(document.getElementById("hiplot"));
+      globalHiPlot = hiplot_setup(document.getElementById("hiplot"), options);
     });
     </script>
   </body>

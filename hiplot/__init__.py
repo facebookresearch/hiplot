@@ -5,4 +5,4 @@
 from .experiment import Experiment, ExperimentFetcherDoesntApply, Datapoint, LineDisplay, ExperimentDisplayed
 from .server import run_server, run_server_main
 
-__version__ = "0.1.0"
+__version__ = "0.1.0.post2"
