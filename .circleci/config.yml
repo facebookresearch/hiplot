@@ -13,6 +13,8 @@ jobs:
 
     steps:
       - checkout
+      - attach_workspace:
+          at: hiplot/static
       - restore_cache:
           keys:
           - v2-mypy_pytest-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
@@ -39,21 +41,46 @@ jobs:
             . venv/bin/activate
             pytest hiplot --durations=10
 
+  npm-build:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - run: npm install
+      - run: mkdir -p npm-build/dist npm-build/dist-dev dist
+      - run: npm run build-dev
+      - run: mv dist/* npm-build/dist-dev/
+      - run: npm run build
+      - run: mv dist/* npm-build/dist/ && cp -r npm-build/dist/ hiplot/static/built
+      - store_artifacts:
+          when: always
+          path: npm-build
+      - persist_to_workspace:
+          root: npm-build
+          paths:
+            - dist
+            - dist-dev
+      - persist_to_workspace:
+          root: hiplot/static
+          paths:
+            - built
+
   browser_ci:
     docker:
       - image: selenium/standalone-chrome
     working_directory: ~/repo
     steps:
       - checkout
+      - attach_workspace:
+          at: npm-build
       - restore_cache:
           keys:
           - v2-browser_ci-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
       - run:
-          name: install dependencies (incl NPM)
+          name: install dependencies
           command: |
             sudo apt-get update
-            sudo apt-get install python3-venv nodejs git -y
-            curl -L https://npmjs.org/install.sh | sudo sh
+            sudo apt-get install python3-venv git -y
             python3 -m venv venv
             . venv/bin/activate
             pip install --upgrade -e .[dev]
@@ -62,46 +89,25 @@ jobs:
             - ./venv
           key: v2-browser_ci-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
       - run:
-          name: Generate pages and end to end testing (provided bundle)
+          name: Generate pages and end to end testing
           when: always
           command: |
             . venv/bin/activate
             rm -rf .circleci/demo_pages
             mkdir artifacts
+            cp -r npm-build/dist hiplot/static/built
             python .circleci/generate_demo_pages.py
             pytest -s .circleci/test_e2e.py
       - run:
           name: Collect artifacts...
           command: mv .circleci/demo_pages artifacts/provided
       - run:
-          name: Test webpack build
-          when: always
-          command: |
-            . venv/bin/activate
-            sudo chown -R 1000:1000 "/home/seluser/.npm"
-            npm install
-            du -h hiplot/static/built/hiplot.bundle.js
-            md5sum hiplot/static/built/hiplot.bundle.js
-            npx webpack --display-error-details --mode production
-            md5sum hiplot/static/built/hiplot.bundle.js
-            cp -r hiplot/static/built artifacts/built-prod
-            # Make sure git diff is empty
-            git diff-index HEAD
-            git status
-            if ! git diff-index --quiet HEAD --; then
-                echo "Make sure you update / commit the bundle when modifying the TypeScript source"
-                echo "I tried to rebuilt it, and the git diff is not empty :("
-                git status
-                exit 1
-            fi
-      - run:
-          name: Generate pages and end to end testing (updated/dev bundle)
+          name: Generate pages and end to end testing (dev bundle)
           when: always
           command: |
             . venv/bin/activate
             rm hiplot/static/built/*
-            npx webpack --display-error-details -d
-            cp -r hiplot/static/built artifacts/built-dev
+            cp npm-build/dist-dev/* hiplot/static/built
             pip install --upgrade -e .[dev]
             rm -rf .circleci/demo_pages
             python .circleci/generate_demo_pages.py
@@ -151,18 +157,113 @@ jobs:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/_build/html
 
+  pypi-build:
+    docker:
+      - image: python:3.7
+    steps:
+      - checkout
+      - attach_workspace:
+          at: hiplot/static
+      - run:
+          name: install dependencies
+          command: |
+            apt-get update
+            apt-get install python3-venv -y
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements/dev.txt
+      - run:
+          name: verify git tag vs. version
+          command: |
+            . venv/bin/activate
+            python setup.py verify
+      - run:
+          name: create packages
+          command: |
+            . venv/bin/activate
+            rm -rf dist && mkdir dist pypi-build
+            # create a source distribution
+            python setup.py sdist
+            # create a wheel
+            python setup.py bdist_wheel
+            mv dist pypi-build
+      - run:
+          name: verify package
+          command: |
+            . ./venv/bin/activate
+            twine check pypi-build/dist/*
+      - persist_to_workspace:
+          root: pypi-build
+          paths: dist
+      - store_artifacts:
+          when: always
+          path: pypi-build
+
+  pypi-deploy:
+    docker:
+      - image: python:3.7
+    steps:
+      - attach_workspace:
+          at: pypi-build
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = danthe3rd" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: upload to pypi
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install twine
+            du -h pypi-build/dist/*
+            twine upload pypi-build/dist/hiplot-*
 workflows:
   version: 2
   all_ci:
     jobs:
-      - mypy_pytest
-      - browser_ci
-      - docs-build
+      - npm-build:
+          filters:
+            tags:
+              only: /.*/
+      - mypy_pytest:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
+      - browser_ci:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
+      - docs-build:
+          filters:
+            tags:
+              only: /.*/
       - docs-deploy:
           requires:
-            #- mypy_pytest
-            #- browser_ci
             - docs-build
           filters:
             branches:
               only: master
+      - pypi-build:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?/
+      - pypi-deploy:
+          requires:
+            - pypi-build
+            - npm-build
+            - docs-build
+            - browser_ci
+            - mypy_pytest
+          filters:
+            tags:
+              only: /([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?/
+            branches:
+              ignore: /.*/

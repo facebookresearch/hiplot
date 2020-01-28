@@ -6,14 +6,14 @@
 
 HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.
 
+There are 2 modes to HiPlot:
+- As a web-server (if your data is a CSV for instance)
+- In a jupyter notebook (to visualize python data)
+
 Get started with:
 ```bash
 pip install git+ssh://git@github.com/facebookresearch/hiplot.git
 ```
-
-There are 2 modes to HiPlot:
-- As a web-server (if your data is a CSV for instance)
-- In a jupyter notebook (to visualize python data)
 
 
 ## HiPlot as a web-server
@@ -24,7 +24,7 @@ Run the command above and then access http://127.0.0.1:5005/ (*you need to forwa
 
 ## HiPlot in a Jupyter notebook
 ### Basic usage
-Provide a list of dictionnaries to build a HiPlot `Experiment` that you can display
+Provide a list of dictionnaries to build a `hip.Experiment` that you can display
 ```python
 # In a Jupyter notebook
 import hiplot as hip

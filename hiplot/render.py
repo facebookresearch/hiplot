@@ -81,7 +81,11 @@ def get_index_html_template() -> str:
     return render_jinja_html(str(Path(__file__).parent / "templates"), "index.html")
 
 
-def make_experiment_standalone_page(experiment: Dict[str, Any], call_js_fn: str = 'setup_hiplot_website') -> str:
+def make_experiment_standalone_page(options: Dict[str, Any]) -> str:
     index_html = html_inlinize(get_index_html_template())
-    index_html = index_html.replace('/*ON_LOAD_SCRIPT_INJECT*/', f"/*ON_LOAD_SCRIPT_INJECT*/ globalHiPlot = {call_js_fn}(document.getElementById('hiplot'), eval('(' + {escapejs(json.dumps(experiment))} + ')')); return;")
+    index_html = index_html.replace(
+        "/*ON_LOAD_SCRIPT_INJECT*/",
+        f"""/*ON_LOAD_SCRIPT_INJECT*/
+        Object.assign(options, eval('(' + {escapejs(json.dumps(options))} + ')'));
+        """)
     return index_html

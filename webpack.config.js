@@ -11,10 +11,12 @@ var webpack = require("webpack");
 
 
 module.exports = {
-    entry: './src/hiplot.tsx',
+    entry: {
+      'hiplot': './src/hiplot.tsx',
+    },
     output: {
-        path: path.resolve(__dirname, 'hiplot/static/built'),
-        filename: 'hiplot.bundle.js'
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js'
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js', '.json', '.css', '.svg', '.scss'],

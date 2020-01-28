@@ -115,3 +115,4 @@ hiplot/static/built/main.licenses.txt
 node_modules
 .vscode
 docs/build
+hiplot/static/built

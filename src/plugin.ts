@@ -24,7 +24,4 @@ export interface HiPlotData {
     context_menu_ref: React.RefObject<ContextMenu>;
     colorby: WatchedProperty;
     url_state: State;
-
-    is_notebook: boolean;
-    is_webserver: boolean;
 };
