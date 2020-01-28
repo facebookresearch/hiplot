@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Readme File &#8212; HiPlot 0.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="HiPlot documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="readme-file">
+<h1>Readme File<a class="headerlink" href="#readme-file" title="Permalink to this headline">¶</a></h1>
+<p>HiPlot - High dimensional Interactive Plotting
+.. image:: <a class="reference external" href="https://circleci.com/gh/facebookresearch/hiplot/tree/master.svg?style=svg&amp;circle-token=c89b6825078e174cf35bdc18e4ad4a16e28876f9">https://circleci.com/gh/facebookresearch/hiplot/tree/master.svg?style=svg&amp;circle-token=c89b6825078e174cf35bdc18e4ad4a16e28876f9</a></p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">target</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://circleci.com/gh/facebookresearch/hiplot/tree/master">https://circleci.com/gh/facebookresearch/hiplot/tree/master</a></p>
+</dd>
+<dt class="field-even">alt</dt>
+<dd class="field-even"><p>CircleCI</p>
+</dd>
+</dl>
+</div></blockquote>
+<hr class="docutils" />
+<a class="reference external image-reference" href="hiplot/static/logo.svg"><img alt="Logo" src="hiplot/static/logo.svg" /></a>
+<p>HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.</p>
+<p>There are 2 modes to HiPlot:</p>
+<ul class="simple">
+<li><p>As a web-server (if your data is a CSV for instance)</p></li>
+<li><p>In a jupyter notebook (to visualize python data)</p></li>
+</ul>
+<p>Get started with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install git+ssh://git@github.com/facebookresearch/hiplot.git
+</pre></div>
+</div>
+<div class="section" id="hiplot-as-a-web-server">
+<h2>HiPlot as a web-server<a class="headerlink" href="#hiplot-as-a-web-server" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m hiplot
+</pre></div>
+</div>
+<p>Run the command above and then access <a class="reference external" href="http://127.0.0.1:5005/">http://127.0.0.1:5005/</a> (<em>you need to forward the port 5005 to be able to access it from your machine if running remotely</em>)</p>
+</div>
+<div class="section" id="hiplot-in-a-jupyter-notebook">
+<h2>HiPlot in a Jupyter notebook<a class="headerlink" href="#hiplot-in-a-jupyter-notebook" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="basic-usage">
+<h3>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h3>
+<p>Provide a list of dictionnaries to build a <code class="docutils literal notranslate"><span class="pre">hip.Experiment</span></code> that you can display</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In a Jupyter notebook</span>
+<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;SGD&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">}]</span>
+<span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://facebookresearch.github.io/hiplot/_static/demo/demo_basic_usage.html">see it live</a></p>
+<p>It is also possible to load a CSV directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/path/to/data.csv&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+    <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">))</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-use-cases">
+<h3>Advanced use-cases<a class="headerlink" href="#advanced-use-cases" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="enable-x-y-plot">
+<h4>Enable X/Y plot<a class="headerlink" href="#enable-x-y-plot" title="Permalink to this headline">¶</a></h4>
+<p>HiPlot can also display a X/Y graph if enabled explicitely as below. To do so, we must use the <code class="docutils literal notranslate"><span class="pre">Datapoint</span></code> class directly, and for each point specify the previous point <code class="docutils literal notranslate"><span class="pre">from_uid</span></code>. Multiple points can share the same parent - this is especially useful when representing evolving populations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="n">exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="p">()</span><span class="o">.</span><span class="n">set_line_xy</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;generation&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;loss&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">dp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span>
+        <span class="n">uid</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+        <span class="n">values</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;generation&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+            <span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="p">})</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">from_parent</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">datapoints</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:])</span>
+        <span class="n">dp</span><span class="o">.</span><span class="n">from_uid</span> <span class="o">=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">uid</span>
+        <span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span>
+        <span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span>
+    <span class="n">exp</span><span class="o">.</span><span class="n">datapoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span>
+<span class="n">exp</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">lines_thickness</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Customize lines thickness. When below 0, the dots are not connected</span>
+<span class="n">exp</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">lines_opacity</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Decrease this value if you have too many lines overlapping</span>
+<span class="n">exp</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference external image-reference" href="assets/demo_line_xy.png"><img alt="demo_line_xy" src="assets/demo_line_xy.png" /></a>
+<p><a class="reference external" href="https://facebookresearch.github.io/hiplot/_static/demo/demo_line_xy.html">see it live</a></p>
+</div>
+<div class="section" id="retrieve-currently-selected-rows">
+<h4>Retrieve currently selected rows<a class="headerlink" href="#retrieve-currently-selected-rows" title="Permalink to this headline">¶</a></h4>
+<p><em>Only supported on Jupyter Notebook - does not work on Jupyter Lab</em></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In a Jupyter notebook cell</span>
+<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}]</span>
+<span class="n">handler</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+
+<span class="c1"># In a different notebook cell (not supported for Jupyter Lab)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">handler</span><span class="o">.</span><span class="n">get_selected</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="change-column-properties">
+<h4>Change column properties<a class="headerlink" href="#change-column-properties" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;hidden_field&#39;</span><span class="p">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;hidden_field&#39;</span><span class="p">:</span> <span class="s1">&#39;value2&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;black&#39;</span><span class="p">}]</span>
+<span class="n">exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">exp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">[</span><span class="s1">&#39;hidden_field&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">parallel_plot_order</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># Hide</span>
+<span class="n">exp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;red&#39;</span><span class="p">:</span> <span class="s1">&#39;rgb(255, 0, 0)&#39;</span><span class="p">,</span> <span class="s1">&#39;black&#39;</span><span class="p">:</span> <span class="s1">&#39;rgb(0, 0, 0)&#39;</span><span class="p">}</span>
+<span class="n">exp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">parallel_plot_order</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># first column</span>
+<span class="n">exp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;numericlog&#39;</span>
+<span class="n">exp</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
+<a class="reference external image-reference" href="assets/demo_change_column_properties.png"><img alt="demo_change_column_properties" src="assets/demo_change_column_properties.png" /></a>
+<p><a class="reference external" href="https://facebookresearch.github.io/hiplot/_static/demo/demo_change_column_properties.html">see it live</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>HiPlot is <a class="reference external" href="LICENSE">MIT</a> licensed, as found in the <a class="reference external" href="LICENSE">LICENSE</a> file.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">HiPlot</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Readme File</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hiplot-as-a-web-server">HiPlot as a web-server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hiplot-in-a-jupyter-notebook">HiPlot in a Jupyter notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">HiPlot documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Facebook AI Research (FAIR).
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/readme.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

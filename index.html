@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Welcome to HiPlot’s documentation! &#8212; HiPlot 0.1.0 documentation</title>
+    <title>HiPlot documentation &#8212; HiPlot 0.1.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Readme File" href="readme.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -30,9 +31,45 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-hiplot-s-documentation">
-<h1>Welcome to HiPlot’s documentation!<a class="headerlink" href="#welcome-to-hiplot-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="hiplot-documentation">
+<h1>HiPlot documentation<a class="headerlink" href="#hiplot-documentation" title="Permalink to this headline">¶</a></h1>
+<p>HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.</p>
+<p>There are 2 modes to HiPlot:</p>
+<ul class="simple">
+<li><p>As a web-server (if your data is a CSV for instance)</p></li>
+<li><p>In a jupyter notebook (to visualize python data)</p></li>
+</ul>
+</div>
+<div class="section" id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pip</span> <span class="n">install</span> <span class="n">hiplot</span>
+</pre></div>
+</div>
+<div class="section" id="option-1-in-an-ipython-notebook">
+<h2>Option 1: In an ipython notebook<a class="headerlink" href="#option-1-in-an-ipython-notebook" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;SGD&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">}]</span>
+<span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="option-2-hiplot-webserver">
+<h2>Option 2: HiPlot webserver<a class="headerlink" href="#option-2-hiplot-webserver" title="Permalink to this headline">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Readme File</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#hiplot-as-a-web-server">HiPlot as a web-server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#hiplot-in-a-jupyter-notebook">HiPlot in a Jupyter notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#license">License</a></li>
+</ul>
+</li>
+</ul>
 </div>
 <dl class="class">
 <dt id="hiplot.Experiment">
@@ -121,10 +158,11 @@ Experiments with circular references, non-existent parents, or without datapoint
 
 <dl class="function">
 <dt id="hiplot.run_server">
-<code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">run_server</code><span class="sig-paren">(</span><em class="sig-param">add_fetchers: List[str], host: str = '127.0.0.1', port: int = 5005</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/hiplot/server.html#run_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.run_server" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">run_server</code><span class="sig-paren">(</span><em class="sig-param">add_fetchers: List[str], host: str = '127.0.0.1', port: int = 5005, debug: bool = False</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/hiplot/server.html#run_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.run_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs the HiPlot server</p>
 </dd></dl>
 
+</div>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -152,11 +190,16 @@ Experiments with circular references, non-existent parents, or without datapoint
 
 
 <h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Readme File</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="readme.html" title="next chapter">Readme File</a></li>
   </ul></li>
 </ul>
 </div>
