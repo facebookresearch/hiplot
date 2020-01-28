@@ -51,7 +51,7 @@ jobs:
       - run: npm run build-dev
       - run: mv dist/* npm-build/dist-dev/
       - run: npm run build
-      - run: tsc
+      - run: npx tsc
       - run: mv dist/* npm-build/dist/ && mkdir -p hiplot/static/built/ && cp npm-build/dist/hiplot.bundle.js hiplot/static/built/
       - store_artifacts:
           when: always
@@ -77,15 +77,16 @@ jobs:
           name: Gather package files
           command: |
             mkdir pack
-            npm version $CIRCLE_TAG
+            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"$CIRCLE_TAG\",/" package.json
             cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src pack/
             mv npm-build/dist pack/
+            rm pack/dist/hiplot-*  # Leftover from setup.py
       - run:
           name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
       - run:
           name: Publish
-          command: npm publish
+          command: cd pack && npm publish
       - store_artifacts:
           when: always
           path: pack
@@ -131,8 +132,8 @@ jobs:
           when: always
           command: |
             . venv/bin/activate
-            rm hiplot/static/built/*
-            cp npm-build/dist-dev/* hiplot/static/built
+            rm -rf hiplot/static/built/*
+            cp -r npm-build/dist-dev/* hiplot/static/built
             pip install --upgrade -e .[dev]
             rm -rf .circleci/demo_pages
             python .circleci/generate_demo_pages.py
