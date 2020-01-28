@@ -51,7 +51,8 @@ jobs:
       - run: npm run build-dev
       - run: mv dist/* npm-build/dist-dev/
       - run: npm run build
-      - run: mv dist/* npm-build/dist/ && cp -r npm-build/dist/ hiplot/static/built
+      - run: tsc
+      - run: mv dist/* npm-build/dist/ && mkdir -p hiplot/static/built/ && cp npm-build/dist/hiplot.bundle.js hiplot/static/built/
       - store_artifacts:
           when: always
           path: npm-build
@@ -64,6 +65,30 @@ jobs:
           root: hiplot/static
           paths:
             - built
+
+  npm-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: npm-build
+      - run:
+          name: Gather package files
+          command: |
+            mkdir pack
+            npm version $CIRCLE_TAG
+            cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src pack/
+            mv npm-build/dist pack/
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: Publish
+          command: npm publish
+      - store_artifacts:
+          when: always
+          path: pack
 
   browser_ci:
     docker:
@@ -256,6 +281,18 @@ workflows:
             tags:
               only: /([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?/
       - pypi-deploy:
+          requires:
+            - pypi-build
+            - npm-build
+            - docs-build
+            - browser_ci
+            - mypy_pytest
+          filters:
+            tags:
+              only: /([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?/
+            branches:
+              ignore: /.*/
+      - npm-deploy:
           requires:
             - pypi-build
             - npm-build

@@ -12,7 +12,7 @@ There are 2 modes to HiPlot:
 
 Get started with:
 ```bash
-pip install git+ssh://git@github.com/facebookresearch/hiplot.git
+pip install hiplot
 ```
 
 
