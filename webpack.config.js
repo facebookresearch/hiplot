@@ -16,6 +16,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
+        //path: path.resolve(__dirname, 'hiplot', 'static', 'built'),
         filename: '[name].bundle.js'
     },
     resolve: {
@@ -59,7 +60,7 @@ module.exports = {
                     // "allowJs": true,                       /* Allow javascript files to be compiled. */
                     "checkJs": false,                       /* Report errors in .js files. */
                     "jsx": "react",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
-                    "declaration": true,                   /* Generates corresponding '.d.ts' file. */
+                    // "declaration": true,                   /* Generates corresponding '.d.ts' file. */
                     // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
                     // "sourceMap": true,                     /* Generates corresponding '.map' file. */
                     // "outFile": "./",                       /* Concatenate and emit output to single file. */

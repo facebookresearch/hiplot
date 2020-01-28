@@ -50,8 +50,8 @@ export class RowsDisplayTable extends React.Component<HiPlotData, RowsDisplayTab
                     return {
                         'title': x,
                         'defaultContent': 'null',
-                        'createdCell': function (td, cellData, rowData, row, col) {
-                            var color = me.props.get_color_for_uid(cellData, 1.0);
+                        'createdCell': function (td, row_uid, rowData, row, col) {
+                            var color = me.props.get_color_for_row(me.props.dp_lookup[row_uid], 1.0);
                             $(td).prepend($('<span>').addClass('color-block').css('background-color', color));
                         }
                     }

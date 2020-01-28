@@ -86,9 +86,9 @@ class LineDisplay(_DictSerializable):
         axis_x: Optional[str] = None,
         axis_y: Optional[str] = None,
         lines_thickness: float = 1.2,
-        lines_opacity: float = 0.8,
+        lines_opacity: Optional[float] = None,
         dots_thickness: float = 1.4,
-        dots_opacity: float = 0.8,
+        dots_opacity: Optional[float] = None,
     ) -> None:
         self.axis_x = axis_x
         self.axis_y = axis_y

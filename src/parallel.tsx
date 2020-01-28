@@ -226,7 +226,9 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
           .attr("class", style.label)
           .text(String)
           .on("contextmenu", function(d) {
-            me.props.context_menu_ref.current.show(d3.event.pageX, d3.event.pageY, d);
+            if (me.props.context_menu_ref !== undefined) {
+              me.props.context_menu_ref.current.show(d3.event.pageX, d3.event.pageY, d);
+            }
             d3.event.preventDefault();
           })
           .append("title")
@@ -368,7 +370,9 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
 
     // Handles a brush event, toggling the display of foreground lines.
     function brush() {
-      me.props.context_menu_ref.current.hide();
+      if (me.props.context_menu_ref !== undefined) {
+        me.props.context_menu_ref.current.hide();
+      }
       brush_count++;
       var extents = brush_extends();
       var actives = me.dimensions.filter(function(p) { return extents[p] !== null; });
@@ -425,7 +429,7 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
 
       props.rows['selected'].set(selected);
     }
-    this.debounced_brush = _.throttle(brush, 75);
+    this.debounced_brush = _.throttle(brush.bind(this), 75);
 
     props.rows['selected'].on_change(function(selected) {
       // Render selected lines
