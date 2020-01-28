@@ -29,6 +29,14 @@ import LogoSVG from "../hiplot/static/logo.svg";
 import style from "./hiplot.css";
 import { ContextMenu } from "./contextmenu";
 
+// Exported from HiPlot
+export { PlotXY } from "./plotxy";
+export { ParallelPlot } from "./parallel";
+export { RowsDisplayTable } from "./rowsdisplaytable";
+export { HiPlotData } from "./plugin";
+export { Datapoint, HiPlotExperiment, AllDatasets, HiPlotLoadStatus } from "./types";
+
+
 interface HiPlotComponentProps {
     experiment: HiPlotExperiment | null;
     is_webserver: boolean;
@@ -82,6 +90,9 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         rows['selected'].on_change(this.onSelectedChange.bind(this), this);
         rows['all'].on_change(this.recomputeParamsDef.bind(this), this);
     }
+    static defaultProps = {
+        is_webserver: false,
+    };
     onSelectedChange(selection: Array<Datapoint>): void {
         this.comm_selection_id += 1;
         if (this.comm !== null) {

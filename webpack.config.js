@@ -59,12 +59,12 @@ module.exports = {
                     // "allowJs": true,                       /* Allow javascript files to be compiled. */
                     "checkJs": false,                       /* Report errors in .js files. */
                     "jsx": "react",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
-                    // "declaration": true,                   /* Generates corresponding '.d.ts' file. */
+                    "declaration": true,                   /* Generates corresponding '.d.ts' file. */
                     // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
                     // "sourceMap": true,                     /* Generates corresponding '.map' file. */
                     // "outFile": "./",                       /* Concatenate and emit output to single file. */
-                    //"outDir": "./src",        /* Redirect output structure to the directory. */
-                    "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+                    "outDir": "./dist",        /* Redirect output structure to the directory. */
+                    // "rootDir": "",                         /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
                     // "composite": true,                     /* Enable project compilation */
                     // "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */
                     // "removeComments": true,                /* Do not emit comments to output. */
@@ -113,7 +113,8 @@ module.exports = {
                 
                     /* Advanced Options */
                     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
-                  },}
+                  },
+                }
             },
             {
                 test: /\.module\.s(a|c)ss$/,
@@ -147,6 +148,12 @@ module.exports = {
                     }
                   }
                 ]
+              },
+              // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+              {
+                  enforce: "pre",
+                  test: /\.js$/,
+                  loader: "source-map-loader"
               }
         ],
     },
