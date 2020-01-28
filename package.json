@@ -2,8 +2,8 @@
   "name": "hiplot",
   "version": "0.0.0",
   "description": "HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.",
-  "main": "src/hiplot.bundle.js",
-  "types": "./dist/src/hiplot.d.ts",
+  "main": "src/hiplot.js",
+  "types": "./dist/hiplot.d.ts",
   "dependencies": {
     "@babel/cli": "^7.7.4",
     "@babel/core": "^7.7.4",
