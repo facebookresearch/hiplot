@@ -47,10 +47,12 @@ class MultipleFetcher:
 def demo_change_column_properties() -> hip.Experiment:
     data = [{"param": 1, "loss": 10, "hidden_field": "value1", "c": "red"}, {"param": 2, "loss": 5, "hidden_field": "value2", "c": "black"}]
     exp = hip.Experiment.from_iterable(data)
-    exp.parameters_definition["hidden_field"].parallel_plot_order = -1  # Hide
     exp.parameters_definition["c"].colors = {"red": "rgb(255, 0, 0)", "black": "rgb(0, 0, 0)"}
-    exp.parameters_definition["c"].parallel_plot_order = 0  # first column
     exp.parameters_definition["loss"].type = hip.ValueType.NUMERIC_LOG
+    exp.display_data(hip.Displays.PARALLEL_PLOT).update({
+        'hide': ['hidden_field'],   # This column won't appear in the parallel plot
+        'order': ['c']              # Column `c` will be displayed first the in parallel plot
+    })
     return exp
 
 

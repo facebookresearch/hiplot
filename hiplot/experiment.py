@@ -40,9 +40,9 @@ class ValueType(Enum):
 
 
 class Displays(Enum):
+    PARALLEL_PLOT = 'parallel_plot'
     XY = 'xy'
     XY2 = 'xy2'
-    PARALLEL_PLOT = 'parallel_plot'
     TABLE = 'table'
 
 
@@ -52,14 +52,9 @@ class ValueDef(_DictSerializable):
         Overwrite the generated values for a column:
             - type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
             - colors: mapping from value to color in the format "rgb(R, G, B)" or "hsl(H, S, L)"
-            - parallel_plot_order: column ordering if >= 0.
-                If < 0, the column is hidden
-            - parallel_plot_inverted: invert the column values
         """
         self.type = type
         self.colors = colors
-        self.parallel_plot_order = parallel_plot_order
-        self.parallel_plot_inverted = parallel_plot_inverted
 
     def validate(self) -> None:
         if self.colors is not None:
@@ -73,8 +68,6 @@ class ValueDef(_DictSerializable):
         return {
             "type": self.type.value if self.type is not None else None,
             "colors": self.colors,
-            "parallel_plot_order": self.parallel_plot_order,
-            "parallel_plot_inverted": self.parallel_plot_inverted,
         }
 
 

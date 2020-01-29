@@ -37,10 +37,15 @@ export { HiPlotPluginData } from "./plugin";
 export { Datapoint, HiPlotExperiment, AllDatasets, HiPlotLoadStatus } from "./types";
 
 
+interface PluginInfo {
+    name: string;
+    render: (plugin_data: HiPlotPluginData) => JSX.Element;
+};
+
 interface HiPlotComponentProps {
     experiment: HiPlotExperiment | null;
     is_webserver: boolean;
-    plugins: Array<(plugin_data: HiPlotPluginData) => JSX.Element>;
+    plugins: Array<PluginInfo>;
 };
 
 interface HiPlotComponentState {
@@ -306,7 +311,11 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             <ContextMenu ref={this.data.context_menu_ref}/>
             {this.state.loadStatus == HiPlotLoadStatus.Loaded &&
             <div>
-                {this.props.plugins.map((render_plugin, idx) => <React.Fragment key={idx}>{render_plugin(this.data)}</React.Fragment>)}
+                {this.props.plugins.map((plugin_info, idx) => <React.Fragment key={idx}>{plugin_info.render({
+                    ...this.data,
+                    ...(this.state.experiment._displays[plugin_info.name] ? this.state.experiment._displays[plugin_info.name] : {}),
+                    url_state: this.data.url_state.children(plugin_info.name)
+                })}</React.Fragment>)}
             </div>
             }
             </div>
@@ -358,9 +367,10 @@ export function hiplot_setup(element: HTMLElement, extra?: object) {
         experiment: null,
         is_webserver: true,
         plugins: [
-            (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />,
-            (plugin_data: HiPlotPluginData) => <PlotXY name={"xy"} data={xydata} {...plugin_data} />,
-            (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />,
+            // Names correspond to values of hip.Displays
+            {name: "parallel_plot", render: (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />},
+            {name: "xy", render: (plugin_data: HiPlotPluginData) => <PlotXY name={"xy"} data={xydata} {...plugin_data} />},
+            {name: "table", render: (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />},
         ]
     };
     if (extra !== undefined) {
