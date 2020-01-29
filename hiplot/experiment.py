@@ -108,7 +108,7 @@ class Experiment(_DictSerializable):
     ) -> None:
         self.datapoints = datapoints if datapoints is not None else []
         self.parameters_definition = parameters_definition if parameters_definition is not None else defaultdict(ValueDef)
-        self._displays: Dict[str, Any] = {
+        self._displays: Dict[str, Dict[str, Any]] = {
             Displays.PARALLEL_PLOT.value: {},
             Displays.TABLE.value: {},
             Displays.XY.value: {},
