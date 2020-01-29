@@ -262,9 +262,10 @@ class Wav2letterLoader:
 '''
         PERF_PREFIX = 'perf_'
         lines = file.read_text().split('\n')
-        assert len(lines) >= 3 and lines[-1] == '', lines
         metrics: List[Dict[str, Any]] = []
-        for _, l in enumerate(lines[1:-1]):
+        for _, l in enumerate(lines[1:]):
+            if l == '':
+                continue
             epoch_metrics: Dict[str, Any] = {}
             for name, val in zip(lines[0].split()[1:], l.split()):
                 name = name.replace('/checkpoint/antares/datasets/librispeech/lists/', '')
