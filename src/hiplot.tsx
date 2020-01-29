@@ -21,7 +21,7 @@ import { ParallelPlot } from "./parallel";
 import { PlotXY } from "./plotxy";
 import { SelectedCountProgressBar } from "./controls";
 import { ErrorDisplay, HeaderBar } from "./elements";
-import { HiPlotData } from "./plugin";
+import { HiPlotPluginData } from "./plugin";
 
 //@ts-ignore
 import LogoSVG from "../hiplot/static/logo.svg";
@@ -33,13 +33,19 @@ import { ContextMenu } from "./contextmenu";
 export { PlotXY } from "./plotxy";
 export { ParallelPlot } from "./parallel";
 export { RowsDisplayTable } from "./rowsdisplaytable";
-export { HiPlotData } from "./plugin";
+export { HiPlotPluginData } from "./plugin";
 export { Datapoint, HiPlotExperiment, AllDatasets, HiPlotLoadStatus } from "./types";
 
+
+interface PluginInfo {
+    name: string;
+    render: (plugin_data: HiPlotPluginData) => JSX.Element;
+};
 
 interface HiPlotComponentProps {
     experiment: HiPlotExperiment | null;
     is_webserver: boolean;
+    plugins: Array<PluginInfo>;
 };
 
 interface HiPlotComponentState {
@@ -49,11 +55,10 @@ interface HiPlotComponentState {
     error: string;
 }
 
-function make_hiplot_data(): HiPlotData {
+function make_hiplot_data(): HiPlotPluginData {
     return {
         params_def: {},
         rows: new AllDatasets(),
-        get_color_for_uid: null,
         get_color_for_row: null,
         render_row_text: function(row: Datapoint) {
             return row.uid;
@@ -75,7 +80,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
 
     table: RowsDisplayTable = null;
 
-    data: HiPlotData = make_hiplot_data();
+    data: HiPlotPluginData = make_hiplot_data();
 
     constructor(props: HiPlotComponentProps) {
         super(props);
@@ -156,10 +161,6 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         this.data.get_color_for_row = function(trial: Datapoint, alpha: number) {
             return me.data.params_def[me.data.colorby.get()].colorScheme(trial[me.data.colorby.get()], alpha);
         };
-        this.data.get_color_for_uid = function(uid: string, alpha: number) {
-            var trial = me.data.dp_lookup[uid];
-            return me.data.params_def[me.data.colorby.get()].colorScheme(trial[me.data.colorby.get()], alpha);
-        };
     }
     loadWithPromise(prom: Promise<any>) {
         var me = this;
@@ -202,43 +203,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
     componentDidMount() {
         // Setup contextmenu when we right-click a parameter
         var me = this;
-        me.data.context_menu_ref.current.addCallback(function(column, cm) {
-            const VAR_TYPE_TO_NAME = {
-                [ParamType.CATEGORICAL]: 'Categorical',
-                [ParamType.NUMERIC]: 'Number',
-                [ParamType.NUMERICLOG]: 'Number (log-scale)',
-                [ParamType.NUMERICPERCENTILE]: 'Number (percentile-scale)',
-            };
-
-            var contextmenu = $(cm);
-            contextmenu.append($('<h6 class="dropdown-header">Data scaling</h6>'));
-            me.data.params_def[column].type_options.forEach(function(possible_type) {
-              var option = $('<a class="dropdown-item" href="#">').text(VAR_TYPE_TO_NAME[possible_type]);
-              if (possible_type == me.data.params_def[column].type) {
-                option.addClass('disabled').css('pointer-events', 'none');
-              }
-              option.click(function(event) {
-                contextmenu.css('display', 'none');
-                me.data.params_def[column].type = possible_type;
-                me.data.params_def[column].__url_state__.set('type', possible_type);
-                me.data.rows['all'].append([]); // Trigger recomputation of the parameters + rerendering
-                event.preventDefault();
-              });
-              contextmenu.append(option);
-            });
-            contextmenu.append($('<div class="dropdown-divider"></div>'));
-        
-            // Color by
-            var link_colorize = $('<a class="dropdown-item" href="#">Use for coloring</a>');
-            link_colorize.click(function(event) {
-            me.data.colorby.set(column);
-            event.preventDefault();
-            });
-            if (me.data.colorby.get() == column) {
-                link_colorize.addClass('disabled').css('pointer-events', 'none');
-            }
-            contextmenu.append(link_colorize);
-        }, this);
+        me.data.context_menu_ref.current.addCallback(this.columnContextMenu.bind(this), this);
 
         // Load experiment provided in constructor if any
         if (this.props.experiment !== null) {
@@ -257,6 +222,43 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         if (this.state.loadStatus == HiPlotLoadStatus.None) {
             this.data = make_hiplot_data();
         }
+    }
+    columnContextMenu(column: string, cm: HTMLDivElement) {
+        const VAR_TYPE_TO_NAME = {
+            [ParamType.CATEGORICAL]: 'Categorical',
+            [ParamType.NUMERIC]: 'Number',
+            [ParamType.NUMERICLOG]: 'Number (log-scale)',
+            [ParamType.NUMERICPERCENTILE]: 'Number (percentile-scale)',
+        };
+
+        var contextmenu = $(cm);
+        contextmenu.append($('<h6 class="dropdown-header">Data scaling</h6>'));
+        this.data.params_def[column].type_options.forEach(function(possible_type) {
+          var option = $('<a class="dropdown-item" href="#">').text(VAR_TYPE_TO_NAME[possible_type]);
+          if (possible_type == this.data.params_def[column].type) {
+            option.addClass('disabled').css('pointer-events', 'none');
+          }
+          option.click(function(event) {
+            contextmenu.css('display', 'none');
+            this.data.params_def[column].type = possible_type;
+            this.data.params_def[column].__url_state__.set('type', possible_type);
+            this.data.rows['all'].append([]); // Trigger recomputation of the parameters + rerendering
+            event.preventDefault();
+          }.bind(this));
+          contextmenu.append(option);
+        }.bind(this));
+        contextmenu.append($('<div class="dropdown-divider"></div>'));
+    
+        // Color by
+        var link_colorize = $('<a class="dropdown-item" href="#">Use for coloring</a>');
+        link_colorize.click(function(event) {
+            this.data.colorby.set(column);
+            event.preventDefault();
+        }.bind(this));
+        if (this.data.colorby.get() == column) {
+            link_colorize.addClass('disabled').css('pointer-events', 'none');
+        }
+        contextmenu.append(link_colorize);
     }
     onRefreshDataBtn() {
         this.loadURI(this.data.url_state.get(URL_LOAD_URI));
@@ -309,9 +311,11 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             <ContextMenu ref={this.data.context_menu_ref}/>
             {this.state.loadStatus == HiPlotLoadStatus.Loaded &&
             <div>
-                <ParallelPlot {...this.data} />
-                <PlotXY {...this.data} />
-                <RowsDisplayTable {...this.data} />
+                {this.props.plugins.map((plugin_info, idx) => <React.Fragment key={idx}>{plugin_info.render({
+                    ...this.data,
+                    ...(this.state.experiment._displays[plugin_info.name] ? this.state.experiment._displays[plugin_info.name] : {}),
+                    url_state: this.data.url_state.children(plugin_info.name)
+                })}</React.Fragment>)}
             </div>
             }
             </div>
@@ -357,9 +361,17 @@ class DocAndCredits extends React.Component {
 };
 
 export function hiplot_setup(element: HTMLElement, extra?: object) {
+    var xydata = {};
+    var pplotdata = {};
     var props: HiPlotComponentProps = {
         experiment: null,
         is_webserver: true,
+        plugins: [
+            // Names correspond to values of hip.Displays
+            {name: "parallel_plot", render: (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />},
+            {name: "xy", render: (plugin_data: HiPlotPluginData) => <PlotXY name={"xy"} data={xydata} {...plugin_data} />},
+            {name: "table", render: (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />},
+        ]
     };
     if (extra !== undefined) {
         Object.assign(props, extra);

@@ -17,7 +17,7 @@ import { WatchedProperty, AllDatasets, Datapoint, ParamType } from "./types";
 import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
-import { HiPlotData } from "./plugin";
+import { HiPlotPluginData } from "./plugin";
 import { ResizableH } from "./lib/resizable";
 
 
@@ -32,9 +32,19 @@ export interface StringMapping<V> { [key: string]: V; };
 interface ParallelPlotState {
   height: number;
   width: number;
+  order: Array<string>;
+  hide: Set<string>;
+  invert: Set<string>;
 };
 
-export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState> {
+interface ParallelPlotData extends HiPlotPluginData {
+  order?: Array<string>;
+  hide?: Set<string>;
+  invert?: Set<string>;
+  data: any;
+};
+
+export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlotState> {
   on_resize: () => void = null;
   on_unmount: Array<() => void> = [];
   m = [75, 0, 10, 0]; // Margins
@@ -63,14 +73,19 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
   yscale: StringMapping<any> = {}; // d3.scale
   axis: any; // d3.scale
   d3brush = d3.brushY();
-  constructor(props: HiPlotData) {
+  constructor(props: ParallelPlotData) {
     super(props);
     this.state = {
-      height: 600,
+      height: props.data.height ? props.data.height : 600,
       width: document.body.clientWidth,
+      order: props.order ? props.order : props.url_state.get('order', []),
+      hide: new Set(props.hide ? props.hide : props.url_state.get('hide', [])),
+      invert: new Set(props.invert ? props.invert : props.url_state.get('invert', [])),
     };
   }
-
+  static defaultProps = {
+    data: {}
+  }
   componentWillUnmount() {
     this.svg.selectAll("*").remove();
     $(window).off("resize", this.onWindowResize);
@@ -85,6 +100,16 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
           this.on_resize();
         }
     }
+    if (prevState.invert != this.state.invert) {
+      this.props.url_state.set('invert', Array.from(this.state.invert));
+    }
+    if (prevState.hide != this.state.hide) {
+      this.props.url_state.set('hide', Array.from(this.state.hide));
+    }
+    if (prevState.order != this.state.order) {
+      this.props.url_state.set('order', this.state.order);
+    }
+    this.props.data.height = this.state.height;
   }
   onResizeH(height: number): void {
     this.setState({height: height});
@@ -126,31 +151,30 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
     // Background canvas
     me.background = this.background_ref.current.getContext('2d');
 
+    function isColHidden(k: string) {
+      var pd = me.props.params_def[k];
+      return pd === undefined ||
+        pd.special_values.length + pd.distinct_values.length <= 1 ||
+        (pd.type == ParamType.CATEGORICAL && pd.distinct_values.length > 80) ||
+        me.state.hide.has(k);
+    }
     // SVG for ticks, labels, and interactions
 
     // Load the data and visualization
     function _loadWithProvidedData() {
-      function save_dimension_order() {
-        me.dimensions.forEach(function(k, idx) {
-          props.params_def[k].parallel_plot_order = idx;
-          props.params_def[k].__url_state__.set('order', idx);
-        });
-      }
-
       // Extract the list of numerical dimensions and create a scale for each.
       me.xscale.domain(me.dimensions = d3.keys(props.params_def).filter(function(k) {
-        var pd = props.params_def[k];
-        if (pd.parallel_plot_order < 0) {
+        if (isColHidden(k)) {
           return false;
         }
         me.yscale[k] = me.createScale(k);
         return true;
       }).sort(function(a, b) {
-        var pda = props.params_def[a];
-        var pdb = props.params_def[b];
-        return pda.parallel_plot_order - pdb.parallel_plot_order;
+        var pda = me.state.order.findIndex((e) => e == a);
+        var pdb = me.state.order.findIndex((e) => e == b);
+        return (pda == -1 ? me.state.order.length : pda) - (pdb == -1 ? me.state.order.length : pdb);
       }));
-      save_dimension_order();
+      me.setState({order: Array.from(me.dimensions)});
 
       // Add a group element for each dimension.
       function create_drag_beh() {
@@ -193,7 +217,7 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
           if (dragging[d] < 12 || dragging[d] > me.w-12) {
             remove_axis(d);
           }
-          save_dimension_order();
+          me.setState({order: Array.from(me.dimensions)});
   
           me.xscale.domain(me.dimensions);
           update_ticks(d, extent);
@@ -226,7 +250,9 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
           .attr("class", style.label)
           .text(String)
           .on("contextmenu", function(d) {
-            me.props.context_menu_ref.current.show(d3.event.pageX, d3.event.pageY, d);
+            if (me.props.context_menu_ref !== undefined) {
+              me.props.context_menu_ref.current.show(d3.event.pageX, d3.event.pageY, d);
+            }
             d3.event.preventDefault();
           })
           .append("title")
@@ -284,15 +310,26 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
       var extents = brush_extends();
       var extent = extents[d] !== null ? [me.h - extents[d][1], me.h - extents[d][0]] : null;
 
-      var pd = props.params_def[d];
-      if (pd.parallel_plot_inverted) {
-        pd.parallel_plot_inverted = false;
+      if (me.state.invert.has(d)) {
+        me.setState(function(prevState, props) {
+          var newInvert = new Set(prevState.invert);
+          newInvert.delete(d);
+          return {
+            invert: newInvert
+          };
+        });
         me.setScaleRange(d);
         div.selectAll("." + style.label)
           .filter(function(p) { return p == d; })
           .style("text-decoration", null);
       } else {
-        pd.parallel_plot_inverted = true;
+        me.setState(function(prevState, props) {
+          var newInvert = new Set(prevState.invert);
+          newInvert.add(d);
+          return {
+            invert: newInvert
+          };
+        });
         me.setScaleRange(d);
         div.selectAll("." + style.label)
           .filter(function(p) { return p == d; })
@@ -368,7 +405,9 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
 
     // Handles a brush event, toggling the display of foreground lines.
     function brush() {
-      me.props.context_menu_ref.current.hide();
+      if (me.props.context_menu_ref !== undefined) {
+        me.props.context_menu_ref.current.hide();
+      }
       brush_count++;
       var extents = brush_extends();
       var actives = me.dimensions.filter(function(p) { return extents[p] !== null; });
@@ -425,7 +464,7 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
 
       props.rows['selected'].set(selected);
     }
-    this.debounced_brush = _.throttle(brush, 75);
+    this.debounced_brush = _.throttle(brush.bind(this), 75);
 
     props.rows['selected'].on_change(function(selected) {
       // Render selected lines
@@ -554,8 +593,13 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
     function remove_axis(d) {
       var pd = props.params_def[d];
       if (pd !== undefined) {
-        pd.parallel_plot_order = -1;
-        pd.__url_state__.set('order', -1);
+        me.setState(function(prevState, props) {
+          var newHide = new Set(prevState.hide);
+          newHide.add(d);
+          return {
+            hide: newHide
+          };
+        });
       }
       var g = svgg.selectAll(".dimension");
       me.dimensions = _.difference(me.dimensions, [d]);
@@ -572,9 +616,8 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
   }
 
   setScaleRange(k: string) {
-    var pd = this.props.params_def[k];
     var range = [this.h, 0];
-    if (pd.parallel_plot_inverted) {
+    if (this.state.invert.has(k)) {
       range = [0, this.h];
     }
     this.yscale[k].range(range);
@@ -586,7 +629,7 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
       return null;
     }
     var range = [this.h, 0];
-    if (pd.parallel_plot_inverted) {
+    if (this.state.invert.has(k)) {
       range = [0, this.h];
     }
     var scale = pd.create_d3_scale();

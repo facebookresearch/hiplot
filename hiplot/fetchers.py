@@ -47,10 +47,12 @@ class MultipleFetcher:
 def demo_change_column_properties() -> hip.Experiment:
     data = [{"param": 1, "loss": 10, "hidden_field": "value1", "c": "red"}, {"param": 2, "loss": 5, "hidden_field": "value2", "c": "black"}]
     exp = hip.Experiment.from_iterable(data)
-    exp.parameters_definition["hidden_field"].parallel_plot_order = -1  # Hide
     exp.parameters_definition["c"].colors = {"red": "rgb(255, 0, 0)", "black": "rgb(0, 0, 0)"}
-    exp.parameters_definition["c"].parallel_plot_order = 0  # first column
-    exp.parameters_definition["loss"].type = "numericlog"
+    exp.parameters_definition["loss"].type = hip.ValueType.NUMERIC_LOG
+    exp.display_data(hip.Displays.PARALLEL_PLOT).update({
+        'hide': ['hidden_field'],   # This column won't appear in the parallel plot
+        'order': ['c']              # Column `c` will be displayed first the in parallel plot
+    })
     return exp
 
 
@@ -62,7 +64,13 @@ def demo_basic_usage() -> hip.Experiment:
 
 
 def demo_line_xy() -> hip.Experiment:
-    exp = hip.Experiment().set_line_xy(x='generation', y='loss')
+    exp = hip.Experiment()
+    exp.display_data(hip.Displays.XY).update({
+        'axis_x': 'generation',
+        'axis_y': 'loss',
+        'lines_thickness': 1.0, # Customize lines thickness. When below 0, the dots are not connected
+        'lines_opacity': 1.0,   # Decrease this value if you have too many lines overlapping
+    })
     for i in range(200):
         dp = hip.Datapoint(
             uid=str(i),
@@ -77,8 +85,6 @@ def demo_line_xy() -> hip.Experiment:
             dp.values['loss'] += from_parent.values['loss']  # type: ignore
             dp.values['param'] *= from_parent.values['param']  # type: ignore
         exp.datapoints.append(dp)
-    exp.line_display.lines_thickness = 1.0  # Customize lines thickness. When below 0, the dots are not connected
-    exp.line_display.lines_opacity = 1.0  # Decrease this value if you have too many lines overlapping
     return exp
 
 
@@ -86,7 +92,11 @@ def demo_bug_uid() -> hip.Experiment:
     return hip.Experiment.from_iterable([{'a': 1, 'b': 2, 'uid': 50.0}, {'a': 2, 'b': 3, 'uid': 49.33}])
 
 def demo(n: int = 100) -> hip.Experiment:
-    xp = hip.Experiment().set_line_xy("time", "exp_metric")
+    xp = hip.Experiment()
+    xp.display_data(hip.Displays.XY).update({
+        'axis_x': 'time',
+        'axis_y': 'exp_metric',
+    })
 
     # Some fake PBT-ish data
     def fake_params() -> Dict[str, hip.DisplayableType]:
@@ -146,8 +156,8 @@ def demo(n: int = 100) -> hip.Experiment:
             parent = random.choice(xp.datapoints[-10:])
             current_pop.append(dict(uid=f"continue{continue_num}", params=fake_params(), last_ckpt_uid=parent.uid))
     xp.parameters_definition["c"].colors = {"red": "rgb(255, 0, 0)", "green": "rgb(0, 255, 0)", "black": "rgb(0, 0, 0)"}
-    xp.parameters_definition["force_numericlog"].type = "numericlog"
-    xp.parameters_definition["pctile"].type = "numericpercentile"
+    xp.parameters_definition["force_numericlog"].type = hip.ValueType.NUMERIC_LOG
+    xp.parameters_definition["pctile"].type = hip.ValueType.NUMERIC_PERCENTILE
     return xp
 
 README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
@@ -262,9 +272,10 @@ class Wav2letterLoader:
 '''
         PERF_PREFIX = 'perf_'
         lines = file.read_text().split('\n')
-        assert len(lines) >= 3 and lines[-1] == '', lines
         metrics: List[Dict[str, Any]] = []
-        for _, l in enumerate(lines[1:-1]):
+        for _, l in enumerate(lines[1:]):
+            if l == '':
+                continue
             epoch_metrics: Dict[str, Any] = {}
             for name, val in zip(lines[0].split()[1:], l.split()):
                 name = name.replace('/checkpoint/antares/datasets/librispeech/lists/', '')

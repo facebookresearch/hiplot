@@ -135,19 +135,10 @@ export interface HiPlotValueDef {
     parallel_plot_inverted: boolean;
 };
 
-export interface HiPlotGraphConfig {
-    axis_x: string | null;
-    axis_y: string | null;
-    lines_thickness: number;
-    lines_opacity: number;
-    dots_thickness: number;
-    dots_opacity: number;
-};
-
 export interface HiPlotExperiment {
     datapoints: Array<Datapoint>,
     parameters_definition: {[key: string]: HiPlotValueDef},
-    line_display: HiPlotGraphConfig,
+    _displays: {[key: string]: {[key2: string]: any}},
 }
 
 export enum HiPlotLoadStatus {

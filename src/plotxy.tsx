@@ -8,14 +8,19 @@
 import $ from "jquery";
 import * as d3 from "d3";
 
-import { WatchedProperty, HiPlotGraphConfig } from "./types";
+import { WatchedProperty } from "./types";
 import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
-import { HiPlotData } from "./plugin";
+import { HiPlotPluginData } from "./plugin";
 import React from "react";
 import { ResizableH } from "./lib/resizable";
 import _ from "underscore";
+
+interface PlotXYProps extends HiPlotPluginData {
+  name: string;
+  data: any;
+};
 
 interface PlotXYState {
   width: number,
@@ -23,31 +28,60 @@ interface PlotXYState {
   enabled: boolean,
 };
 
-export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
+export interface HiPlotGraphConfig {
+  axis_x: string | null;
+  axis_y: string | null;
+  lines_thickness: number;
+  lines_opacity: number;
+  dots_thickness: number;
+  dots_opacity: number;
+};
+
+export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   on_resize: () => void = null;
   params_def: ParamDefMap;
   svg: any;
   clear_canvas: () => void;
   axis_x = new WatchedProperty('axis_x');
   axis_y = new WatchedProperty('axis_y');
-  experiment_provided_config: HiPlotGraphConfig;
+  config: HiPlotGraphConfig;
   root_ref: React.RefObject<HTMLDivElement> = React.createRef();
   canvas_lines_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
   canvas_highlighted_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
 
-  constructor(props: HiPlotData) {
+  constructor(props: PlotXYProps) {
     super(props);
+    let height: number;
+    if (props.data.height) {
+      height = props.data.height;
+    } else if (props.experiment._displays[props.name] && props.experiment._displays[props.name].height) {
+      height = props.experiment._displays[props.name].height;
+    } else {
+      height = d3.min([d3.max([document.body.clientHeight-540, 240]), 500]);
+    }
     this.state = {
       width: document.body.clientWidth,
-      height: d3.min([d3.max([document.body.clientHeight-540, 240]), 500]),
+      height: height,
       enabled: false,
     };
+  }
+  static defaultProps = {
+      name: "xy",
+      data: {},
   }
   componentDidMount() {
     $(window).on("resize", this.onWindowResize);
     var me = this;
     var props = this.props;
-    me.experiment_provided_config = props.experiment.line_display;
+    me.config = {
+      axis_x: null,
+      axis_y: null,
+      lines_thickness: 1.2,
+      lines_opacity: null,
+      dots_thickness: 1.4,
+      dots_opacity: null
+    };
+    Object.assign(me.config, props.experiment._displays[this.props.name]);
     me.params_def = props.params_def;
 
     // Load default X/Y axis
@@ -60,26 +94,28 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
             props.url_state.set(axis.name, v);
         }, this);
     }
-    init_line_display_axis(this.axis_x, me.experiment_provided_config.axis_x);
-    init_line_display_axis(this.axis_y, me.experiment_provided_config.axis_y);
+    init_line_display_axis(this.axis_x, me.config.axis_x);
+    init_line_display_axis(this.axis_y, me.config.axis_y);
 
-    props.context_menu_ref.current.addCallback(function(column, cm) {
-      var contextmenu = $(cm);
-      contextmenu.append($('<div class="dropdown-divider"></div>'));
-      contextmenu.append($('<h6 class="dropdown-header">XY plot</h6>'));
-      [me.axis_x, me.axis_y].forEach(function(dat, index) {
-        var label = "Set as " + ['X', 'Y'][index] + ' axis';
-        var option = $('<a class="dropdown-item" href="#">').text(label);
-        if (dat.get() == column) {
-          option.addClass('disabled').css('pointer-events', 'none');
-        }
-        option.click(function(event) {
-          dat.set(column);
-          event.preventDefault();
+    if (this.props.context_menu_ref !== undefined) {
+      props.context_menu_ref.current.addCallback(function(column, cm) {
+        var contextmenu = $(cm);
+        contextmenu.append($('<div class="dropdown-divider"></div>'));
+        contextmenu.append($(`<h6 class="dropdown-header">${me.props.name}</h6>`));
+        [me.axis_x, me.axis_y].forEach(function(dat, index) {
+          var label = "Set as " + ['X', 'Y'][index] + ' axis';
+          var option = $('<a class="dropdown-item" href="#">').text(label);
+          if (dat.get() == column) {
+            option.addClass('disabled').css('pointer-events', 'none');
+          }
+          option.click(function(event) {
+            dat.set(column);
+            event.preventDefault();
+          });
+          contextmenu.append(option);
         });
-        contextmenu.append(option);
-      });
-    }, me);
+      }, me);
+    }
 
     var div = d3.select(this.root_ref.current);
     me.svg = div.select("svg");
@@ -209,7 +245,6 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
 
       function moved() {
         d3.event.preventDefault();
-        // currently_displayed
         var closest = null;
         var closest_dist = null;
         $.each(currently_displayed, function(_, dp) {
@@ -294,20 +329,19 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
         ctx.fill();
       }
     };
-
-    props.rows['all'].on_change(function(new_data) {
-        recompute_scale();
-    }, this);
     
     // Render at the same pace as parallel plot
-    var xp_config = props.experiment.line_display;
+    var xp_config = this.config;
     function render_new_rows(new_rows) {
+      var area = me.state.height * me.state.width / 400000;
+      var lines_opacity = xp_config.lines_opacity ? xp_config.lines_opacity : d3.min([3 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
+      var dots_opacity = xp_config.dots_opacity ? xp_config.dots_opacity : d3.min([4 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
       new_rows.forEach(function(dp) {
         var call_render = function() {
           render_dp(dp, graph_lines, {
-            'lines_color': props.get_color_for_row(dp, xp_config.lines_opacity),
+            'lines_color': props.get_color_for_row(dp, lines_opacity),
             'lines_width': xp_config.lines_thickness,
-            'dots_color': props.get_color_for_row(dp, xp_config.dots_opacity),
+            'dots_color': props.get_color_for_row(dp, dots_opacity),
             'dots_thickness': xp_config.dots_thickness,
             'remember': true,
           });
@@ -318,7 +352,14 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
         }
       });
     }
-    props.rows['rendered'].on_append(render_new_rows, this);
+    props.rows['all'].on_change(function(new_data) {
+        recompute_scale();
+        render_new_rows(props.rows['selected'].get());
+    }, this);
+    props.rows['selected'].on_change(function(all_rows) {
+      me.clear_canvas();
+      render_new_rows(all_rows);
+    }.bind(this), this);
     render_new_rows(props.rows['selected'].get());
 
     this.clear_canvas = function() {
@@ -327,12 +368,6 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
       currently_displayed = [];
       rerender_all_points = [];
     };
-    // Draw selected
-    props.rows['rendered'].on_change(function(new_rows) {
-      if (new_rows.length == 0) {
-        me.clear_canvas();
-      }
-    }, this);
 
     // Draw highlights
     props.rows['highlighted'].on_change(function(highlighted) {
@@ -352,9 +387,9 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
         while (dp !== undefined) {
           var color = props.get_color_for_row(dp, 1.0).split(',');
           render_dp(dp, highlights, {
-            'lines_color': [color[0], color[1], color[2], me.experiment_provided_config.lines_opacity + ')'].join(','),
+            'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
             'lines_width': 4,
-            'dots_color': [color[0], color[1], color[2], me.experiment_provided_config.dots_opacity + ')'].join(','),
+            'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
             'dots_thickness': 5,
           });
           if (dp.from_uid === null) {
@@ -390,6 +425,7 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
     update_axis();
     this.on_resize = _.throttle(function() {
       recompute_scale();
+      me.clear_canvas();
       render_new_rows(props.rows['selected'].get());
     }, 75);
   }
@@ -422,7 +458,9 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
     this.axis_x.off(this);
     this.axis_y.off(this);
     this.props.rows.off(this);
-    this.props.context_menu_ref.current.removeCallbacks(this);
+    if (this.props.context_menu_ref !== undefined) {
+      this.props.context_menu_ref.current.removeCallbacks(this);
+    }
     $(window).off("resize", this.onWindowResize);
   };
   componentDidUpdate(prevProps, prevState) {
@@ -431,5 +469,6 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
           this.on_resize();
         }
     }
+    this.props.data.height = this.state.height;
   }
 }

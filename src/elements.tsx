@@ -9,7 +9,7 @@
 import style from "./elements.css";
 import React from "react";
 import { HiPlotLoadStatus, URL_LOAD_URI } from "./types";
-import { HiPlotData } from "./plugin";
+import { HiPlotPluginData } from "./plugin";
 import { RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
 
 //@ts-ignore
@@ -88,7 +88,7 @@ export class RunsSelectionTextArea extends React.Component<Props, State> {
 }
 
 
-interface HeaderBarProps extends HiPlotData {
+interface HeaderBarProps extends HiPlotPluginData {
     onRequestLoadExperiment?: (uri: string) => void;
     onRequestRefreshExperiment?: () => void;
     loadStatus: HiPlotLoadStatus;
@@ -122,21 +122,24 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                 />
             }
         
-            <div className="col-md-8">
             {this.props.loadStatus == HiPlotLoadStatus.Loaded && !this.state.isTextareaFocused && 
                 <React.Fragment>
-                    <RestoreDataBtn rows={this.props.rows} />
-                    <KeepDataBtn rows={this.props.rows} />
-                    <ExcludeDataBtn rows={this.props.rows} />
-                    {this.props.onRequestRefreshExperiment != null &&
-                        <button title="Refresh + restore data removed" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
-                    }
-                    <ExportDataCSVBtn rows={this.props.rows} />
-                    {/* TODO: Selected count stats */}
-                    <div style={{clear:'both'}}></div>
+                    <div className="col-md-4">
+                        <RestoreDataBtn rows={this.props.rows} />
+                        <KeepDataBtn rows={this.props.rows} />
+                        <ExcludeDataBtn rows={this.props.rows} />
+                        {this.props.onRequestRefreshExperiment != null &&
+                            <button title="Refresh + restore data removed" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
+                        }
+                        <ExportDataCSVBtn rows={this.props.rows} />
+                        {/* TODO: Selected count stats */}
+                        <div style={{clear:'both'}}></div>
+                    </div>
+                    <div className="col-md-4">
+                        selected/total
+                    </div>
                 </React.Fragment>
             }
-            </div>
         </div></div>);
     }
 };

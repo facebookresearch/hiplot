@@ -32,8 +32,6 @@ export interface ParamDef {
     numeric: boolean,
     distinct_values: Array<any>,
     colorScheme: (value: any, alpha: number) => string,
-    parallel_plot_order: number,
-    parallel_plot_inverted: boolean,
     colors: object,
     special_values: Array<any>,
     type_options: Array<ParamType>,
@@ -216,8 +214,6 @@ export function infertypes(url_states: State, table: Array<Datapoint>, hints): P
             'numeric': numeric,
             'distinct_values': distinct_values,
             'colorScheme': colorScheme,
-            'parallel_plot_order': parseFloat(url_state.get('order', 0.5)),
-            'parallel_plot_inverted': false,
             'colors': hint !== undefined ? hint.colors : null,
             'special_values': special_values,
             'type_options': [ParamType.CATEGORICAL],
@@ -230,21 +226,6 @@ export function infertypes(url_states: State, table: Array<Datapoint>, hints): P
                 info.type_options.push(ParamType.NUMERICLOG);
             }
             info.type_options.push(ParamType.NUMERICPERCENTILE);
-        }
-        // Don't display if we have only 1 value
-        if (special_values.length + distinct_values.length <= 1) {
-            info.parallel_plot_order = -1;
-        }
-        if (categorical && distinct_values.length > 80) {
-            info.parallel_plot_order = -1;
-        }
-        if (hint !== undefined) {
-            if (hint.parallel_plot_order !== null) {
-                info.parallel_plot_order = hint.parallel_plot_order;
-            }
-            if (hint.parallel_plot_inverted !== null) {
-                info.parallel_plot_inverted = hint.parallel_plot_inverted;
-            }
         }
         return info;
     }
