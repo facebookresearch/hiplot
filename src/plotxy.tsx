@@ -12,10 +12,15 @@ import { WatchedProperty, HiPlotGraphConfig } from "./types";
 import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
-import { HiPlotData } from "./plugin";
+import { HiPlotPluginData } from "./plugin";
 import React from "react";
 import { ResizableH } from "./lib/resizable";
 import _ from "underscore";
+
+interface PlotXYProps extends HiPlotPluginData {
+  name: string;
+  data: any;
+};
 
 interface PlotXYState {
   width: number,
@@ -23,7 +28,7 @@ interface PlotXYState {
   enabled: boolean,
 };
 
-export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
+export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   on_resize: () => void = null;
   params_def: ParamDefMap;
   svg: any;
@@ -35,13 +40,17 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
   canvas_lines_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
   canvas_highlighted_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
 
-  constructor(props: HiPlotData) {
+  constructor(props: PlotXYProps) {
     super(props);
     this.state = {
       width: document.body.clientWidth,
-      height: d3.min([d3.max([document.body.clientHeight-540, 240]), 500]),
+      height: props.data.height ? props.data.height : d3.min([d3.max([document.body.clientHeight-540, 240]), 500]),
       enabled: false,
     };
+  }
+  static defaultProps = {
+      name: "XY Plot",
+      data: {},
   }
   componentDidMount() {
     $(window).on("resize", this.onWindowResize);
@@ -67,7 +76,7 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
       props.context_menu_ref.current.addCallback(function(column, cm) {
         var contextmenu = $(cm);
         contextmenu.append($('<div class="dropdown-divider"></div>'));
-        contextmenu.append($('<h6 class="dropdown-header">XY plot</h6>'));
+        contextmenu.append($(`<h6 class="dropdown-header">${me.props.name}</h6>`));
         [me.axis_x, me.axis_y].forEach(function(dat, index) {
           var label = "Set as " + ['X', 'Y'][index] + ' axis';
           var option = $('<a class="dropdown-item" href="#">').text(label);
@@ -295,10 +304,6 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
         ctx.fill();
       }
     };
-
-    props.rows['all'].on_change(function(new_data) {
-        recompute_scale();
-    }, this);
     
     // Render at the same pace as parallel plot
     var xp_config = props.experiment.line_display;
@@ -306,7 +311,6 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
       var area = me.state.height * me.state.width / 400000;
       var lines_opacity = xp_config.lines_opacity ? xp_config.lines_opacity : d3.min([3 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
       var dots_opacity = xp_config.dots_opacity ? xp_config.dots_opacity : d3.min([4 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
-      console.log(area, area / Math.pow(props.rows.selected.get().length, 0.3), lines_opacity);
       new_rows.forEach(function(dp) {
         var call_render = function() {
           render_dp(dp, graph_lines, {
@@ -323,6 +327,10 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
         }
       });
     }
+    props.rows['all'].on_change(function(new_data) {
+        recompute_scale();
+        render_new_rows(props.rows['selected'].get());
+    }, this);
     props.rows['selected'].on_change(function(all_rows) {
       me.clear_canvas();
       render_new_rows(all_rows);
@@ -436,5 +444,6 @@ export class PlotXY extends React.Component<HiPlotData, PlotXYState> {
           this.on_resize();
         }
     }
+    this.props.data.height = this.state.height;
   }
 }

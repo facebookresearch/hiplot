@@ -17,19 +17,19 @@ dtReorder(window, $);
 import { Datapoint } from "./types";
 //@ts-ignore
 import style from "./hiplot.css";
-import { HiPlotData } from "./plugin";
+import { HiPlotPluginData } from "./plugin";
 import _ from "underscore";
 
 interface RowsDisplayTableState {
 };
 
-export class RowsDisplayTable extends React.Component<HiPlotData, RowsDisplayTableState> {
+export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisplayTableState> {
     table_ref: React.RefObject<HTMLTableElement> = React.createRef();
     dt = null;
     dom: JQuery;
     ordered_cols: Array<string> = [];
     empty: boolean;
-    constructor(props: HiPlotData) {
+    constructor(props: HiPlotPluginData) {
         super(props);
         this.state = {};
     }

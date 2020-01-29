@@ -9,7 +9,7 @@
 import style from "./elements.css";
 import React from "react";
 import { HiPlotLoadStatus, URL_LOAD_URI } from "./types";
-import { HiPlotData } from "./plugin";
+import { HiPlotPluginData } from "./plugin";
 import { RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
 
 //@ts-ignore
@@ -88,7 +88,7 @@ export class RunsSelectionTextArea extends React.Component<Props, State> {
 }
 
 
-interface HeaderBarProps extends HiPlotData {
+interface HeaderBarProps extends HiPlotPluginData {
     onRequestLoadExperiment?: (uri: string) => void;
     onRequestRefreshExperiment?: () => void;
     loadStatus: HiPlotLoadStatus;

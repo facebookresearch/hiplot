@@ -13,11 +13,11 @@ import React from "react";
 import * as d3 from "d3";
 import * as _ from 'underscore';
 
-import { WatchedProperty, AllDatasets, Datapoint, ParamType } from "./types";
+import { WatchedProperty, AllDatasets, Datapoint } from "./types";
 import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
-import { HiPlotData } from "./plugin";
+import { HiPlotPluginData } from "./plugin";
 import { ResizableH } from "./lib/resizable";
 
 
@@ -34,7 +34,11 @@ interface ParallelPlotState {
   width: number;
 };
 
-export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState> {
+interface ParallelPlotData extends HiPlotPluginData {
+  data: any;
+};
+
+export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlotState> {
   on_resize: () => void = null;
   on_unmount: Array<() => void> = [];
   m = [75, 0, 10, 0]; // Margins
@@ -63,14 +67,16 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
   yscale: StringMapping<any> = {}; // d3.scale
   axis: any; // d3.scale
   d3brush = d3.brushY();
-  constructor(props: HiPlotData) {
+  constructor(props: ParallelPlotData) {
     super(props);
     this.state = {
-      height: 600,
+      height: props.data.height ? props.data.height : 600,
       width: document.body.clientWidth,
     };
   }
-
+  static defaultProps = {
+    data: {}
+  }
   componentWillUnmount() {
     this.svg.selectAll("*").remove();
     $(window).off("resize", this.onWindowResize);
@@ -85,6 +91,7 @@ export class ParallelPlot extends React.Component<HiPlotData, ParallelPlotState>
           this.on_resize();
         }
     }
+    this.props.data.height = this.state.height;
   }
   onResizeH(height: number): void {
     this.setState({height: height});

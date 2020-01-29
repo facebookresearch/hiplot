@@ -21,7 +21,7 @@ import { ParallelPlot } from "./parallel";
 import { PlotXY } from "./plotxy";
 import { SelectedCountProgressBar } from "./controls";
 import { ErrorDisplay, HeaderBar } from "./elements";
-import { HiPlotData } from "./plugin";
+import { HiPlotPluginData } from "./plugin";
 
 //@ts-ignore
 import LogoSVG from "../hiplot/static/logo.svg";
@@ -33,13 +33,14 @@ import { ContextMenu } from "./contextmenu";
 export { PlotXY } from "./plotxy";
 export { ParallelPlot } from "./parallel";
 export { RowsDisplayTable } from "./rowsdisplaytable";
-export { HiPlotData } from "./plugin";
+export { HiPlotPluginData } from "./plugin";
 export { Datapoint, HiPlotExperiment, AllDatasets, HiPlotLoadStatus } from "./types";
 
 
 interface HiPlotComponentProps {
     experiment: HiPlotExperiment | null;
     is_webserver: boolean;
+    plugins: Array<(plugin_data: HiPlotPluginData) => JSX.Element>;
 };
 
 interface HiPlotComponentState {
@@ -49,7 +50,7 @@ interface HiPlotComponentState {
     error: string;
 }
 
-function make_hiplot_data(): HiPlotData {
+function make_hiplot_data(): HiPlotPluginData {
     return {
         params_def: {},
         rows: new AllDatasets(),
@@ -74,7 +75,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
 
     table: RowsDisplayTable = null;
 
-    data: HiPlotData = make_hiplot_data();
+    data: HiPlotPluginData = make_hiplot_data();
 
     constructor(props: HiPlotComponentProps) {
         super(props);
@@ -305,9 +306,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             <ContextMenu ref={this.data.context_menu_ref}/>
             {this.state.loadStatus == HiPlotLoadStatus.Loaded &&
             <div>
-                <ParallelPlot {...this.data} />
-                <PlotXY {...this.data} />
-                <RowsDisplayTable {...this.data} />
+                {this.props.plugins.map((render_plugin) => render_plugin(this.data))}
             </div>
             }
             </div>
@@ -353,9 +352,16 @@ class DocAndCredits extends React.Component {
 };
 
 export function hiplot_setup(element: HTMLElement, extra?: object) {
+    var xydata = {};
+    var pplotdata = {};
     var props: HiPlotComponentProps = {
         experiment: null,
         is_webserver: true,
+        plugins: [
+            (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />,
+            (plugin_data: HiPlotPluginData) => <PlotXY data={xydata} {...plugin_data} />,
+            (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />,
+        ]
     };
     if (extra !== undefined) {
         Object.assign(props, extra);

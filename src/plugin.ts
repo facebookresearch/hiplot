@@ -12,7 +12,7 @@ import { ContextMenu } from "./contextmenu";
 import { State } from "./lib/savedstate";
 
 
-export interface HiPlotData {
+export interface HiPlotPluginData {
     experiment: HiPlotExperiment;
     params_def: ParamDefMap,
     rows: AllDatasets,
