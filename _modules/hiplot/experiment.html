@@ -36,6 +36,7 @@
 <span class="c1"># LICENSE file in the root directory of this source tree.</span>
 
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Set</span>
 
@@ -64,35 +65,43 @@
     <span class="k">def</span> <span class="nf">_asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
 
-<span class="k">class</span> <span class="nc">ValueDef</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ValueType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">CATEGORICAL</span> <span class="o">=</span> <span class="s1">&#39;categorical&#39;</span>
     <span class="n">NUMERIC</span> <span class="o">=</span> <span class="s1">&#39;numeric&#39;</span>
     <span class="n">NUMERIC_LOG</span> <span class="o">=</span> <span class="s1">&#39;numericlog&#39;</span>
     <span class="n">NUMERIC_PERCENTILE</span> <span class="o">=</span> <span class="s1">&#39;numericpercentile&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parallel_plot_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parallel_plot_inverted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="k">class</span> <span class="nc">Displays</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">PARALLEL_PLOT</span> <span class="o">=</span> <span class="s1">&#39;parallel_plot&#39;</span>
+    <span class="n">XY</span> <span class="o">=</span> <span class="s1">&#39;xy&#39;</span>
+    <span class="n">XY2</span> <span class="o">=</span> <span class="s1">&#39;xy2&#39;</span>
+    <span class="n">TABLE</span> <span class="o">=</span> <span class="s1">&#39;table&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">ValueDef</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ValueType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parallel_plot_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parallel_plot_inverted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite the generated values for a column:</span>
 <span class="sd">            - type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...</span>
 <span class="sd">            - colors: mapping from value to color in the format &quot;rgb(R, G, B)&quot; or &quot;hsl(H, S, L)&quot;</span>
-<span class="sd">            - parallel_plot_order: column ordering if &gt;= 0.</span>
-<span class="sd">                If &lt; 0, the column is hidden</span>
-<span class="sd">            - parallel_plot_inverted: invert the column values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="n">colors</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parallel_plot_order</span> <span class="o">=</span> <span class="n">parallel_plot_order</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parallel_plot_inverted</span> <span class="o">=</span> <span class="n">parallel_plot_inverted</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid value type: </span><span class="si">{self.type}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;rgb(&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;hsl(&quot;</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">&#39;Invalid color </span><span class="si">{v}</span><span class="s1"> for value </span><span class="si">{k}</span><span class="s1">. Expected color to start with either &quot;rgb(&quot; or &quot;hsl(&quot;&#39;</span>
                     <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;colors&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="p">,</span>
+        <span class="p">}</span>
 
 
 <span class="k">class</span> <span class="nc">Datapoint</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
@@ -111,26 +120,6 @@
                 <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Datapoint </span><span class="si">{self.uid}</span><span class="s1"> contains a value for &quot;</span><span class="si">{reserved_kw}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">LineDisplay</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Settings for the XY graph (optional)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-        <span class="n">axis_x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">axis_y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">lines_thickness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">,</span>
-        <span class="n">lines_opacity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
-        <span class="n">dots_thickness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span>
-        <span class="n">dots_opacity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axis_x</span> <span class="o">=</span> <span class="n">axis_x</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">axis_y</span> <span class="o">=</span> <span class="n">axis_y</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lines_thickness</span> <span class="o">=</span> <span class="n">lines_thickness</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lines_opacity</span> <span class="o">=</span> <span class="n">lines_opacity</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dots_thickness</span> <span class="o">=</span> <span class="n">dots_thickness</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dots_opacity</span> <span class="o">=</span> <span class="n">dots_opacity</span>
-
-
 <div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../index.html#hiplot.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Object that can be rendered by HiPlot.</span>
@@ -138,7 +127,6 @@
 
 <span class="sd">    :ivar datapoints: All the measurements we have. One datapoint corresponds to one line in the parallel plot and to one line in the table.</span>
 <span class="sd">    :ivar parameters_definition: Characteristics of the columns (ordering, type, etc...)</span>
-<span class="sd">    :ivar line_display: Characteristics of the XY graph (lines thickness, initial x/y axis...)</span>
 
 <span class="sd">    :Example:</span>
 
@@ -149,18 +137,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
         <span class="n">datapoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">parameters_definition</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ValueDef</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">line_display</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LineDisplay</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">parameters_definition</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ValueDef</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span> <span class="o">=</span> <span class="n">datapoints</span> <span class="k">if</span> <span class="n">datapoints</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters_definition</span> <span class="o">=</span> <span class="n">parameters_definition</span> <span class="k">if</span> <span class="n">parameters_definition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">ValueDef</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">line_display</span> <span class="o">=</span> <span class="n">line_display</span> <span class="k">if</span> <span class="n">line_display</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">LineDisplay</span><span class="p">()</span>
-
-
-    <span class="k">def</span> <span class="nf">set_line_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_x</span> <span class="o">=</span> <span class="n">x</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_y</span> <span class="o">=</span> <span class="n">y</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_displays</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">Displays</span><span class="o">.</span><span class="n">TABLE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">Displays</span><span class="o">.</span><span class="n">XY</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="p">}</span>
 
 <div class="viewcode-block" id="Experiment.validate"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -184,12 +169,6 @@
             <span class="n">p</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="s1">&#39;Not a single datapoint&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">,</span> <span class="s1">&#39;from_uid&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dp</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">)):</span>
-                <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No datapoint has a value for line X axis </span><span class="si">{self.line_display.axis_x}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_y</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">,</span> <span class="s1">&#39;from_uid&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_y</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dp</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">)):</span>
-                <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No datapoint has a value for line Y axis </span><span class="si">{self.line_display.axis_y}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Experiment.display"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentDisplayed&quot;</span><span class="p">:</span>
@@ -218,8 +197,21 @@
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;datapoints&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">],</span>
             <span class="s2">&quot;parameters_definition&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters_definition</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-            <span class="s2">&quot;line_display&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">_asdict</span><span class="p">(),</span>
+            <span class="s2">&quot;_displays&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_displays</span><span class="p">,</span>
         <span class="p">}</span>
+
+<div class="viewcode-block" id="Experiment.remove_missing_parents"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.remove_missing_parents">[docs]</a>    <span class="k">def</span> <span class="nf">remove_missing_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets `from_uid` to None when set to a non-existing Datapoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">existing_dp</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">dp</span><span class="o">.</span><span class="n">uid</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dp</span><span class="o">.</span><span class="n">from_uid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing_dp</span><span class="p">:</span>
+                <span class="n">dp</span><span class="o">.</span><span class="n">from_uid</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">display_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">:</span> <span class="n">Displays</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_displays</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">{})</span>
 
 <div class="viewcode-block" id="Experiment.from_iterable"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.from_iterable">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_iterable</span><span class="p">(</span><span class="n">it</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
@@ -236,7 +228,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Experiment</span><span class="p">(</span>
             <span class="n">datapoints</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">Datapoint</span><span class="p">(</span><span class="n">uid</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)),</span> <span class="n">values</span><span class="o">=</span><span class="p">{</span><span class="n">mk</span><span class="p">:</span> <span class="n">mv</span> <span class="k">for</span> <span class="n">mk</span><span class="p">,</span> <span class="n">mv</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">mk</span> <span class="o">!=</span> <span class="s2">&quot;uid&quot;</span><span class="p">})</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
+                <span class="n">Datapoint</span><span class="p">(</span><span class="n">uid</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)),</span> <span class="n">from_uid</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;from_uid&quot;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="p">{</span><span class="n">mk</span><span class="p">:</span> <span class="n">mv</span> <span class="k">for</span> <span class="n">mk</span><span class="p">,</span> <span class="n">mv</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">mk</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="s2">&quot;from_uid&quot;</span><span class="p">]})</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="p">)</span></div>
 
@@ -255,9 +247,6 @@
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">subxp</span><span class="o">.</span><span class="n">datapoints</span>
             <span class="p">]</span>
-            <span class="k">if</span> <span class="n">xp</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">subxp</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">subxp</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">xp</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_x</span> <span class="o">=</span> <span class="n">subxp</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_x</span>
-                <span class="n">xp</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_y</span> <span class="o">=</span> <span class="n">subxp</span><span class="o">.</span><span class="n">line_display</span><span class="o">.</span><span class="n">axis_y</span>
             <span class="k">if</span> <span class="n">subxp</span><span class="o">.</span><span class="n">parameters_definition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">xp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subxp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">xp</span></div></div>
