@@ -50,7 +50,13 @@ HiPlot can also display a X/Y graph if enabled explicitely as below. To do so, w
 import hiplot as hip
 import random
 
-exp = hip.Experiment().set_line_xy(x='generation', y='loss')
+exp = hip.Experiment()
+exp.display_data(hip.Displays.XY).update({
+	'axis_x': 'generation',
+	'axis_y': 'loss',
+	'lines_thickness': 1.0, # Customize lines thickness. When below 0, the dots are not connected
+	'lines_opacity': 1.0,   # Decrease this value if you have too many lines overlapping
+})
 for i in range(100):
 	dp = hip.Datapoint(
 		uid=str(i),
@@ -65,8 +71,6 @@ for i in range(100):
 		dp.values['loss'] += from_parent.values['loss']
 		dp.values['param'] *= from_parent.values['param']
 	exp.datapoints.append(dp)
-exp.line_display.lines_thickness = 1.0  # Customize lines thickness. When below 0, the dots are not connected
-exp.line_display.lines_opacity = 1.0  # Decrease this value if you have too many lines overlapping
 exp.display()
 ```
 ![demo_line_xy](assets/demo_line_xy.png)
@@ -94,7 +98,7 @@ exp = hip.Experiment.from_iterable(data)
 exp.parameters_definition['hidden_field'].parallel_plot_order = -1  # Hide
 exp.parameters_definition['c'].colors = {'red': 'rgb(255, 0, 0)', 'black': 'rgb(0, 0, 0)'}
 exp.parameters_definition['c'].parallel_plot_order = 0  # first column
-exp.parameters_definition['loss'].type = 'numericlog'
+exp.parameters_definition["loss"].type = hip.ValueType.NUMERIC_LOG
 exp.display()
 ```
 ![demo_change_column_properties](assets/demo_change_column_properties.png)

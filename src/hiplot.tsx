@@ -306,7 +306,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             <ContextMenu ref={this.data.context_menu_ref}/>
             {this.state.loadStatus == HiPlotLoadStatus.Loaded &&
             <div>
-                {this.props.plugins.map((render_plugin) => render_plugin(this.data))}
+                {this.props.plugins.map((render_plugin, idx) => <React.Fragment key={idx}>{render_plugin(this.data)}</React.Fragment>)}
             </div>
             }
             </div>
@@ -359,7 +359,7 @@ export function hiplot_setup(element: HTMLElement, extra?: object) {
         is_webserver: true,
         plugins: [
             (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />,
-            (plugin_data: HiPlotPluginData) => <PlotXY data={xydata} {...plugin_data} />,
+            (plugin_data: HiPlotPluginData) => <PlotXY name={"xy"} data={xydata} {...plugin_data} />,
             (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />,
         ]
     };

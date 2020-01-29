@@ -3,6 +3,7 @@
 # LICENSE file in the root directory of this source tree.
 
 from abc import ABCMeta, abstractmethod
+from enum import Enum
 from collections import defaultdict
 from typing import Optional, List, Dict, Any, Iterable, Union, Callable, Set
 
@@ -31,13 +32,22 @@ class _DictSerializable:
     def _asdict(self) -> Dict[str, Any]:
         return self.__dict__
 
-class ValueDef(_DictSerializable):
+class ValueType(Enum):
     CATEGORICAL = 'categorical'
     NUMERIC = 'numeric'
     NUMERIC_LOG = 'numericlog'
     NUMERIC_PERCENTILE = 'numericpercentile'
 
-    def __init__(self, type: Optional[str] = None, colors: Optional[Dict[Any, str]] = None, parallel_plot_order: Optional[int] = None, parallel_plot_inverted: Optional[bool] = None) -> None:
+
+class Displays(Enum):
+    XY = 'xy'
+    XY2 = 'xy2'
+    PARALLEL_PLOT = 'parallel_plot'
+    TABLE = 'table'
+
+
+class ValueDef(_DictSerializable):
+    def __init__(self, type: Optional[ValueType] = None, colors: Optional[Dict[Any, str]] = None, parallel_plot_order: Optional[int] = None, parallel_plot_inverted: Optional[bool] = None) -> None:
         """
         Overwrite the generated values for a column:
             - type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
@@ -52,14 +62,20 @@ class ValueDef(_DictSerializable):
         self.parallel_plot_inverted = parallel_plot_inverted
 
     def validate(self) -> None:
-        if self.type is not None and not hasattr(type(self), self.type):
-            raise ExperimentValidationError(f"Invalid value type: {self.type}")
         if self.colors is not None:
             for k, v in self.colors.items():
                 if not v.startswith("rgb(") and not v.startswith("hsl("):
                     raise ExperimentValidationError(
                         f'Invalid color {v} for value {k}. Expected color to start with either "rgb(" or "hsl("'
                     )
+
+    def _asdict(self) -> Dict[str, Any]:
+        return {
+            "type": self.type.value if self.type is not None else None,
+            "colors": self.colors,
+            "parallel_plot_order": self.parallel_plot_order,
+            "parallel_plot_inverted": self.parallel_plot_inverted,
+        }
 
 
 class Datapoint(_DictSerializable):
@@ -78,26 +94,6 @@ class Datapoint(_DictSerializable):
                 raise ExperimentValidationError(f'Datapoint {self.uid} contains a value for "{reserved_kw}"')
 
 
-class LineDisplay(_DictSerializable):
-    """
-    Settings for the XY graph (optional)
-    """
-    def __init__(self,
-        axis_x: Optional[str] = None,
-        axis_y: Optional[str] = None,
-        lines_thickness: float = 1.2,
-        lines_opacity: Optional[float] = None,
-        dots_thickness: float = 1.4,
-        dots_opacity: Optional[float] = None,
-    ) -> None:
-        self.axis_x = axis_x
-        self.axis_y = axis_y
-        self.lines_thickness = lines_thickness
-        self.lines_opacity = lines_opacity
-        self.dots_thickness = dots_thickness
-        self.dots_opacity = dots_opacity
-
-
 class Experiment(_DictSerializable):
     """
     Object that can be rendered by HiPlot.
@@ -105,7 +101,6 @@ class Experiment(_DictSerializable):
 
     :ivar datapoints: All the measurements we have. One datapoint corresponds to one line in the parallel plot and to one line in the table.
     :ivar parameters_definition: Characteristics of the columns (ordering, type, etc...)
-    :ivar line_display: Characteristics of the XY graph (lines thickness, initial x/y axis...)
 
     :Example:
 
@@ -116,18 +111,15 @@ class Experiment(_DictSerializable):
     """
     def __init__(self,
         datapoints: Optional[List[Datapoint]] = None,
-        parameters_definition: Optional[Dict[str, ValueDef]] = None,
-        line_display: Optional[LineDisplay] = None
+        parameters_definition: Optional[Dict[str, ValueDef]] = None
     ) -> None:
         self.datapoints = datapoints if datapoints is not None else []
         self.parameters_definition = parameters_definition if parameters_definition is not None else defaultdict(ValueDef)
-        self.line_display = line_display if line_display is not None else LineDisplay()
-
-
-    def set_line_xy(self, x: str, y: str) -> "Experiment":
-        self.line_display.axis_x = x
-        self.line_display.axis_y = y
-        return self
+        self._displays: Dict[str, Any] = {
+            Displays.PARALLEL_PLOT.value: {},
+            Displays.TABLE.value: {},
+            Displays.XY.value: {},
+        }
 
     def validate(self) -> "Experiment":
         """
@@ -151,12 +143,6 @@ class Experiment(_DictSerializable):
             p.validate()
         if not self.datapoints:
             raise ExperimentValidationError('Not a single datapoint')
-        if self.line_display.axis_x is not None:
-            if self.line_display.axis_x not in ['uid', 'from_uid'] and all((self.line_display.axis_x not in dp.values for dp in self.datapoints)):
-                raise ExperimentValidationError(f'No datapoint has a value for line X axis {self.line_display.axis_x}')
-        if self.line_display.axis_y is not None:
-            if self.line_display.axis_y not in ['uid', 'from_uid'] and all((self.line_display.axis_y not in dp.values for dp in self.datapoints)):
-                raise ExperimentValidationError(f'No datapoint has a value for line Y axis {self.line_display.axis_y}')
         return self
 
     def display(self, force_full_width: bool = False) -> "ExperimentDisplayed":
@@ -185,8 +171,21 @@ class Experiment(_DictSerializable):
         return {
             "datapoints": [d._asdict() for d in self.datapoints],
             "parameters_definition": {k: v._asdict() for k, v in self.parameters_definition.items()},
-            "line_display": self.line_display._asdict(),
+            "_displays": self._displays,
         }
+
+    def remove_missing_parents(self) -> "Experiment":
+        """
+        Sets `from_uid` to None when set to a non-existing Datapoint.
+        """
+        existing_dp: Set[str] = set([dp.uid for dp in self.datapoints])
+        for dp in self.datapoints:
+            if dp.from_uid not in existing_dp:
+                dp.from_uid = None
+        return self
+
+    def display_data(self, plugin: Displays) -> Dict[str, Any]:
+        return self._displays.setdefault(plugin.value, {})
 
     @staticmethod
     def from_iterable(it: Iterable[Dict[str, Any]]) -> "Experiment":
@@ -203,7 +202,7 @@ class Experiment(_DictSerializable):
         """
         return Experiment(
             datapoints=[
-                Datapoint(uid=str(row.get("uid", k)), values={mk: mv for mk, mv in row.items() if mk != "uid"}) for k, row in enumerate(it)
+                Datapoint(uid=str(row.get("uid", k)), from_uid=row.get("from_uid"), values={mk: mv for mk, mv in row.items() if mk not in ["uid", "from_uid"]}) for k, row in enumerate(it)
             ]
         )
 
@@ -222,9 +221,6 @@ class Experiment(_DictSerializable):
                 )
                 for d in subxp.datapoints
             ]
-            if xp.line_display.axis_x is None and subxp.line_display.axis_x is not None and subxp.line_display.axis_y is not None:
-                xp.line_display.axis_x = subxp.line_display.axis_x
-                xp.line_display.axis_y = subxp.line_display.axis_y
             if subxp.parameters_definition is not None:
                 xp.parameters_definition.update(subxp.parameters_definition)
         return xp

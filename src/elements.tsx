@@ -122,21 +122,24 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                 />
             }
         
-            <div className="col-md-8">
             {this.props.loadStatus == HiPlotLoadStatus.Loaded && !this.state.isTextareaFocused && 
                 <React.Fragment>
-                    <RestoreDataBtn rows={this.props.rows} />
-                    <KeepDataBtn rows={this.props.rows} />
-                    <ExcludeDataBtn rows={this.props.rows} />
-                    {this.props.onRequestRefreshExperiment != null &&
-                        <button title="Refresh + restore data removed" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
-                    }
-                    <ExportDataCSVBtn rows={this.props.rows} />
-                    {/* TODO: Selected count stats */}
-                    <div style={{clear:'both'}}></div>
+                    <div className="col-md-4">
+                        <RestoreDataBtn rows={this.props.rows} />
+                        <KeepDataBtn rows={this.props.rows} />
+                        <ExcludeDataBtn rows={this.props.rows} />
+                        {this.props.onRequestRefreshExperiment != null &&
+                            <button title="Refresh + restore data removed" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
+                        }
+                        <ExportDataCSVBtn rows={this.props.rows} />
+                        {/* TODO: Selected count stats */}
+                        <div style={{clear:'both'}}></div>
+                    </div>
+                    <div className="col-md-4">
+                        selected/total
+                    </div>
                 </React.Fragment>
             }
-            </div>
         </div></div>);
     }
 };

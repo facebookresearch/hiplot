@@ -8,7 +8,7 @@
 import $ from "jquery";
 import * as d3 from "d3";
 
-import { WatchedProperty, HiPlotGraphConfig } from "./types";
+import { WatchedProperty } from "./types";
 import { ParamDefMap } from "./infertypes";
 //@ts-ignore
 import style from "./hiplot.css";
@@ -28,6 +28,15 @@ interface PlotXYState {
   enabled: boolean,
 };
 
+export interface HiPlotGraphConfig {
+  axis_x: string | null;
+  axis_y: string | null;
+  lines_thickness: number;
+  lines_opacity: number;
+  dots_thickness: number;
+  dots_opacity: number;
+};
+
 export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   on_resize: () => void = null;
   params_def: ParamDefMap;
@@ -35,28 +44,44 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   clear_canvas: () => void;
   axis_x = new WatchedProperty('axis_x');
   axis_y = new WatchedProperty('axis_y');
-  experiment_provided_config: HiPlotGraphConfig;
+  config: HiPlotGraphConfig;
   root_ref: React.RefObject<HTMLDivElement> = React.createRef();
   canvas_lines_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
   canvas_highlighted_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
 
   constructor(props: PlotXYProps) {
     super(props);
+    let height: number;
+    if (props.data.height) {
+      height = props.data.height;
+    } else if (props.experiment._displays[props.name] && props.experiment._displays[props.name].height) {
+      height = props.experiment._displays[props.name].height;
+    } else {
+      height = d3.min([d3.max([document.body.clientHeight-540, 240]), 500]);
+    }
     this.state = {
       width: document.body.clientWidth,
-      height: props.data.height ? props.data.height : d3.min([d3.max([document.body.clientHeight-540, 240]), 500]),
+      height: height,
       enabled: false,
     };
   }
   static defaultProps = {
-      name: "XY Plot",
+      name: "xy",
       data: {},
   }
   componentDidMount() {
     $(window).on("resize", this.onWindowResize);
     var me = this;
     var props = this.props;
-    me.experiment_provided_config = props.experiment.line_display;
+    me.config = {
+      axis_x: null,
+      axis_y: null,
+      lines_thickness: 1.2,
+      lines_opacity: null,
+      dots_thickness: 1.4,
+      dots_opacity: null
+    };
+    Object.assign(me.config, props.experiment._displays[this.props.name]);
     me.params_def = props.params_def;
 
     // Load default X/Y axis
@@ -69,8 +94,8 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
             props.url_state.set(axis.name, v);
         }, this);
     }
-    init_line_display_axis(this.axis_x, me.experiment_provided_config.axis_x);
-    init_line_display_axis(this.axis_y, me.experiment_provided_config.axis_y);
+    init_line_display_axis(this.axis_x, me.config.axis_x);
+    init_line_display_axis(this.axis_y, me.config.axis_y);
 
     if (this.props.context_menu_ref !== undefined) {
       props.context_menu_ref.current.addCallback(function(column, cm) {
@@ -306,7 +331,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     };
     
     // Render at the same pace as parallel plot
-    var xp_config = props.experiment.line_display;
+    var xp_config = this.config;
     function render_new_rows(new_rows) {
       var area = me.state.height * me.state.width / 400000;
       var lines_opacity = xp_config.lines_opacity ? xp_config.lines_opacity : d3.min([3 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
