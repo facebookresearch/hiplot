@@ -2,11 +2,45 @@
 Getting started
 ====================
 
+Installing
+-----------------------
 
->>> pip install hiplot
+Python version
+^^^^^^^^^^^^^^
+HiPlot requires python version 3.6 or newer (you can check your python version with :code:`python --version`)
 
-Option 1: In an ipython notebook
---------------------------------
+
+Python virtualenv
+^^^^^^^^^^^^^^^^^
+We recommend that you create a virtualenv for HiPlot, if you don't use one already.
+
+On Linux/MacOS
+"""""""""""""""""
+.. code-block:: bash
+
+    # Create a virtualenv
+    python3 -m venv venv_hiplot
+    # Activate it
+    . venv_hiplot/bin/activate
+
+On Windows
+""""""""""""""""""
+.. code-block:: bash
+
+    py -3 -m venv venv_hiplot
+    venv_hiplot\Scripts\activate
+
+
+Install HiPlot
+^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+
+    pip install hiplot
+
+
+Option 1: Use HiPlot in an ipython notebook
+--------------------------------------------
 
 
 .. code-block:: python
@@ -24,8 +58,8 @@ Option 1: In an ipython notebook
 
 .. _getStartedWebserver:
 
-Option 2: HiPlot webserver
---------------------------
+Option 2: Use HiPlot webserver
+-------------------------------
 
 >>> hiplot
 
