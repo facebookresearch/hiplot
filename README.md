@@ -73,7 +73,7 @@ for i in range(100):
 	exp.datapoints.append(dp)
 exp.display()
 ```
-![demo_line_xy](assets/demo_line_xy.png)
+![demo_line_xy](https://github.com/facebookresearch/hiplot/raw/master/assets/demo_line_xy.png)
 [see it live](https://facebookresearch.github.io/hiplot/_static/demo/demo_line_xy.html)
 
 #### Retrieve currently selected rows
@@ -101,7 +101,7 @@ exp.parameters_definition['c'].parallel_plot_order = 0  # first column
 exp.parameters_definition["loss"].type = hip.ValueType.NUMERIC_LOG
 exp.display()
 ```
-![demo_change_column_properties](assets/demo_change_column_properties.png)
+![demo_change_column_properties](https://github.com/facebookresearch/hiplot/raw/master/assets/demo_change_column_properties.png)
 [see it live](https://facebookresearch.github.io/hiplot/_static/demo/demo_change_column_properties.html)
 
 ## License
