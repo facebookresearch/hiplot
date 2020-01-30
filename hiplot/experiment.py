@@ -2,9 +2,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import csv
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 from collections import defaultdict
+from pathlib import Path
 from typing import Optional, List, Dict, Any, Iterable, Union, Callable, Set
 
 from .render import make_experiment_standalone_page
@@ -39,11 +41,10 @@ class ValueType(Enum):
     NUMERIC_PERCENTILE = 'numericpercentile'
 
 
-class Displays(Enum):
-    PARALLEL_PLOT = 'parallel_plot'
-    XY = 'xy'
-    XY2 = 'xy2'
-    TABLE = 'table'
+class Displays:
+    PARALLEL_PLOT = 'PARALLEL_PLOT'
+    XY = 'XY'
+    TABLE = 'TABLE'
 
 
 class ValueDef(_DictSerializable):
@@ -109,9 +110,9 @@ class Experiment(_DictSerializable):
         self.datapoints = datapoints if datapoints is not None else []
         self.parameters_definition = parameters_definition if parameters_definition is not None else defaultdict(ValueDef)
         self._displays: Dict[str, Dict[str, Any]] = {
-            Displays.PARALLEL_PLOT.value: {},
-            Displays.TABLE.value: {},
-            Displays.XY.value: {},
+            Displays.PARALLEL_PLOT: {},
+            Displays.TABLE: {},
+            Displays.XY: {},
         }
 
     def validate(self) -> "Experiment":
@@ -150,15 +151,42 @@ class Experiment(_DictSerializable):
         self.validate()
         return display_exp(self, force_full_width=force_full_width)
 
-    def to_html(self) -> str:
+    def to_html(self, file: Optional[Union[Path, str]] = None) -> str:
         """
         Returns the content of a standalone .html file that displays this experiment
         without any dependency to HiPlot server or static files.
+
+        :param file: Path to a file to write (optional)
+        :returns: A standalone HTML code to display this Experiment.
         """
         self.validate()
-        return make_experiment_standalone_page(options={
+        html = make_experiment_standalone_page(options={
             'experiment': self._asdict()
         })
+        if file is not None:
+            Path(file).write_text(html)
+        return html
+
+    def to_csv(self, file: Union[Path, str]) -> None:
+        """
+        Dumps this Experiment as a .csv file.
+        Information about display_data, parameters definition will be lost.
+
+        :param file: Path to a file to write
+        """
+        with Path(file).open("w") as csvfile:
+            fieldnames: Set[str] = set()
+            for dp in self.datapoints:
+                for f in dp.values.keys():
+                    fieldnames.add(f)
+            writer = csv.DictWriter(csvfile, fieldnames=["uid", "from_uid"] + sorted(list(fieldnames)))
+            writer.writeheader()
+            for dp in self.datapoints:
+                writer.writerow({
+                    **dp.values,
+                    "uid": dp.uid,
+                    "from_uid": dp.from_uid,
+                })
 
     def _asdict(self) -> Dict[str, Any]:
         return {
@@ -177,14 +205,26 @@ class Experiment(_DictSerializable):
                 dp.from_uid = None
         return self
 
-    def display_data(self, plugin: Displays) -> Dict[str, Any]:
-        return self._displays.setdefault(plugin.value, {})
+    def display_data(self, plugin: str) -> Dict[str, Any]:
+        """
+        Retrieve data dictionnary for a plugin, which can be modified.
+
+        :param plugin: Name of the plugin
+
+        :Example:
+
+        >>> exp.display_data(hip.Displays.XY).update({"axis_x": "time", "axis_y": "loss"})
+
+        """
+        return self._displays.setdefault(plugin, {})
 
     @staticmethod
     def from_iterable(it: Iterable[Dict[str, Any]]) -> "Experiment":
         """
         Creates a HiPlot experiment from an iterable/list of dictionnaries.
         This is the easiest way to generate an `hiplot.Experiment` object.
+
+        :param it: A list (or iterable) of dictionnaries
 
         :Example:
 
@@ -195,9 +235,22 @@ class Experiment(_DictSerializable):
         """
         return Experiment(
             datapoints=[
-                Datapoint(uid=str(row.get("uid", k)), from_uid=row.get("from_uid"), values={mk: mv for mk, mv in row.items() if mk not in ["uid", "from_uid"]}) for k, row in enumerate(it)
+                Datapoint(
+                    uid=str(row.get("uid", k)),
+                    from_uid=row.get("from_uid") if row.get("from_uid") != '' else None,
+                    values={mk: mv for mk, mv in row.items() if mk not in ["uid", "from_uid"]}) for k, row in enumerate(it)
             ]
         )
+
+    @staticmethod
+    def from_csv(file: Union[Path, str]) -> "Experiment":
+        """
+        Creates a HiPlot experiment from a CSV file.
+
+        :param file: CSV file path
+        """
+        with Path(file).open() as csvfile:
+            return Experiment.from_iterable(csv.DictReader(csvfile))
 
     @staticmethod
     def merge(xp_dict: Dict[str, "Experiment"]) -> "Experiment":

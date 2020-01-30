@@ -368,9 +368,9 @@ export function hiplot_setup(element: HTMLElement, extra?: object) {
         is_webserver: true,
         plugins: [
             // Names correspond to values of hip.Displays
-            {name: "parallel_plot", render: (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />},
-            {name: "xy", render: (plugin_data: HiPlotPluginData) => <PlotXY name={"xy"} data={xydata} {...plugin_data} />},
-            {name: "table", render: (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />},
+            {name: "PARALLEL_PLOT", render: (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />},
+            {name: "XY", render: (plugin_data: HiPlotPluginData) => <PlotXY name={"xy"} data={xydata} {...plugin_data} />},
+            {name: "TABLE", render: (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />},
         ]
     };
     if (extra !== undefined) {
