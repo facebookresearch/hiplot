@@ -135,13 +135,22 @@ venv_hiplot<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
 </div>
 <div class="section" id="install-hiplot">
 <h3>Install HiPlot<a class="headerlink" href="#install-hiplot" title="Permalink to this headline">¶</a></h3>
+<p>Within the activated environment, use the following command to install HiPlot:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install hiplot
 </pre></div>
 </div>
+<p>Congratulation, HiPlot is now ready to use! You can either:</p>
+<ul class="simple">
+<li><p>Use it to render python data in a notebook</p></li>
+<li><p>Or start it as a webserver to track, compare and visualize your experiments</p></li>
+</ul>
 </div>
 </div>
 <div class="section" id="option-1-use-hiplot-in-an-ipython-notebook">
 <h2>Option 1: Use HiPlot in an ipython notebook<a class="headerlink" href="#option-1-use-hiplot-in-an-ipython-notebook" title="Permalink to this headline">¶</a></h2>
+<p>Here we assume that we have a list of several datapoints.
+HiPlot can only render <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a> objects, so we create one with <a class="reference internal" href="py_reference.html#hiplot.Experiment.from_iterable" title="hiplot.Experiment.from_iterable"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment.from_iterable</span></code></a>.
+Once we have created this object, we can display it with <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment.display</span></code></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;SGD&#39;</span><span class="p">},</span>
     <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">},</span>

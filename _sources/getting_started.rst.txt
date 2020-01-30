@@ -34,14 +34,25 @@ On Windows
 Install HiPlot
 ^^^^^^^^^^^^^^^^^^^^
 
+Within the activated environment, use the following command to install HiPlot:
+
 .. code-block:: bash
 
     pip install hiplot
 
 
+Congratulation, HiPlot is now ready to use! You can either:
+
+* Use it to render python data in a notebook
+* Or start it as a webserver to track, compare and visualize your experiments
+
+
 Option 1: Use HiPlot in an ipython notebook
 --------------------------------------------
 
+Here we assume that we have a list of several datapoints.
+HiPlot can only render :class:`hiplot.Experiment` objects, so we create one with :class:`hiplot.Experiment.from_iterable`.
+Once we have created this object, we can display it with :class:`hiplot.Experiment.display`.
 
 .. code-block:: python
 
