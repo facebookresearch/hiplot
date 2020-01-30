@@ -8,6 +8,7 @@ import uuid
 import json
 import math
 import re
+import ast
 import glob
 from typing import Dict, List, Optional, Callable, Any
 from pathlib import Path
@@ -234,8 +235,17 @@ def load_fairseq(uri: str) -> hip.Experiment:
     params: Dict[str, Any] = {}
     for l in lines:
         if l.startswith('Namespace('):
-            # Namespace(activation_dropout=0.1, activation_fn='relu', ...)
-            params = eval('dict' + l.lstrip('Namespace'))
+            """
+            format: Namespace(activation_dropout=0.1, activation_fn='relu', ...)
+            Ideally we want to do: `eval("dict(activation_dropout=0.1, activation_fn='relu', ...)")`
+            But as it's user input, we want to have something safe.
+            (it's still possible to crash the python interpreter with a too complex string due to stack depth limitations)
+            """
+            node = ast.parse(l)
+            params = {
+                kw.arg: ast.literal_eval(kw.value)
+                for kw in node.body[0].value.keywords  # type: ignore
+            }
             continue
         if l.startswith('| epoch'):
             l = l.lstrip('| epoch')
@@ -267,8 +277,8 @@ class Wav2letterLoader:
     def _parse_metrics(self, file: Path) -> List[Dict[str, Any]]:
         # 001_perf:
         '''
-# date	time	epoch	lr	lrcriterion	runtime	bch(ms)	smp(ms)	fwd(ms)	crit-fwd(ms)	bwd(ms)	optim(ms)	loss	train-LER	train-WER	dev-clean.lst-loss	dev-clean.lst-LER	dev-clean.lst-WER	avg-isz	avg-tsz	max-tsz	hrs	thrpt(sec/sec)
-2019-09-30 11:24:55      114 0.025000 0.025000 00:01:22 185.99 2.63 42.54 2.49 122.78 15.75  151.95674 76.53 112.49  152.57000 79.76 115.47 1268 041 078  100.57 4364.75
+# date\tkey1\tkey2...
+2019-09-30\tval1\tval2...
 '''
         PERF_PREFIX = 'perf_'
         lines = file.read_text().split('\n')
@@ -278,7 +288,6 @@ class Wav2letterLoader:
                 continue
             epoch_metrics: Dict[str, Any] = {}
             for name, val in zip(lines[0].split()[1:], l.split()):
-                name = name.replace('/checkpoint/antares/datasets/librispeech/lists/', '')
                 try:
                     epoch_metrics[PERF_PREFIX + name] = float(val)
                 except ValueError:
@@ -300,16 +309,10 @@ class Wav2letterLoader:
             mtrics = self._parse_metrics(Path(p))
             for m in mtrics:
                 ckpt_name = uri[-5:] + "_" + str(len(xp.datapoints))
-                values = {
-                    'epoch': m['perf_epoch'],
-                    'lr': m["perf_lr"],
-                    'lrcrit': m['perf_lrcriterion'],
-                    **m,
-                }
                 xp.datapoints.append(hip.Datapoint(
                     uid=ckpt_name,
                     from_uid=prev_ckpt_name,
-                    values=values))
+                    values=m))
                 prev_ckpt_name = ckpt_name
         return xp
 
