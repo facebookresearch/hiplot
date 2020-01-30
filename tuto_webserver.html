@@ -136,6 +136,13 @@
 <h3>Step 1: Create an experiment fetcher<a class="headerlink" href="#step-1-create-an-experiment-fetcher" title="Permalink to this headline">¶</a></h3>
 <p>An experiment fetcher transforms a string (that the user enters, a path for instance) into a proper <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a>.
 Let’s write a dummy one that takes a folder, and returns the content of <code class="code docutils literal notranslate"><span class="pre">data.csv</span></code> inside if the file exists.</p>
+<p>When we request an experiment in HiPlot, the server will call the experiment fetchers it has iteratively.
+Each fetcher can either:</p>
+<ul class="simple">
+<li><p>Return a <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a>, that will be sent to the client</p></li>
+<li><p>Raise an <a class="reference internal" href="py_reference.html#hiplot.ExperimentFetcherDoesntApply" title="hiplot.ExperimentFetcherDoesntApply"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ExperimentFetcherDoesntApply</span></code></a> exception, in which case the server moves on and tries the next fetcher</p></li>
+</ul>
+<p>In order to avoid conflicts, it is good practice to use a prefix to determine which fetcher we want to call. Here we use <code class="code docutils literal notranslate"><span class="pre">myxp://</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_fetcher.py</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
@@ -143,9 +150,9 @@ Let’s write a dummy one that takes a folder, and returns the content of <code 
     <span class="c1"># Only apply this fetcher if the URI starts with myxp://</span>
     <span class="n">PREFIX</span><span class="o">=</span><span class="s2">&quot;myxp://&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">uri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">PREFIX</span><span class="p">):</span>
-        <span class="c1"># Lets other fetchers handle this one</span>
+        <span class="c1"># Let other fetchers handle this one</span>
         <span class="k">raise</span> <span class="n">hip</span><span class="o">.</span><span class="n">ExperimentFetcherDoesntApply</span><span class="p">()</span>
-    <span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">PREFIX</span><span class="p">):]</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">PREFIX</span><span class="p">):]</span>  <span class="c1"># Remove the prefix</span>
 
     <span class="k">return</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="n">uri</span> <span class="o">+</span> <span class="s1">&#39;/data.csv&#39;</span><span class="p">)</span>
 </pre></div>
@@ -153,6 +160,7 @@ Let’s write a dummy one that takes a folder, and returns the content of <code 
 </div>
 <div class="section" id="step-2-prepare-the-data">
 <h3>Step 2: Prepare the data<a class="headerlink" href="#step-2-prepare-the-data" title="Permalink to this headline">¶</a></h3>
+<p>Our fetcher is ready, let’s simulate a dummy experiment that we can load later</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Some dummy data for the demo</span>
 mkdir xp_folder
 <span class="nb">echo</span> -e <span class="s2">&quot;col1, col2, col3\n1,2,3\n2,2,3\n4,4,2&quot;</span> &gt; xp_folder/data.csv

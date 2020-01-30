@@ -46,6 +46,14 @@ Step 1: Create an experiment fetcher
 An experiment fetcher transforms a string (that the user enters, a path for instance) into a proper :class:`hiplot.Experiment`.
 Let's write a dummy one that takes a folder, and returns the content of :code:`data.csv` inside if the file exists.
 
+When we request an experiment in HiPlot, the server will call the experiment fetchers it has iteratively.
+Each fetcher can either:
+
+* Return a :class:`hiplot.Experiment`, that will be sent to the client
+* Raise an :class:`hiplot.ExperimentFetcherDoesntApply` exception, in which case the server moves on and tries the next fetcher
+
+In order to avoid conflicts, it is good practice to use a prefix to determine which fetcher we want to call. Here we use :code:`myxp://`
+
 .. code-block:: python
 
     # my_fetcher.py
@@ -55,9 +63,9 @@ Let's write a dummy one that takes a folder, and returns the content of :code:`d
         # Only apply this fetcher if the URI starts with myxp://
         PREFIX="myxp://"
         if not uri.startswith(PREFIX):
-            # Lets other fetchers handle this one
+            # Let other fetchers handle this one
             raise hip.ExperimentFetcherDoesntApply()
-        uri = uri[len(PREFIX):]
+        uri = uri[len(PREFIX):]  # Remove the prefix
 
         return hip.Experiment.from_csv(uri + '/data.csv')
 
@@ -65,6 +73,8 @@ Let's write a dummy one that takes a folder, and returns the content of :code:`d
 
 Step 2: Prepare the data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Our fetcher is ready, let's simulate a dummy experiment that we can load later
 
 .. code-block:: bash
 
