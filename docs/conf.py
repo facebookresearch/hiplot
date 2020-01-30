@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# Copyright (c) Facebook, Inc. and its affiliates.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 # -*- coding: utf-8 -*-
 #
 # HiPlot documentation build configuration file, created by
@@ -17,6 +21,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import guzzle_sphinx_theme
+import re
+from pathlib import Path
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
@@ -32,13 +39,13 @@ sys.path.insert(0, os.path.abspath('..'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    'm2r',
-]
+              'sphinx.ext.doctest',
+              'sphinx.ext.todo',
+              'sphinx.ext.coverage',
+              'sphinx.ext.viewcode',
+              'sphinx.ext.githubpages',
+              'm2r',
+              ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -54,7 +61,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'HiPlot'
-copyright = '2020, Facebook AI Research (FAIR)'
+copyright = '2020, Facebook AI Research (FAIR)'  # pylint:disable=redefined-builtin
 author = 'Facebook AI Research (FAIR)'
 
 github_doc_root = 'https://github.com/facebookresearch/hiplot'
@@ -63,8 +70,6 @@ github_doc_root = 'https://github.com/facebookresearch/hiplot'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-from pathlib import Path
-import re
 init_str = Path("../hiplot/__init__.py").read_text()
 match = re.search(r"^__version__ = \"(?P<version>[\w\.]+?)\"$", init_str, re.MULTILINE)
 assert match is not None, "Could not find version in hiplot/__init__.py"
@@ -92,10 +97,9 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-html_favicon='../hiplot/static/icon.png'
+html_favicon = '../hiplot/static/icon.png'
 
 # -- Options for HTML output ----------------------------------------------
-import guzzle_sphinx_theme
 
 html_theme_path = guzzle_sphinx_theme.html_theme_path()
 html_theme = 'guzzle_sphinx_theme'
@@ -174,5 +178,3 @@ texinfo_documents = [
      author, 'HiPlot', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-

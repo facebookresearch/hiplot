@@ -41,7 +41,7 @@ class MultipleFetcher:
     def __call__(self, uri: str) -> hip.Experiment:
         if not uri.startswith(self.MULTI_PREFIX):
             raise hip.ExperimentFetcherDoesntApply()
-        defs = json.loads(uri[len(self.MULTI_PREFIX) :])
+        defs = json.loads(uri[len(self.MULTI_PREFIX):])
         if isinstance(defs, list):
             return hip.Experiment.merge({v: load_xp_with_fetchers(self.fetchers, v) for v in defs})
         return hip.Experiment.merge({k: load_xp_with_fetchers(self.fetchers, v) for k, v in defs.items()})
@@ -61,18 +61,19 @@ def demo_change_column_properties() -> hip.Experiment:
 
 
 def demo_basic_usage() -> hip.Experiment:
-    data = [{'dropout':0.1, 'lr': 0.001, 'loss': 10.0, 'optimizer': 'SGD'},
-         {'dropout':0.15, 'lr': 0.01, 'loss': 3.5, 'optimizer': 'Adam'},
-        {'dropout':0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
+    data = [{'dropout': 0.1, 'lr': 0.001, 'loss': 10.0, 'optimizer': 'SGD'},
+            {'dropout': 0.15, 'lr': 0.01, 'loss': 3.5, 'optimizer': 'Adam'},
+            {'dropout': 0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
     return hip.Experiment.from_iterable(data)
 
 
 def demo_line_xy() -> hip.Experiment:
+    #DEMO_LINE_XY_BEGIN
     exp = hip.Experiment()
     exp.display_data(hip.Displays.XY).update({
         'axis_x': 'generation',
         'axis_y': 'loss',
-        'lines_thickness': 1.0, # Customize lines thickness. When below 0, the dots are not connected
+        'lines_thickness': 1.0,  # Customize lines thickness. When below 0, the dots are not connected
         'lines_opacity': 1.0,   # Decrease this value if you have too many lines overlapping
     })
     for i in range(200):
@@ -82,18 +83,20 @@ def demo_line_xy() -> hip.Experiment:
                 'generation': i,
                 'param': 10 ** random.uniform(-1, 1),
                 'loss': random.uniform(-5, 5)
-        })
+            })
         if i > 10:
             from_parent = random.choice(exp.datapoints[-10:])
-            dp.from_uid = from_parent.uid
+            dp.from_uid = from_parent.uid # <-- Connect the parent to the child
             dp.values['loss'] += from_parent.values['loss']  # type: ignore
             dp.values['param'] *= from_parent.values['param']  # type: ignore
         exp.datapoints.append(dp)
+    #DEMO_LINE_XY_END
     return exp
 
 
 def demo_bug_uid() -> hip.Experiment:
     return hip.Experiment.from_iterable([{'a': 1, 'b': 2, 'uid': 50.0}, {'a': 2, 'b': 3, 'uid': 49.33}])
+
 
 def demo(n: int = 100) -> hip.Experiment:
     xp = hip.Experiment()
@@ -164,8 +167,9 @@ def demo(n: int = 100) -> hip.Experiment:
     xp.parameters_definition["pctile"].type = hip.ValueType.NUMERIC_PERCENTILE
     return xp
 
+
 README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
-    "demo": lambda: demo(),
+    "demo": demo,
     "demo_big": lambda: demo(1000),
     "demo_change_column_properties": demo_change_column_properties,
     "demo_basic_usage": demo_basic_usage,
@@ -210,6 +214,7 @@ def load_json(uri: str) -> hip.Experiment:
 
 
 def load_fairseq(uri: str) -> hip.Experiment:
+    # pylint:disable=too-many-locals
     PREFIX = 'fairseq://'
     if not uri.startswith(PREFIX):
         raise hip.ExperimentFetcherDoesntApply()
@@ -217,18 +222,13 @@ def load_fairseq(uri: str) -> hip.Experiment:
     train_log = Path(uri)
     if train_log.is_dir():
         found = False
-        for try_log_file in ["train.log", "process.out", "process_0.out"]:
-            if (train_log / try_log_file).is_file():
+        try_files = [train_log / f for f in ["train.log", "process.out", "process_0.out"]] + \
+            [Path(f) for f in glob.glob(str(train_log / "*.log")) + glob.glob(str(train_log / "slurm_logs" / "*.log"))]
+        for try_log_file in try_files:
+            if try_log_file.is_file():
                 found = True
-                train_log = train_log / try_log_file
-        if not found:
-            for f in glob.glob(str(train_log / "*.log")):
-                found = True
-                train_log = Path(f)
-        if not found:
-            for f in glob.glob(str(train_log / "slurm_logs" / "*.log")):
-                found = True
-                train_log = Path(f)
+                train_log = try_log_file
+                break
         if not found:
             raise hip.ExperimentFetcherDoesntApply("No log file found")
     lines = train_log.read_text().split('\n')
@@ -238,12 +238,10 @@ def load_fairseq(uri: str) -> hip.Experiment:
     params: Dict[str, Any] = {}
     for l in lines:
         if l.startswith('Namespace('):
-            """
-            format: Namespace(activation_dropout=0.1, activation_fn='relu', ...)
-            Ideally we want to do: `eval("dict(activation_dropout=0.1, activation_fn='relu', ...)")`
-            But as it's user input, we want to have something safe.
-            (it's still possible to crash the python interpreter with a too complex string due to stack depth limitations)
-            """
+            # format: Namespace(activation_dropout=0.1, activation_fn='relu', ...)
+            # Ideally we want to do: `eval("dict(activation_dropout=0.1, activation_fn='relu', ...)")`
+            # But as it's user input, we want to have something safe.
+            # (it's still possible to crash the python interpreter with a too complex string due to stack depth limitations)
             node = ast.parse(l)
             params = {
                 kw.arg: ast.literal_eval(kw.value)
@@ -254,11 +252,12 @@ def load_fairseq(uri: str) -> hip.Experiment:
             l = l.lstrip('| epoch')
             epoch = int(l[:3])
             if epoch not in epoch_to_dp:
-                dp = hip.Datapoint(uid=str(epoch), values={"epoch": epoch, **params}, from_uid=None if epoch - 1 not in epoch_to_dp else str(epoch - 1))
+                dp = hip.Datapoint(uid=str(epoch), values={"epoch": epoch, **params},
+                                   from_uid=None if epoch - 1 not in epoch_to_dp else str(epoch - 1))
                 epoch_to_dp[epoch] = dp
                 xp.datapoints.append(dp)
-            # | epoch 002 | loss 8.413 | nll_loss 8.413 | ppl 340.86 | wps 102922 | ups 1 | wpb 73680.957 | bsz 23.985 | num_updates 2798 | lr 0.174875 | gnorm 0.249 | clip 1.000 | oom 0.000 | loss_scale 8.000 | wall 2020 | train_wall 1954
-            # | epoch 002 | valid on 'valid' subset | loss 7.599 | nll_loss 7.599 | ppl 193.89 | num_updates 2798 | best_loss 7.59906
+            # | epoch 002 | loss 8.413 | ...
+            # | epoch 002 | valid on 'valid' subset | loss 7.599 | nll_loss 7.599 | ...
             parts = l.split('|')[1:]
             prefix = ''
             for p in parts:
@@ -319,13 +318,16 @@ class Wav2letterLoader:
                 prev_ckpt_name = ckpt_name
         return xp
 
+
 load_wav2letter = Wav2letterLoader()
+
 
 def _get_module_by_name_in_cwd(name: str) -> Any:
     spec = importlib.util.spec_from_file_location(name, str(Path(os.getcwd()) / f"{name}.py"))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)  # type: ignore
     return module
+
 
 def get_fetchers(add_fetchers: List[str]) -> List[hip.ExperimentFetcher]:
     xp_fetchers: List[hip.ExperimentFetcher] = [load_demo, load_csv, load_json, load_fairseq, load_wav2letter]

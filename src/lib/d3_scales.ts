@@ -234,4 +234,3 @@ export function scale_add_outliers(scale_orig) {
     };
     return scale;
 }
-

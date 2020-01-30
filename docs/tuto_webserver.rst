@@ -37,7 +37,7 @@ List of experiments
 
 .. _tutoWebserverCustomFetcher:
 
-Make HiPlot server to render your own experiments
+Make HiPlot server render your own experiments
 --------------------------------------------------------
 
 
@@ -58,7 +58,7 @@ Let's write a dummy one that takes a folder, and returns the content of :code:`d
             # Lets other fetchers handle this one
             raise hip.ExperimentFetcherDoesntApply()
         uri = uri[len(PREFIX):]
-    
+
         return hip.Experiment.from_csv(uri + '/data.csv')
 
 

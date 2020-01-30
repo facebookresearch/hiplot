@@ -10,7 +10,7 @@ DEMO_PAGES_PATH = Path('.circleci/demo_pages')
 def create_browser() -> webdriver.Chrome:
     # enable browser logging
     d = DesiredCapabilities.CHROME
-    d['goog:loggingPrefs'] = { 'browser':'ALL' }
+    d['goog:loggingPrefs'] = {'browser': 'ALL'}
 
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
@@ -18,6 +18,7 @@ def create_browser() -> webdriver.Chrome:
     driver = webdriver.Chrome(options=chrome_options, desired_capabilities=d)
     driver.set_window_size(1920, 1080, driver.window_handles[0])
     return driver
+
 
 def test_demo_pages() -> None:
     num_err = 0

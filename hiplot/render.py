@@ -24,7 +24,6 @@ def html_inlinize(html: str, replace_local: bool = True) -> str:
     """
     Includes external CSS, JS and images directly in the HTML
     (only for files with a relative path)
-    Can be applied to local files (static/*), or to internet files (https://...)
     """
     SUFFIX_TO_TYPE = {
         '.png': 'image/png',
@@ -65,15 +64,6 @@ def html_inlinize(html: str, replace_local: bool = True) -> str:
         new_tag = soup.new_tag("script")
         new_tag.string = file.read_text()
         i.replace_with(new_tag)
-    for i in soup.find_all("img"):
-        src = i["src"]
-        if src.startswith("http") or src.startswith("//"):
-            continue
-        else:
-            if not replace_local:
-                continue
-        file = Path(static_root, src)
-        i["src"] = f"data:{SUFFIX_TO_TYPE[file.suffix]};base64,{base64.b64encode(file.open('rb').read()).decode('ascii')}"
     return str(soup)
 
 

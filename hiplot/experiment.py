@@ -31,8 +31,10 @@ class _DictSerializable:
     """
     All classes that are transmitted to Javascript must subclass this
     """
+
     def _asdict(self) -> Dict[str, Any]:
         return self.__dict__
+
 
 class ValueType(Enum):
     """
@@ -54,13 +56,14 @@ class ValueDef(_DictSerializable):
     """
     Provides a custom type, color, etc.. for a column. See :attr:`hiplot.Experiment.parameters_definition`
     """
-    def __init__(self, type: Optional[ValueType] = None, colors: Optional[Dict[Any, str]] = None) -> None:
+
+    def __init__(self, value_type: Optional[ValueType] = None, colors: Optional[Dict[Any, str]] = None) -> None:
         """
         Overwrite the generated values for a column:
             - type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
             - colors: mapping from value to color in the format "rgb(R, G, B)" or "hsl(H, S, L)"
         """
-        self.type = type
+        self.type = value_type
         self.colors = colors
 
     def validate(self) -> None:
@@ -100,6 +103,7 @@ class Datapoint(_DictSerializable):
         })
         hip.Experiment(datapoints=[dp1, dp2]).display()  # Render in an ipython notebook
     """
+
     def __init__(self, uid: str, values: Dict[str, DisplayableType], from_uid: Optional[str] = None) -> None:
         self.uid = uid
         self.values = values
@@ -133,10 +137,11 @@ class Experiment(_DictSerializable):
         exp = hip.Experiment.from_iterable(data)
 
     """
+
     def __init__(self,
-        datapoints: Optional[List[Datapoint]] = None,
-        parameters_definition: Optional[Dict[str, ValueDef]] = None
-    ) -> None:
+                 datapoints: Optional[List[Datapoint]] = None,
+                 parameters_definition: Optional[Dict[str, ValueDef]] = None
+                 ) -> None:
         self.datapoints = datapoints if datapoints is not None else []
         self.parameters_definition = parameters_definition if parameters_definition is not None else defaultdict(ValueDef)
         self._displays: Dict[str, Dict[str, Any]] = {
@@ -212,7 +217,7 @@ class Experiment(_DictSerializable):
                 return self._to_csv(csvfile)
         else:
             return self._to_csv(file)
-    
+
     def _to_csv(self, fh: IO[str]) -> None:
         fieldnames: Set[str] = set()
         for dp in self.datapoints:
@@ -238,7 +243,7 @@ class Experiment(_DictSerializable):
         """
         Sets :attr:`hiplot.Datapoint.from_uid` to None when set to a non-existing Datapoint.
         """
-        existing_dp: Set[str] = set([dp.uid for dp in self.datapoints])
+        existing_dp: Set[str] = set((dp.uid for dp in self.datapoints))
         for dp in self.datapoints:
             if dp.from_uid not in existing_dp:
                 dp.from_uid = None
@@ -253,7 +258,7 @@ class Experiment(_DictSerializable):
         :Example:
 
         .. code-block:: python
-        
+
             exp.display_data(hip.Displays.XY).update({
                 "axis_x": "time",
                 "axis_y": "loss"
@@ -321,6 +326,7 @@ class ExperimentFetcherDoesntApply(Exception):
 
 
 ExperimentFetcher = Callable[[str], Experiment]
+
 
 class ExperimentDisplayed(metaclass=ABCMeta):
     @abstractmethod

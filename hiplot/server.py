@@ -51,4 +51,3 @@ def run_server_main() -> int:
     args = parser.parse_args()
     run_server(fetchers=get_fetchers(args.fetchers), host=args.host, port=args.port, debug=args.dev)
     return 0
-

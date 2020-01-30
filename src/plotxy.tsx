@@ -134,7 +134,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
 
     var x_scale, y_scale, yAxis, xAxis, margin;
     var x_scale_orig, y_scale_orig;
-  
+
     function redraw_axis_and_rerender() {
       var rerender_all_points_before = rerender_all_points;
       redraw_axis();
@@ -329,7 +329,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         ctx.fill();
       }
     };
-    
+
     // Render at the same pace as parallel plot
     var xp_config = this.config;
     function render_new_rows(new_rows) {

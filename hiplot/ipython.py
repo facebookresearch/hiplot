@@ -12,6 +12,7 @@ from ipykernel.comm import Comm
 from . import experiment as exp
 from .render import escapejs, make_experiment_standalone_page
 
+
 class GetSelectedFailure(Exception):
     pass
 
@@ -95,7 +96,9 @@ load_when_ready();
 """
 
     if not force_full_width:
-        IPython.display.display(IPython.display.HTML(f'''<div /><iframe id="{iframe_id}" style="width: 100%; height: 100vh; border: 0px" srcdoc="{html.escape(page_html)}"></iframe>'''))
+        IPython.display.display(IPython.display.HTML(
+            f'''<div />
+        <iframe id="{iframe_id}" style="width: 100%; height: 100vh; border: 0px" srcdoc="{html.escape(page_html)}"></iframe>'''))
         IPython.display.display(IPython.display.Javascript(js))
         return iframe_id
 
@@ -150,7 +153,6 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
         except NameError:  # NameError: name 'get_ipython' is not defined
             # We are not in an ipython environment - for example in testing
             pass
-
 
     def get_selected(self) -> List[exp.Datapoint]:
         if self._num_recv == 0:

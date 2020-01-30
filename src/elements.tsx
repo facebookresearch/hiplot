@@ -146,8 +146,8 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                     hasFocus={this.state.isTextareaFocused}
                 />
             }
-        
-            {this.props.loadStatus == HiPlotLoadStatus.Loaded && !this.state.isTextareaFocused && 
+
+            {this.props.loadStatus == HiPlotLoadStatus.Loaded && !this.state.isTextareaFocused &&
                 <React.Fragment>
                     <div className="col-md-5">
                         <RestoreDataBtn rows={this.props.rows} />

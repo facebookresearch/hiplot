@@ -8,10 +8,12 @@ from bs4 import BeautifulSoup
 from .fetchers import README_DEMOS
 from .render import get_index_html_template
 
+
 def test_ipython_demos() -> None:
     for k, v in README_DEMOS.items():
         print(k)
         v().display()
+
 
 def test_index_html_valid() -> None:
     """
@@ -37,6 +39,9 @@ def test_index_html_valid() -> None:
 
         def handle_data(self, data: str) -> None:
             self.content.append(data.strip())
+
+        def error(self, message: str) -> None:
+            assert False
 
     parser_actual = MyHTMLParser(html_soup)
     parser_expected = MyHTMLParser(html_template)

@@ -192,7 +192,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           dimensions_dom.attr("transform", function(d) { return "translate(" + position(d) + ")"; });
           brush_count++;
           is_dragged[d] = true;
-  
+
           // Feedback for axis deletion if dropped
           if (dragging[d] < 12 || dragging[d] > me.w-12) {
             d3.select(this).select("." + style.brush).style('fill', 'red');
@@ -204,24 +204,24 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           if (!is_dragged[d]) {
             // no movement, invert axis
             var extent = invert_axis(d);
-  
+
           } else {
             // reorder axes
             d3.select(this).transition().attr("transform", "translate(" + me.xscale(d) + ")");
-  
+
             var extents = brush_extends();
             extent = extents[d];
           }
-  
+
           // remove axis if dragged all the way left
           if (dragging[d] < 12 || dragging[d] > me.w-12) {
             remove_axis(d);
           }
           me.setState({order: Array.from(me.dimensions)});
-  
+
           me.xscale.domain(me.dimensions);
           update_ticks(d, extent);
-  
+
           // rerender
           d3.select(me.foreground_ref.current).style("opacity", null);
           brush();

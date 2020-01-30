@@ -248,7 +248,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
           contextmenu.append(option);
         }.bind(this));
         contextmenu.append($('<div class="dropdown-divider"></div>'));
-    
+
         // Color by
         var link_colorize = $('<a class="dropdown-item" href="#">Use for coloring</a>');
         link_colorize.click(function(event) {

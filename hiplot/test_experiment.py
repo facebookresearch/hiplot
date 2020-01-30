@@ -6,6 +6,7 @@ import tempfile
 import pytest
 from . import init as hip
 
+
 def test_merge() -> None:
     merged = hip.Experiment.merge(
         {
@@ -49,6 +50,7 @@ def test_validation_missing_parent() -> None:
     assert xp.datapoints[0].from_uid is None
     xp.validate()
 
+
 def test_export_csv() -> None:
     tmpfile = tempfile.NamedTemporaryFile().name
 
@@ -58,18 +60,20 @@ def test_export_csv() -> None:
     xp2 = hip.Experiment.from_csv(tmpfile)
     xp2.validate()
 
+
 def test_to_html() -> None:
     xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
     xp.to_html(tempfile.NamedTemporaryFile().name)
 
+
 def test_doc() -> None:
-    #EXPERIMENT_SETTINGS_SNIPPET1_BEGIN
-    exp = hip.fetchers.load_demo("demo") # Let's create a dummy experiment
+    # EXPERIMENT_SETTINGS_SNIPPET1_BEGIN
+    exp = hip.fetchers.load_demo("demo")  # Let's create a dummy experiment
 
     # Change column type
     exp.parameters_definition["optionA"].type = hip.ValueType.NUMERIC_LOG
-    #EXPERIMENT_SETTINGS_SNIPPET1_END
-    #EXPERIMENT_SETTINGS_SNIPPET2_BEGIN
+    # EXPERIMENT_SETTINGS_SNIPPET1_END
+    # EXPERIMENT_SETTINGS_SNIPPET2_BEGIN
     # Provide configuration for the parallel plot
     exp.display_data(hip.Displays.PARALLEL_PLOT).update({
         # Hide some columns
@@ -91,5 +95,5 @@ def test_doc() -> None:
         'dots_thickness': 2.0,
         'dots_opacity': 0.3,
     })
-    #EXPERIMENT_SETTINGS_SNIPPET2_END
+    # EXPERIMENT_SETTINGS_SNIPPET2_END
     exp.validate()
