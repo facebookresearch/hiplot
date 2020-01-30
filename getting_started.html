@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Getting started &#8212; HiPlot 0.1.0.post3 documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Customizing Experiments" href="experiment_settings.html" />
+    <link rel="prev" title="HiPlot documentation" href="index.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="experiment_settings.html" title="Customizing Experiments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="HiPlot documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Contents</h2>
+    <div class="sidebar-localtoc">
+      <ul>
+<li><a class="reference internal" href="#">Getting started</a><ul>
+<li><a class="reference internal" href="#option-1-in-an-ipython-notebook">Option 1: In an ipython notebook</a></li>
+<li><a class="reference internal" href="#option-2-hiplot-webserver">Option 2: HiPlot webserver</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+  </div>
+</div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">HiPlot documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="experiment_settings.html"
+                        title="next chapter">Customizing Experiments</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/getting_started.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>Getting started</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pip</span> <span class="n">install</span> <span class="n">hiplot</span>
+</pre></div>
+</div>
+<div class="section" id="option-1-in-an-ipython-notebook">
+<h2>Option 1: In an ipython notebook<a class="headerlink" href="#option-1-in-an-ipython-notebook" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;SGD&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">}]</span>
+<span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="../assets/notebook.png"><img alt="../assets/notebook.png" src="../assets/notebook.png" style="width: 800px;" /></a>
+</div>
+</div>
+<div class="section" id="option-2-hiplot-webserver">
+<span id="getstartedwebserver"></span><h2>Option 2: HiPlot webserver<a class="headerlink" href="#option-2-hiplot-webserver" title="Permalink to this headline">¶</a></h2>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span>
+</pre></div>
+</div>
+<p>Then open your web browser in <a class="reference external" href="http://127.0.0.1:5005/">http://127.0.0.1:5005/</a>.
+In the web interface, you can enter an experiment URI - you can enter the path to a CSV file, or just type in “<cite>demo</cite>”, or “<cite>demo_line_xy</cite>” to see some basic examples.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, hiplot only listens on localhost, which prevents anyone else from seeing your experiments.
+To allow anyone to connect, use</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span> <span class="o">--</span><span class="n">host</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span>
+</pre></div>
+</div>
+</div>
+<p>HiPlot webserver allows to do way more:</p>
+<ul class="simple">
+<li><p>you can share the URL to a colleague - it contains all the columns you have filtered, reordered during the session</p></li>
+<li><p>you can <a class="reference internal" href="tuto_webserver.html#tutowebservercomparexp"><span class="std std-ref">Compare multiple experiments</span></a></p></li>
+<li><p>you can <a class="reference internal" href="tuto_webserver.html#tutowebservercustomfetcher"><span class="std std-ref">Use HiPlot server to render your own experiments</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="index.html" title="previous chapter (use the left arrow)">HiPlot documentation</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="experiment_settings.html" title="next chapter (use the right arrow)">Customizing Experiments</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="experiment_settings.html" title="Customizing Experiments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="HiPlot documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2020, Facebook AI Research (FAIR). Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

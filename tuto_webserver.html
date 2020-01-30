@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Advanced uses: Webserver &#8212; HiPlot 0.1.0.post3 documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="HiPlot classes reference" href="py_reference.html" />
+    <link rel="prev" title="Customizing Experiments" href="experiment_settings.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py_reference.html" title="HiPlot classes reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="experiment_settings.html" title="Customizing Experiments"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Contents</h2>
+    <div class="sidebar-localtoc">
+      <ul>
+<li><a class="reference internal" href="#">Advanced uses: Webserver</a><ul>
+<li><a class="reference internal" href="#compare-multiple-experiments">Compare multiple experiments</a><ul>
+<li><a class="reference internal" href="#dictionary-of-named-experiments">Dictionary of named experiments</a></li>
+<li><a class="reference internal" href="#list-of-experiments">List of experiments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#use-hiplot-server-to-render-your-own-experiments">Use HiPlot server to render your own experiments</a><ul>
+<li><a class="reference internal" href="#step-1-create-an-experiment-fetcher">Step 1: Create an experiment fetcher</a></li>
+<li><a class="reference internal" href="#step-2-prepare-the-data">Step 2: Prepare the data</a></li>
+<li><a class="reference internal" href="#step-3-run-hiplot-server-with-the-new-fetcher">Step 3: Run HiPlot server with the new fetcher</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+  </div>
+</div>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="experiment_settings.html"
+                        title="previous chapter">Customizing Experiments</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="py_reference.html"
+                        title="next chapter">HiPlot classes reference</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tuto_webserver.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>Advanced uses: Webserver</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="advanced-uses-webserver">
+<span id="tutowebserver"></span><h1>Advanced uses: Webserver<a class="headerlink" href="#advanced-uses-webserver" title="Permalink to this headline">¶</a></h1>
+<p>This section assumes you already have a hiplot webserver running (otherwise, see <a class="reference internal" href="getting_started.html#getstartedwebserver"><span class="std std-ref">Option 2: HiPlot webserver</span></a>)</p>
+<div class="section" id="compare-multiple-experiments">
+<span id="tutowebservercomparexp"></span><h2>Compare multiple experiments<a class="headerlink" href="#compare-multiple-experiments" title="Permalink to this headline">¶</a></h2>
+<p>Multiple experiments can be combined together in the interface using the special “multi” fetcher. It allows 2 syntaxes:</p>
+<div class="section" id="dictionary-of-named-experiments">
+<h3>Dictionary of named experiments<a class="headerlink" href="#dictionary-of-named-experiments" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">multi</span><span class="p">:</span><span class="o">//</span><span class="p">{</span>
+    <span class="s2">&quot;exp1_name&quot;</span><span class="p">:</span> <span class="s2">&quot;exp1_uri&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;exp2_name&quot;</span><span class="p">:</span> <span class="s2">&quot;exp2_uri&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="list-of-experiments">
+<h3>List of experiments<a class="headerlink" href="#list-of-experiments" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">multi</span><span class="p">:</span><span class="o">//</span><span class="p">[</span>
+    <span class="s2">&quot;exp1_uri&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;exp2_uri&quot;</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="use-hiplot-server-to-render-your-own-experiments">
+<span id="tutowebservercustomfetcher"></span><h2>Use HiPlot server to render your own experiments<a class="headerlink" href="#use-hiplot-server-to-render-your-own-experiments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="step-1-create-an-experiment-fetcher">
+<h3>Step 1: Create an experiment fetcher<a class="headerlink" href="#step-1-create-an-experiment-fetcher" title="Permalink to this headline">¶</a></h3>
+<p>An experiment fetcher transforms a string (that the user enters, a path for instance) into a proper <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a>.
+Let’s write a dummy one that takes a folder, and returns the content of <cite>data.csv</cite> inside if the file exists.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_fetcher.py</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="k">def</span> <span class="nf">fetch_my_experiment</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+    <span class="c1"># Only apply this fetcher if the URI starts with myxp://</span>
+    <span class="n">PREFIX</span><span class="o">=</span><span class="s2">&quot;myxp://&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">uri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">PREFIX</span><span class="p">):</span>
+        <span class="c1"># Lets other fetchers handle this one</span>
+        <span class="k">raise</span> <span class="n">hip</span><span class="o">.</span><span class="n">ExperimentFetcherDoesntApply</span><span class="p">()</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">PREFIX</span><span class="p">):]</span>
+
+    <span class="k">return</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="n">uri</span> <span class="o">+</span> <span class="s1">&#39;/data.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-2-prepare-the-data">
+<h3>Step 2: Prepare the data<a class="headerlink" href="#step-2-prepare-the-data" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Some dummy data for the demo</span>
+mkdir xp_folder
+<span class="nb">echo</span> -e <span class="s2">&quot;col1, col2, col3\n1,2,3\n2,2,3\n4,4,2&quot;</span> &gt; xp_folder/data.csv
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-3-run-hiplot-server-with-the-new-fetcher">
+<h3>Step 3: Run HiPlot server with the new fetcher<a class="headerlink" href="#step-3-run-hiplot-server-with-the-new-fetcher" title="Permalink to this headline">¶</a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span> <span class="n">my_fetcher</span><span class="o">.</span><span class="n">fetch_my_experiment</span>
+</pre></div>
+</div>
+<p>In the interface, you can load the string “myxp://xp_folder”</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="experiment_settings.html" title="previous chapter (use the left arrow)">Customizing Experiments</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="py_reference.html" title="next chapter (use the right arrow)">HiPlot classes reference</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py_reference.html" title="HiPlot classes reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="experiment_settings.html" title="Customizing Experiments"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2020, Facebook AI Research (FAIR). Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

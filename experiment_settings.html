@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Customizing Experiments &#8212; HiPlot 0.1.0.post3 documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Advanced uses: Webserver" href="tuto_webserver.html" />
+    <link rel="prev" title="Getting started" href="getting_started.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tuto_webserver.html" title="Advanced uses: Webserver"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="getting_started.html"
+                        title="previous chapter">Getting started</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tuto_webserver.html"
+                        title="next chapter">Advanced uses: Webserver</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/experiment_settings.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>Customizing Experiments</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="customizing-experiments">
+<span id="customizexp"></span><h1>Customizing Experiments<a class="headerlink" href="#customizing-experiments" title="Permalink to this headline">¶</a></h1>
+<p>An experiment is rendered with several independant components:</p>
+<ul class="simple">
+<li><p>A parallel plot</p></li>
+<li><p>An XY graph</p></li>
+<li><p>A table that displays individual rows</p></li>
+</ul>
+<p>It’s possible to customize how the data is rendered.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">fetchers</span><span class="o">.</span><span class="n">load_demo</span><span class="p">(</span><span class="s2">&quot;demo&quot;</span><span class="p">)</span> <span class="c1"># Let&#39;s create a dummy experiment</span>
+
+    <span class="c1"># Change column type</span>
+    <span class="n">exp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">[</span><span class="s2">&quot;optionA&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">ValueType</span><span class="o">.</span><span class="n">NUMERIC_LOG</span>
+
+    <span class="c1"># Provide configuration for the parallel plot</span>
+    <span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="c1"># Hide some columns</span>
+        <span class="s1">&#39;hide&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;optionB&#39;</span><span class="p">],</span>
+        <span class="c1"># Specify the order for others</span>
+        <span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span>  <span class="c1"># Put column time first on the left</span>
+    <span class="p">})</span>
+
+    <span class="c1"># Provide configuration for the XY graph</span>
+    <span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">XY</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="c1"># Default X axis for the XY plot</span>
+        <span class="s1">&#39;axis_x&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span>
+        <span class="c1"># Default Y axis</span>
+        <span class="s1">&#39;axis_y&#39;</span><span class="p">:</span> <span class="s1">&#39;lr&#39;</span><span class="p">,</span>
+        <span class="c1"># Configure lines</span>
+        <span class="s1">&#39;lines_thickness&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="s1">&#39;lines_opacity&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="c1"># Configure dots</span>
+        <span class="s1">&#39;dots_thickness&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="s1">&#39;dots_opacity&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+    <span class="p">})</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="getting_started.html" title="previous chapter (use the left arrow)">Getting started</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="tuto_webserver.html" title="next chapter (use the right arrow)">Advanced uses: Webserver</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tuto_webserver.html" title="Advanced uses: Webserver"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2020, Facebook AI Research (FAIR). Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

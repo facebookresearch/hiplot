@@ -4,296 +4,172 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>HiPlot documentation &#8212; HiPlot 0.1.0 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>HiPlot documentation &#8212; HiPlot 0.1.0.post3 documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Readme File" href="readme.html" />
+    <link rel="next" title="Getting started" href="getting_started.html" />
+  
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
-
-          <div class="body" role="main">
-            
-  <div class="section" id="hiplot-documentation">
-<h1>HiPlot documentation<a class="headerlink" href="#hiplot-documentation" title="Permalink to this headline">¶</a></h1>
-<p>HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.</p>
-<p>There are 2 modes to HiPlot:</p>
-<ul class="simple">
-<li><p>As a web-server (if your data is a CSV for instance)</p></li>
-<li><p>In a jupyter notebook (to visualize python data)</p></li>
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar">
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Contents</h2>
+    <div class="sidebar-localtoc">
+      <ul>
+<li><a class="reference internal" href="#">HiPlot documentation</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
+
+    </div>
+  </div>
 </div>
-<div class="section" id="getting-started">
-<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pip</span> <span class="n">install</span> <span class="n">hiplot</span>
-</pre></div>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="getting_started.html"
+                        title="next chapter">Getting started</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
 </div>
-<div class="section" id="option-1-in-an-ipython-notebook">
-<h2>Option 1: In an ipython notebook<a class="headerlink" href="#option-1-in-an-ipython-notebook" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
-<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;SGD&#39;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">}]</span>
-<span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="option-2-hiplot-webserver">
-<h2>Option 2: HiPlot webserver<a class="headerlink" href="#option-2-hiplot-webserver" title="Permalink to this headline">¶</a></h2>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span>
-</pre></div>
-</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="#">Docs</a></li>
+              
+              <li>HiPlot documentation</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="figure align-default">
+<img alt="_images/logo.svg" src="_images/logo.svg" /></div>
+<p>HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information. <a class="reference external" href="https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html">Try a demo now!</a></p>
+<div class="section" id="hiplot-documentation">
+<h1>HiPlot documentation<a class="headerlink" href="#hiplot-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">Readme File</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#hiplot-as-a-web-server">HiPlot as a web-server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#hiplot-in-a-jupyter-notebook">HiPlot in a Jupyter notebook</a></li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#option-1-in-an-ipython-notebook">Option 1: In an ipython notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#option-2-hiplot-webserver">Option 2: HiPlot webserver</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">Customizing Experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tuto_webserver.html#compare-multiple-experiments">Compare multiple experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tuto_webserver.html#use-hiplot-server-to-render-your-own-experiments">Use HiPlot server to render your own experiments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="py_reference.html">HiPlot classes reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="py_reference.html#hiplot-experiment"><cite>hiplot.Experiment</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="py_reference.html#hiplot-datapoint"><cite>hiplot.Datapoint</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="py_reference.html#changing-columns-type-scales">Changing columns type/scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="py_reference.html#exceptions">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="py_reference.html#hiplot-server">HiPlot server</a></li>
 </ul>
 </li>
 </ul>
-</div>
-<dl class="class">
-<dt id="hiplot.Experiment">
-<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param">datapoints: Optional[List[hiplot.experiment.Datapoint]] = None</em>, <em class="sig-param">parameters_definition: Optional[Dict[str</em>, <em class="sig-param">hiplot.experiment.ValueDef]] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Object that can be rendered by HiPlot.
-See <cite>Experiment.display</cite> for ipython notebook case, or <cite>ExperimentFetcher</cite> for the web-server case.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>datapoints</strong> – All the measurements we have. One datapoint corresponds to one line in the parallel plot and to one line in the table.</p></li>
-<li><p><strong>parameters_definition</strong> – Characteristics of the columns (ordering, type, etc…)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Example</dt>
-<dd class="field-even"><p></p></dd>
-</dl>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;hidden_field&#39;</span><span class="p">:</span> <span class="s1">&#39;value1&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">},</span>
-<span class="go">    {&#39;param&#39;: 2, &#39;loss&#39;: 5, &#39;hidden_field&#39;: &#39;value2&#39;, &#39;c&#39;: &#39;black&#39;}]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="method">
-<dt id="hiplot.Experiment.display">
-<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param">force_full_width: bool = False</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ExperimentDisplayed<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display" title="Permalink to this definition">¶</a></dt>
-<dd><p>Displays an experiment in an ipython notebook.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>force_full_width</strong> – allows to force to have 100% width on Jupyter Notebooks only.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An <cite>ExperimentDisplayed</cite> object that can be used to fetch a list of <cite>Datapoint</cite> - only implemented for Jupyter notebook.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="hiplot.Experiment.display_data">
-<code class="sig-name descname">display_data</code><span class="sig-paren">(</span><em class="sig-param">plugin: str</em><span class="sig-paren">)</span> &#x2192; Dict[str, Any]<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve data dictionnary for a plugin, which can be modified.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>plugin</strong> – Name of the plugin</p>
-</dd>
-<dt class="field-even">Example</dt>
-<dd class="field-even"><p></p></dd>
-</dl>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">XY</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;axis_x&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;axis_y&quot;</span><span class="p">:</span> <span class="s2">&quot;loss&quot;</span><span class="p">})</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="hiplot.Experiment.from_csv">
-<em class="property">static </em><code class="sig-name descname">from_csv</code><span class="sig-paren">(</span><em class="sig-param">file: Union[pathlib.Path, str]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.from_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.from_csv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a HiPlot experiment from a CSV file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file</strong> – CSV file path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="hiplot.Experiment.from_iterable">
-<em class="property">static </em><code class="sig-name descname">from_iterable</code><span class="sig-paren">(</span><em class="sig-param">it: Iterable[Dict[str, Any]]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.from_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.from_iterable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a HiPlot experiment from an iterable/list of dictionnaries.
-This is the easiest way to generate an <cite>hiplot.Experiment</cite> object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>it</strong> – A list (or iterable) of dictionnaries</p>
-</dd>
-<dt class="field-even">Example</dt>
-<dd class="field-even"><p></p></dd>
-</dl>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">([{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">}])</span>
-<span class="go">&lt;hiplot.experiment.Experiment object at 0x7f0f2e13c590&gt;</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="hiplot.Experiment.merge">
-<em class="property">static </em><code class="sig-name descname">merge</code><span class="sig-paren">(</span><em class="sig-param">xp_dict: Dict[str, Experiment]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.merge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merge several experiments into a single one</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hiplot.Experiment.remove_missing_parents">
-<code class="sig-name descname">remove_missing_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.remove_missing_parents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.remove_missing_parents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets <cite>from_uid</cite> to None when set to a non-existing Datapoint.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hiplot.Experiment.to_csv">
-<code class="sig-name descname">to_csv</code><span class="sig-paren">(</span><em class="sig-param">file: Union[pathlib.Path, str, IO[str]]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_csv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dumps this Experiment as a .csv file.
-Information about display_data, parameters definition will be lost.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file</strong> – Path/handle to a file to write</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="hiplot.Experiment.to_html">
-<code class="sig-name descname">to_html</code><span class="sig-paren">(</span><em class="sig-param">file: Union[pathlib.Path, str, IO[str], None] = None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the content of a standalone .html file that displays this experiment
-without any dependency to HiPlot server or static files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file</strong> – Path/handle to a file to write (optional)</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A standalone HTML code to display this Experiment.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="hiplot.Experiment.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes sure that this object is valid. Raises a <cite>hip.ExperimentValidationError</cite> otherwise.
-Experiments with circular references, non-existent parents, or without datapoints are invalid.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="hiplot.ExperimentDisplayed">
-<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ExperimentDisplayed</code><a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentDisplayed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ExperimentDisplayed" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="hiplot.ExperimentDisplayed.get_selected">
-<em class="property">abstract </em><code class="sig-name descname">get_selected</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[hiplot.experiment.Datapoint]<a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentDisplayed.get_selected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ExperimentDisplayed.get_selected" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of currently rendered datapoints in the parallel plot</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="hiplot.run_server">
-<code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">run_server</code><span class="sig-paren">(</span><em class="sig-param">add_fetchers: List[str], host: str = '127.0.0.1', port: int = 5005, debug: bool = False</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/hiplot/server.html#run_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.run_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs the HiPlot server</p>
-</dd></dl>
-
 </div>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
 
 
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">HiPlot</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">Readme File</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="readme.html" title="next chapter">Readme File</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2020, Facebook AI Research (FAIR).
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
+            
+  <div class="footer-relations">
     
-
-    
+      <div class="pull-right">
+        <a class="btn btn-default" href="getting_started.html" title="next chapter (use the right arrow)">Getting started</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="getting_started.html" title="Getting started"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2020, Facebook AI Research (FAIR). Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
   </body>
 </html>
