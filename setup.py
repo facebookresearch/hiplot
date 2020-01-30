@@ -56,7 +56,7 @@ setup(
     extras_require={"dev": requirements["dev"]},
     package_data={"hiplot": ["py.typed", "static/*", "static/*/*", "static/*/*/*", "templates/**"]},
     include_package_data=True,
-    scripts=['scripts/hiplot'],
+    scripts=['scripts/hiplot', 'scripts/hiplot-render'],
     python_requires='>=3.6',
     cmdclass={
         'verify': VerifyVersionCommand,

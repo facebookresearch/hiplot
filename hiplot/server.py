@@ -5,10 +5,11 @@
 import argparse
 import importlib
 import json
+import copy
 from typing import List, Any, Dict
 
 from . import experiment as exp
-from .fetchers import load_demo, load_csv, load_json, load_fairseq, load_wav2letter, MultipleFetcher, NoFetcherFound, load_xp_with_fetchers
+from .fetchers import get_fetchers, MultipleFetcher, NoFetcherFound, load_xp_with_fetchers
 from .render import get_index_html_template, html_inlinize
 
 
@@ -20,7 +21,7 @@ def run_server(add_fetchers: List[str], host: str = '127.0.0.1', port: int = 500
     from flask_compress import Compress
 
     app = Flask(__name__)
-    xp_fetchers: List[exp.ExperimentFetcher] = [load_demo, load_csv, load_json, load_fairseq, load_wav2letter]
+    xp_fetchers = get_fetchers(add_fetchers)
 
     @app.route("/")
     def index() -> Any:  # pylint: disable=unused-variable
@@ -38,12 +39,6 @@ def run_server(add_fetchers: List[str], host: str = '127.0.0.1', port: int = 500
         except NoFetcherFound as e:
             return jsonify({"error": f"No fetcher found for this experiment: {e}"})
 
-    for fetcher_spec in add_fetchers:
-        parts = fetcher_spec.split(".")
-        module = importlib.import_module(".".join(parts[:-1]))
-        fetcher = getattr(module, parts[-1])
-        xp_fetchers.append(fetcher)
-    xp_fetchers.append(MultipleFetcher(xp_fetchers))
     Compress(app)
     app.run(debug=debug, host=host, port=port)
 

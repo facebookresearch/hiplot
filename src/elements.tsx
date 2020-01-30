@@ -99,11 +99,36 @@ interface HeaderBarState {
 };
 
 export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
+    selected_count_ref: React.RefObject<HTMLElement> = React.createRef();
+    selected_pct_ref: React.RefObject<HTMLElement> = React.createRef();
+    total_count_ref: React.RefObject<HTMLElement> = React.createRef();
     constructor(props: HeaderBarProps) {
         super(props);
         this.state = {
             isTextareaFocused: false
         };
+    }
+    recomputeMetrics() {
+        if (!this.selected_count_ref.current) {
+            return;
+        }
+        const selected_count = this.props.rows.selected.get().length;
+        const total_count = this.props.rows.all.get().length;
+        this.selected_count_ref.current.innerText = '' + selected_count;
+        this.selected_pct_ref.current.innerText = '' + (100 * selected_count / total_count).toPrecision(3);
+        this.total_count_ref.current.innerText = '' + total_count;
+    }
+    componentDidMount() {
+        this.props.rows.selected.on_change(function(rows) {
+            this.recomputeMetrics();
+        }.bind(this), this);
+        this.props.rows.all.on_change(function(rows) {
+            this.recomputeMetrics();
+        }.bind(this), this);
+        this.recomputeMetrics();
+    }
+    componentWillUnmount() {
+        this.props.rows.off(this);
     }
     render() {
         return (<div className={"container-fluid " + style.header}>
@@ -124,7 +149,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         
             {this.props.loadStatus == HiPlotLoadStatus.Loaded && !this.state.isTextareaFocused && 
                 <React.Fragment>
-                    <div className="col-md-4">
+                    <div className="col-md-5">
                         <RestoreDataBtn rows={this.props.rows} />
                         <KeepDataBtn rows={this.props.rows} />
                         <ExcludeDataBtn rows={this.props.rows} />
@@ -132,11 +157,11 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                             <button title="Refresh + restore data removed" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
                         }
                         <ExportDataCSVBtn rows={this.props.rows} />
-                        {/* TODO: Selected count stats */}
                         <div style={{clear:'both'}}></div>
                     </div>
-                    <div className="col-md-4">
-                        selected/total
+                    <div className="col-md-3" style={{"fontFamily": "monospace"}}>
+            Selected: <strong ref={this.selected_count_ref} style={{"minWidth": "4em", "textAlign": "right", "display": "inline-block"}}>??</strong>
+                    /<strong ref={this.total_count_ref} style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>??</strong> (<span ref={this.selected_pct_ref}>??</span>%)
                     </div>
                 </React.Fragment>
             }

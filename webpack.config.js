@@ -5,9 +5,26 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-var path = require('path');
+const path = require('path');
+const fs = require('fs');
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
-var webpack = require("webpack");
+const webpack = require("webpack");
+
+const distPath = path.resolve(__dirname, 'dist');
+
+class WhenDoneCopyToHiplotStaticDir {
+  apply(compiler) {
+    compiler.hooks.afterEmit.tap('WhenDoneCopyToHiplotStaticDir', (
+      stats /* stats is passed as argument when done hook is tapped.  */
+    ) => {
+      var pyBuilt = path.resolve(__dirname, 'hiplot', 'static', 'built');
+      try {
+          fs.mkdirSync(pyBuilt, {recursive: true});
+      } catch (err) { /* `recursive` option is node >= 10.0. Otherwise will throw if the directory already exists */ }
+      fs.copyFileSync(path.resolve(distPath, 'hiplot.bundle.js'), path.resolve(pyBuilt, 'hiplot.bundle.js'));
+    });
+  }
+}
 
 
 module.exports = {
@@ -15,8 +32,7 @@ module.exports = {
       'hiplot': './src/hiplot.tsx',
     },
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        //path: path.resolve(__dirname, 'hiplot', 'static', 'built'),
+        path: distPath,
         filename: '[name].bundle.js'
     },
     resolve: {
@@ -167,6 +183,7 @@ module.exports = {
 " Copyright (c) Facebook, Inc. and its affiliates.\n\n\
  This source code is licensed under the MIT license found in the\n\
  LICENSE file in the root directory of this source tree."),
+      new WhenDoneCopyToHiplotStaticDir()
     ],
     devtool: 'source-map'
 };

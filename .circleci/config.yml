@@ -2,7 +2,15 @@
 #
 # Check https://circleci.com/docs/2.0/language-python/ for more details
 #
-version: 2
+version: 2.1
+
+commands:
+  attach_built_js:
+    steps:
+      - attach_workspace:
+          at: npm-build
+      - run: cp -r npm-build/dist hiplot/static/built
+
 jobs:
   mypy_pytest:
     docker:
@@ -97,8 +105,7 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - attach_workspace:
-          at: npm-build
+      - attach_built_js
       - restore_cache:
           keys:
           - v2-browser_ci-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
@@ -119,10 +126,10 @@ jobs:
           when: always
           command: |
             . venv/bin/activate
-            rm -rf .circleci/demo_pages
             mkdir artifacts
-            cp -r npm-build/dist hiplot/static/built
-            python .circleci/generate_demo_pages.py
+            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
+            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
+            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
             pytest -s .circleci/test_e2e.py
       - run:
           name: Collect artifacts...
@@ -135,8 +142,9 @@ jobs:
             rm -rf hiplot/static/built/*
             cp -r npm-build/dist-dev/* hiplot/static/built
             pip install --upgrade -e .[dev]
-            rm -rf .circleci/demo_pages
-            python .circleci/generate_demo_pages.py
+            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
+            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
+            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
             pytest -s .circleci/test_e2e.py
       - run:
           name: Collect artifacts...
@@ -151,17 +159,40 @@ jobs:
       - image: python:3.7
     steps:
       - checkout
+      - attach_built_js
       - run:
-          name: Install dependencies
+          name: install dependencies
           command: |
-            pip install -r requirements/main.txt
-            pip install -r requirements/dev.txt
+            apt-get update
+            apt-get install python3-venv git -y
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade -e .[dev]
+      - run:
+          name: Generate HiPlot demos
+          command: |
+            . venv/bin/activate
+            mkdir -p docs/_static/demo/
+            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
+            for p in $PAGES; do echo $p; hiplot-render --format html $p > docs/_static/demo/$p.html; done
+      - run:
+          name: Generate other demos
+          command: |
+            . venv/bin/activate
+            DATA_PATH="assets/data"
+            EXPERIMENTS=`(cd $DATA_PATH && ls)`
+            for p in $EXPERIMENTS; do echo $p; hiplot-render --format html $DATA_PATH/$p > docs/_static/demo/$p.html; done
       - run:
           name: Build docs
-          command: cd docs/ && make html
+          command: |
+            . venv/bin/activate
+            cd docs/ && make html
       - persist_to_workspace:
           root: docs/_build
           paths: html
+      - store_artifacts:
+          when: always
+          path: docs/_build/html
 
   docs-deploy:
     docker:
@@ -266,6 +297,8 @@ workflows:
             tags:
               only: /.*/
       - docs-build:
+          requires:
+            - npm-build
           filters:
             tags:
               only: /.*/
