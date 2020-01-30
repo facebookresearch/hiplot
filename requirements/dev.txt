@@ -6,3 +6,4 @@ selenium
 sphinx
 m2r
 twine
+guzzle_sphinx_theme
