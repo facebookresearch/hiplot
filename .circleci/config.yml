@@ -1,0 +1,343 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2.1
+
+commands:
+  attach_built_js:
+    steps:
+      - attach_workspace:
+          at: npm-build
+      - run: cp -r npm-build/dist hiplot/static/built
+
+jobs:
+  mypy_pytest:
+    docker:
+      # specify the version you desire here
+      - image: circleci/python:3.6
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - attach_workspace:
+          at: hiplot/static
+      - restore_cache:
+          keys:
+          - v2-mypy_pytest-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install .[dev]
+      - save_cache:
+          paths:
+            - ./venv
+          key: v2-mypy_pytest-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: "Run mypy"
+          when: always
+          command: |
+            . venv/bin/activate
+            mypy --strict --implicit-reexport hiplot
+      - run:
+          name: Run tests
+          when: always
+          command: |
+            . venv/bin/activate
+            pytest hiplot --durations=10
+
+  npm-build:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - run: npm install
+      - run: mkdir -p npm-build/dist npm-build/dist-dev dist
+      - run: npm run build-dev
+      - run: mv dist/* npm-build/dist-dev/
+      - run: npm run build
+      - run: npx tsc
+      - run: mv dist/* npm-build/dist/ && mkdir -p hiplot/static/built/ && cp npm-build/dist/hiplot.bundle.js hiplot/static/built/
+      - store_artifacts:
+          when: always
+          path: npm-build
+      - persist_to_workspace:
+          root: npm-build
+          paths:
+            - dist
+            - dist-dev
+      - persist_to_workspace:
+          root: hiplot/static
+          paths:
+            - built
+
+  npm-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: npm-build
+      - run:
+          name: Gather package files
+          command: |
+            mkdir pack
+            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"$CIRCLE_TAG\",/" package.json
+            cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src pack/
+            mv npm-build/dist pack/
+            rm pack/dist/hiplot-*  # Leftover from setup.py
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      - run:
+          name: Publish
+          command: cd pack && npm publish
+      - store_artifacts:
+          when: always
+          path: pack
+
+  browser_ci:
+    docker:
+      - image: selenium/standalone-chrome
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_built_js
+      - restore_cache:
+          keys:
+          - v2-browser_ci-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: install dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install python3-venv git -y
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade -e .[dev]
+      - save_cache:
+          paths:
+            - ./venv
+          key: v2-browser_ci-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: Generate pages and end to end testing
+          when: always
+          command: |
+            . venv/bin/activate
+            mkdir artifacts
+            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
+            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
+            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
+            pytest -s .circleci/test_e2e.py
+      - run:
+          name: Collect artifacts...
+          command: mv .circleci/demo_pages artifacts/provided
+      - run:
+          name: Generate pages and end to end testing (dev bundle)
+          when: always
+          command: |
+            . venv/bin/activate
+            rm -rf hiplot/static/built/*
+            cp -r npm-build/dist-dev/* hiplot/static/built
+            pip install --upgrade -e .[dev]
+            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
+            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
+            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
+            pytest -s .circleci/test_e2e.py
+      - run:
+          name: Collect artifacts...
+          when: always
+          command: mv .circleci/demo_pages artifacts/dev
+      - store_artifacts:
+          when: always
+          path: ~/repo/artifacts
+
+  docs-build:
+    docker:
+      - image: python:3.7
+    steps:
+      - checkout
+      - attach_built_js
+      - run:
+          name: install dependencies
+          command: |
+            apt-get update
+            apt-get install python3-venv git -y
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade -e .[dev]
+      - run:
+          name: Generate HiPlot demos
+          command: |
+            . venv/bin/activate
+            mkdir -p docs/_static/demo/
+            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
+            for p in $PAGES; do echo $p; hiplot-render --format html $p > docs/_static/demo/$p.html; done
+      - run:
+          name: Generate other demos
+          command: |
+            . venv/bin/activate
+            DATA_PATH="assets/data"
+            EXPERIMENTS=`(cd $DATA_PATH && ls)`
+            for p in $EXPERIMENTS; do echo $p; hiplot-render --format html $DATA_PATH/$p > docs/_static/demo/$p.html; done
+      - run: cp hiplot/static/built/hiplot.bundle.js docs/_static/hiplot.bundle.js
+      - run:
+          name: Build docs
+          command: |
+            . venv/bin/activate
+            cd docs/ && make html
+      - persist_to_workspace:
+          root: docs/_build
+          paths: html
+      - store_artifacts:
+          when: always
+          path: docs/_build/html
+
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "25:76:4d:1b:f0:5b:72:cb:97:43:fd:35:c9:16:85:2c"
+      - attach_workspace:
+          at: docs/_build
+      - run:
+          name: Install and configure dependencies
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "ci-build"
+            git config user.name "ci-build"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dotfiles --message "[skip ci] Updates" --dist docs/_build/html
+
+  pypi-build:
+    docker:
+      - image: python:3.7
+    steps:
+      - checkout
+      - attach_workspace:
+          at: hiplot/static
+      - run:
+          name: install dependencies
+          command: |
+            apt-get update
+            apt-get install python3-venv -y
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements/dev.txt
+      - run:
+          name: verify git tag vs. version
+          command: |
+            . venv/bin/activate
+            python setup.py verify
+      - run:
+          name: create packages
+          command: |
+            . venv/bin/activate
+            rm -rf dist && mkdir dist pypi-build
+            # create a source distribution
+            python setup.py sdist
+            # create a wheel
+            python setup.py bdist_wheel
+            mv dist pypi-build
+      - run:
+          name: verify package
+          command: |
+            . ./venv/bin/activate
+            twine check pypi-build/dist/*
+      - persist_to_workspace:
+          root: pypi-build
+          paths: dist
+      - store_artifacts:
+          when: always
+          path: pypi-build
+
+  pypi-deploy:
+    docker:
+      - image: python:3.7
+    steps:
+      - attach_workspace:
+          at: pypi-build
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = danthe3rd" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: upload to pypi
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install twine
+            du -h pypi-build/dist/*
+            twine upload pypi-build/dist/hiplot-*
+workflows:
+  version: 2
+  all_ci:
+    jobs:
+      - npm-build:
+          filters:
+            tags:
+              only: /.*/
+      - mypy_pytest:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
+      - browser_ci:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
+      - docs-build:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
+      - docs-deploy:
+          requires:
+            - docs-build
+          filters:
+            branches:
+              only: master
+      - pypi-build:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)/
+            branches:
+              ignore: /.*/
+      - pypi-deploy:
+          requires:
+            - pypi-build
+            - npm-build
+            - docs-build
+            - browser_ci
+            - mypy_pytest
+          filters:
+            tags:
+              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)/
+            branches:
+              ignore: /.*/
+      - npm-deploy:
+          requires:
+            - pypi-build
+            - npm-build
+            - docs-build
+            - browser_ci
+            - mypy_pytest
+          filters:
+            tags:
+              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)/
+            branches:
+              ignore: /.*/

@@ -1,0 +1,7 @@
+# Dockerfile to reproduce locally a Selenium setup with Chrome similar to the CI
+# docker build -t hiplot .
+# docker run --mount src="$(pwd)/..",target=/home/seluser/hiplot,type=bind  -it --entrypoint /bin/bash  hiplot
+FROM selenium/standalone-chrome
+RUN sudo apt-get update
+RUN sudo apt-get install python3-venv -y
+RUN python3 -m venv ~/venv; . ~/venv/bin/activate; pip install wheel; pip install ipython flask bs4 pytest mypy ipykernel selenium
