@@ -11,9 +11,7 @@ __pycache__/
 .DS_Store
 
 # Distribution / packaging / data storage
-data/
 outputs/
-nevergrad_repository/
 .Python
 env/
 build/

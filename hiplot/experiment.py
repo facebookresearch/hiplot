@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 from enum import Enum
 from collections import defaultdict
 from pathlib import Path
-from typing import Optional, List, Dict, Any, Iterable, Union, Callable, Set
+from typing import Optional, List, Dict, Any, Iterable, Union, Callable, Set, IO
 
 from .render import make_experiment_standalone_page
 
@@ -151,12 +151,12 @@ class Experiment(_DictSerializable):
         self.validate()
         return display_exp(self, force_full_width=force_full_width)
 
-    def to_html(self, file: Optional[Union[Path, str]] = None) -> str:
+    def to_html(self, file: Optional[Union[Path, str, IO[str]]] = None) -> str:
         """
         Returns the content of a standalone .html file that displays this experiment
         without any dependency to HiPlot server or static files.
 
-        :param file: Path to a file to write (optional)
+        :param file: Path/handle to a file to write (optional)
         :returns: A standalone HTML code to display this Experiment.
         """
         self.validate()
@@ -164,29 +164,38 @@ class Experiment(_DictSerializable):
             'experiment': self._asdict()
         })
         if file is not None:
-            Path(file).write_text(html)
+            if isinstance(file, (Path, str)):
+                Path(file).write_text(html)
+            else:
+                file.write(html)
         return html
 
-    def to_csv(self, file: Union[Path, str]) -> None:
+    def to_csv(self, file: Union[Path, str, IO[str]]) -> None:
         """
         Dumps this Experiment as a .csv file.
         Information about display_data, parameters definition will be lost.
 
-        :param file: Path to a file to write
+        :param file: Path/handle to a file to write
         """
-        with Path(file).open("w") as csvfile:
-            fieldnames: Set[str] = set()
-            for dp in self.datapoints:
-                for f in dp.values.keys():
-                    fieldnames.add(f)
-            writer = csv.DictWriter(csvfile, fieldnames=["uid", "from_uid"] + sorted(list(fieldnames)))
-            writer.writeheader()
-            for dp in self.datapoints:
-                writer.writerow({
-                    **dp.values,
-                    "uid": dp.uid,
-                    "from_uid": dp.from_uid,
-                })
+        if isinstance(file, (Path, str)):
+            with Path(file).open("w") as csvfile:
+                return self._to_csv(csvfile)
+        else:
+            return self._to_csv(file)
+    
+    def _to_csv(self, fh: IO[str]) -> None:
+        fieldnames: Set[str] = set()
+        for dp in self.datapoints:
+            for f in dp.values.keys():
+                fieldnames.add(f)
+        writer = csv.DictWriter(fh, fieldnames=["uid", "from_uid"] + sorted(list(fieldnames)))
+        writer.writeheader()
+        for dp in self.datapoints:
+            writer.writerow({
+                **dp.values,
+                "uid": dp.uid,
+                "from_uid": dp.from_uid,
+            })
 
     def _asdict(self) -> Dict[str, Any]:
         return {

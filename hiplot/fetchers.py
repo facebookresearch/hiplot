@@ -10,6 +10,7 @@ import math
 import re
 import ast
 import glob
+import importlib
 from typing import Dict, List, Optional, Callable, Any
 from pathlib import Path
 
@@ -317,3 +318,13 @@ class Wav2letterLoader:
         return xp
 
 load_wav2letter = Wav2letterLoader()
+
+def get_fetchers(add_fetchers: List[str]) -> List[hip.ExperimentFetcher]:
+    xp_fetchers: List[hip.ExperimentFetcher] = [load_demo, load_csv, load_json, load_fairseq, load_wav2letter]
+    for fetcher_spec in add_fetchers:
+        parts = fetcher_spec.split(".")
+        module = importlib.import_module(".".join(parts[:-1]))
+        fetcher = getattr(module, parts[-1])
+        xp_fetchers.append(fetcher)
+    xp_fetchers.append(MultipleFetcher(xp_fetchers))
+    return xp_fetchers

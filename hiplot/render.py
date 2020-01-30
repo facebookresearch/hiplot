@@ -82,10 +82,15 @@ def get_index_html_template() -> str:
 
 
 def make_experiment_standalone_page(options: Dict[str, Any]) -> str:
+    hiplot_options = {
+        'is_webserver': False
+    }
+    hiplot_options.update(options)
+
     index_html = html_inlinize(get_index_html_template())
     index_html = index_html.replace(
         "/*ON_LOAD_SCRIPT_INJECT*/",
         f"""/*ON_LOAD_SCRIPT_INJECT*/
-        Object.assign(options, eval('(' + {escapejs(json.dumps(options))} + ')'));
+        Object.assign(options, eval('(' + {escapejs(json.dumps(hiplot_options))} + ')'));
         """)
     return index_html
