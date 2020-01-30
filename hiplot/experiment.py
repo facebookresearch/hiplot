@@ -35,10 +35,13 @@ class _DictSerializable:
         return self.__dict__
 
 class ValueType(Enum):
-    CATEGORICAL = 'categorical'
-    NUMERIC = 'numeric'
-    NUMERIC_LOG = 'numericlog'
-    NUMERIC_PERCENTILE = 'numericpercentile'
+    """
+    Defines how we render a column (scaling, and color scheme)
+    """
+    CATEGORICAL = 'categorical'                 #: Categorical value
+    NUMERIC = 'numeric'                         #: Numeric value on a linear scale. Supports integers, floats, NaNs and inf
+    NUMERIC_LOG = 'numericlog'                  #: Same as NUMERIC, displayed on a logarithmic scale.
+    NUMERIC_PERCENTILE = 'numericpercentile'    #: Same as NUMERIC, displayed on a percentile scale.
 
 
 class Displays:
@@ -48,7 +51,10 @@ class Displays:
 
 
 class ValueDef(_DictSerializable):
-    def __init__(self, type: Optional[ValueType] = None, colors: Optional[Dict[Any, str]] = None, parallel_plot_order: Optional[int] = None, parallel_plot_inverted: Optional[bool] = None) -> None:
+    """
+    Provides a custom type, color, etc.. for a column. See :attr:`hiplot.Experiment.parameters_definition`
+    """
+    def __init__(self, type: Optional[ValueType] = None, colors: Optional[Dict[Any, str]] = None) -> None:
         """
         Overwrite the generated values for a column:
             - type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
@@ -75,7 +81,24 @@ class ValueDef(_DictSerializable):
 class Datapoint(_DictSerializable):
     """
     A datapoint represents a single measurement of metrics - for instance a model checkpoint that is evaluated.
-    It can have a parent `from_uid` if this `Datapoint` originates from another one (offspring).
+    It can have a parent if it originates from another one (offspring).
+
+
+    :ivar uid: A unique identifier for this datapoint
+    :ivar values: A dictionnary with arbitrary metrics/values
+    :ivar from_uid: The uid of the parent :class:`Datapoint` (optional)
+
+    :Example:
+
+    .. code-block:: python
+
+        import hiplot as hip
+        dp1 = hip.Datapoint(uid="parent", values={"loss": 0.0})
+        dp2 = hip.Datapoint(uid="child", from_uid="parent", values={
+            "loss": 1.0,
+            "another_metric": 0.0  # Different datapoints can have different metrics
+        })
+        hip.Experiment(datapoints=[dp1, dp2]).display()  # Render in an ipython notebook
     """
     def __init__(self, uid: str, values: Dict[str, DisplayableType], from_uid: Optional[str] = None) -> None:
         self.uid = uid
@@ -83,6 +106,9 @@ class Datapoint(_DictSerializable):
         self.from_uid = from_uid
 
     def validate(self) -> None:
+        """
+        Makes sure this object is valid - throws an `hiplot.ExperimentValidationError` exception otherwise.
+        """
         for reserved_kw in ["uid", "from_uid"]:
             if reserved_kw in self.values:
                 raise ExperimentValidationError(f'Datapoint {self.uid} contains a value for "{reserved_kw}"')
@@ -90,18 +116,22 @@ class Datapoint(_DictSerializable):
 
 class Experiment(_DictSerializable):
     """
-    Object that can be rendered by HiPlot.
-    See `Experiment.display` for ipython notebook case, or `ExperimentFetcher` for the web-server case.
+    Object that can be rendered by HiPlot. It essential contains a list of metrics, but also some options on how to render it.
+
+    See :meth:`Experiment.display` to display an :class:`Experiment` in an ipython notebook.
 
     :ivar datapoints: All the measurements we have. One datapoint corresponds to one line in the parallel plot and to one line in the table.
     :ivar parameters_definition: Characteristics of the columns (ordering, type, etc...)
 
     :Example:
 
-    >>> import hiplot as hip
-    >>> data = [{'param': 1, 'loss': 10, 'hidden_field': 'value1', 'c': 'red'},
-        {'param': 2, 'loss': 5, 'hidden_field': 'value2', 'c': 'black'}]
-    >>> exp = hip.Experiment.from_iterable(data)
+    .. code-block:: python
+
+        import hiplot as hip
+        data = [{'param': 1, 'loss': 10, 'hidden_field': 'value1', 'c': 'red'},
+            {'param': 2, 'loss': 5, 'hidden_field': 'value2', 'c': 'black'}]
+        exp = hip.Experiment.from_iterable(data)
+
     """
     def __init__(self,
         datapoints: Optional[List[Datapoint]] = None,
@@ -206,7 +236,7 @@ class Experiment(_DictSerializable):
 
     def remove_missing_parents(self) -> "Experiment":
         """
-        Sets `from_uid` to None when set to a non-existing Datapoint.
+        Sets :attr:`hiplot.Datapoint.from_uid` to None when set to a non-existing Datapoint.
         """
         existing_dp: Set[str] = set([dp.uid for dp in self.datapoints])
         for dp in self.datapoints:
@@ -222,7 +252,12 @@ class Experiment(_DictSerializable):
 
         :Example:
 
-        >>> exp.display_data(hip.Displays.XY).update({"axis_x": "time", "axis_y": "loss"})
+        .. code-block:: python
+        
+            exp.display_data(hip.Displays.XY).update({
+                "axis_x": "time",
+                "axis_y": "loss"
+            })
 
         """
         return self._displays.setdefault(plugin, {})
@@ -286,7 +321,6 @@ class ExperimentFetcherDoesntApply(Exception):
 
 
 ExperimentFetcher = Callable[[str], Experiment]
-
 
 class ExperimentDisplayed(metaclass=ABCMeta):
     @abstractmethod

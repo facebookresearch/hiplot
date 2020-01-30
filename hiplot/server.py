@@ -13,15 +13,14 @@ from .fetchers import get_fetchers, MultipleFetcher, NoFetcherFound, load_xp_wit
 from .render import get_index_html_template, html_inlinize
 
 
-def run_server(add_fetchers: List[str], host: str = '127.0.0.1', port: int = 5005, debug: bool = False) -> None:
+def run_server(fetchers: List[exp.ExperimentFetcher], host: str = '127.0.0.1', port: int = 5005, debug: bool = False) -> None:
     """
-    Runs the HiPlot server
+    Runs the HiPlot server, given a list of ExperimentFetchers - functions that convert a URI into a :class:`hiplot.Experiment`
     """
     from flask import Flask, render_template, jsonify, request
     from flask_compress import Compress
 
     app = Flask(__name__)
-    xp_fetchers = get_fetchers(add_fetchers)
 
     @app.route("/")
     def index() -> Any:  # pylint: disable=unused-variable
@@ -33,7 +32,7 @@ def run_server(add_fetchers: List[str], host: str = '127.0.0.1', port: int = 500
         uri = request.args.get("uri", type=str)
         assert uri is not None
         try:
-            xp = load_xp_with_fetchers(xp_fetchers, uri)
+            xp = load_xp_with_fetchers(fetchers, uri)
             xp.validate()
             return jsonify({"query": uri, "experiment": xp._asdict()})
         except NoFetcherFound as e:
@@ -50,6 +49,6 @@ def run_server_main() -> int:
     parser.add_argument("--dev", action='store_true', help="Enable Flask Debug mode (watches for files modifications, etc..)")
     parser.add_argument("fetchers", nargs="*", type=str)
     args = parser.parse_args()
-    run_server(add_fetchers=args.fetchers, host=args.host, port=args.port, debug=args.dev)
+    run_server(fetchers=get_fetchers(args.fetchers), host=args.host, port=args.port, debug=args.dev)
     return 0
 
