@@ -107,13 +107,43 @@ See <cite>Experiment.display</cite> for ipython notebook case, or <cite>Experime
 </dd></dl>
 
 <dl class="method">
+<dt id="hiplot.Experiment.display_data">
+<code class="sig-name descname">display_data</code><span class="sig-paren">(</span><em class="sig-param">plugin: str</em><span class="sig-paren">)</span> &#x2192; Dict[str, Any]<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve data dictionnary for a plugin, which can be modified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>plugin</strong> – Name of the plugin</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">XY</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;axis_x&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;axis_y&quot;</span><span class="p">:</span> <span class="s2">&quot;loss&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="hiplot.Experiment.from_csv">
+<em class="property">static </em><code class="sig-name descname">from_csv</code><span class="sig-paren">(</span><em class="sig-param">file: Union[pathlib.Path, str]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.from_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.from_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a HiPlot experiment from a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file</strong> – CSV file path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="hiplot.Experiment.from_iterable">
 <em class="property">static </em><code class="sig-name descname">from_iterable</code><span class="sig-paren">(</span><em class="sig-param">it: Iterable[Dict[str, Any]]</em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.from_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.from_iterable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a HiPlot experiment from an iterable/list of dictionnaries.
 This is the easiest way to generate an <cite>hiplot.Experiment</cite> object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Example</dt>
-<dd class="field-odd"><p></p></dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>it</strong> – A list (or iterable) of dictionnaries</p>
+</dd>
+<dt class="field-even">Example</dt>
+<dd class="field-even"><p></p></dd>
 </dl>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">([{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;b&quot;</span><span class="p">}])</span>
@@ -135,10 +165,30 @@ This is the easiest way to generate an <cite>hiplot.Experiment</cite> object.</p
 </dd></dl>
 
 <dl class="method">
+<dt id="hiplot.Experiment.to_csv">
+<code class="sig-name descname">to_csv</code><span class="sig-paren">(</span><em class="sig-param">file: Union[pathlib.Path, str, IO[str]]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dumps this Experiment as a .csv file.
+Information about display_data, parameters definition will be lost.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file</strong> – Path/handle to a file to write</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="hiplot.Experiment.to_html">
-<code class="sig-name descname">to_html</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_html</code><span class="sig-paren">(</span><em class="sig-param">file: Union[pathlib.Path, str, IO[str], None] = None</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the content of a standalone .html file that displays this experiment
 without any dependency to HiPlot server or static files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file</strong> – Path/handle to a file to write (optional)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A standalone HTML code to display this Experiment.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">

@@ -35,10 +35,12 @@
 <span class="c1"># This source code is licensed under the MIT license found in the</span>
 <span class="c1"># LICENSE file in the root directory of this source tree.</span>
 
+<span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">IO</span>
 
 <span class="kn">from</span> <span class="nn">.render</span> <span class="kn">import</span> <span class="n">make_experiment_standalone_page</span>
 
@@ -72,11 +74,10 @@
     <span class="n">NUMERIC_PERCENTILE</span> <span class="o">=</span> <span class="s1">&#39;numericpercentile&#39;</span>
 
 
-<span class="k">class</span> <span class="nc">Displays</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="n">PARALLEL_PLOT</span> <span class="o">=</span> <span class="s1">&#39;parallel_plot&#39;</span>
-    <span class="n">XY</span> <span class="o">=</span> <span class="s1">&#39;xy&#39;</span>
-    <span class="n">XY2</span> <span class="o">=</span> <span class="s1">&#39;xy2&#39;</span>
-    <span class="n">TABLE</span> <span class="o">=</span> <span class="s1">&#39;table&#39;</span>
+<span class="k">class</span> <span class="nc">Displays</span><span class="p">:</span>
+    <span class="n">PARALLEL_PLOT</span> <span class="o">=</span> <span class="s1">&#39;PARALLEL_PLOT&#39;</span>
+    <span class="n">XY</span> <span class="o">=</span> <span class="s1">&#39;XY&#39;</span>
+    <span class="n">TABLE</span> <span class="o">=</span> <span class="s1">&#39;TABLE&#39;</span>
 
 
 <span class="k">class</span> <span class="nc">ValueDef</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
@@ -142,9 +143,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span> <span class="o">=</span> <span class="n">datapoints</span> <span class="k">if</span> <span class="n">datapoints</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters_definition</span> <span class="o">=</span> <span class="n">parameters_definition</span> <span class="k">if</span> <span class="n">parameters_definition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">ValueDef</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_displays</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="n">Displays</span><span class="o">.</span><span class="n">TABLE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="n">Displays</span><span class="o">.</span><span class="n">XY</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">Displays</span><span class="o">.</span><span class="n">TABLE</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="n">Displays</span><span class="o">.</span><span class="n">XY</span><span class="p">:</span> <span class="p">{},</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="Experiment.validate"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
@@ -183,15 +184,51 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">display_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="o">=</span><span class="n">force_full_width</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Experiment.to_html"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Experiment.to_html"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the content of a standalone .html file that displays this experiment</span>
 <span class="sd">        without any dependency to HiPlot server or static files.</span>
+
+<span class="sd">        :param file: Path/handle to a file to write (optional)</span>
+<span class="sd">        :returns: A standalone HTML code to display this Experiment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">make_experiment_standalone_page</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="n">make_experiment_standalone_page</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{</span>
             <span class="s1">&#39;experiment&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span>
-        <span class="p">})</span></div>
+        <span class="p">})</span>
+        <span class="k">if</span> <span class="n">file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">html</span></div>
+
+<div class="viewcode-block" id="Experiment.to_csv"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dumps this Experiment as a .csv file.</span>
+<span class="sd">        Information about display_data, parameters definition will be lost.</span>
+
+<span class="sd">        :param file: Path/handle to a file to write</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
+    
+    <span class="k">def</span> <span class="nf">_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fh</span><span class="p">:</span> <span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fieldnames</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">fieldnames</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="s2">&quot;from_uid&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">fieldnames</span><span class="p">)))</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">:</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">({</span>
+                <span class="o">**</span><span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                <span class="s2">&quot;uid&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">uid</span><span class="p">,</span>
+                <span class="s2">&quot;from_uid&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">from_uid</span><span class="p">,</span>
+            <span class="p">})</span>
 
     <span class="k">def</span> <span class="nf">_asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -210,14 +247,26 @@
                 <span class="n">dp</span><span class="o">.</span><span class="n">from_uid</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">display_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">:</span> <span class="n">Displays</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_displays</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="p">{})</span>
+<div class="viewcode-block" id="Experiment.display_data"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.display_data">[docs]</a>    <span class="k">def</span> <span class="nf">display_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve data dictionnary for a plugin, which can be modified.</span>
+
+<span class="sd">        :param plugin: Name of the plugin</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; exp.display_data(hip.Displays.XY).update({&quot;axis_x&quot;: &quot;time&quot;, &quot;axis_y&quot;: &quot;loss&quot;})</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_displays</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="p">{})</span></div>
 
 <div class="viewcode-block" id="Experiment.from_iterable"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.from_iterable">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_iterable</span><span class="p">(</span><span class="n">it</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a HiPlot experiment from an iterable/list of dictionnaries.</span>
 <span class="sd">        This is the easiest way to generate an `hiplot.Experiment` object.</span>
+
+<span class="sd">        :param it: A list (or iterable) of dictionnaries</span>
 
 <span class="sd">        :Example:</span>
 
@@ -228,9 +277,22 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Experiment</span><span class="p">(</span>
             <span class="n">datapoints</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">Datapoint</span><span class="p">(</span><span class="n">uid</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)),</span> <span class="n">from_uid</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;from_uid&quot;</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="p">{</span><span class="n">mk</span><span class="p">:</span> <span class="n">mv</span> <span class="k">for</span> <span class="n">mk</span><span class="p">,</span> <span class="n">mv</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">mk</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="s2">&quot;from_uid&quot;</span><span class="p">]})</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
+                <span class="n">Datapoint</span><span class="p">(</span>
+                    <span class="n">uid</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">)),</span>
+                    <span class="n">from_uid</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;from_uid&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;from_uid&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">values</span><span class="o">=</span><span class="p">{</span><span class="n">mk</span><span class="p">:</span> <span class="n">mv</span> <span class="k">for</span> <span class="n">mk</span><span class="p">,</span> <span class="n">mv</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">mk</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="s2">&quot;from_uid&quot;</span><span class="p">]})</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Experiment.from_csv"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.from_csv">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_csv</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a HiPlot experiment from a CSV file.</span>
+
+<span class="sd">        :param file: CSV file path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Experiment.merge"><a class="viewcode-back" href="../../index.html#hiplot.Experiment.merge">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="n">xp_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
