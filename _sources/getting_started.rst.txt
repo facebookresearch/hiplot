@@ -8,6 +8,7 @@ Getting started
 Option 1: In an ipython notebook
 --------------------------------
 
+
 .. code-block:: python
 
     import hiplot as hip
@@ -21,8 +22,6 @@ Option 1: In an ipython notebook
    :width: 800
 
 
-
-
 .. _getStartedWebserver:
 
 Option 2: HiPlot webserver
@@ -32,7 +31,7 @@ Option 2: HiPlot webserver
 
 
 Then open your web browser in http://127.0.0.1:5005/.
-In the web interface, you can enter an experiment URI - you can enter the path to a CSV file, or just type in "`demo`", or "`demo_line_xy`" to see some basic examples.
+In the web interface, you can enter an experiment URI - you can enter the path to a CSV file, or just type in :code:`demo`, or :code:`demo_line_xy` to see some basic examples.
 
 .. note::
    By default, hiplot only listens on localhost, which prevents anyone else from seeing your experiments.
@@ -40,7 +39,7 @@ In the web interface, you can enter an experiment URI - you can enter the path t
 
    >>> hiplot --host 0.0.0.0
 
-HiPlot webserver allows to do way more:
+HiPlot webserver can do way more:
 
 * you can share the URL to a colleague - it contains all the columns you have filtered, reordered during the session
 * you can :ref:`tutoWebserverCompareXp`

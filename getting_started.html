@@ -24,7 +24,7 @@
     <link rel="shortcut icon" href="_static/icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Customizing Experiments" href="experiment_settings.html" />
+    <link rel="next" title="More about hiplot.Experiment" href="experiment_settings.html" />
     <link rel="prev" title="HiPlot documentation" href="index.html" />
   
    
@@ -37,7 +37,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="experiment_settings.html" title="Customizing Experiments"
+          <a href="experiment_settings.html" title="More about hiplot.Experiment"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="HiPlot documentation"
@@ -51,35 +51,31 @@
         <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
       </div>
   <div id="left-column">
-    <div class="sphinxsidebar">
+    <div class="sphinxsidebar"><a href="
+    index.html" class="text-logo">HiPlot</a>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
-    <h2>Contents</h2>
-    <div class="sidebar-localtoc">
-      <ul>
-<li><a class="reference internal" href="#">Getting started</a><ul>
-<li><a class="reference internal" href="#option-1-in-an-ipython-notebook">Option 1: In an ipython notebook</a></li>
-<li><a class="reference internal" href="#option-2-hiplot-webserver">Option 2: HiPlot webserver</a></li>
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#option-1-in-an-ipython-notebook">Option 1: In an ipython notebook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#option-2-hiplot-webserver">Option 2: HiPlot webserver</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py_reference.html">HiPlot classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 
-    </div>
+    
   </div>
 </div>
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">HiPlot documentation</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="experiment_settings.html"
-                        title="next chapter">Customizing Experiments</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/getting_started.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
     <div id="main-search">
@@ -123,7 +119,7 @@
 </pre></div>
 </div>
 <div class="figure align-default">
-<a class="reference internal image-reference" href="../assets/notebook.png"><img alt="../assets/notebook.png" src="../assets/notebook.png" style="width: 800px;" /></a>
+<a class="reference internal image-reference" href="_images/notebook.png"><img alt="_images/notebook.png" src="_images/notebook.png" style="width: 800px;" /></a>
 </div>
 </div>
 <div class="section" id="option-2-hiplot-webserver">
@@ -132,7 +128,7 @@
 </pre></div>
 </div>
 <p>Then open your web browser in <a class="reference external" href="http://127.0.0.1:5005/">http://127.0.0.1:5005/</a>.
-In the web interface, you can enter an experiment URI - you can enter the path to a CSV file, or just type in “<cite>demo</cite>”, or “<cite>demo_line_xy</cite>” to see some basic examples.</p>
+In the web interface, you can enter an experiment URI - you can enter the path to a CSV file, or just type in <code class="code docutils literal notranslate"><span class="pre">demo</span></code>, or <code class="code docutils literal notranslate"><span class="pre">demo_line_xy</span></code> to see some basic examples.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>By default, hiplot only listens on localhost, which prevents anyone else from seeing your experiments.
@@ -141,11 +137,11 @@ To allow anyone to connect, use</p>
 </pre></div>
 </div>
 </div>
-<p>HiPlot webserver allows to do way more:</p>
+<p>HiPlot webserver can do way more:</p>
 <ul class="simple">
 <li><p>you can share the URL to a colleague - it contains all the columns you have filtered, reordered during the session</p></li>
 <li><p>you can <a class="reference internal" href="tuto_webserver.html#tutowebservercomparexp"><span class="std std-ref">Compare multiple experiments</span></a></p></li>
-<li><p>you can <a class="reference internal" href="tuto_webserver.html#tutowebservercustomfetcher"><span class="std std-ref">Use HiPlot server to render your own experiments</span></a></p></li>
+<li><p>you can <a class="reference internal" href="tuto_webserver.html#tutowebservercustomfetcher"><span class="std std-ref">Make HiPlot server render your own experiments</span></a></p></li>
 </ul>
 </div>
 </div>
@@ -160,7 +156,7 @@ To allow anyone to connect, use</p>
       </div>
     
       <div class="pull-right">
-        <a class="btn btn-default" href="experiment_settings.html" title="next chapter (use the right arrow)">Customizing Experiments</a>
+        <a class="btn btn-default" href="experiment_settings.html" title="next chapter (use the right arrow)">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a>
       </div>
     </div>
     <div class="clearer"></div>
@@ -175,7 +171,7 @@ To allow anyone to connect, use</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="experiment_settings.html" title="Customizing Experiments"
+          <a href="experiment_settings.html" title="More about hiplot.Experiment"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="HiPlot documentation"

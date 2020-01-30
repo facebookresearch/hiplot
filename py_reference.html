@@ -24,6 +24,7 @@
     <link rel="shortcut icon" href="_static/icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
     <link rel="prev" title="Advanced uses: Webserver" href="tuto_webserver.html" />
   
    
@@ -36,6 +37,9 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
           <a href="tuto_webserver.html" title="Advanced uses: Webserver"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
@@ -47,35 +51,34 @@
         <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
       </div>
   <div id="left-column">
-    <div class="sphinxsidebar">
+    <div class="sphinxsidebar"><a href="
+    index.html" class="text-logo">HiPlot</a>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
-    <h2>Contents</h2>
-    <div class="sidebar-localtoc">
-      <ul>
-<li><a class="reference internal" href="#">HiPlot classes reference</a><ul>
-<li><a class="reference internal" href="#hiplot-experiment"><cite>hiplot.Experiment</cite></a></li>
-<li><a class="reference internal" href="#hiplot-datapoint"><cite>hiplot.Datapoint</cite></a></li>
-<li><a class="reference internal" href="#changing-columns-type-scales">Changing columns type/scales</a></li>
-<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
-<li><a class="reference internal" href="#hiplot-server">HiPlot server</a></li>
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">HiPlot classes reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hiplot-experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hiplot-datapoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Datapoint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#columns-type-scales">Columns type/scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hiplot-server">HiPlot server</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 
-    </div>
+    
   </div>
 </div>
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="tuto_webserver.html"
-                        title="previous chapter">Advanced uses: Webserver</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/py_reference.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
     <div id="main-search">
@@ -107,7 +110,7 @@
   <div class="section" id="hiplot-classes-reference">
 <h1>HiPlot classes reference<a class="headerlink" href="#hiplot-classes-reference" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="hiplot-experiment">
-<h2><cite>hiplot.Experiment</cite><a class="headerlink" href="#hiplot-experiment" title="Permalink to this headline">¶</a></h2>
+<h2><a class="reference internal" href="#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a><a class="headerlink" href="#hiplot-experiment" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="hiplot.Experiment">
 <em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param">datapoints: Optional[List[hiplot.experiment.Datapoint]] = None</em>, <em class="sig-param">parameters_definition: Optional[Dict[str</em>, <em class="sig-param">hiplot.experiment.ValueDef]] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment" title="Permalink to this definition">¶</a></dt>
@@ -234,7 +237,7 @@ without any dependency to HiPlot server or static files.</p>
 <dl class="method">
 <dt id="hiplot.Experiment.validate">
 <code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes sure that this object is valid. Raises a <cite>hip.ExperimentValidationError</cite> otherwise.
+<dd><p>Makes sure that this object is valid. Raises a <a class="reference internal" href="#hiplot.ExperimentValidationError" title="hiplot.ExperimentValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ExperimentValidationError</span></code></a> otherwise.
 Experiments with circular references, non-existent parents, or without datapoints are invalid.</p>
 </dd></dl>
 
@@ -242,7 +245,7 @@ Experiments with circular references, non-existent parents, or without datapoint
 
 </div>
 <div class="section" id="hiplot-datapoint">
-<h2><cite>hiplot.Datapoint</cite><a class="headerlink" href="#hiplot-datapoint" title="Permalink to this headline">¶</a></h2>
+<h2><a class="reference internal" href="#hiplot.Datapoint" title="hiplot.Datapoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Datapoint</span></code></a><a class="headerlink" href="#hiplot-datapoint" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="hiplot.Datapoint">
 <em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">Datapoint</code><span class="sig-paren">(</span><em class="sig-param">uid: str, values: Dict[str, Union[bool, int, float, str]], from_uid: Optional[str] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Datapoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Datapoint" title="Permalink to this definition">¶</a></dt>
@@ -271,14 +274,14 @@ It can have a parent if it originates from another one (offspring).</p>
 <dl class="method">
 <dt id="hiplot.Datapoint.validate">
 <code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/hiplot/experiment.html#Datapoint.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Datapoint.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes sure this object is valid - throws an <cite>hiplot.ExperimentValidationError</cite> exception otherwise.</p>
+<dd><p>Makes sure this object is valid - throws an <a class="reference internal" href="#hiplot.ExperimentValidationError" title="hiplot.ExperimentValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ExperimentValidationError</span></code></a> exception otherwise.</p>
 </dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="changing-columns-type-scales">
-<h2>Changing columns type/scales<a class="headerlink" href="#changing-columns-type-scales" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="columns-type-scales">
+<h2>Columns type/scales<a class="headerlink" href="#columns-type-scales" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="hiplot.ValueType">
 <em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ValueType</code><a class="reference internal" href="_modules/hiplot/experiment.html#ValueType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ValueType" title="Permalink to this definition">¶</a></dt>
@@ -311,7 +314,7 @@ It can have a parent if it originates from another one (offspring).</p>
 
 <dl class="class">
 <dt id="hiplot.ValueDef">
-<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ValueDef</code><span class="sig-paren">(</span><em class="sig-param">type: Optional[hiplot.experiment.ValueType] = None</em>, <em class="sig-param">colors: Optional[Dict[Any</em>, <em class="sig-param">str]] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#ValueDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ValueDef" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ValueDef</code><span class="sig-paren">(</span><em class="sig-param">value_type: Optional[hiplot.experiment.ValueType] = None</em>, <em class="sig-param">colors: Optional[Dict[Any</em>, <em class="sig-param">str]] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#ValueDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ValueDef" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides a custom type, color, etc.. for a column. See <code class="xref py py-attr docutils literal notranslate"><span class="pre">hiplot.Experiment.parameters_definition</span></code></p>
 </dd></dl>
 
@@ -349,6 +352,9 @@ It can have a parent if it originates from another one (offspring).</p>
         <a class="btn btn-default" href="tuto_webserver.html" title="previous chapter (use the left arrow)">Advanced uses: Webserver</a>
       </div>
     
+      <div class="pull-right">
+        <a class="btn btn-default" href="contributing.html" title="next chapter (use the right arrow)">Contributing</a>
+      </div>
     </div>
     <div class="clearer"></div>
   
@@ -361,6 +367,9 @@ It can have a parent if it originates from another one (offspring).</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             >next</a> |</li>
         <li class="right" >
           <a href="tuto_webserver.html" title="Advanced uses: Webserver"
              >previous</a> |</li>

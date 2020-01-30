@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="HiPlot classes reference" href="py_reference.html" />
-    <link rel="prev" title="Customizing Experiments" href="experiment_settings.html" />
+    <link rel="prev" title="More about hiplot.Experiment" href="experiment_settings.html" />
   
    
 
@@ -40,7 +40,7 @@
           <a href="py_reference.html" title="HiPlot classes reference"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="experiment_settings.html" title="Customizing Experiments"
+          <a href="experiment_settings.html" title="More about hiplot.Experiment"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
       </ul>
@@ -51,44 +51,32 @@
         <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
       </div>
   <div id="left-column">
-    <div class="sphinxsidebar">
+    <div class="sphinxsidebar"><a href="
+    index.html" class="text-logo">HiPlot</a>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
-    <h2>Contents</h2>
-    <div class="sidebar-localtoc">
-      <ul>
-<li><a class="reference internal" href="#">Advanced uses: Webserver</a><ul>
-<li><a class="reference internal" href="#compare-multiple-experiments">Compare multiple experiments</a><ul>
-<li><a class="reference internal" href="#dictionary-of-named-experiments">Dictionary of named experiments</a></li>
-<li><a class="reference internal" href="#list-of-experiments">List of experiments</a></li>
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced uses: Webserver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#compare-multiple-experiments">Compare multiple experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#make-hiplot-server-render-your-own-experiments">Make HiPlot server render your own experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dump-your-experiments-to-csv-or-html-with-hiplot-render">Dump your experiments to CSV or HTML with <code class="code docutils literal notranslate"><span class="pre">hiplot-render</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#use-hiplot-server-to-render-your-own-experiments">Use HiPlot server to render your own experiments</a><ul>
-<li><a class="reference internal" href="#step-1-create-an-experiment-fetcher">Step 1: Create an experiment fetcher</a></li>
-<li><a class="reference internal" href="#step-2-prepare-the-data">Step 2: Prepare the data</a></li>
-<li><a class="reference internal" href="#step-3-run-hiplot-server-with-the-new-fetcher">Step 3: Run HiPlot server with the new fetcher</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="py_reference.html">HiPlot classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 
-    </div>
+    
   </div>
 </div>
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="experiment_settings.html"
-                        title="previous chapter">Customizing Experiments</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="py_reference.html"
-                        title="next chapter">HiPlot classes reference</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/tuto_webserver.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
     <div id="main-search">
@@ -122,7 +110,7 @@
 <p>This section assumes you already have a hiplot webserver running (otherwise, see <a class="reference internal" href="getting_started.html#getstartedwebserver"><span class="std std-ref">Option 2: HiPlot webserver</span></a>)</p>
 <div class="section" id="compare-multiple-experiments">
 <span id="tutowebservercomparexp"></span><h2>Compare multiple experiments<a class="headerlink" href="#compare-multiple-experiments" title="Permalink to this headline">¶</a></h2>
-<p>Multiple experiments can be combined together in the interface using the special “multi” fetcher. It allows 2 syntaxes:</p>
+<p>Multiple experiments can be combined together in the interface using the special <code class="code docutils literal notranslate"><span class="pre">multi</span></code> fetcher. It allows 2 syntaxes:</p>
 <div class="section" id="dictionary-of-named-experiments">
 <h3>Dictionary of named experiments<a class="headerlink" href="#dictionary-of-named-experiments" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">multi</span><span class="p">:</span><span class="o">//</span><span class="p">{</span>
@@ -142,12 +130,12 @@
 </div>
 </div>
 </div>
-<div class="section" id="use-hiplot-server-to-render-your-own-experiments">
-<span id="tutowebservercustomfetcher"></span><h2>Use HiPlot server to render your own experiments<a class="headerlink" href="#use-hiplot-server-to-render-your-own-experiments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="make-hiplot-server-render-your-own-experiments">
+<span id="tutowebservercustomfetcher"></span><h2>Make HiPlot server render your own experiments<a class="headerlink" href="#make-hiplot-server-render-your-own-experiments" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="step-1-create-an-experiment-fetcher">
 <h3>Step 1: Create an experiment fetcher<a class="headerlink" href="#step-1-create-an-experiment-fetcher" title="Permalink to this headline">¶</a></h3>
 <p>An experiment fetcher transforms a string (that the user enters, a path for instance) into a proper <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a>.
-Let’s write a dummy one that takes a folder, and returns the content of <cite>data.csv</cite> inside if the file exists.</p>
+Let’s write a dummy one that takes a folder, and returns the content of <code class="code docutils literal notranslate"><span class="pre">data.csv</span></code> inside if the file exists.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_fetcher.py</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
@@ -176,7 +164,16 @@ mkdir xp_folder
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span> <span class="n">my_fetcher</span><span class="o">.</span><span class="n">fetch_my_experiment</span>
 </pre></div>
 </div>
-<p>In the interface, you can load the string “myxp://xp_folder”</p>
+<p>In the interface, you can load the string <code class="code docutils literal notranslate"><span class="pre">myxp://xp_folder</span></code></p>
+</div>
+</div>
+<div class="section" id="dump-your-experiments-to-csv-or-html-with-hiplot-render">
+<h2>Dump your experiments to CSV or HTML with <code class="code docutils literal notranslate"><span class="pre">hiplot-render</span></code><a class="headerlink" href="#dump-your-experiments-to-csv-or-html-with-hiplot-render" title="Permalink to this headline">¶</a></h2>
+<p>HiPlot also provides a script to generate CSV or a standalone HTML file for an experiment from the command line.
+Like the webserver, it can take additional fetchers to render custom experiments (see also <a class="reference internal" href="#tutowebservercustomfetcher"><span class="std std-ref">Make HiPlot server render your own experiments</span></a> above).
+You can get started with:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span><span class="o">-</span><span class="n">render</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
 </div>
 </div>
 </div>
@@ -187,7 +184,7 @@ mkdir xp_folder
   <div class="footer-relations">
     
       <div class="pull-left">
-        <a class="btn btn-default" href="experiment_settings.html" title="previous chapter (use the left arrow)">Customizing Experiments</a>
+        <a class="btn btn-default" href="experiment_settings.html" title="previous chapter (use the left arrow)">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a>
       </div>
     
       <div class="pull-right">
@@ -209,7 +206,7 @@ mkdir xp_folder
           <a href="py_reference.html" title="HiPlot classes reference"
              >next</a> |</li>
         <li class="right" >
-          <a href="experiment_settings.html" title="Customizing Experiments"
+          <a href="experiment_settings.html" title="More about hiplot.Experiment"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.0.post3 documentation</a> &#187;</li> 
       </ul>

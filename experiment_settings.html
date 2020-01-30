@@ -13,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>Customizing Experiments &#8212; HiPlot 0.1.0.post3 documentation</title>
+    <title>More about hiplot.Experiment &#8212; HiPlot 0.1.0.post3 documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -51,20 +51,31 @@
         <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
       </div>
   <div id="left-column">
-    <div class="sphinxsidebar">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="getting_started.html"
-                        title="previous chapter">Getting started</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="tuto_webserver.html"
-                        title="next chapter">Advanced uses: Webserver</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/experiment_settings.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+    <div class="sphinxsidebar"><a href="
+    index.html" class="text-logo">HiPlot</a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#drawing-lines-by-connecting-datapoints">Drawing lines by connecting Datapoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#frontend-rendering-settings">Frontend rendering settings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py_reference.html">HiPlot classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+    
+  </div>
+</div>
 <div class="sidebar-block">
   <div class="sidebar-wrapper">
     <div id="main-search">
@@ -87,27 +98,65 @@
             <ol class="breadcrumb">
               <li><a href="index.html">Docs</a></li>
               
-              <li>Customizing Experiments</li>
+              <li>More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></li>
             </ol>
           </div>
           
           <div class="document clearer body">
             
-  <div class="section" id="customizing-experiments">
-<span id="customizexp"></span><h1>Customizing Experiments<a class="headerlink" href="#customizing-experiments" title="Permalink to this headline">¶</a></h1>
-<p>An experiment is rendered with several independant components:</p>
+  <div class="section" id="more-about-hiplot-experiment">
+<span id="customizexp"></span><h1>More about <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a><a class="headerlink" href="#more-about-hiplot-experiment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="drawing-lines-by-connecting-datapoints">
+<h2>Drawing lines by connecting Datapoints<a class="headerlink" href="#drawing-lines-by-connecting-datapoints" title="Permalink to this headline">¶</a></h2>
+<p>HiPlot has an XY graph. By default, it will simply display one dot per datapoint.
+However, it is possible to make it draw lines or even trees by specifying offspring relationships.
+In an <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a>, each point corresponds to a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" title="hiplot.Datapoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Datapoint</span></code></a>, and each <a class="reference internal" href="py_reference.html#hiplot.Datapoint" title="hiplot.Datapoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Datapoint</span></code></a> has a unique <code class="code docutils literal notranslate"><span class="pre">uid</span></code>.
+When a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" title="hiplot.Datapoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Datapoint</span></code></a> has his <code class="code docutils literal notranslate"><span class="pre">from_uid</span></code> set to a parent’s <code class="code docutils literal notranslate"><span class="pre">uid</span></code>, the XY graph will connect the parent and the child.</p>
+<p>Multiple points can share the same parent - this is especially useful when representing evolving populations.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="p">()</span>
+    <span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">XY</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s1">&#39;axis_x&#39;</span><span class="p">:</span> <span class="s1">&#39;generation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;axis_y&#39;</span><span class="p">:</span> <span class="s1">&#39;loss&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;lines_thickness&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># Customize lines thickness. When below 0, the dots are not connected</span>
+        <span class="s1">&#39;lines_opacity&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>   <span class="c1"># Decrease this value if you have too many lines overlapping</span>
+    <span class="p">})</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
+        <span class="n">dp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span>
+            <span class="n">uid</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span>
+            <span class="n">values</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;generation&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+                <span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="p">})</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">from_parent</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">datapoints</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:])</span>
+            <span class="n">dp</span><span class="o">.</span><span class="n">from_uid</span> <span class="o">=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">uid</span> <span class="c1"># &lt;-- Connect the parent to the child</span>
+            <span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+            <span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="n">exp</span><span class="o">.</span><span class="n">datapoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/demo_line_xy.png"><img alt="_images/demo_line_xy.png" src="_images/demo_line_xy.png" style="width: 800px;" /></a>
+</div>
+<p><a class="reference external" href="https://facebookresearch.github.io/hiplot/_static/demo/demo_line_xy.html">See it live</a></p>
+</div>
+<div class="section" id="frontend-rendering-settings">
+<h2>Frontend rendering settings<a class="headerlink" href="#frontend-rendering-settings" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to customize how the data is rendered:</p>
 <ul class="simple">
-<li><p>A parallel plot</p></li>
-<li><p>An XY graph</p></li>
-<li><p>A table that displays individual rows</p></li>
+<li><p>Either globally by attributing a <a class="reference internal" href="py_reference.html#hiplot.ValueType" title="hiplot.ValueType"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ValueType</span></code></a> to columns</p></li>
 </ul>
-<p>It’s possible to customize how the data is rendered.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">fetchers</span><span class="o">.</span><span class="n">load_demo</span><span class="p">(</span><span class="s2">&quot;demo&quot;</span><span class="p">)</span> <span class="c1"># Let&#39;s create a dummy experiment</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">fetchers</span><span class="o">.</span><span class="n">load_demo</span><span class="p">(</span><span class="s2">&quot;demo&quot;</span><span class="p">)</span>  <span class="c1"># Let&#39;s create a dummy experiment</span>
 
     <span class="c1"># Change column type</span>
     <span class="n">exp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">[</span><span class="s2">&quot;optionA&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">ValueType</span><span class="o">.</span><span class="n">NUMERIC_LOG</span>
-
-    <span class="c1"># Provide configuration for the parallel plot</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Or in the invididual components with <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_data" title="hiplot.Experiment.display_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_data()</span></code></a></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># Provide configuration for the parallel plot</span>
     <span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
         <span class="c1"># Hide some columns</span>
         <span class="s1">&#39;hide&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;optionB&#39;</span><span class="p">],</span>
@@ -129,6 +178,11 @@
         <span class="s1">&#39;dots_opacity&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
     <span class="p">})</span>
 </pre></div>
+</div>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/customized_demo.png"><img alt="_images/customized_demo.png" src="_images/customized_demo.png" style="width: 800px;" /></a>
+</div>
+<p>Rendering of the experiment.</p>
 </div>
 </div>
 

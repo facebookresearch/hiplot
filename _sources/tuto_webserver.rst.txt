@@ -12,7 +12,7 @@ Compare multiple experiments
 ----------------------------
 
 
-Multiple experiments can be combined together in the interface using the special "multi" fetcher. It allows 2 syntaxes:
+Multiple experiments can be combined together in the interface using the special :code:`multi` fetcher. It allows 2 syntaxes:
 
 Dictionary of named experiments
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -37,14 +37,14 @@ List of experiments
 
 .. _tutoWebserverCustomFetcher:
 
-Use HiPlot server to render your own experiments
+Make HiPlot server render your own experiments
 --------------------------------------------------------
 
 
 Step 1: Create an experiment fetcher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 An experiment fetcher transforms a string (that the user enters, a path for instance) into a proper :class:`hiplot.Experiment`.
-Let's write a dummy one that takes a folder, and returns the content of `data.csv` inside if the file exists.
+Let's write a dummy one that takes a folder, and returns the content of :code:`data.csv` inside if the file exists.
 
 .. code-block:: python
 
@@ -58,7 +58,7 @@ Let's write a dummy one that takes a folder, and returns the content of `data.cs
             # Lets other fetchers handle this one
             raise hip.ExperimentFetcherDoesntApply()
         uri = uri[len(PREFIX):]
-    
+
         return hip.Experiment.from_csv(uri + '/data.csv')
 
 
@@ -78,4 +78,15 @@ Step 3: Run HiPlot server with the new fetcher
 
 >>> hiplot my_fetcher.fetch_my_experiment
 
-In the interface, you can load the string "myxp://xp_folder"
+In the interface, you can load the string :code:`myxp://xp_folder`
+
+
+
+Dump your experiments to CSV or HTML with :code:`hiplot-render`
+----------------------------------------------------------------
+
+HiPlot also provides a script to generate CSV or a standalone HTML file for an experiment from the command line.
+Like the webserver, it can take additional fetchers to render custom experiments (see also :ref:`tutoWebserverCustomFetcher` above).
+You can get started with:
+
+>>> hiplot-render --help

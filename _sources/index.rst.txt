@@ -16,6 +16,7 @@ HiPlot documentation
    experiment_settings
    tuto_webserver
    py_reference
+   contributing
 
 
 Indices and tables
