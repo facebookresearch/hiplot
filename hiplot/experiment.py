@@ -107,7 +107,7 @@ class Datapoint(_DictSerializable):
 
     def validate(self) -> None:
         """
-        Makes sure this object is valid - throws an `hiplot.ExperimentValidationError` exception otherwise.
+        Makes sure this object is valid - throws an :class:`hiplot.ExperimentValidationError` exception otherwise.
         """
         for reserved_kw in ["uid", "from_uid"]:
             if reserved_kw in self.values:
@@ -147,7 +147,7 @@ class Experiment(_DictSerializable):
 
     def validate(self) -> "Experiment":
         """
-        Makes sure that this object is valid. Raises a `hip.ExperimentValidationError` otherwise.
+        Makes sure that this object is valid. Raises a :class:`hiplot.ExperimentValidationError` otherwise.
         Experiments with circular references, non-existent parents, or without datapoints are invalid.
         """
         seen: Set[str] = set()

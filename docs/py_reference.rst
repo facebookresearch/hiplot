@@ -2,21 +2,21 @@
 HiPlot classes reference
 ========================
 
-`hiplot.Experiment`
+:class:`hiplot.Experiment`
 --------------------------------
 
 .. autoclass:: hiplot.Experiment
    :members:
 
 
-`hiplot.Datapoint`
+:class:`hiplot.Datapoint`
 --------------------------------
 
 .. autoclass:: hiplot.Datapoint
    :members:
 
 
-Changing columns type/scales
+Columns type/scales
 --------------------------------
 .. autoclass:: hiplot.ValueType
    :members:

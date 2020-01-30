@@ -40,7 +40,7 @@ In the web interface, you can enter an experiment URI - you can enter the path t
 
    >>> hiplot --host 0.0.0.0
 
-HiPlot webserver allows to do way more:
+HiPlot webserver can do way more:
 
 * you can share the URL to a colleague - it contains all the columns you have filtered, reordered during the session
 * you can :ref:`tutoWebserverCompareXp`

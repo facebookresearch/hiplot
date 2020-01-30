@@ -182,6 +182,7 @@ jobs:
             DATA_PATH="assets/data"
             EXPERIMENTS=`(cd $DATA_PATH && ls)`
             for p in $EXPERIMENTS; do echo $p; hiplot-render --format html $DATA_PATH/$p > docs/_static/demo/$p.html; done
+      - run: cp hiplot/static/built/hiplot.bundle.js docs/_static/hiplot.bundle.js
       - run:
           name: Build docs
           command: |

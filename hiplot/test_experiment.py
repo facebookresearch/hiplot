@@ -68,7 +68,8 @@ def test_doc() -> None:
 
     # Change column type
     exp.parameters_definition["optionA"].type = hip.ValueType.NUMERIC_LOG
-
+    #EXPERIMENT_SETTINGS_SNIPPET1_END
+    #EXPERIMENT_SETTINGS_SNIPPET2_BEGIN
     # Provide configuration for the parallel plot
     exp.display_data(hip.Displays.PARALLEL_PLOT).update({
         # Hide some columns
@@ -90,5 +91,5 @@ def test_doc() -> None:
         'dots_thickness': 2.0,
         'dots_opacity': 0.3,
     })
-    #EXPERIMENT_SETTINGS_SNIPPET1_END
+    #EXPERIMENT_SETTINGS_SNIPPET2_END
     exp.validate()

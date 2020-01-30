@@ -6,7 +6,7 @@ import hiplot.fetchers
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog="HiPlot", description="Render an HiPlot experiment to HTML or CSV")
+    parser = argparse.ArgumentParser(prog="HiPlot", description="Render an HiPlot experiment to HTML or CSV in the standard output")
     parser.add_argument("experiment_uri", type=str)
     parser.add_argument("--format", default='csv', choices=['csv', 'html'], help="File format")
     parser.add_argument("fetchers", nargs="*", type=str, help="Additional fetchers to use")
