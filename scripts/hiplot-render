@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+import sys
+import argparse
+import hiplot as hip
+import hiplot.fetchers
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(prog="HiPlot", description="Render an HiPlot experiment to HTML or CSV in the standard output")
+    parser.add_argument("experiment_uri", type=str)
+    parser.add_argument("--format", default='csv', choices=['csv', 'html'], help="File format")
+    parser.add_argument("fetchers", nargs="*", type=str, help="Additional fetchers to use")
+    args = parser.parse_args()
+
+    exp = hip.fetchers.load_xp_with_fetchers(hip.fetchers.get_fetchers(args.fetchers), args.experiment_uri)
+    exp.validate()
+    if args.format == 'csv':
+        exp.to_csv(sys.stdout)
+    elif args.format == 'html':
+        exp.to_html(sys.stdout)
+    else:
+        assert False, args.format

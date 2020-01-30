@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>HiPlot</title>
+    <link rel="icon" href="static/icon.png" />
+  </head>
+  <body style="margin:0px">
+    <div id="hiplot"></div>
+    <script src="static/built/hiplot.bundle.js" type="module" ></script>
+    <script type="text/javascript">
+    var globalHiPlot = undefined;
+    document.addEventListener("DOMContentLoaded", function() {
+      var options = {
+        is_webserver: true,
+      };
+      /*ON_LOAD_SCRIPT_INJECT*/
+      globalHiPlot = hiplot_setup(document.getElementById("hiplot"), options);
+    });
+    </script>
+  </body>
+</html>

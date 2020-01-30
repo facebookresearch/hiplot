@@ -1,0 +1,62 @@
+{
+  "name": "hiplot",
+  "version": "0.0.0",
+  "description": "HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.",
+  "main": "src/hiplot.js",
+  "types": "./dist/hiplot.d.ts",
+  "dependencies": {
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "@babel/preset-typescript": "^7.7.4",
+    "@types/bootstrap": "^4.3.1",
+    "@types/d3": "^5.7.2",
+    "@types/datatables.net": "^1.10.18",
+    "@types/jquery": "^3.3.31",
+    "@types/react": "^16.9.13",
+    "@types/react-dom": "^16.9.4",
+    "@types/source-map": "^0.5.7",
+    "@types/underscore": "^1.9.4",
+    "bootstrap": "^4.4.1",
+    "d3": "^5.14.2",
+    "datatables.net-bs4": "^1.10.20",
+    "datatables.net-buttons-bs4": "^1.6.1",
+    "datatables.net-colreorder-bs4": "^1.5.2",
+    "datatables.net-fixedheader-bs4": "^3.1.6",
+    "datatables.net-responsive-bs4": "^2.2.3",
+    "jquery": "^3.4.1",
+    "randomcolor": "^0.5.4",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "underscore": "^1.9.1"
+  },
+  "devDependencies": {
+    "css-loader": "^3.4.1",
+    "file-loader": "^5.0.2",
+    "json5": "^2.1.1",
+    "license-webpack-plugin": "^2.1.3",
+    "node-sass": "^4.13.1",
+    "sass-loader": "^8.0.0",
+    "source-map-loader": "^0.2.4",
+    "style-loader": "^1.1.2",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.5",
+    "url-loader": "^3.0.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  },
+  "scripts": {
+    "build": "webpack --display-error-details --progress",
+    "build-dev": "webpack --display-error-details --progress -d"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebookresearch/hiplot.git"
+  },
+  "author": "Facebook AI Research",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/facebookresearch/hiplot/issues"
+  },
+  "homepage": "https://github.com/facebookresearch/hiplot#readme"
+}

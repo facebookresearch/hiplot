@@ -1,0 +1,210 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+.hiplot {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+.hiplot {
+  font-family: Ubuntu, Tahoma, Helvetica, sans-serif;
+  font-size: 12px;
+  line-height: 1.4em;
+  background: #f7f7f7;
+  color: #404040;
+}
+.dark {
+  background: #131313;
+  color: #e3e3e3;
+}
+.hiplot a {
+  text-decoration: none;
+}
+.dark a {
+  color: #5ae;
+}
+.wrap {
+  padding: 0 3.5%;
+}
+.parallel-plot-chart svg {
+  font-family: Ubuntu, Tahoma, Helvetica, sans-serif;
+}
+.parallel-plot-chart canvas, .parallel-plot-chart svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.parallel-plot-chart {
+  position: relative;
+}
+.hiplot .brush rect.extent {
+  fill: rgba(100,100,100,0.15);
+  stroke: #fff;
+}
+.dark .brush rect.extent {
+  fill: rgba(100,100,100,0.15);
+  stroke: #ddd;
+}
+.hiplot .brush:hover rect.extent {
+  stroke: #222;
+  stroke-dasharray: 5,5;
+}
+.hiplot .brush rect.extent:hover {
+  stroke-dasharray: none;
+}
+.resize rect {
+  fill: none;
+}
+.background {
+  fill: none;
+}
+.dark .background {
+  fill: none;
+}
+.axis line, .axis path {
+  fill: none;
+  stroke: #777;
+  stroke-width: 1;
+}
+.dark .axis line, .dark .axis path {
+  stroke: #777;
+}
+.axis :global(.tick) {
+  width: 200px;
+}
+.axis text {
+  fill: #111;
+  text-anchor: right;
+  font-size: 11px;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+.axis text.label {
+  font-size: 12px;
+  cursor: move;
+  padding-bottom: 24px;
+}
+.dark .axis text {
+  fill: #f2f2f2;
+  text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
+}
+.dark .axis text.label {
+  fill: #ddd;
+}
+.quarter, .third, .half {
+  float: left;
+}
+.quarter {
+  width: 23%;
+  margin: 0 1%;
+}
+.third {
+  width: 31.3%;
+  margin: 0 1%;
+}
+.half {
+  width: 48%;
+  margin: 0 1%;
+}
+.hiplot h3 {
+  margin: 12px 0 9px;
+}
+.hiplot h3 small {
+  color: #888;
+  font-weight: normal;
+}
+.hiplot p {
+  margin: 0.6em 0;
+}
+.hiplot small {
+  line-height: 1.2em;
+}
+.hiplot button:disabled {
+  color: #555 !important;
+  opacity: 0.4;
+}
+.settings button:disabled {
+  display: none;
+}
+.dark button:disabled {
+  opacity: 0.2;
+}
+.hiplot .restoreData,
+.hiplot .keepData,
+.hiplot .excludeData {
+  font-weight:bold
+}
+.hiplot .keepData:hover:enabled {
+  color: #080;
+}
+.hiplot .excludeData:hover:enabled {
+  color: #900;
+}
+
+.renderedBar,
+.selectedBar {
+  width:0%;
+  font-weight: bold;
+  height: 100%;
+}
+.renderedBar {
+  background: #3d9aff;
+  border-right: 1px solid #666;
+}
+.selectedBar {
+  background: rgba(171, 171, 171, 0.5);
+  border-right: 1px solid #999;
+}
+.fillbar {
+  height: 2px;
+  line-height: 2px;
+  width: 100%;
+}
+.little-box {
+  width: 268px;
+  float: left;
+}
+.controls {
+  float: right;
+  height: 24px;
+  line-height: 24px;
+}
+
+/* Scrollbars */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ddd;
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b5b5b5;
+  border-radius: 12px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #222;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #444;
+}
+
+.checkpoints-graph-svg :global(.tick) line {
+  color: #9a9a9a26;
+}
+
+tr.highlight {
+  background-color: #e2e2e2 !important;
+}
+
+.min-height-100 {
+  min-height: 100vh;
+}
