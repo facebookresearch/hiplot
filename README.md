@@ -4,7 +4,9 @@
 ![Logo](https://raw.githubusercontent.com/facebookresearch/hiplot/master/hiplot/static/logo.png)
 
 
-HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information. [Try a demo now](https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html)
+HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.
+
+### [Try a demo now](https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html)
 
 There are 2 modes to HiPlot:
 - As a web-server (if your data is a CSV for instance)

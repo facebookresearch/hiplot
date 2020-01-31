@@ -2,7 +2,8 @@
 
 .. mdinclude:: ../README.md
    :start-line: 6
-   :end-line: 8
+   :end-line: 10
+
 
 HiPlot documentation
 ====================
