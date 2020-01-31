@@ -63,8 +63,9 @@ Once we have created this object, we can display it with :class:`hiplot.Experime
     hip.Experiment.from_iterable(data).display()
 
 
-.. figure:: ../assets/notebook.png
-   :width: 800
+.. raw:: html
+
+    <iframe src="https://facebookresearch.github.io/hiplot/_static/demo/demo_basic_usage.html" height="500px" width="100%"></iframe>
 
 
 .. _getStartedWebserver:

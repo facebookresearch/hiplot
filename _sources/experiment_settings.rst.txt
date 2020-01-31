@@ -20,10 +20,10 @@ Multiple points can share the same parent - this is especially useful when repre
     :end-before: DEMO_LINE_XY_END
 
 
-.. figure:: ../assets/demo_line_xy.png
-   :width: 800
+.. raw:: html
 
-`See it live <https://facebookresearch.github.io/hiplot/_static/demo/demo_line_xy.html>`_
+    <iframe src="https://facebookresearch.github.io/hiplot/_static/demo/demo_line_xy.html" height="1000px" style="width: 865px; margin-left: -20px"></iframe>
+
 
 
 

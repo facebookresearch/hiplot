@@ -13,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>Try a demo now &#8212; HiPlot 0.1.1 documentation</title>
+    <title>HiPlot demonstration &#8212; HiPlot 0.1.1 documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -90,7 +90,7 @@
             <ol class="breadcrumb">
               <li><a href="#">Docs</a></li>
               
-              <li>Try a demo now</li>
+              <li>HiPlot demonstration</li>
             </ol>
           </div>
           
@@ -99,10 +99,18 @@
   <div class="figure align-default">
 <img alt="_images/logo.svg" src="_images/logo.svg" /></div>
 <p>HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.</p>
-<div class="section" id="id1">
-<h1><a class="reference external" href="https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html">Try a demo now</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="hiplot-demonstration">
+<h1>HiPlot demonstration<a class="headerlink" href="#hiplot-demonstration" title="Permalink to this headline">¶</a></h1>
+<p>Given about 7000 experimental datapoints, we want to understand which parameters influence the metric we want to optimize: <code class="code docutils literal notranslate"><span class="pre">valid</span> <span class="pre">ppl</span></code>. How can HiPlot help?</p>
+<ul class="simple">
+<li><p>On the parallel plot, each line represents one datapoint. Slicing on the <code class="code docutils literal notranslate"><span class="pre">valid</span> <span class="pre">ppl</span></code> axis reveals that higher values for <code class="code docutils literal notranslate"><span class="pre">lr</span></code> lead to better models.</p></li>
+<li><p>We will focus on higher values for the <code class="code docutils literal notranslate"><span class="pre">lr</span></code> then. Un-slice the <code class="code docutils literal notranslate"><span class="pre">valid</span> <span class="pre">ppl</span></code> axis by clicking on the axis, but outside of the current slice. Slice on the <code class="code docutils literal notranslate"><span class="pre">lr</span></code> axis values above <code class="code docutils literal notranslate"><span class="pre">1e-2</span></code>, then click the <code class="code docutils literal notranslate"><span class="pre">Keep</span></code> button.</p></li>
+<li><p>Let’s see now how the training goes by adding a line plot. Right click the <code class="code docutils literal notranslate"><span class="pre">epoch</span></code> axis title and select <code class="code docutils literal notranslate"><span class="pre">Set</span> <span class="pre">as</span> <span class="pre">X</span> <span class="pre">axis</span></code>. Similary, set <code class="code docutils literal notranslate"><span class="pre">valid</span> <span class="pre">ppl</span></code> as the Y axis. Once you have done both, an XY line plot should appear below the parallel plot.</p></li>
+<li><p>Slicing through the <code class="code docutils literal notranslate"><span class="pre">dropout</span></code>, <code class="code docutils literal notranslate"><span class="pre">embedding_size</span></code> and <code class="code docutils literal notranslate"><span class="pre">lr</span></code> axis reveals how they can affect the training dynamics: convergence speed and maximum performance.</p></li>
+</ul>
+<iframe src="https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html?hip.color_by=%22valid+ppl%22" height="1000px" style="width: 865px; margin-left: -20px"></iframe></div>
 <div class="section" id="hiplot-documentation">
-<h2>HiPlot documentation<a class="headerlink" href="#hiplot-documentation" title="Permalink to this headline">¶</a></h2>
+<h1>HiPlot documentation<a class="headerlink" href="#hiplot-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -118,6 +126,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tuto_webserver.html#experiments-uri">Experiments URI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tuto_webserver.html#compare-multiple-experiments">Compare multiple experiments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tuto_webserver.html#make-hiplot-server-render-your-own-experiments">Make HiPlot server render your own experiments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tuto_webserver.html#dump-your-experiments-to-csv-or-html-with-hiplot-render">Dump your experiments to CSV or HTML with <code class="code docutils literal notranslate"><span class="pre">hiplot-render</span></code></a></li>
@@ -141,12 +150,11 @@
 </div>
 </div>
 <div class="section" id="indices-and-tables">
-<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
 </div>
 
 
