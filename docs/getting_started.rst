@@ -65,7 +65,7 @@ Once we have created this object, we can display it with :class:`hiplot.Experime
 
 .. raw:: html
 
-    <iframe src="https://facebookresearch.github.io/hiplot/_static/demo/demo_basic_usage.html" height="500px" width="100%"></iframe>
+    <iframe src="./_static/demo/demo_basic_usage.html?hip.PARALLEL_PLOT.height=300" height="700px" width="100%"></iframe>
 
 
 .. _getStartedWebserver:
