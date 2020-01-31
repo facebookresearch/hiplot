@@ -111,6 +111,7 @@ extensions.append("guzzle_sphinx_theme")
 html_theme_options = {
     # Set the name of the project to appear in the sidebar
     "project_nav_name": "HiPlot",
+    "base_url": "https://facebookresearch.github.io/hiplot/",
 }
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

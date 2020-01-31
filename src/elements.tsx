@@ -131,12 +131,13 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         this.props.rows.off(this);
     }
     render() {
+        const hasTextArea = this.props.onRequestLoadExperiment != null;
         return (<div className={"container-fluid " + style.header}>
         <div className={"form-row"}>
             <div className="col-md-1">
                 <img style={{height: '55px'}} src={IconSVG} />
             </div>
-            {this.props.onRequestLoadExperiment != null &&
+            {hasTextArea &&
                 <RunsSelectionTextArea
                     initialValue={this.props.url_state.get(URL_LOAD_URI, '')}
                     enabled={this.props.loadStatus != HiPlotLoadStatus.Loading}
@@ -159,7 +160,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                         <ExportDataCSVBtn rows={this.props.rows} />
                         <div style={{clear:'both'}}></div>
                     </div>
-                    <div className="col-md-3" style={{"fontFamily": "monospace"}}>
+                    <div className={hasTextArea ? "col-md-3" : "col-md-6"} style={{"fontFamily": "monospace"}}>
             Selected: <strong ref={this.selected_count_ref} style={{"minWidth": "4em", "textAlign": "right", "display": "inline-block"}}>??</strong>
                     /<strong ref={this.total_count_ref} style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>??</strong> (<span ref={this.selected_pct_ref}>??</span>%)
                     </div>

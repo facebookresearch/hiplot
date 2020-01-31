@@ -256,7 +256,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
             d3.event.preventDefault();
           })
           .append("title")
-            .text("Click to invert. Drag to reorder");
+            .text("Click to invert. Drag to reorder. Right click for options.");
 
       // Add and store a brush for each axis.
       dimensions_dom.append("svg:g")
