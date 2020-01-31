@@ -4,7 +4,7 @@
 
 import tempfile
 import pytest
-from . import init as hip
+import hiplot as hip
 
 
 def test_merge() -> None:

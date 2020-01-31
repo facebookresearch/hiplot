@@ -73,8 +73,6 @@ def demo_line_xy() -> hip.Experiment:
     exp.display_data(hip.Displays.XY).update({
         'axis_x': 'generation',
         'axis_y': 'loss',
-        'lines_thickness': 1.0,  # Customize lines thickness. When below 0, the dots are not connected
-        'lines_opacity': 1.0,   # Decrease this value if you have too many lines overlapping
     })
     for i in range(200):
         dp = hip.Datapoint(
