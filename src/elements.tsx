@@ -14,6 +14,7 @@ import { RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from ".
 
 //@ts-ignore
 import IconSVG from "../hiplot/static/icon.svg";
+import { HiPlotTutorial } from "./tutorial/tutorial";
 
 
 interface Props {
@@ -96,16 +97,20 @@ interface HeaderBarProps extends HiPlotPluginData {
 
 interface HeaderBarState {
     isTextareaFocused: boolean;
+    hasTutorial: boolean;
 };
 
 export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
     selected_count_ref: React.RefObject<HTMLElement> = React.createRef();
     selected_pct_ref: React.RefObject<HTMLElement> = React.createRef();
     total_count_ref: React.RefObject<HTMLElement> = React.createRef();
+    controls_root_ref: React.RefObject<HTMLDivElement> = React.createRef();
+
     constructor(props: HeaderBarProps) {
         super(props);
         this.state = {
-            isTextareaFocused: false
+            isTextareaFocused: false,
+            hasTutorial: false,
         };
     }
     recomputeMetrics() {
@@ -130,13 +135,20 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
     componentWillUnmount() {
         this.props.rows.off(this);
     }
-    render() {
+    componentDidUpdate() {
+        this.recomputeMetrics();
+    }
+    onToggleTutorial() {
+        this.setState(function(prevState, prevProps) {
+            return {
+                hasTutorial: !prevState.hasTutorial
+            };
+        });
+    }
+    renderControls() {
         const hasTextArea = this.props.onRequestLoadExperiment != null;
-        return (<div className={"container-fluid " + style.header}>
-        <div className={"form-row"}>
-            <div className="col-md-1">
-                <img style={{height: '55px'}} src={IconSVG} />
-            </div>
+        return (
+        <React.Fragment>
             {hasTextArea &&
                 <RunsSelectionTextArea
                     initialValue={this.props.url_state.get(URL_LOAD_URI, '')}
@@ -158,14 +170,32 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                             <button title="Refresh + restore data removed" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
                         }
                         <ExportDataCSVBtn rows={this.props.rows} />
+                        <button title="Start HiPlot tutorial" onClick={this.onToggleTutorial.bind(this)}>Help</button>
+
                         <div style={{clear:'both'}}></div>
                     </div>
-                    <div className={hasTextArea ? "col-md-3" : "col-md-6"} style={{"fontFamily": "monospace"}}>
+                    <div className={hasTextArea ? "col-md-3" : "col-md-6"}>
+                        <div style={{"fontFamily": "monospace"}}>
             Selected: <strong ref={this.selected_count_ref} style={{"minWidth": "4em", "textAlign": "right", "display": "inline-block"}}>??</strong>
                     /<strong ref={this.total_count_ref} style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>??</strong> (<span ref={this.selected_pct_ref}>??</span>%)
+                        </div>
                     </div>
                 </React.Fragment>
             }
+        </React.Fragment>);
+    }
+    render() {
+        var controlsOrTutorial = this.state.hasTutorial ?
+            (<div className="col-md-11">
+                <HiPlotTutorial navbarRoot={this.controls_root_ref} onTutorialDone={(() => this.setState({hasTutorial: false})).bind(this)}/>
+            </div>) :
+            this.renderControls();
+        return (<div ref={this.controls_root_ref} className={"container-fluid " + style.header}>
+        <div className={"form-row"}>
+            <div className="col-md-1">
+                <img style={{height: '55px'}} src={IconSVG} />
+            </div>
+            {controlsOrTutorial}
         </div></div>);
     }
 };

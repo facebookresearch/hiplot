@@ -120,7 +120,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   render() {
     return (
     <ResizableH initialHeight={this.state.height} onResize={this.onResizeH.bind(this)}>
-    <div ref={this.root_ref} className={style["parallel-plot-chart"]} style={{"height": this.state.height}}>
+    <div ref={this.root_ref} className={`${style["parallel-plot-chart"]} pplot-root`} style={{"height": this.state.height}}>
           <canvas ref={this.foreground_ref} className={style["background-canvas"]}></canvas>
           <canvas ref={this.background_ref} className={style["foreground-canvas"]}></canvas>
           <canvas ref={this.highlighted_ref} className={style["highlight-canvas"]}></canvas>
@@ -247,7 +247,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           .attr("text-anchor", "middle")
           .attr("y", function(d,i) { return -14 - 16 * (i%3); } )
           .attr("x", 0)
-          .attr("class", style.label)
+          .classed(style.label, true)
+          .classed("pplot-label", true)
           .text(String)
           .on("contextmenu", function(d) {
             if (me.props.context_menu_ref !== undefined) {
@@ -260,7 +261,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
       // Add and store a brush for each axis.
       dimensions_dom.append("svg:g")
-          .attr("class", style.brush)
+          .classed(style.brush, true)
+          .classed("pplot-brush", true)
           .each(function(d) { d3.select(this).call(me.d3brush); })
         .selectAll("rect")
           .style("visibility", null)
