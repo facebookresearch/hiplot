@@ -1,7 +1,7 @@
 # HiPlot - High dimensional Interactive Plotting [![CircleCI](https://circleci.com/gh/facebookresearch/hiplot/tree/master.svg?style=svg&circle-token=c89b6825078e174cf35bdc18e4ad4a16e28876f9)](https://circleci.com/gh/facebookresearch/hiplot/tree/master)
 
 
-![Logo](https://raw.githubusercontent.com/facebookresearch/hiplot/master/hiplot/static/logo.svg)
+![Logo](https://raw.githubusercontent.com/facebookresearch/hiplot/master/hiplot/static/logo.png)
 
 
 HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information. [Try a demo now](https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html)
