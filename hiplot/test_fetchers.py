@@ -29,7 +29,7 @@ def test_fetcher_csv() -> None:
     with pytest.raises(exp.ExperimentFetcherDoesntApply):
         load_csv("file_does_not_exist.csv")
 
-@pytest.mark.skipif(platform.system() == "Windows",
+@pytest.mark.skipif(platform.system() == "Windows",  # type: ignore
                     reason="needs rewrite on windows")
 def test_fetcher_json() -> None:
     with tempfile.NamedTemporaryFile("w+", suffix=".json") as tmpf:
