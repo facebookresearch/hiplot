@@ -213,7 +213,7 @@ class Experiment(_DictSerializable):
         :param file: Path/handle to a file to write
         """
         if isinstance(file, (Path, str)):
-            with Path(file).open("w") as csvfile:
+            with Path(file).open("w", encoding="utf-8") as csvfile:
                 return self._to_csv(csvfile)
         else:
             return self._to_csv(file)
@@ -299,7 +299,7 @@ class Experiment(_DictSerializable):
         :param file: CSV file path
         """
         if isinstance(file, (Path, str)):
-            with Path(file).open() as csvfile:
+            with Path(file).open(encoding="utf-8") as csvfile:
                 return Experiment.from_iterable(csv.DictReader(csvfile))
         else:
             return Experiment.from_iterable(csv.DictReader(file))
