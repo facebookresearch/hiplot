@@ -13,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>More about hiplot.Experiment &#8212; HiPlot 0.1.1 documentation</title>
+    <title>More about hiplot.Experiment &#8212; HiPlot 0.1.2 documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.2 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="container-wrapper">
@@ -128,7 +128,7 @@ When a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" t
             <span class="p">})</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
             <span class="n">from_parent</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">datapoints</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:])</span>
-            <span class="n">dp</span><span class="o">.</span><span class="n">from_uid</span> <span class="o">=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">uid</span> <span class="c1"># &lt;-- Connect the parent to the child</span>
+            <span class="n">dp</span><span class="o">.</span><span class="n">from_uid</span> <span class="o">=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">uid</span>  <span class="c1"># &lt;-- Connect the parent to the child</span>
             <span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
             <span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">from_parent</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
         <span class="n">exp</span><span class="o">.</span><span class="n">datapoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="p">)</span>
@@ -210,7 +210,7 @@ When a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" t
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.2 documentation</a> &#187;</li> 
       </ul>
     </div>
 <script type="text/javascript">
