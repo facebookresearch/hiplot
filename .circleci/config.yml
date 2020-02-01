@@ -11,6 +11,9 @@ commands:
           at: npm-build
       - run: cp -r npm-build/dist hiplot/static/built
 
+orbs:
+  win: circleci/windows@2.2.0
+
 jobs:
   mypy_pytest:
     docker:
@@ -277,6 +280,22 @@ jobs:
             pip install twine
             du -h pypi-build/dist/*
             twine upload pypi-build/dist/hiplot-*
+
+  win-tests:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - attach_built_js
+      - run:
+          name: Setup hiplot in virtualenv
+          command: |
+            py -3 -m venv venv_hiplot
+            . ./venv_hiplot/Scripts/activate
+            pip install .[dev]
+      - run: pytest hiplot
+
 workflows:
   version: 2
   all_ci:
@@ -286,6 +305,12 @@ workflows:
             tags:
               only: /.*/
       - mypy_pytest:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
+      - win-tests:
           requires:
             - npm-build
           filters:
