@@ -43,7 +43,7 @@ def html_inlinize(html: str, replace_local: bool = True) -> str:
                 href = href[1:]
             file = Path(static_root, href)
             new_tag = soup.new_tag("style")
-            new_tag.string = file.read_text()
+            new_tag.string = file.read_text(encoding="utf-8")
             i.replace_with(new_tag)
         elif i["rel"][0] == "icon":  # Favicon
             file = Path(static_root, href)
