@@ -5,6 +5,7 @@
 from pathlib import Path
 import json
 import tempfile
+import platform
 import pytest
 from . import experiment as exp
 from .fetchers import load_demo, load_csv, load_json, README_DEMOS
@@ -28,7 +29,8 @@ def test_fetcher_csv() -> None:
     with pytest.raises(exp.ExperimentFetcherDoesntApply):
         load_csv("file_does_not_exist.csv")
 
-
+@pytest.mark.skipif(platform.system() == "Windows",
+                    reason="needs rewrite on windows")
 def test_fetcher_json() -> None:
     with tempfile.NamedTemporaryFile("w+", suffix=".json") as tmpf:
         json.dump([{"id": 1, "metric": 1.0, "param": "abc"}, {"id": 2, "metric": 1.0, "param": "abc", "option": "def"}], tmpf)
