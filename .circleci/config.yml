@@ -294,7 +294,11 @@ jobs:
             py -3 -m venv venv_hiplot
             . ./venv_hiplot/Scripts/activate
             pip install .[dev]
-      - run: pytest hiplot
+      - run:
+          name: pytest
+          command: |
+            . ./venv_hiplot/Scripts/activate
+            pytest hiplot
 
 workflows:
   version: 2
