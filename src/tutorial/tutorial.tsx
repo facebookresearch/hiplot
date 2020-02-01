@@ -25,7 +25,7 @@ class StepParallelPlot extends React.Component<TutorialStepProps, {}> {
         return (
         <div className="alert alert-info" role="alert">
             <h4 className="alert-heading">Step 1/4: The parallel plot</h4>
-            <p>The first plot you see above is a Parallel Plot.
+            <p>The first plot you see above is a <strong>Parallel Plot</strong>.
                 Parallel plots are a convenient way to visualize and filter high-dimensional data.
                 HiPlot will draw one vertical scaled axis for each metric you have in your dataset,
                 and each training/data point is a continuous line that goes through its value on each of the axes.
@@ -50,8 +50,7 @@ class StepLearnToSlice extends React.Component<TutorialStepProps, {}> {
         return (
         <div className="alert alert-info" role="alert">
             <h4 className="alert-heading">Step 2/4: Slicing data</h4>
-            <p>Slicing along an axis allows to discover patterns in the data.
-                <strong>Drag vertically along an axis</strong> to display only a subset of the data.
+            <p>Slicing along an axis allows to discover patterns in the data. <strong>Drag vertically along an axis</strong> to display only a subset of the data.
                 You also can do it on several axis at the same time.
             </p>
             <hr/>
@@ -74,7 +73,7 @@ class StepMoveAndRemoveColumns extends React.Component<TutorialStepProps, {}> {
         return (
         <div className="alert alert-info" role="alert">
             <h4 className="alert-heading">Step 3/4: Move and remove axis</h4>
-            <p>Move an axis by <strong>dragging it's label above</strong>.
+            <p>Move an axis by <strong>dragging its label above</strong>.
                 In parallel plots, we can very easily spot relationships between nearby axis.
                 You can also <strong>remove</strong> an axis by moving it all the way to the left or to the right.
             </p>

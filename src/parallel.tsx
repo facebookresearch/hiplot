@@ -76,11 +76,11 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   constructor(props: ParallelPlotData) {
     super(props);
     this.state = {
-      height: props.data.height ? props.data.height : 600,
+      height: props.url_state.get('height', props.data.height ? props.data.height : 600),
       width: document.body.clientWidth,
-      order: props.order ? props.order : props.url_state.get('order', []),
-      hide: new Set(props.hide ? props.hide : props.url_state.get('hide', [])),
-      invert: new Set(props.invert ? props.invert : props.url_state.get('invert', [])),
+      order: props.url_state.get('order', props.order ? props.order : []),
+      hide: new Set(props.url_state.get('hide', props.hide ? props.hide : [])),
+      invert: new Set(props.url_state.get('invert', props.invert ? props.invert : [])),
     };
   }
   static defaultProps = {

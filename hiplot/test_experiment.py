@@ -3,6 +3,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import tempfile
+import shutil
 import pytest
 import hiplot as hip
 
@@ -52,18 +53,32 @@ def test_validation_missing_parent() -> None:
 
 
 def test_export_csv() -> None:
-    tmpfile = tempfile.NamedTemporaryFile().name
+    with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as tmpfile:
+        xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
+        xp.to_csv(tmpfile)
+        xp.validate()
 
-    xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
-    xp.to_csv(tmpfile)
-    xp.validate()
-    xp2 = hip.Experiment.from_csv(tmpfile)
-    xp2.validate()
+        tmpfile.seek(0)
+        xp2 = hip.Experiment.from_csv(tmpfile)
+        assert len(xp2.datapoints) == 2
+        xp2.validate()
 
 
 def test_to_html() -> None:
     xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
-    xp.to_html(tempfile.NamedTemporaryFile().name)
+    xp.to_html(tempfile.TemporaryFile(mode="w", encoding="utf-8"))
+
+
+def test_to_filename() -> None:
+    dirpath = tempfile.mkdtemp()
+    try:
+        xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
+        xp.to_html(dirpath + "/xp.html")
+        csv_path = dirpath + "/xp.csv"
+        xp.to_csv(csv_path)
+        hip.Experiment.from_csv(csv_path).validate()
+    finally:
+        shutil.rmtree(dirpath)
 
 
 def test_doc() -> None:

@@ -18,7 +18,7 @@ Given about 7000 experimental datapoints, we want to understand which parameters
 
 .. raw:: html
 
-    <iframe src="https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html?hip.color_by=%22valid+ppl%22" height="1000px" style="width: 865px; margin-left: -20px"></iframe>
+    <iframe src="./_static/demo/ml1.csv.html?hip.color_by=%22valid+ppl%22&amp;hip.PARALLEL_PLOT.height=300" height="1000px" style="width: 865px; margin-left: -20px"></iframe>
 
 
 HiPlot documentation

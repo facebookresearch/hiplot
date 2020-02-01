@@ -68,7 +68,7 @@ def demo_basic_usage() -> hip.Experiment:
 
 
 def demo_line_xy() -> hip.Experiment:
-    #DEMO_LINE_XY_BEGIN
+    # DEMO_LINE_XY_BEGIN
     exp = hip.Experiment()
     exp.display_data(hip.Displays.XY).update({
         'axis_x': 'generation',
@@ -84,11 +84,11 @@ def demo_line_xy() -> hip.Experiment:
             })
         if i > 10:
             from_parent = random.choice(exp.datapoints[-10:])
-            dp.from_uid = from_parent.uid # <-- Connect the parent to the child
+            dp.from_uid = from_parent.uid  # <-- Connect the parent to the child
             dp.values['loss'] += from_parent.values['loss']  # type: ignore
             dp.values['param'] *= from_parent.values['param']  # type: ignore
         exp.datapoints.append(dp)
-    #DEMO_LINE_XY_END
+    # DEMO_LINE_XY_END
     return exp
 
 
@@ -229,7 +229,7 @@ def load_fairseq(uri: str) -> hip.Experiment:
                 break
         if not found:
             raise hip.ExperimentFetcherDoesntApply("No log file found")
-    lines = train_log.read_text().split('\n')
+    lines = train_log.read_text(encoding="utf-8").split('\n')
 
     xp = hip.Experiment()
     epoch_to_dp: Dict[int, hip.Datapoint] = {}
@@ -281,7 +281,7 @@ class Wav2letterLoader:
 2019-09-30\tval1\tval2...
 '''
         PERF_PREFIX = 'perf_'
-        lines = file.read_text().split('\n')
+        lines = file.read_text(encoding="utf-8").split('\n')
         metrics: List[Dict[str, Any]] = []
         for _, l in enumerate(lines[1:]):
             if l == '':

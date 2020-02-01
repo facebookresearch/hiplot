@@ -200,7 +200,7 @@ class Experiment(_DictSerializable):
         })
         if file is not None:
             if isinstance(file, (Path, str)):
-                Path(file).write_text(html)
+                Path(file).write_text(html, encoding="utf-8")
             else:
                 file.write(html)
         return html
@@ -213,7 +213,7 @@ class Experiment(_DictSerializable):
         :param file: Path/handle to a file to write
         """
         if isinstance(file, (Path, str)):
-            with Path(file).open("w") as csvfile:
+            with Path(file).open("w", encoding="utf-8") as csvfile:
                 return self._to_csv(csvfile)
         else:
             return self._to_csv(file)
@@ -292,14 +292,17 @@ class Experiment(_DictSerializable):
         )
 
     @staticmethod
-    def from_csv(file: Union[Path, str]) -> "Experiment":
+    def from_csv(file: Union[Path, str, IO[str]]) -> "Experiment":
         """
         Creates a HiPlot experiment from a CSV file.
 
         :param file: CSV file path
         """
-        with Path(file).open() as csvfile:
-            return Experiment.from_iterable(csv.DictReader(csvfile))
+        if isinstance(file, (Path, str)):
+            with Path(file).open(encoding="utf-8") as csvfile:
+                return Experiment.from_iterable(csv.DictReader(csvfile))
+        else:
+            return Experiment.from_iterable(csv.DictReader(file))
 
     @staticmethod
     def merge(xp_dict: Dict[str, "Experiment"]) -> "Experiment":
