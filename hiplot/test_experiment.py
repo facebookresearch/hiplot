@@ -52,18 +52,20 @@ def test_validation_missing_parent() -> None:
 
 
 def test_export_csv() -> None:
-    tmpfile = tempfile.NamedTemporaryFile().name
+    with tempfile.NamedTemporaryFile(mode="w+") as tmpfile:
+        xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
+        xp.to_csv(tmpfile)
+        xp.validate()
 
-    xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
-    xp.to_csv(tmpfile)
-    xp.validate()
-    xp2 = hip.Experiment.from_csv(tmpfile)
-    xp2.validate()
+        tmpfile.seek(0)
+        xp2 = hip.Experiment.from_csv(tmpfile)
+        assert len(xp2.datapoints) == 2
+        xp2.validate()
 
 
 def test_to_html() -> None:
     xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
-    xp.to_html(tempfile.NamedTemporaryFile().name)
+    xp.to_html(tempfile.TemporaryFile(mode="w"))
 
 
 def test_doc() -> None:

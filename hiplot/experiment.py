@@ -292,14 +292,17 @@ class Experiment(_DictSerializable):
         )
 
     @staticmethod
-    def from_csv(file: Union[Path, str]) -> "Experiment":
+    def from_csv(file: Union[Path, str, IO[str]]) -> "Experiment":
         """
         Creates a HiPlot experiment from a CSV file.
 
         :param file: CSV file path
         """
-        with Path(file).open() as csvfile:
-            return Experiment.from_iterable(csv.DictReader(csvfile))
+        if isinstance(file, (Path, str)):
+            with Path(file).open() as csvfile:
+                return Experiment.from_iterable(csv.DictReader(csvfile))
+        else:
+            return Experiment.from_iterable(csv.DictReader(file))
 
     @staticmethod
     def merge(xp_dict: Dict[str, "Experiment"]) -> "Experiment":
