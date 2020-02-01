@@ -3,6 +3,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import tempfile
+import shutil
 import pytest
 import hiplot as hip
 
@@ -66,6 +67,18 @@ def test_export_csv() -> None:
 def test_to_html() -> None:
     xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
     xp.to_html(tempfile.TemporaryFile(mode="w", encoding="utf-8"))
+
+
+def test_to_filename() -> None:
+    dirpath = tempfile.mkdtemp()
+    try:
+        xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v"}, {"uid": 2, "k": "vk", "k2": "vk2"}])
+        xp.to_html(dirpath + "/xp.html")
+        csv_path = dirpath + "/xp.csv"
+        xp.to_csv(csv_path)
+        hip.Experiment.from_csv(csv_path).validate()
+    finally:
+        shutil.rmtree(dirpath)
 
 
 def test_doc() -> None:

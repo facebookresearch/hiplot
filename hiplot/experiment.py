@@ -200,7 +200,7 @@ class Experiment(_DictSerializable):
         })
         if file is not None:
             if isinstance(file, (Path, str)):
-                Path(file).write_text(html)
+                Path(file).write_text(html, encoding="utf-8")
             else:
                 file.write(html)
         return html
