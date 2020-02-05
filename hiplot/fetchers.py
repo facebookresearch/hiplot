@@ -137,7 +137,7 @@ def demo(n: int = 100) -> hip.Experiment:
     def fake_metrics(t: float) -> Dict[str, hip.DisplayableType]:
         return {
             "exp_metric": 10 ** random.uniform(-5, 0),
-            "pct_success": random.uniform(0, 100),
+            "pct_success": random.uniform(10, 90),
             "chkpt": uuid.uuid4().hex[:6],
             "time": t + random.uniform(-0.2, 0.2),
             "force_numericlog": random.uniform(1, 100),
@@ -166,6 +166,18 @@ def demo(n: int = 100) -> hip.Experiment:
     return xp
 
 
+def demo_force_scale() -> hip.Experiment:
+    xp = hip.Experiment()
+    for _ in range(100):
+        values = [abs(random.gauss(0.0, 1.0)) for _ in range(4)]
+        xp.datapoints.append(hip.Datapoint({
+            f"value{i}": v / sum(values)
+            for i, v in enumerate(values)
+        }))
+    for i in range(4):
+        xp.parameters_definition[f"value{i}"].force_range(0.0, 1.0)
+    return xp
+
 README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_big": lambda: demo(1000),
@@ -173,6 +185,7 @@ README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
     "demo_basic_usage": demo_basic_usage,
     "demo_line_xy": demo_line_xy,
     "demo_bug_uid": demo_bug_uid,
+    "demo_force_scale": demo_force_scale,
 }
 
 

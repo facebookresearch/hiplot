@@ -168,7 +168,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
 
       yAxis = g => g
         .attr("transform", `translate(${margin.left - 10},0)`)
-        .call(d3.axisLeft(y_scale).ticks(1+me.state.height/40).tickSizeInner(margin.left + margin.right - me.state.width))
+        .call(d3.axisLeft(y_scale).ticks(1+me.state.height / 40).tickSizeInner(margin.left + margin.right - me.state.width))
         .call(g => g.select(".domain").remove())
         .call(g => g.select(".tick:last-of-type text").clone()
             .attr("x", 3)
@@ -177,7 +177,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
             .text(me.axis_y.get()));
       xAxis = g => g
         .attr("transform", `translate(0,${me.state.height - margin.bottom})`)
-        .call(d3.axisBottom(x_scale).ticks(1+me.state.width / 40).tickSizeInner(margin.bottom + margin.top - me.state.height))
+        .call(d3.axisBottom(x_scale).ticks(1+me.state.width / 80).tickSizeInner(margin.bottom + margin.top - me.state.height))
         .call(g => g.select(".tick:last-of-type text").clone()
             .attr("y", 22)
             .attr("text-anchor", "end")

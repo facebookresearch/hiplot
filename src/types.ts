@@ -90,18 +90,6 @@ export class Dataset {
     }
 }
 
-class DatasetMirror extends Dataset {
-    constructor(public parent: Dataset, full_name: string) {
-        super(full_name);
-    }
-    set(new_rows: Array<Datapoint>) {
-        this.parent.set(new_rows);
-    }
-    append(new_rows: Array<Datapoint>) {
-        this.parent.append(new_rows);
-    }
-}
-
 export class AllDatasets {
     constructor(
         public experiment_all: Dataset = new Dataset("experiment_all"),
@@ -131,8 +119,8 @@ export enum ParamType {
 export interface HiPlotValueDef {
     type: ParamType;
     colors: {[value: string]: string};
-    parallel_plot_order: boolean;
-    parallel_plot_inverted: boolean;
+    force_value_min: number | null;
+    force_value_max: number | null;
 };
 
 export interface HiPlotExperiment {

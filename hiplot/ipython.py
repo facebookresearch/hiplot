@@ -121,7 +121,7 @@ load_when_ready();
     </style>"""))
     IPython.display.display(IPython.display.HTML(f'''
         <div id="{container_id}">
-            <iframe id="{iframe_id}" scrolling="no" srcdoc="{html.escape(page_html)}"></iframe>
+            <iframe id="{iframe_id}" srcdoc="{html.escape(page_html)}"></iframe>
         </div>'''))
     IPython.display.display(IPython.display.Javascript(js))
     return iframe_id
