@@ -3,6 +3,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import csv
+import uuid
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 from collections import defaultdict
@@ -65,6 +66,13 @@ class ValueDef(_DictSerializable):
         """
         self.type = value_type
         self.colors = colors
+        self.force_value_min: Optional[float] = None
+        self.force_value_max: Optional[float] = None
+
+    def force_range(self, minimum: float, maximum: float) -> "ValueDef":
+        self.force_value_min = minimum
+        self.force_value_max = maximum
+        return self
 
     def validate(self) -> None:
         if self.colors is not None:
@@ -78,6 +86,8 @@ class ValueDef(_DictSerializable):
         return {
             "type": self.type.value if self.type is not None else None,
             "colors": self.colors,
+            "force_value_min": self.force_value_min,
+            "force_value_max": self.force_value_max,
         }
 
 
@@ -104,8 +114,8 @@ class Datapoint(_DictSerializable):
         hip.Experiment(datapoints=[dp1, dp2]).display()  # Render in an ipython notebook
     """
 
-    def __init__(self, uid: str, values: Dict[str, DisplayableType], from_uid: Optional[str] = None) -> None:
-        self.uid = uid
+    def __init__(self, values: Dict[str, DisplayableType], *, uid: Optional[str] = None, from_uid: Optional[str] = None) -> None:
+        self.uid = uid if uid is not None else str(uuid.uuid4())
         self.values = values
         self.from_uid = from_uid
 

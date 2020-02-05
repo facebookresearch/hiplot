@@ -87,6 +87,8 @@ def test_doc() -> None:
 
     # Change column type
     exp.parameters_definition["optionA"].type = hip.ValueType.NUMERIC_LOG
+    # Force a column minimum/maximum values
+    exp.parameters_definition["pct_success"].force_range(0, 100)
     # EXPERIMENT_SETTINGS_SNIPPET1_END
     # EXPERIMENT_SETTINGS_SNIPPET2_BEGIN
     # Provide configuration for the parallel plot

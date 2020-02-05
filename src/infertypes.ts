@@ -11,7 +11,7 @@ import randomColor from "../node_modules/randomcolor/randomColor.js";
 
 import { State } from "./lib/savedstate";
 import { d3_scale_percentile, scale_add_outliers } from "./lib/d3_scales";
-import { Datapoint, ParamType } from "./types";
+import { Datapoint, ParamType, HiPlotValueDef } from "./types";
 
 
 function hashCode(str: string): number {
@@ -25,14 +25,12 @@ function hashCode(str: string): number {
     return hash;
 };
 
-export interface ParamDef {
+export interface ParamDef extends HiPlotValueDef {
     create_d3_scale: any,
-    type: ParamType,
     optional: boolean,
     numeric: boolean,
     distinct_values: Array<any>,
     colorScheme: (value: any, alpha: number) => string,
-    colors: object,
     special_values: Array<any>,
     type_options: Array<ParamType>,
     __url_state__: State,
@@ -46,7 +44,7 @@ export interface ParamDefMap { [key: string]: ParamDef; };
  *  - If a variable is numeric
  *  - If a variable is log-scaled
  */
-export function infertypes(url_states: State, table: Array<Datapoint>, hints): ParamDefMap {
+export function infertypes(url_states: State, table: Array<Datapoint>, hints: {[key:string]: HiPlotValueDef}): ParamDefMap {
 
     if (hints === undefined) {
         hints = {};
@@ -68,7 +66,7 @@ export function infertypes(url_states: State, table: Array<Datapoint>, hints): P
         } : null;
       }
 
-    function infertype(key: string, hint): ParamDef {
+    function infertype(key: string, hint: HiPlotValueDef): ParamDef {
         var url_state = url_states.children(key);
         var optional = false;
         var numeric = ["uid", "from_uid"].indexOf(key) == -1;
@@ -144,11 +142,13 @@ export function infertypes(url_states: State, table: Array<Datapoint>, hints): P
                 if (type == ParamType.NUMERICPERCENTILE) {
                     return d3_scale_percentile(dv);
                 }
+                var min = hint !== undefined && hint.force_value_min !== null ? hint.force_value_min : dv[0];
+                var max = hint !== undefined && hint.force_value_max !== null ? hint.force_value_max : dv[dv.length - 1];
                 if (type == ParamType.NUMERICLOG) {
-                    return d3.scaleLog().domain([dv[0], dv[dv.length - 1]]);
+                    return d3.scaleLog().domain([min, max]);
                 }
                 console.assert(type == ParamType.NUMERIC, "Unknown variable type " + type);
-                return d3.scaleLinear().domain([dv[0], dv[dv.length - 1]]);
+                return d3.scaleLinear().domain([min, max]);
             }
         }
         function create_d3_scale() {
@@ -209,15 +209,18 @@ export function infertypes(url_states: State, table: Array<Datapoint>, hints): P
 
         var info = {
             'create_d3_scale': create_d3_scale,
-            'type': type,
             'optional': optional,
             'numeric': numeric,
             'distinct_values': distinct_values,
             'colorScheme': colorScheme,
-            'colors': hint !== undefined ? hint.colors : null,
             'special_values': special_values,
             'type_options': [ParamType.CATEGORICAL],
             '__url_state__': url_state,
+
+            'type': type,
+            'colors': hint !== undefined ? hint.colors : null,
+            'force_value_min': hint !== undefined && hint.force_value_min !== null ? hint.force_value_min : null,
+            'force_value_max': hint !== undefined && hint.force_value_max !== null ? hint.force_value_max : null,
         };
         // What other types we can render as?
         if (numeric) {
