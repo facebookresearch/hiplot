@@ -82,7 +82,7 @@ export class ExportDataCSVBtn extends React.Component<HiPlotDataControlProps, Hi
     onClick() {
         var csv: string = d3.csvFormat(this.props.rows['selected'].get()).replace(/\n/g,"<br/>\n");
         var styles = "<style>body { font-family: sans-serif; font-size: 12px; }</style>";
-        window.open("text/csv").document.write(styles + csv);
+        window.open("data:text/csv;charset=utf-8," + escape(csv));
     }
 
     render() {
