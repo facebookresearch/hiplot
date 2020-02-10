@@ -75,7 +75,7 @@ Option 2: Use HiPlot webserver
 
 Within the activated environment, use the following command to run HiPlot server:
 
->>> hiplot
+$ hiplot
 
 
 Then open your web browser in http://127.0.0.1:5005/.
@@ -85,7 +85,7 @@ In the web interface, you can enter an experiment URI - you can enter the path t
    By default, hiplot only listens on localhost, which prevents anyone else from seeing your experiments.
    To allow anyone to connect, use
 
-   >>> hiplot --host 0.0.0.0
+   $ hiplot --host 0.0.0.0
 
 HiPlot webserver can do way more:
 
