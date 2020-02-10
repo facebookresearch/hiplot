@@ -73,6 +73,8 @@ Once we have created this object, we can display it with :class:`hiplot.Experime
 Option 2: Use HiPlot webserver
 -------------------------------
 
+Within the activated environment, use the following command to run HiPlot server:
+
 >>> hiplot
 
 
