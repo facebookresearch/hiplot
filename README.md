@@ -37,7 +37,7 @@ hip.Experiment.from_iterable(data).display()
 * NPM package: https://www.npmjs.com/package/hiplot
 
 ## Credits
-Inspired by and based on code from [Kai Chang](http://bl.ocks.org/syntagmatic/3150059), [Mike Bostock](http://bl.ocks.org/1341021) and [Jason Davies](http://bl.ocks.org/1341281").
+Inspired by and based on code from [Kai Chang](http://bl.ocks.org/syntagmatic/3150059), [Mike Bostock](http://bl.ocks.org/1341021) and [Jason Davies](http://bl.ocks.org/1341281).
 
 ## License
 HiPlot is [MIT](LICENSE) licensed, as found in the [LICENSE](LICENSE) file.
