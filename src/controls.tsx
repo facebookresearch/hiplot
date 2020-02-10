@@ -78,11 +78,26 @@ export class ExcludeDataBtn extends React.Component<HiPlotDataControlProps, HiPl
     }
 };
 
+function downloadURL(url: string, filename: string) {
+    var element = document.createElement('a');
+    element.setAttribute('href', url);
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
 export class ExportDataCSVBtn extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
     onClick() {
-        var csv: string = d3.csvFormat(this.props.rows['selected'].get()).replace(/\n/g,"<br/>\n");
-        var styles = "<style>body { font-family: sans-serif; font-size: 12px; }</style>";
-        window.open("data:text/csv;charset=utf-8," + escape(csv));
+        var all_selected = this.props.rows['selected'].get();
+        var csv: string = d3.csvFormat(all_selected);
+        var blob = new Blob([csv], {type: "text/csv"});
+        var url = window.URL.createObjectURL(blob);
+        downloadURL(url, `hiplot-selected-${all_selected.length}.csv`);
     }
 
     render() {
