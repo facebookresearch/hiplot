@@ -9,7 +9,7 @@ import * as d3 from "d3";
 
 import randomColor from "../node_modules/randomcolor/randomColor.js";
 
-import { State } from "./lib/savedstate";
+import { PersistentState } from "./lib/savedstate";
 import { d3_scale_percentile, scale_add_outliers } from "./lib/d3_scales";
 import { Datapoint, ParamType, HiPlotValueDef } from "./types";
 
@@ -33,7 +33,7 @@ export interface ParamDef extends HiPlotValueDef {
     colorScheme: (value: any, alpha: number) => string,
     special_values: Array<any>,
     type_options: Array<ParamType>,
-    __url_state__: State,
+    __url_state__: PersistentState,
 }
 
 export interface ParamDefMap { [key: string]: ParamDef; };
@@ -44,7 +44,7 @@ export interface ParamDefMap { [key: string]: ParamDef; };
  *  - If a variable is numeric
  *  - If a variable is log-scaled
  */
-export function infertypes(url_states: State, table: Array<Datapoint>, hints: {[key:string]: HiPlotValueDef}): ParamDefMap {
+export function infertypes(url_states: PersistentState, table: Array<Datapoint>, hints: {[key:string]: HiPlotValueDef}): ParamDefMap {
 
     if (hints === undefined) {
         hints = {};

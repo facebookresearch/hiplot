@@ -16,7 +16,7 @@ import './global';
 import { WatchedProperty, Datapoint, ParamType, HiPlotExperiment, AllDatasets, HiPlotLoadStatus, URL_COLOR_BY, URL_LOAD_URI } from "./types";
 import { RowsDisplayTable } from "./rowsdisplaytable";
 import { infertypes } from "./infertypes";
-import { PageState } from "./lib/savedstate";
+import { PersistentState, PersistentStateInMemory, PersistentStateInURL } from "./lib/savedstate";
 import { ParallelPlot } from "./parallel";
 import { PlotXY } from "./plotxy";
 import { SelectedCountProgressBar } from "./controls";
@@ -46,6 +46,7 @@ interface HiPlotComponentProps {
     experiment: HiPlotExperiment | null;
     is_webserver: boolean;
     plugins: Array<PluginInfo>;
+    persistent_state?: PersistentState;
 };
 
 interface HiPlotComponentState {
@@ -55,7 +56,7 @@ interface HiPlotComponentState {
     error: string;
 }
 
-function make_hiplot_data(): HiPlotPluginData {
+function make_hiplot_data(persistent_state?: PersistentState): HiPlotPluginData {
     return {
         params_def: {},
         rows: new AllDatasets(),
@@ -67,7 +68,7 @@ function make_hiplot_data(): HiPlotPluginData {
         context_menu_ref: React.createRef(),
         colorby: new WatchedProperty('colorby'),
         experiment: null,
-        url_state: PageState.create_state('hip'),
+        persistent_state: persistent_state !== undefined ? persistent_state : new PersistentStateInMemory("", {}),
     };
 }
 
@@ -80,7 +81,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
 
     table: RowsDisplayTable = null;
 
-    data: HiPlotPluginData = make_hiplot_data();
+    data: HiPlotPluginData;
 
     constructor(props: HiPlotComponentProps) {
         super(props);
@@ -90,6 +91,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             loadStatus: HiPlotLoadStatus.None,
             error: null,
         };
+        this.data = make_hiplot_data(this.props.persistent_state);
 
         var rows = this.data.rows;
         rows['selected'].on_change(this.onSelectedChange.bind(this), this);
@@ -109,7 +111,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         }
     }
     recomputeParamsDef(all_data: Array<Datapoint>): void {
-        Object.assign(this.data.params_def, infertypes(this.data.url_state.children('params'), all_data, this.data.params_def));
+        Object.assign(this.data.params_def, infertypes(this.data.persistent_state.children('params'), all_data, this.data.params_def));
     }
     _loadExperiment(experiment: HiPlotExperiment) {
         //console.log('Load xp', experiment);
@@ -130,7 +132,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         rows['all'].set(rows['experiment_all'].get());
         rows['selected'].set(rows['experiment_all'].get());
 
-        me.data.params_def = infertypes(this.data.url_state.children('params'), rows['all'].get(), experiment.parameters_definition);
+        me.data.params_def = infertypes(this.data.persistent_state.children('params'), rows['all'].get(), experiment.parameters_definition);
 
         // Color handling
         function get_default_color() {
@@ -151,12 +153,12 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             var possibles = Object.keys(me.data.params_def).sort((a, b) => select_as_coloring_score(b) - select_as_coloring_score(a));
             return possibles[0];
         }
-        this.data.colorby.set(this.data.url_state.get(URL_COLOR_BY, get_default_color()));
+        this.data.colorby.set(this.data.persistent_state.get(URL_COLOR_BY, get_default_color()));
         if (me.data.params_def[this.data.colorby.get()] === undefined) {
             this.data.colorby.set(get_default_color());
         }
         this.data.colorby.on_change(function(f) {
-            me.data.url_state.set(URL_COLOR_BY, f);
+            me.data.persistent_state.set(URL_COLOR_BY, f);
         }, this);
         this.data.get_color_for_row = function(trial: Datapoint, alpha: number) {
             return me.data.params_def[me.data.colorby.get()].colorScheme(trial[me.data.colorby.get()], alpha);
@@ -212,7 +214,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             }.bind(this)));
         }
         else {
-            var load_uri = this.data.url_state.get(URL_LOAD_URI);
+            var load_uri = this.data.persistent_state.get(URL_LOAD_URI);
             if (load_uri !== undefined) {
                 this.loadURI(load_uri);
             }
@@ -220,7 +222,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
     }
     componentDidUpdate() {
         if (this.state.loadStatus == HiPlotLoadStatus.None) {
-            this.data = make_hiplot_data();
+            this.data = make_hiplot_data(this.props.persistent_state);
         }
     }
     columnContextMenu(column: string, cm: HTMLDivElement) {
@@ -261,7 +263,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         contextmenu.append(link_colorize);
     }
     onRefreshDataBtn() {
-        this.loadURI(this.data.url_state.get(URL_LOAD_URI));
+        this.loadURI(this.data.persistent_state.get(URL_LOAD_URI));
     }
     loadURI(uri: string) {
         this.loadWithPromise(new Promise(function(resolve, reject) {
@@ -286,8 +288,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
         }));
     }
     onRunsTextareaSubmitted(uri: string) {
-        this.data.url_state.clear();
-        this.data.url_state.set(URL_LOAD_URI, uri);
+        this.data.persistent_state.set(URL_LOAD_URI, uri);
         this.loadURI(uri);
     }
 
@@ -314,7 +315,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
                 {this.props.plugins.map((plugin_info, idx) => <React.Fragment key={idx}>{plugin_info.render({
                     ...this.data,
                     ...(this.state.experiment._displays[plugin_info.name] ? this.state.experiment._displays[plugin_info.name] : {}),
-                    url_state: this.data.url_state.children(plugin_info.name)
+                    persistent_state: this.data.persistent_state.children(plugin_info.name)
                 })}</React.Fragment>)}
             </div>
             }
@@ -366,6 +367,7 @@ export function hiplot_setup(element: HTMLElement, extra?: object) {
     var props: HiPlotComponentProps = {
         experiment: null,
         is_webserver: true,
+        persistent_state: new PersistentStateInURL("hip"),
         plugins: [
             // Names correspond to values of hip.Displays
             {name: "PARALLEL_PLOT", render: (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />},

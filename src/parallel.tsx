@@ -76,11 +76,11 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   constructor(props: ParallelPlotData) {
     super(props);
     this.state = {
-      height: props.url_state.get('height', props.data.height ? props.data.height : 600),
-      width: document.body.clientWidth,
-      order: props.url_state.get('order', props.order ? props.order : []),
-      hide: new Set(props.url_state.get('hide', props.hide ? props.hide : [])),
-      invert: new Set(props.url_state.get('invert', props.invert ? props.invert : [])),
+      height: props.persistent_state.get('height', props.data.height ? props.data.height : 600),
+      width: 0, // Will be initiatialize to element width
+      order: props.persistent_state.get('order', props.order ? props.order : []),
+      hide: new Set(props.persistent_state.get('hide', props.hide ? props.hide : [])),
+      invert: new Set(props.persistent_state.get('invert', props.invert ? props.invert : [])),
     };
   }
   static defaultProps = {
@@ -101,13 +101,13 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         }
     }
     if (prevState.invert != this.state.invert) {
-      this.props.url_state.set('invert', Array.from(this.state.invert));
+      this.props.persistent_state.set('invert', Array.from(this.state.invert));
     }
     if (prevState.hide != this.state.hide) {
-      this.props.url_state.set('hide', Array.from(this.state.hide));
+      this.props.persistent_state.set('hide', Array.from(this.state.hide));
     }
     if (prevState.order != this.state.order) {
-      this.props.url_state.set('order', this.state.order);
+      this.props.persistent_state.set('order', this.state.order);
     }
     this.props.data.height = this.state.height;
   }
@@ -115,7 +115,10 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     this.setState({height: height});
   }
   onWindowResize = function() {
-    this.setState({width: document.body.clientWidth});
+    if (!this.root_ref.current) {
+      return;
+    }
+    this.setState({width: this.root_ref.current.offsetWidth});
   }.bind(this)
   render() {
     return (
@@ -129,6 +132,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     </ResizableH>);
   }
   componentDidMount() {
+    this.setState({width: this.state.width == 0 ? this.root_ref.current.offsetWidth : this.state.width}, this.initParallelPlot.bind(this));
+  }
+  initParallelPlot() {
     var me = this;
     var props = this.props;
 

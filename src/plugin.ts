@@ -9,7 +9,7 @@
 import { ParamDefMap } from "./infertypes";
 import { AllDatasets, DatapointLookup, WatchedProperty, Datapoint, HiPlotExperiment } from "./types";
 import { ContextMenu } from "./contextmenu";
-import { State } from "./lib/savedstate";
+import { PersistentState } from "./lib/savedstate";
 
 
 export interface HiPlotPluginData {
@@ -22,5 +22,5 @@ export interface HiPlotPluginData {
 
     context_menu_ref?: React.RefObject<ContextMenu>;
     colorby: WatchedProperty;
-    url_state: State;
+    persistent_state: PersistentState;
 };

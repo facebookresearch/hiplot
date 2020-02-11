@@ -35,3 +35,8 @@
 .header button {
     vertical-align: top;
 }
+
+.controlGroup {
+    margin-left: 5px;
+    margin-right: 5px;
+}

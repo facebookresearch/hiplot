@@ -42,10 +42,13 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   params_def: ParamDefMap;
   svg: any;
   clear_canvas: () => void;
+  onWindowResizeDebounced: () => void;
+
   axis_x = new WatchedProperty('axis_x');
   axis_y = new WatchedProperty('axis_y');
   config: HiPlotGraphConfig;
   root_ref: React.RefObject<HTMLDivElement> = React.createRef();
+  container_ref: React.RefObject<HTMLDivElement> = React.createRef();
   canvas_lines_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
   canvas_highlighted_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
 
@@ -60,17 +63,21 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       height = d3.min([d3.max([document.body.clientHeight-540, 240]), 500]);
     }
     this.state = {
-      width: document.body.clientWidth,
+      width: 0,
       height: height,
       enabled: false,
     };
+    this.onWindowResizeDebounced = _.debounce(this.onWindowResize.bind(this), 100);
   }
   static defaultProps = {
       name: "xy",
       data: {},
   }
   componentDidMount() {
-    $(window).on("resize", this.onWindowResize);
+    this.setState({width: this.container_ref.current.parentElement.offsetWidth}, this.mountPlotXY.bind(this));
+  }
+  mountPlotXY() {
+    $(window).on("resize", this.onWindowResizeDebounced);
     var me = this;
     var props = this.props;
     me.config = {
@@ -86,12 +93,12 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
 
     // Load default X/Y axis
     function init_line_display_axis(axis, default_value) {
-        axis.set(props.url_state.get(axis.name, default_value));
+        axis.set(props.persistent_state.get(axis.name, default_value));
         if (props.params_def[axis.get()] === undefined) {
             axis.set(null);
         }
         axis.on_change(function(v) {
-            props.url_state.set(axis.name, v);
+            props.persistent_state.set(axis.name, v);
         }, this);
     }
     init_line_display_axis(this.axis_x, me.config.axis_x);
@@ -435,14 +442,14 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     }
   }
   onWindowResize = function() {
-    if (document.body.clientWidth != this.state.width) {
-      this.setState({width: document.body.clientWidth});
+    if (this.container_ref.current) {
+      this.setState({width: this.container_ref.current.offsetWidth});
     }
   }.bind(this)
   render() {
     return (
-    <div className={this.state.enabled ? "" : "collapse"}>
-      <ResizableH initialHeight={this.state.height} onResize={this.onResizeH.bind(this)}>
+    <div ref={this.container_ref} className={this.state.enabled ? "" : "collapse"}>
+      <ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResizeH.bind(this), 100)}>
         <div ref={this.root_ref} className="checkpoints-graph" style={{"height": this.state.height}}>
             <canvas ref={this.canvas_lines_ref} className={style["checkpoints-graph-lines"]} style={{position: 'absolute'}}></canvas>
             <canvas ref={this.canvas_highlighted_ref} className={style["checkpoints-graph-highlights"]} style={{position: 'absolute'}}></canvas>
@@ -461,7 +468,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     if (this.props.context_menu_ref !== undefined) {
       this.props.context_menu_ref.current.removeCallbacks(this);
     }
-    $(window).off("resize", this.onWindowResize);
+    $(window).off("resize", this.onWindowResizeDebounced);
   };
   componentDidUpdate(prevProps, prevState) {
     if (prevState.height != this.state.height || prevState.width != this.state.width) {

@@ -108,7 +108,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     }
     render() {
         return (
-        <div className={`${style.wrap} container-fluid`}>
+        <div className={`${style.wrap} container-fluid ${style["horizontal-scrollable"]}`}>
         <div className={"row"}>
             <div className={`col-md-12 sample-table-container`}>
             <table ref={this.table_ref} className="sample-rows-table display table table-striped table-bordered dataTable">
