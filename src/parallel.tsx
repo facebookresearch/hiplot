@@ -125,7 +125,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     <ResizableH initialHeight={this.state.height} onResize={this.onResizeH.bind(this)}>
     <div ref={this.root_ref} className={`${style["parallel-plot-chart"]} pplot-root`} style={{"height": this.state.height}}>
           <canvas ref={this.foreground_ref} className={style["background-canvas"]}></canvas>
-          <canvas ref={this.background_ref} className={style["foreground-canvas"]}></canvas>
           <canvas ref={this.highlighted_ref} className={style["highlight-canvas"]}></canvas>
           <svg></svg>
     </div>
@@ -153,9 +152,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
     // Highlight canvas for temporary interactions
     me.highlighted = this.highlighted_ref.current.getContext('2d');
-
-    // Background canvas
-    me.background = this.background_ref.current.getContext('2d');
 
     function isColHidden(k: string) {
       var pd = me.props.params_def[k];
