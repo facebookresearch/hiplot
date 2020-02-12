@@ -7,7 +7,7 @@
 
 import style from "./elements.css";
 import React from "react";
-import { HiPlotLoadStatus, URL_LOAD_URI } from "./types";
+import { HiPlotLoadStatus, PSTATE_LOAD_URI } from "./types";
 import { HiPlotPluginData } from "./plugin";
 import { RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
 
@@ -148,7 +148,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         <React.Fragment>
             {hasTextArea &&
                 <RunsSelectionTextArea
-                    initialValue={this.props.persistent_state.get(URL_LOAD_URI, '')}
+                    initialValue={this.props.persistent_state.get(PSTATE_LOAD_URI, '')}
                     enabled={this.props.loadStatus != HiPlotLoadStatus.Loading}
                     minimizeWhenOutOfFocus={this.props.loadStatus == HiPlotLoadStatus.Loaded}
                     onSubmit={this.props.onRequestLoadExperiment}

@@ -9,7 +9,7 @@ import $ from "jquery";
 import * as d3 from "d3";
 
 import { WatchedProperty } from "./types";
-import { ParamDefMap } from "./infertypes";
+import { ParamDefMap, create_d3_scale } from "./infertypes";
 import style from "./hiplot.css";
 import { HiPlotPluginData } from "./plugin";
 import React from "react";
@@ -103,7 +103,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     init_line_display_axis(this.axis_x, me.config.axis_x);
     init_line_display_axis(this.axis_y, me.config.axis_y);
 
-    if (this.props.context_menu_ref !== undefined) {
+    if (this.props.context_menu_ref) {
       props.context_menu_ref.current.addCallback(function(column, cm) {
         var contextmenu = $(cm);
         contextmenu.append($('<div class="dropdown-divider"></div>'));
@@ -151,7 +151,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       rerender_all_points = rerender_all_points_before;
     }
     function create_scale(param: string, range) {
-      var scale = me.params_def[param].create_d3_scale()
+      var scale = create_d3_scale(me.params_def[param])
       scale.range(range);
       return scale;
     }
@@ -464,7 +464,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     this.axis_x.off(this);
     this.axis_y.off(this);
     this.props.rows.off(this);
-    if (this.props.context_menu_ref !== undefined) {
+    if (this.props.context_menu_ref) {
       this.props.context_menu_ref.current.removeCallbacks(this);
     }
     $(window).off("resize", this.onWindowResizeDebounced);

@@ -26,15 +26,111 @@ function hashCode(str: string): number {
 };
 
 export interface ParamDef extends HiPlotValueDef {
-    create_d3_scale: any,
     optional: boolean,
     numeric: boolean,
     distinct_values: Array<any>,
-    colorScheme: (value: any, alpha: number) => string,
     special_values: Array<any>,
     type_options: Array<ParamType>,
-    __url_state__: PersistentState,
+    __val2color?: {[k: string]: any};
 }
+
+
+const special_numerics = ['inf', '-inf', Infinity, -Infinity, null];
+function is_special_numeric(x) {
+    return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
+};
+
+function toRgb(colr: string) {
+    if (colr.startsWith("rgb")) {
+        var rgb = colr.slice(0, -1).split('(')[1].split(',');
+        return {
+            r: parseInt(rgb[0]),
+            g: parseInt(rgb[1]),
+            b: parseInt(rgb[2]),
+        };
+    }
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colr);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+}
+
+
+function create_d3_scale_without_outliers(pd: ParamDef): any {
+    var dv = pd.distinct_values;
+    if (pd.type == ParamType.CATEGORICAL) {
+      return d3.scalePoint().domain(dv);
+    }
+    else {
+        if (pd.type == ParamType.NUMERICPERCENTILE) {
+            return d3_scale_percentile(dv);
+        }
+        var min = pd.force_value_min !== null ? pd.force_value_min : dv[0];
+        var max = pd.force_value_max !== null ? pd.force_value_max : dv[dv.length - 1];
+        if (pd.type == ParamType.NUMERICLOG) {
+            return d3.scaleLog().domain([min, max]);
+        }
+        console.assert(pd.type == ParamType.NUMERIC, "Unknown variable type " + pd.type);
+        return d3.scaleLinear().domain([min, max]);
+    }
+}
+
+export function create_d3_scale(pd: ParamDef): any {
+    var scale = create_d3_scale_without_outliers(pd);
+    if (pd.special_values.length && [ParamType.NUMERIC, ParamType.NUMERICLOG, ParamType.NUMERICPERCENTILE].indexOf(pd.type) >= 0) {
+        scale = scale_add_outliers(scale);
+    }
+    return scale;
+}
+
+export function colorScheme(pd: ParamDef, value: any, alpha: number): string {
+    if (pd.type == ParamType.CATEGORICAL) {
+        function compute_val2color() {
+            // Compute this lazyly - the call to "DistinctColors" is quite slow :/
+            if (pd.__val2color !== undefined) {
+                return;
+            }
+            pd.__val2color = pd.colors !== null ? pd.colors : {};
+            for (var i = 0; i < pd.distinct_values.length; ++i) {
+                if (pd.__val2color[pd.distinct_values[i]]) {
+                    continue;
+                }
+                if (pd.distinct_values.length < 10) {
+                    var c = toRgb(d3.schemeCategory10[i % 10]);
+                    pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+                    continue;
+                }
+                var valueHash = hashCode(JSON.stringify(pd.distinct_values[i]));
+                var c = toRgb((randomColor as any)({seed: Math.abs(valueHash)}));
+                pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+            }
+        };
+        compute_val2color();
+        var c = pd.__val2color[value];
+        if (c === undefined) {
+            c = 'rgb(0, 0, 0)';
+        }
+        console.assert((c.startsWith('rgb(') || c.startsWith('hsl(')), c);
+        return c.slice(0, 3) + 'a' + c.slice(3, c.length - 1) + ',' + alpha + ')';
+    }
+    else {
+        if (value === undefined || value === null || is_special_numeric(value)) {
+            return 'rgba(0,0,0,' + alpha + ')';
+        }
+        var scale = create_d3_scale_without_outliers(pd);
+        scale.range([0, 1]);
+        var colr = scale(value);
+        //var code = d3.interpolateViridis(colr);
+        //@ts-ignore
+        var code = d3.interpolateTurbo(colr);
+        var rgb = toRgb(code);
+        return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+    }
+}
+
+
 
 export interface ParamDefMap { [key: string]: ParamDef; };
 
@@ -49,32 +145,12 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
     if (hints === undefined) {
         hints = {};
     }
-    function toRgb(colr: string) {
-        if (colr.startsWith("rgb")) {
-            var rgb = colr.slice(0, -1).split('(')[1].split(',');
-            return {
-                r: parseInt(rgb[0]),
-                g: parseInt(rgb[1]),
-                b: parseInt(rgb[2]),
-            };
-        }
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colr);
-        return result ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16)
-        } : null;
-      }
 
     function infertype(key: string, hint: HiPlotValueDef): ParamDef {
         var url_state = url_states.children(key);
         var optional = false;
         var numeric = ["uid", "from_uid"].indexOf(key) == -1;
         var setVals = [];
-        var special_numerics = ['inf', '-inf', Infinity, -Infinity, null];
-        function is_special_numeric(x) {
-            return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
-        };
         var special_values_set = new Set();
         table.forEach(function(row) {
             var v = row[key];
@@ -133,89 +209,12 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             type = url_state.get('type', type);
         }
 
-        function create_d3_scale_without_outliers() {
-            var dv = distinct_values;
-            if (type == ParamType.CATEGORICAL) {
-              return d3.scalePoint().domain(dv);
-            }
-            else {
-                if (type == ParamType.NUMERICPERCENTILE) {
-                    return d3_scale_percentile(dv);
-                }
-                var min = hint !== undefined && hint.force_value_min !== null ? hint.force_value_min : dv[0];
-                var max = hint !== undefined && hint.force_value_max !== null ? hint.force_value_max : dv[dv.length - 1];
-                if (type == ParamType.NUMERICLOG) {
-                    return d3.scaleLog().domain([min, max]);
-                }
-                console.assert(type == ParamType.NUMERIC, "Unknown variable type " + type);
-                return d3.scaleLinear().domain([min, max]);
-            }
-        }
-        function create_d3_scale() {
-            var scale = create_d3_scale_without_outliers();
-            if (special_values.length && [ParamType.NUMERIC, ParamType.NUMERICLOG, ParamType.NUMERICPERCENTILE].indexOf(type) >= 0) {
-                scale = scale_add_outliers(scale);
-            }
-            return scale;
-        }
-        var colorScheme = null;
-        if (type == ParamType.CATEGORICAL) {
-            var val2color = null;
-            function compute_val2color() {
-                // Compute this lazyly - the call to "DistinctColors" is quite slow :/
-                if (val2color !== null) {
-                    return;
-                }
-                val2color = hint !== undefined && hint.colors !== null ? hint.colors : {};
-                for (var i = 0; i < distinct_values.length; ++i) {
-                    if (val2color[distinct_values[i]]) {
-                        continue;
-                    }
-                    if (distinct_values.length < 10) {
-                        var c = toRgb(d3.schemeCategory10[i % 10]);
-                        val2color[distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
-                        continue;
-                    }
-                    var valueHash = hashCode(JSON.stringify(distinct_values[i]));
-                    var c = toRgb((randomColor as any)({seed: Math.abs(valueHash)}));
-                    val2color[distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
-                }
-            };
-            colorScheme = function(val: any, alpha: number) {
-                compute_val2color();
-                var c = val2color[val];
-                if (c === undefined) {
-                    c = 'rgb(0, 0, 0)';
-                }
-                console.assert((c.startsWith('rgb(') || c.startsWith('hsl(')), c);
-                return c.slice(0, 3) + 'a' + c.slice(3, c.length - 1) + ',' + alpha + ')';
-            };
-        }
-        else {
-            colorScheme = function(val: any, alpha: number) {
-                if (val === undefined || val === null || is_special_numeric(val)) {
-                    return 'rgba(0,0,0,' + alpha + ')';
-                }
-                var scale = create_d3_scale_without_outliers();
-                scale.range([0, 1]);
-                var colr = scale(val);
-                //var code = d3.interpolateViridis(colr);
-                //@ts-ignore
-                var code = d3.interpolateTurbo(colr);
-                var rgb = toRgb(code);
-                return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
-            };
-        }
-
         var info = {
-            'create_d3_scale': create_d3_scale,
             'optional': optional,
             'numeric': numeric,
             'distinct_values': distinct_values,
-            'colorScheme': colorScheme,
             'special_values': special_values,
             'type_options': [ParamType.CATEGORICAL],
-            '__url_state__': url_state,
 
             'type': type,
             'colors': hint !== undefined ? hint.colors : null,
