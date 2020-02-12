@@ -10,7 +10,6 @@ import * as d3 from "d3";
 
 import { WatchedProperty } from "./types";
 import { ParamDefMap } from "./infertypes";
-//@ts-ignore
 import style from "./hiplot.css";
 import { HiPlotPluginData } from "./plugin";
 import React from "react";

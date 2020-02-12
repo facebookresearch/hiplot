@@ -15,19 +15,23 @@ import * as _ from 'underscore';
 
 import { WatchedProperty, AllDatasets, Datapoint, ParamType } from "./types";
 import { ParamDefMap } from "./infertypes";
-//@ts-ignore
 import style from "./hiplot.css";
 import { HiPlotPluginData } from "./plugin";
 import { ResizableH } from "./lib/resizable";
 
+interface ParallelPlotCanvasProps {
 
-export interface ParallelPlotInternalState {
-  colorby: WatchedProperty,
-  rows: AllDatasets,
-  params_def: ParamDefMap,
 };
 
-export interface StringMapping<V> { [key: string]: V; };
+interface ParallelPlotCanvasState {
+
+};
+
+class ParallelPlotCanvas extends React.Component<ParallelPlotCanvasProps, ParallelPlotCanvasState> {
+
+};
+
+interface StringMapping<V> { [key: string]: V; };
 
 interface ParallelPlotState {
   height: number;

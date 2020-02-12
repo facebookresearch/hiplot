@@ -15,7 +15,6 @@ import dtReorder from "datatables.net-colreorder-bs4";
 dtReorder(window, $);
 
 import { Datapoint } from "./types";
-//@ts-ignore
 import style from "./hiplot.css";
 import { HiPlotPluginData } from "./plugin";
 import _ from "underscore";

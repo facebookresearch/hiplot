@@ -7,7 +7,6 @@
 
 import $ from "jquery";
 import React from "react";
-//@ts-ignore
 import style from "./tutorial.css";
 
 interface TutorialStepProps {

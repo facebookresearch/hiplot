@@ -51,16 +51,33 @@ module.exports = {
                 }]
             },
             {
+              test: /\.s(a|c)ss$/,
+              exclude: /\.module.(s(a|c)ss)$/,
+              loader: [
+                'style-loader',
+                'css-loader',
+                {
+                  loader: 'sass-loader',
+                  options: {
+                    sourceMap: true
+                  }
+                }
+              ]
+            },
+            {
               test: /\.css$/i,
-              use: ['style-loader', {
-                  loader: 'css-loader',
+              use: [
+                "style-loader",
+                "@teamsupercell/typings-for-css-modules-loader",
+                {
+                  loader: "css-loader",
                   options: {
                     modules: {
-                        //localIdentName: '[local]__[path][name]--[hash:base64:5]',
-                        localIdentName: '[local]__[hash:base64:5]',
+                      localIdentName: '[local]__[hash:base64:5]',
                     }
                   }
-              }],
+                },
+              ]
             },
             { parser: { amd: false } },
             {
@@ -133,45 +150,16 @@ module.exports = {
                   },
                 }
             },
+            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             {
-                test: /\.module\.s(a|c)ss$/,
-                loader: [
-                  'style-loader',
-                  {
-                    loader: 'css-loader',
-                    options: {
-                      modules: true,
-                      sourceMap: true
-                    }
-                  },
-                  {
-                    loader: 'sass-loader',
-                    options: {
-                      sourceMap: true
-                    }
-                  }
-                ]
-              },
-              {
-                test: /\.s(a|c)ss$/,
-                exclude: /\.module.(s(a|c)ss)$/,
-                loader: [
-                  'style-loader',
-                  'css-loader',
-                  {
-                    loader: 'sass-loader',
-                    options: {
-                      sourceMap: true
-                    }
-                  }
-                ]
-              },
-              // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-              {
-                  enforce: "pre",
-                  test: /\.js$/,
-                  loader: "source-map-loader"
-              }
+                enforce: "pre",
+                test: /\.js$/,
+                loader: "source-map-loader"
+            },
+            {
+              test: /\.worker\.js$/,
+              use: { loader: 'worker-loader' }
+            }
         ],
     },
     stats: {

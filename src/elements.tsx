@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-//@ts-ignore
 import style from "./elements.css";
 import React from "react";
 import { HiPlotLoadStatus, URL_LOAD_URI } from "./types";

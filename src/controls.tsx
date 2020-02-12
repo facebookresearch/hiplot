@@ -11,7 +11,6 @@ import * as _ from 'underscore';
 import React from "react";
 
 import { AllDatasets } from "./types";
-//@ts-ignore
 import style from "./hiplot.css";
 
 interface HiPlotDataControlProps {
@@ -101,7 +100,7 @@ export class ExportDataCSVBtn extends React.Component<HiPlotDataControlProps, Hi
     }
 
     render() {
-        return (<button title="Export data as CSV" className={style.exportData} onClick={this.onClick.bind(this)}>Export</button>);
+        return (<button title="Export data as CSV" onClick={this.onClick.bind(this)}>Export</button>);
     }
 };
 

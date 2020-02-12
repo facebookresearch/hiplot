@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-//@ts-ignore
 import style from "./resizable.css";
 import $ from "jquery";
 import React from "react";
