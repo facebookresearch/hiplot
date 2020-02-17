@@ -35,7 +35,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     componentDidMount() {
         this.dom = $(this.table_ref.current);
         this.ordered_cols = ['', 'uid'];
-        var me = this;
+        const me = this;
         $.each(this.props.params_def, function(k: string, def) {
             if (k == 'uid') {
                 return;
@@ -43,23 +43,33 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
             me.ordered_cols.push(k);
         });
         this.dom.empty();
-        var params_def = this.props.params_def;
         var columns: Array<{[k: string]: any}> = this.ordered_cols.map(function(x) {
             return {
                 'title': x,
                 'defaultContent': 'null',
-                'type': x == '' ? 'html' : (params_def[x].numeric ? "num" : "string"),
+                'type': x == '' ? 'html' : (me.props.params_def[x].numeric ? "num" : "string"),
             };
         });
         columns[0]['render'] = function(data, type, row, meta) {
-            var individualUidColIdx = me.dt.colReorder.order().indexOf(1);
-            var color = me.props.get_color_for_row(me.props.dp_lookup[row[individualUidColIdx]], 1.0);
+            const individualUidColIdx = me.dt.colReorder.order().indexOf(1);
+            const color = me.props.get_color_for_row(me.props.dp_lookup[row[individualUidColIdx]], 1.0);
             return `<span class="${style.colorBlock}" style="background-color: ${color}" />`;
         };
         this.dt = this.dom.DataTable({
             columns: columns,
             data: [],
             deferRender: true, // Create HTML elements only when displayed
+            headerCallback: function headerCallback(thead: HTMLTableRowElement, data: Array<Array<any>>, start: number, end: number, display) {
+                Array.from(thead.cells).forEach(function(th, i) {
+                    const col = th.innerHTML;
+                    if (col != '' && me.dt === null && me.props.context_menu_ref !== undefined) {
+                        th.addEventListener('contextmenu', e => {
+                            me.props.context_menu_ref.current.show(e.pageX, e.pageY, col);
+                            e.preventDefault();
+                        });
+                    }
+                });
+            },
             //@ts-ignore
             colReorder: true,
         });
@@ -69,9 +79,9 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 if (!me.dt || me.empty) {
                     return;
                 }
-                var rowIdx = me.dt.cell(this).index().row;
-                var row = me.dt.row(rowIdx);
-                var individualUidColIdx = me.dt.colReorder.order().indexOf(1);
+                const rowIdx = me.dt.cell(this).index().row;
+                const row = me.dt.row(rowIdx);
+                const individualUidColIdx = me.dt.colReorder.order().indexOf(1);
 
                 $(me.dt.cells().nodes()).removeClass(style.highlight);
                 $(row.nodes()).addClass(style.highlight);
@@ -81,7 +91,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 if (!me.dt || me.empty) {
                     return;
                 }
-                var rowIdx = me.dt.cell(this).index().row;
+                const rowIdx = me.dt.cell(this).index().row;
                 $(me.dt.row(rowIdx).nodes()).removeClass(style.highlight);
                 me.props.rows['highlighted'].set([]);
             });
@@ -92,8 +102,8 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         }, 150), this);
     }
     set_selected(selected: Array<Datapoint>) {
-        var dt = this.dt;
-        var ordered_cols = this.ordered_cols;
+        const dt = this.dt;
+        const ordered_cols = this.ordered_cols;
 
         dt.clear();
         dt.rows.add(selected.map(function(row) {
