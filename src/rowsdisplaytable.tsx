@@ -14,7 +14,7 @@ dt(window, $);
 import dtReorder from "datatables.net-colreorder-bs4";
 dtReorder(window, $);
 
-import { Datapoint } from "./types";
+import { Datapoint, ParamType } from "./types";
 import style from "./hiplot.css";
 import { HiPlotPluginData } from "./plugin";
 import _ from "underscore";
@@ -43,6 +43,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
             me.ordered_cols.push(k);
         });
         this.dom.empty();
+        var params_def = this.props.params_def;
         this.dt = this.dom.DataTable({
             columns: this.ordered_cols.map(function(x) {
                 if (x == "uid") {
@@ -52,19 +53,20 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                         'createdCell': function (td, row_uid, rowData, row, col) {
                             var color = me.props.get_color_for_row(me.props.dp_lookup[row_uid], 1.0);
                             $(td).prepend($('<span>').addClass('color-block').css('background-color', color));
-                        }
+                        },
+                        'type': 'string',
                     }
                 }
                 return {
                     'title': x,
-                    'defaultContent': 'null'
+                    'defaultContent': 'null',
+                    'type': params_def[x].numeric ? "num" : "string",
                 };
             }),
             data: [],
             deferRender: true, // Create HTML elements only when displayed
             //@ts-ignore
             colReorder: true,
-            buttons: ['csv'],
         });
         this.empty = true;
         this.dom.find('tbody')
@@ -90,9 +92,9 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
             });
 
         me.set_selected(me.props.rows['selected'].get());
-        me.props.rows['selected'].on_change(function(selection) {
+        me.props.rows['selected'].on_change(_.debounce(function(selection) {
             me.set_selected(selection);
-        }, this);
+        }, 150), this);
     }
     set_selected(selected: Array<Datapoint>) {
         var dt = this.dt;
