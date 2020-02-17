@@ -34,35 +34,30 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     }
     componentDidMount() {
         this.dom = $(this.table_ref.current);
-        this.ordered_cols = ['uid'];
+        this.ordered_cols = ['', 'uid'];
         var me = this;
         $.each(this.props.params_def, function(k: string, def) {
-            if (k == me.ordered_cols[0]) {
+            if (k == 'uid') {
                 return;
             }
             me.ordered_cols.push(k);
         });
         this.dom.empty();
         var params_def = this.props.params_def;
+        var columns: Array<{[k: string]: any}> = this.ordered_cols.map(function(x) {
+            return {
+                'title': x,
+                'defaultContent': 'null',
+                'type': x == '' ? 'html' : (params_def[x].numeric ? "num" : "string"),
+            };
+        });
+        columns[0]['render'] = function(data, type, row, meta) {
+            var individualUidColIdx = me.dt.colReorder.order().indexOf(1);
+            var color = me.props.get_color_for_row(me.props.dp_lookup[row[individualUidColIdx]], 1.0);
+            return `<span class="${style.colorBlock}" style="background-color: ${color}" />`;
+        };
         this.dt = this.dom.DataTable({
-            columns: this.ordered_cols.map(function(x) {
-                if (x == "uid") {
-                    return {
-                        'title': x,
-                        'defaultContent': 'null',
-                        'createdCell': function (td, row_uid, rowData, row, col) {
-                            var color = me.props.get_color_for_row(me.props.dp_lookup[row_uid], 1.0);
-                            $(td).prepend($('<span>').addClass('color-block').css('background-color', color));
-                        },
-                        'type': 'string',
-                    }
-                }
-                return {
-                    'title': x,
-                    'defaultContent': 'null',
-                    'type': params_def[x].numeric ? "num" : "string",
-                };
-            }),
+            columns: columns,
             data: [],
             deferRender: true, // Create HTML elements only when displayed
             //@ts-ignore
@@ -76,7 +71,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 }
                 var rowIdx = me.dt.cell(this).index().row;
                 var row = me.dt.row(rowIdx);
-                var individualUidColIdx = me.dt.colReorder.order().indexOf(0);
+                var individualUidColIdx = me.dt.colReorder.order().indexOf(1);
 
                 $(me.dt.cells().nodes()).removeClass(style.highlight);
                 $(row.nodes()).addClass(style.highlight);
@@ -102,7 +97,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
 
         dt.clear();
         dt.rows.add(selected.map(function(row) {
-            return dt.colReorder.transpose([...Array(ordered_cols.length).keys()]).map(x => row[ordered_cols[x]]);
+            return dt.colReorder.transpose([...Array(ordered_cols.length).keys()]).map(x => x == '' ? '' : row[ordered_cols[x]]);
         }));
         dt.draw();
         this.empty = selected.length == 0;
