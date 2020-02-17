@@ -59,9 +59,9 @@ jobs:
       - checkout
       - run: npm install
       - run: mkdir -p npm-build/dist npm-build/dist-dev dist
-      - run: npm run build-dev
+      - run: (npm run build-dev || true) && npm run build-dev
       - run: mv dist/* npm-build/dist-dev/
-      - run: npm run build
+      - run: (npm run build || true) && npm run build
       - run: npx tsc
       - run: mv dist/* npm-build/dist/ && mkdir -p hiplot/static/built/ && cp npm-build/dist/hiplot.bundle.js hiplot/static/built/
       - store_artifacts:
