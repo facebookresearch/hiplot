@@ -51,6 +51,9 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
             };
         });
         columns[0]['render'] = function(data, type, row, meta) {
+            if (!me.dt) {
+                return '';
+            }
             const individualUidColIdx = me.dt.colReorder.order().indexOf(1);
             const color = me.props.get_color_for_row(me.props.dp_lookup[row[individualUidColIdx]], 1.0);
             return `<span class="${style.colorBlock}" style="background-color: ${color}" />`;
@@ -103,6 +106,9 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     }
     set_selected(selected: Array<Datapoint>) {
         const dt = this.dt;
+        if (!dt) {
+            return;
+        }
         const ordered_cols = this.ordered_cols;
 
         dt.clear();
@@ -126,7 +132,9 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     }
     componentWillUnmount() {
         if (this.dt) {
-            this.dt.destroy();
+            const dt = this.dt;
+            this.dt = null;
+            dt.destroy();
         }
         this.props.rows.off(this);
     }
