@@ -62,7 +62,10 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     // Load default X/Y axis
     const plotConfig = props.experiment._displays[this.props.name] as HiPlotGraphConfig;
     function get_default_axis(axis_name) {
-      const value = props.persistent_state.get(axis_name, plotConfig[axis_name]);
+      var value = props.persistent_state.get(axis_name, plotConfig[axis_name]);
+      if (value === undefined) {
+        value = null;
+      }
       if (value != null && props.params_def[value] === undefined) {
           return null;
       }
