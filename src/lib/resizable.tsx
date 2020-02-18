@@ -8,30 +8,35 @@
 import style from "./resizable.css";
 import $ from "jquery";
 import React from "react";
+import _ from "underscore";
 
 
 interface ResizableHProps {
     initialHeight: number;
-    onResize: (height: number) => void;
+    onResize: (height: number, width: number) => void;
     borderSize: number;
     minHeight: number;
 };
 
 interface ResizableHState {
     height: number;
+    width: number;
     internalHeight: number;
 };
 
 export class ResizableH extends React.Component<ResizableHProps, ResizableHState> {
     div_ref: React.RefObject<HTMLDivElement> = React.createRef();
     m_pos: number = null;
+    onWindowResizeDebounced: () => void;
 
     constructor(props: ResizableHProps) {
         super(props);
         this.state = {
+            width: 0,
             height: this.props.initialHeight,
             internalHeight: this.props.initialHeight,
         };
+        this.onWindowResizeDebounced = _.debounce(this.onWindowResize.bind(this), 100);
     }
     static defaultProps = {
         borderSize: 4,
@@ -47,15 +52,18 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
         }.bind(this));
 
         document.addEventListener("mouseup", this.onMouseUp);
+        $(window).on("resize", this.onWindowResizeDebounced);
+        this.setState({width: this.div_ref.current.parentElement.offsetWidth});
     }
     componentDidUpdate(prevProps, prevState) {
-        if (prevState.height != this.state.height) {
-            this.props.onResize(this.state.height);
+        if (prevState.height != this.state.height || prevState.width != this.state.width) {
+            this.props.onResize(this.state.height, this.state.width);
         }
     }
     componentWillUnmount() {
         document.removeEventListener("mousemove", this.onMouseMove, false);
         document.removeEventListener("mouseup", this.onMouseUp);
+        $(window).off("resize", this.onWindowResizeDebounced);
     }
     render() {
         return (
@@ -80,5 +88,10 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
         }
         this.m_pos = null;
         document.removeEventListener("mousemove", this.onMouseMove, false);
+    }.bind(this)
+    onWindowResize = function() {
+        if (this.div_ref.current) {
+            this.setState({width: this.div_ref.current.offsetWidth});
+        }
     }.bind(this)
 }

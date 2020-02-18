@@ -126,7 +126,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   }
   componentWillUnmount() {
     d3.select(this.svgg_ref.current).selectAll("*").remove();
-    $(window).off("resize", this.onWindowResize);
     this.props.rows.off(this);
     this.props.colorby.off(this);
     this.animloop.stop();
@@ -161,18 +160,14 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     }
     this.props.data.height = this.state.height;
   }
-  onResizeH(height: number): void {
-    this.setState({height: height});
-  }
-  onWindowResize = function() {
-    if (!this.root_ref.current) {
-      return;
+  onResize(height: number, width: number): void {
+    if (this.state.height != height || this.state.width != width) {
+      this.setState({height: height, width: width});
     }
-    this.setState({width: this.root_ref.current.offsetWidth});
-  }.bind(this)
+  }
   render() {
     return (
-    <ResizableH initialHeight={this.state.height} onResize={this.onResizeH.bind(this)}>
+    <ResizableH initialHeight={this.state.height} onResize={this.onResize.bind(this)}>
     <div ref={this.root_ref} className={`${style["parallel-plot-chart"]} pplot-root`} style={{"height": this.state.height}}>
           <canvas ref={this.foreground_ref} className={style["background-canvas"]}></canvas>
           <canvas ref={this.highlighted_ref} className={style["highlight-canvas"]}></canvas>
@@ -528,7 +523,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       // render data
       brush();
     }, 100);
-    $(window).on("resize", this.onWindowResize);
 
     function remove_axis(d) {
       var pd = props.params_def[d];
