@@ -91,7 +91,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       data: {},
   }
   componentDidMount() {
-    if (this.props.context_menu_ref) {
+    if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
       const me = this;
       this.props.context_menu_ref.current.addCallback(function(column, cm) {
         var contextmenu = $(cm);

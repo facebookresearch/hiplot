@@ -40,7 +40,7 @@ export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
         if (y < domain_idx[0]) {
             return values[domain_idx[0]];
         }
-        return values[y];
+        return values[Math.round(y)];
     };
     function range_fn(r) {
         if (r === undefined) {

@@ -58,7 +58,7 @@ function toRgb(colr: string) {
 }
 
 
-function create_d3_scale_without_outliers(pd: ParamDef): any {
+export function create_d3_scale_without_outliers(pd: ParamDef): any {
     var dv = pd.distinct_values;
     if (pd.type == ParamType.CATEGORICAL) {
       return d3.scalePoint().domain(dv);
