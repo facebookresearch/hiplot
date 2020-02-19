@@ -28,7 +28,7 @@ import LogoSVG from "../hiplot/static/logo.svg";
 //@ts-ignore
 import style from "./hiplot.css";
 import { ContextMenu } from "./contextmenu";
-import { DistributionPlot } from "./distribution/distributionplot";
+import { HiPlotDistributionPlugin } from "./distribution/plugin";
 
 // Exported from HiPlot
 export { PlotXY } from "./plotxy";
@@ -373,7 +373,7 @@ export function hiplot_setup(element: HTMLElement, extra?: object) {
             // Names correspond to values of hip.Displays
             {name: "PARALLEL_PLOT", render: (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />},
             {name: "XY", render: (plugin_data: HiPlotPluginData) => <PlotXY name={"XY"} data={xydata} {...plugin_data} />},
-            {name: "DISTR", render: (plugin_data: HiPlotPluginData) => <DistributionPlot {...plugin_data} />},
+            {name: "DISTR", render: (plugin_data: HiPlotPluginData) => <HiPlotDistributionPlugin {...plugin_data} />},
             {name: "TABLE", render: (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />},
         ]
     };

@@ -8,38 +8,23 @@
 import $ from "jquery";
 import React from "react";
 import * as d3 from "d3";
-//@ts-ignore
-import dt from "datatables.net-bs4";
-dt(window, $);
-//@ts-ignore
-import dtReorder from "datatables.net-colreorder-bs4";
-dtReorder(window, $);
 
 import { HiPlotPluginData } from "../plugin";
 import _ from "underscore";
-import { ParamType, Datapoint } from "../types";
-import { DistributionNumericPlot } from "./distributionnumeric";
+import { Datapoint } from "../types";
+import { DistributionPlot, HistogramData } from "./plot";
 import { ResizableH } from "../lib/resizable";
-import { ParamDef } from "../infertypes";
 
-export interface DistributionPlotState {
+
+export interface HiPlotDistributionPluginState {
     height: number,
     width: number,
     nbins: number,
     axis?: string,
-    histData: Array<Datapoint>;
+    histData: HistogramData;
 };
 
-export interface DistributionPlotData {
-    height: number,
-    width: number,
-    nbins: number,
-    axis: string,
-    histData: Array<Datapoint>;
-    param_def: ParamDef;
-};
-
-export class DistributionPlot extends React.Component<HiPlotPluginData, DistributionPlotState> {
+export class HiPlotDistributionPlugin extends React.Component<HiPlotPluginData, HiPlotDistributionPluginState> {
     container_ref: React.RefObject<HTMLDivElement> = React.createRef();
     constructor(props: HiPlotPluginData) {
         super(props);
@@ -51,7 +36,7 @@ export class DistributionPlot extends React.Component<HiPlotPluginData, Distribu
             height: d3.min([d3.max([document.body.clientHeight-540, 240]), 500]),
             width: 0,
             nbins: 10,
-            histData: [],
+            histData: {selected: [], all: props.rows.all.get()},
             axis: axis,
         };
     }
@@ -73,11 +58,28 @@ export class DistributionPlot extends React.Component<HiPlotPluginData, Distribu
                 contextmenu.append(option);
             }, this);
         }
-        this.props.rows.selected.on_change(function(new_dps) {
-            this.setState({histData: new_dps});
+        this.props.rows.selected.on_change(function(new_dps: Datapoint[]) {
+            this.setState(function(s: HiPlotDistributionPluginState, p) {
+                return {
+                    histData: {
+                        ...s.histData,
+                        selected: new_dps,
+                    }
+                };
+            });
+        }.bind(this), this);
+        this.props.rows.all.on_change(function(new_dps: Datapoint[]) {
+            this.setState(function(s: HiPlotDistributionPluginState, p) {
+                return {
+                    histData: {
+                        ...s.histData,
+                        all: new_dps,
+                    }
+                };
+            });
         }.bind(this), this);
     }
-    componentDidUpdate(prevProps: HiPlotPluginData, prevState: DistributionPlotState) {
+    componentDidUpdate(prevProps: HiPlotPluginData, prevState: HiPlotDistributionPluginState) {
         if (prevState.axis != this.state.axis) {
             if (this.props.persistent_state) {
                 this.props.persistent_state.set('axis', this.state.axis);
@@ -96,12 +98,8 @@ export class DistributionPlot extends React.Component<HiPlotPluginData, Distribu
         if (this.state.axis === undefined) {
             return [];
         }
-        const pd = this.props.params_def[this.state.axis];
-        if (pd.type === ParamType.CATEGORICAL) {
-            return <p>Not supported for categorical params yet</p>;
-        }
         return (<ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 150)}>
-            {this.state.width > 0 && <DistributionNumericPlot
+            {this.state.width > 0 && <DistributionPlot
                 axis={this.state.axis}
                 height={this.state.height}
                 width={this.state.width}
