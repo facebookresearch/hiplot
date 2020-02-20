@@ -15,7 +15,7 @@ Multiple points can share the same parent - this is especially useful when repre
 
 
 
-.. literalinclude:: ../hiplot/fetchers.py
+.. literalinclude:: ../hiplot/fetchers_demo.py
     :start-after: DEMO_LINE_XY_BEGIN
     :end-before: DEMO_LINE_XY_END
 
