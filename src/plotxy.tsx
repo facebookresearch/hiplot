@@ -15,19 +15,20 @@ import React from "react";
 import { ResizableH } from "./lib/resizable";
 import _ from "underscore";
 
-interface PlotXYProps extends HiPlotPluginData {
-  name: string;
-  data: any;
-};
-
 
 export interface HiPlotGraphConfig {
+  // Corresponds to values in the dict of `exp._displays['XY']`
   axis_x: string | null,
   axis_y: string | null,
   lines_thickness: number;
   lines_opacity: number;
   dots_thickness: number;
   dots_opacity: number;
+  height?: number;
+};
+
+interface PlotXYProps extends HiPlotPluginData, HiPlotGraphConfig {
+  data: any;
 };
 
 interface PlotXYState extends HiPlotGraphConfig {
@@ -53,8 +54,8 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     let height: number;
     if (props.data.height) {
       height = props.data.height;
-    } else if (props.experiment._displays[props.name] && props.experiment._displays[props.name].height) {
-      height = props.experiment._displays[props.name].height;
+    } else if (props.height) {
+      height = props.height;
     } else {
       height = d3.min([d3.max([document.body.clientHeight-540, 240]), 500]);
     }
@@ -62,7 +63,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     // Load default X/Y axis
     const plotConfig = props.experiment._displays[this.props.name] as HiPlotGraphConfig;
     function get_default_axis(axis_name) {
-      var value = props.persistent_state.get(axis_name, plotConfig[axis_name]);
+      var value = props.persistent_state.get(axis_name, props[axis_name]);
       if (value === undefined) {
         value = null;
       }
@@ -73,8 +74,6 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     }
 
     const state = {
-      lines_thickness: 1.2, // default value
-      dots_thickness: 1.4, // default value
       ...plotConfig,
       axis_x: get_default_axis('axis_x'),
       axis_y: get_default_axis('axis_y'),
@@ -87,7 +86,13 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     };
   }
   static defaultProps = {
-      name: "xy",
+      axis_x: null,
+      axis_y: null,
+      lines_thickness: 1.2,
+      lines_opacity: null,
+      dots_thickness: 1.4,
+      dots_opacity: null,
+
       data: {},
   }
   componentDidMount() {
@@ -126,7 +131,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     var dp_lookup = props.dp_lookup;
     var currently_displayed = [];
     var rerender_all_points = [];
-    var zoom_brush;
+    var zoom_brush: d3.BrushBehavior<unknown>;
 
     // Lines
     var graph_lines = this.canvas_lines_ref.current.getContext('2d');
@@ -136,8 +141,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     var highlights = this.canvas_highlighted_ref.current.getContext('2d');
     highlights.globalCompositeOperation = "destination-over";
 
-    var x_scale, y_scale, yAxis, xAxis, margin;
-    var x_scale_orig, y_scale_orig;
+    const margin = {top: 20, right: 20, bottom: 50, left: 60};
+    var x_scale, y_scale, yAxis, xAxis;
+    var x_scale_orig: d3.AxisScale<d3.AxisDomain>, y_scale_orig: d3.AxisScale<d3.AxisDomain>;
 
     function redraw_axis_and_rerender() {
       var rerender_all_points_before = rerender_all_points;
@@ -165,7 +171,6 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       if (!force && !me.state.enabled) {
         return;
       }
-      margin = {top: 20, right: 20, bottom: 50, left: 60};
       x_scale_orig = x_scale = create_scale(me.state.axis_x, [margin.left, me.state.width - margin.right]);
       y_scale_orig = y_scale = create_scale(me.state.axis_y, [me.state.height - margin.bottom, margin.top]);
       zoom_brush = d3.brush().extent([[margin.left, margin.top], [me.state.width - margin.right, me.state.height - margin.bottom]]).on("end", brushended);
@@ -335,11 +340,11 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     };
 
     // Render at the same pace as parallel plot
-    var xp_config = this.state;
+    var xp_config = this.props;
     function render_new_rows(new_rows) {
       var area = me.state.height * me.state.width / 400000;
-      var lines_opacity = xp_config.lines_opacity ? xp_config.lines_opacity : d3.min([3 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
-      var dots_opacity = xp_config.dots_opacity ? xp_config.dots_opacity : d3.min([4 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
+      var lines_opacity = xp_config.lines_opacity !== null ? xp_config.lines_opacity : d3.min([3 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
+      var dots_opacity = xp_config.dots_opacity !== null ? xp_config.dots_opacity : d3.min([4 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
       new_rows.forEach(function(dp) {
         var call_render = function() {
           render_dp(dp, graph_lines, {

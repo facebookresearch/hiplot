@@ -139,6 +139,15 @@ def demo_force_scale() -> hip.Experiment:
     return xp
 
 
+def demo_distribution(**kwargs: Any) -> hip.Experiment:
+    xp = hip.Experiment.from_iterable([{
+        'cat': random.choice(["a", "b", "c", "d", "e", "f", "g", "h"]),
+        'numeric': random.uniform(0.0, 1.0),
+    } for i in range(1000)])
+    xp.display_data(hip.Displays.DISTRIBUTION).update(kwargs)
+    return xp
+
+
 README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_big": lambda: demo(1000),
@@ -147,4 +156,7 @@ README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
     "demo_line_xy": demo_line_xy,
     "demo_bug_uid": demo_bug_uid,
     "demo_force_scale": demo_force_scale,
+    "demo_distribution_cat": lambda: demo_distribution(axis="cat"),
+    "demo_distribution_num": lambda: demo_distribution(axis="numeric"),
+    "demo_distribution_num_100bins": lambda: demo_distribution(axis="numeric", nbins=100),
 }

@@ -11,7 +11,6 @@ import { create_d3_scale_without_outliers, ParamDef } from "../infertypes";
 import { ParamType, Datapoint } from "../types";
 
 const margin = {top: 20, right: 20, bottom: 50, left: 60};
-const ANIMATION_TIME_MS = 750;
 
 interface BinsDrawData {
     bins: d3.Bin<any, any>[];
@@ -32,6 +31,7 @@ export interface DistributionPlotData {
     axis: string,
     histData: HistogramData;
     param_def: ParamDef;
+    animateMs: number;
 };
 
 
@@ -83,13 +83,13 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
             dataScale.range([this.figureHeight(), 0]);
             d3.select(this.axisRight.current)
                 .transition()
-                .duration(animate ? ANIMATION_TIME_MS : 0)
+                .duration(animate ? this.props.animateMs : 0)
                 .call(d3.axisRight(dataScale).ticks(1 + this.props.height/50))
                     .attr("text-anchor", "end")
                     .selectAll("text").attr("x", -4);
             d3.select(this.axisLeft.current)
                 .transition()
-                .duration(animate ? ANIMATION_TIME_MS : 0)
+                .duration(animate ? this.props.animateMs : 0)
                 .call(d3.axisLeft(dataScale).ticks(1 + this.props.height/50));
         }
 
@@ -150,13 +150,13 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
             densityScale = densityScale.range([this.figureHeight(), 0])
             d3.select(this.axisLeft.current)
                 .transition()
-                .duration(animate ? ANIMATION_TIME_MS : 0)
+                .duration(animate ? this.props.animateMs : 0)
                 .call(d3.axisLeft(densityScale));
         } else {
             densityScale = densityScale.range([0, this.figureWidth()])
             d3.select(this.axisBottom.current)
                 .transition()
-                .duration(animate ? ANIMATION_TIME_MS : 0)
+                .duration(animate ? this.props.animateMs : 0)
                 .call(d3.axisBottom(densityScale));
             // Compute reordering of the bins - we want to display higher densities first.
             var ordered1 = Array.from(binsOrdering).sort((a, b) => allHist.selected.bins[a].length - allHist.selected.bins[b].length);
@@ -192,7 +192,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
             .append("line") // Add a new rect for each new elements
             .merge(u) // get the already existing elements as well
             .transition() // and apply changes to all of them
-            .duration(animate ? ANIMATION_TIME_MS : 0)
+            .duration(animate ? this.props.animateMs : 0)
                 .attr(`${dataCoord}1`, (d, i) => dataScale(hist.bins[binsOrdering[i]].x0) + 1)
                 .attr(`${densityCoord}1`, (d, i) => densityScaleFromLength(d))
                 .attr(`${dataCoord}2`, (d, i) => dataScale(hist.bins[binsOrdering[i]].x1))
@@ -228,7 +228,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
                         .attr('opacity', '1');
             })
             .transition() // and apply changes to all of them
-            .duration(animate ? ANIMATION_TIME_MS : 0);
+            .duration(animate ? this.props.animateMs : 0);
 
         if (this.isVertical()) {
             ut

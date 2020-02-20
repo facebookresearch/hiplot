@@ -19,34 +19,49 @@ import { ResizableH } from "../lib/resizable";
 export interface HiPlotDistributionPluginState {
     height: number,
     width: number,
-    nbins: number,
     axis?: string,
     histData: HistogramData;
 };
 
-export class HiPlotDistributionPlugin extends React.Component<HiPlotPluginData, HiPlotDistributionPluginState> {
+interface DistributionPluginProps extends HiPlotPluginData {
+    // `exp.display_data[hip.Displays.DISTRIBUTION]
+    nbins: number;
+    animateMs: number;
+    axis?: string;
+};
+
+export class HiPlotDistributionPlugin extends React.Component<DistributionPluginProps, HiPlotDistributionPluginState> {
     container_ref: React.RefObject<HTMLDivElement> = React.createRef();
-    constructor(props: HiPlotPluginData) {
+    constructor(props: DistributionPluginProps) {
         super(props);
         var axis = this.props.persistent_state.get('axis');
+        if (axis !== undefined && this.props.params_def[axis] === undefined) {
+            axis = undefined;
+        }
+        if (axis === undefined) {
+            axis = this.props.axis;
+        }
         if (axis && this.props.params_def[axis] === undefined) {
             axis = undefined;
         }
         this.state = {
             height: d3.min([d3.max([document.body.clientHeight-540, 240]), 500]),
             width: 0,
-            nbins: 10,
             histData: {selected: [], all: props.rows.all.get()},
             axis: axis,
         };
     }
+    static defaultProps = {
+        nbins: 10,
+        animateMs: 750,
+    };
+
     componentDidMount() {
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             const me = this;
             this.props.context_menu_ref.current.addCallback(function(column, cm) {
                 var contextmenu = $(cm);
                 contextmenu.append($('<div class="dropdown-divider"></div>'));
-                contextmenu.append($(`<h6 class="dropdown-header">Distribution</h6>`));
                 var option = $('<a class="dropdown-item" href="#">').text("View distribution");
                 if (me.state.axis == column) {
                     option.addClass('disabled').css('pointer-events', 'none');
@@ -103,9 +118,10 @@ export class HiPlotDistributionPlugin extends React.Component<HiPlotPluginData, 
                 axis={this.state.axis}
                 height={this.state.height}
                 width={this.state.width}
-                nbins={this.state.nbins}
                 histData={this.state.histData}
                 param_def={this.props.params_def[this.state.axis]}
+                nbins={this.props.nbins}
+                animateMs={this.props.animateMs}
             />}
         </ResizableH>);
     }

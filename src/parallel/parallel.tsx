@@ -8,7 +8,6 @@
 // This file is largely inspired from the snippet by Kai Chang
 // available in http://bl.ocks.org/syntagmatic/3150059
 
-import $ from "jquery";
 import React from "react";
 import * as d3 from "d3";
 import _ from 'underscore';
@@ -18,43 +17,6 @@ import { create_d3_scale } from "../infertypes";
 import style from "../hiplot.css";
 import { HiPlotPluginData } from "../plugin";
 import { ResizableH } from "../lib/resizable";
-
-/*
-// TODO: Use a WebWorker for rendering?
-import * as parallelWorker from "./parallel.worker";
-const worker = parallelWorker();
-
-interface ParallelPlotCanvasProps {
-  params_def: ParamDefMap;
-  colorby: string;
-  render_dp: Array<Datapoint>;
-  dimensions: Array<{x: number, dim: string}>;
-  height: number;
-  width: number;
-};
-
-interface ParallelPlotCanvasState {
-
-};
-
-class ParallelPlotCanvas extends React.Component<ParallelPlotCanvasProps, ParallelPlotCanvasState> {
-  canvas_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
-  ctx: CanvasRenderingContext2D;
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.params_def != this.props.params_def || prevProps.colorby != this.props.colorby || prevProps.render_dp != this.props.render_dp) {
-      // TODO: Clear canvas + restart drawing
-    }
-  }
-  componentDidMount() {
-    this.ctx = this.canvas_ref.current.getContext('2d');
-    this.ctx.globalCompositeOperation = "destination-over";
-  }
-  render() {
-    return (<canvas ref={this.canvas_ref} className={style["background-canvas"]}></canvas>);
-  }
-};
-*/
 
 interface StringMapping<V> { [key: string]: V; };
 

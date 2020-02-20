@@ -51,6 +51,7 @@ class Displays:
     PARALLEL_PLOT = 'PARALLEL_PLOT'
     XY = 'XY'
     TABLE = 'TABLE'
+    DISTRIBUTION = 'DISTRIBUTION'
 
 
 class ValueDef(_DictSerializable):

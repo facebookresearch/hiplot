@@ -70,6 +70,7 @@ function make_hiplot_data(persistent_state?: PersistentState): HiPlotPluginData 
         colorby: new WatchedProperty('colorby'),
         experiment: null,
         persistent_state: persistent_state !== undefined ? persistent_state : new PersistentStateInMemory("", {}),
+        name: null,
     };
 }
 
@@ -316,6 +317,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
                 {this.props.plugins.map((plugin_info, idx) => <React.Fragment key={idx}>{plugin_info.render({
                     ...this.data,
                     ...(this.state.experiment._displays[plugin_info.name] ? this.state.experiment._displays[plugin_info.name] : {}),
+                    name: plugin_info.name,
                     persistent_state: this.data.persistent_state.children(plugin_info.name)
                 })}</React.Fragment>)}
             </div>
@@ -372,8 +374,8 @@ export function hiplot_setup(element: HTMLElement, extra?: object) {
         plugins: [
             // Names correspond to values of hip.Displays
             {name: "PARALLEL_PLOT", render: (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />},
-            {name: "XY", render: (plugin_data: HiPlotPluginData) => <PlotXY name={"XY"} data={xydata} {...plugin_data} />},
-            {name: "DISTR", render: (plugin_data: HiPlotPluginData) => <HiPlotDistributionPlugin {...plugin_data} />},
+            {name: "XY", render: (plugin_data: HiPlotPluginData) => <PlotXY data={xydata} {...plugin_data} />},
+            {name: "DISTRIBUTION", render: (plugin_data: HiPlotPluginData) => <HiPlotDistributionPlugin {...plugin_data} />},
             {name: "TABLE", render: (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />},
         ]
     };
