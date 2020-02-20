@@ -1,4 +1,5 @@
 import glob
+import time
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -27,6 +28,7 @@ def test_demo_pages() -> None:
         file = Path(f)
         driver = create_browser()
         driver.get(f'file://{file.absolute()}')
+        time.sleep(2)  # Wait for enough data to be loaded
         driver.save_screenshot(f + '.png')
         print(f'  title: {driver.title}')
         print(f'  log messages:')
