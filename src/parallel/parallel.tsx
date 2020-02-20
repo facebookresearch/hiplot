@@ -594,13 +594,11 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           .style('font-size', null)
           .style('display', null);
       });
-    console.log("Update ticks");
     me.setState(function(prevState) { return { brush_count: prevState.brush_count + 1}; });
   }.bind(this);
 
   // render a set of polylines on a canvas
   paths = function(selected: Array<Datapoint>, ctx: CanvasRenderingContext2D, count: number) {
-    console.log("Paths", count);
     var me = this;
     var n = selected.length,
         i = 0,

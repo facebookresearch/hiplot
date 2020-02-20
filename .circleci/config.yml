@@ -10,6 +10,60 @@ commands:
       - attach_workspace:
           at: npm-build
       - run: cp -r npm-build/dist hiplot/static/built
+  test_selenium_e2e:
+    parameters:
+      browser:
+        type: string
+    steps:
+      - checkout
+      - attach_built_js
+      - restore_cache:
+          keys:
+          - v2-e2e-selenium<< parameters.browser >>-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: install dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install python3-venv git -y
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade -e .[dev]
+      - save_cache:
+          paths:
+            - ./venv
+          key: v2-e2e-selenium<< parameters.browser >>-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
+      - run:
+          name: Generate pages and end to end testing
+          when: always
+          command: |
+            . venv/bin/activate
+            mkdir artifacts
+            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
+            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
+            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
+            BROWSER=<< parameters.browser >> pytest -s .circleci/test_e2e.py
+      - run:
+          name: Collect artifacts...
+          command: mv .circleci/demo_pages artifacts/provided
+      - run:
+          name: Generate pages and end to end testing (dev bundle)
+          when: always
+          command: |
+            . venv/bin/activate
+            rm -rf hiplot/static/built/*
+            cp -r npm-build/dist-dev/* hiplot/static/built
+            pip install --upgrade -e .[dev]
+            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
+            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
+            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
+            BROWSER=<< parameters.browser >> pytest -s .circleci/test_e2e.py
+      - run:
+          name: Collect artifacts...
+          when: always
+          command: mv .circleci/demo_pages artifacts/dev
+      - store_artifacts:
+          when: always
+          path: ~/repo/artifacts
 
 orbs:
   win: circleci/windows@2.2.0
@@ -102,60 +156,21 @@ jobs:
           when: always
           path: pack
 
-  browser_ci:
+  browser-e2e-chrome:
     docker:
       - image: selenium/standalone-chrome
     working_directory: ~/repo
     steps:
-      - checkout
-      - attach_built_js
-      - restore_cache:
-          keys:
-          - v2-browser_ci-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
-      - run:
-          name: install dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install python3-venv git -y
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install --upgrade -e .[dev]
-      - save_cache:
-          paths:
-            - ./venv
-          key: v2-browser_ci-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
-      - run:
-          name: Generate pages and end to end testing
-          when: always
-          command: |
-            . venv/bin/activate
-            mkdir artifacts
-            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
-            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
-            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
-            pytest -s .circleci/test_e2e.py
-      - run:
-          name: Collect artifacts...
-          command: mv .circleci/demo_pages artifacts/provided
-      - run:
-          name: Generate pages and end to end testing (dev bundle)
-          when: always
-          command: |
-            . venv/bin/activate
-            rm -rf hiplot/static/built/*
-            cp -r npm-build/dist-dev/* hiplot/static/built
-            pip install --upgrade -e .[dev]
-            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
-            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
-            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
-            pytest -s .circleci/test_e2e.py
-      - run:
-          name: Collect artifacts...
-          when: always
-          command: mv .circleci/demo_pages artifacts/dev
-      - store_artifacts:
-          when: always
-          path: ~/repo/artifacts
+      - test_selenium_e2e:
+          browser: chrome
+
+  browser-e2e-firefox:
+    docker:
+      - image: selenium/standalone-firefox
+    working_directory: ~/repo
+    steps:
+      - test_selenium_e2e:
+          browser: firefox
 
   docs-build:
     docker:
@@ -334,7 +349,13 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - browser_ci:
+      - browser-e2e-chrome:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
+      - browser-e2e-firefox:
           requires:
             - npm-build
           filters:
@@ -363,7 +384,8 @@ workflows:
             - pypi-build
             - npm-build
             - docs-build
-            - browser_ci
+            - browser-e2e-chrome
+            - browser-e2e-firefox
             - mypy_pytest
           filters:
             tags:
@@ -375,7 +397,8 @@ workflows:
             - pypi-build
             - npm-build
             - docs-build
-            - browser_ci
+            - browser-e2e-chrome
+            - browser-e2e-firefox
             - mypy_pytest
           filters:
             tags:
