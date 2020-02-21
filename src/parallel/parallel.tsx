@@ -32,10 +32,24 @@ interface ParallelPlotState {
   dragging: {col: string, pos: number, origin: number, dragging: boolean};
 };
 
-interface ParallelPlotData extends HiPlotPluginData {
+// DISPLAYS_DATA_DOC_BEGIN
+// Corresponds to values in the dict of `exp._displays[hip.Displays.PARALLEL_PLOT]`
+interface ParallelPlotDisplayData {
+  // Ordering of the columns
   order?: Array<string>;
-  hide?: Set<string>;
-  invert?: Set<string>;
+
+  // Hidden columns, that won't appear in the parallel plot
+  hide?: Array<string>;
+
+  // These columns will be inverted (higher values are below)
+  invert?: Array<string>;
+
+  // Categorical columns with more distinct values that this won't be displayed
+  categoricalMaximumValues: number;
+}
+// DISPLAYS_DATA_DOC_END
+
+interface ParallelPlotData extends HiPlotPluginData, ParallelPlotDisplayData {
   data: any;
 };
 
@@ -84,6 +98,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     };
   }
   static defaultProps = {
+    categoricalMaximumValues: 80,
     data: {}
   }
   componentWillUnmount() {
@@ -144,7 +159,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       var pd = this.props.params_def[k];
       return pd === undefined ||
         pd.special_values.length + pd.distinct_values.length <= 1 ||
-        (pd.type == ParamType.CATEGORICAL && pd.distinct_values.length > 80) ||
+        (pd.type == ParamType.CATEGORICAL && pd.distinct_values.length > this.props.categoricalMaximumValues) ||
         this.state.hide.has(k);
     }.bind(this);
 

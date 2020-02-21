@@ -16,22 +16,26 @@ import { ResizableH } from "./lib/resizable";
 import _ from "underscore";
 
 
-export interface HiPlotGraphConfig {
-  // Corresponds to values in the dict of `exp._displays['XY']`
+// DISPLAYS_DATA_DOC_BEGIN
+// Corresponds to values in the dict of `exp._displays[hip.Displays.XY]`
+export interface PlotXYDisplayData {
   axis_x: string | null,
   axis_y: string | null,
   lines_thickness: number;
   lines_opacity: number;
   dots_thickness: number;
   dots_opacity: number;
+
+  // Default height in pixels
   height?: number;
 };
+// DISPLAYS_DATA_DOC_END
 
-interface PlotXYProps extends HiPlotPluginData, HiPlotGraphConfig {
+interface PlotXYProps extends HiPlotPluginData, PlotXYDisplayData {
   data: any;
 };
 
-interface PlotXYState extends HiPlotGraphConfig {
+interface PlotXYState extends PlotXYDisplayData {
   width: number,
   height: number,
   enabled: boolean,
@@ -61,7 +65,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     }
 
     // Load default X/Y axis
-    const plotConfig = props.experiment._displays[this.props.name] as HiPlotGraphConfig;
+    const plotConfig = props.experiment._displays[this.props.name] as PlotXYDisplayData;
     function get_default_axis(axis_name) {
       var value = props.persistent_state.get(axis_name, props[axis_name]);
       if (value === undefined) {

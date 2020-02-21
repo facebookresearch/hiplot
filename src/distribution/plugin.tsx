@@ -23,11 +23,21 @@ export interface HiPlotDistributionPluginState {
     histData: HistogramData;
 };
 
-interface DistributionPluginProps extends HiPlotPluginData {
-    // `exp.display_data[hip.Displays.DISTRIBUTION]
+// DISPLAYS_DATA_DOC_BEGIN
+// Corresponds to values in the dict of `exp._displays[hip.Displays.DISTRIBUTION]`
+interface DistributionDisplayData {
+    // Number of bins for distribution of numeric variables
     nbins: number;
+
+    // Animation duration in ms when data changes
     animateMs: number;
+
+    // Default axis for the distribution plot
     axis?: string;
+};
+// DISPLAYS_DATA_DOC_END
+
+interface DistributionPluginProps extends HiPlotPluginData, DistributionDisplayData {
 };
 
 export class HiPlotDistributionPlugin extends React.Component<DistributionPluginProps, HiPlotDistributionPluginState> {
