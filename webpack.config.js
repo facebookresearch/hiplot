@@ -13,6 +13,9 @@ const webpack = require("webpack");
 const distPath = path.resolve(__dirname, 'dist');
 
 class WhenDoneCopyToHiplotStaticDir {
+  constructor(env) {
+    this.env = env;
+  }
   apply(compiler) {
     compiler.hooks.afterEmit.tap('WhenDoneCopyToHiplotStaticDir', (
       stats /* stats is passed as argument when done hook is tapped.  */
@@ -21,14 +24,15 @@ class WhenDoneCopyToHiplotStaticDir {
       try {
           fs.mkdirSync(pyBuilt, {recursive: true});
       } catch (err) { /* `recursive` option is node >= 10.0. Otherwise will throw if the directory already exists */ }
-      fs.copyFileSync(path.resolve(distPath, 'hiplot.bundle.js'), path.resolve(pyBuilt, 'hiplot.bundle.js'));
+      const target = this.env && this.env.test ? "hiplot_test" : "hiplot";
+      fs.copyFileSync(path.resolve(distPath, `${target}.bundle.js`), path.resolve(pyBuilt, 'hiplot.bundle.js'));
     });
   }
 }
-
-module.exports = {
+module.exports = env => { return {
     entry: {
-      'hiplot': './src/hiplot.tsx',
+      'hiplot': `./src/hiplot.tsx`,
+      'hiplot_test': `./src/hiplot_test.tsx`,
     },
     output: {
         path: distPath,
@@ -110,7 +114,7 @@ module.exports = {
 " Copyright (c) Facebook, Inc. and its affiliates.\n\n\
  This source code is licensed under the MIT license found in the\n\
  LICENSE file in the root directory of this source tree."),
-      new WhenDoneCopyToHiplotStaticDir()
+      new WhenDoneCopyToHiplotStaticDir(env)
     ],
     devtool: 'source-map'
-};
+}};

@@ -32,7 +32,6 @@ export interface PlotXYDisplayData {
 // DISPLAYS_DATA_DOC_END
 
 interface PlotXYProps extends HiPlotPluginData, PlotXYDisplayData {
-  data: any;
 };
 
 interface PlotXYState extends PlotXYDisplayData {
@@ -56,8 +55,8 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   constructor(props: PlotXYProps) {
     super(props);
     let height: number;
-    if (props.data.height) {
-      height = props.data.height;
+    if (props.window_state.height) {
+      height = props.window_state.height;
     } else if (props.height) {
       height = props.height;
     } else {
@@ -494,6 +493,6 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         this.setState({enabled: true});
       }
     }
-    this.props.data.height = this.state.height;
+    this.props.window_state.height = this.state.height;
   }
 }

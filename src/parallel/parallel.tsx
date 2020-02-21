@@ -50,7 +50,6 @@ interface ParallelPlotDisplayData {
 // DISPLAYS_DATA_DOC_END
 
 interface ParallelPlotData extends HiPlotPluginData, ParallelPlotDisplayData {
-  data: any;
 };
 
 export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlotState> {
@@ -87,7 +86,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   constructor(props: ParallelPlotData) {
     super(props);
     this.state = {
-      height: props.persistent_state.get('height', props.data.height ? props.data.height : 600),
+      height: props.persistent_state.get('height', props.window_state.height ? props.window_state.height : 600),
       width: 0, // Will be initiatialize to element width
       order: props.persistent_state.get('order', props.order ? props.order : []),
       hide: new Set(props.persistent_state.get('hide', props.hide ? props.hide : [])),
@@ -135,7 +134,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     if (prevState.brush_count != this.state.brush_count) {
       this.paths(this.props.rows.selected.get(), this.foreground, this.state.brush_count);
     }
-    this.props.data.height = this.state.height;
+    this.props.window_state.height = this.state.height;
   }
   onResize(height: number, width: number): void {
     if (this.state.height != height || this.state.width != width) {

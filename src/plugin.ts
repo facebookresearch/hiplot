@@ -22,6 +22,10 @@ export interface HiPlotPluginData {
 
     context_menu_ref?: React.RefObject<ContextMenu>;
     colorby: WatchedProperty;
-    persistent_state: PersistentState;
     name: string;
+
+    // Data that persists until we close the window
+    window_state: any;
+    // Data that persists upon page reload, sharing link etc...
+    persistent_state: PersistentState;
 };

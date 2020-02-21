@@ -179,7 +179,6 @@ export class ThemeToggle extends React.Component<ThemeToggleProps, ThemeToggleSt
         this.state = {'dark': false};
     }
     onClick() {
-        var btn = this.btnRef.current;
         this.setState(function(s, p) { return {dark: !s.dark}});
     }
     componentDidUpdate() {

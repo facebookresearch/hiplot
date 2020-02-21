@@ -1,6 +1,7 @@
 import glob
 import time
 import os
+import pytest
 from pathlib import Path
 import selenium
 from selenium import webdriver
@@ -36,29 +37,33 @@ def create_browser_firefox() -> RemoteWebDriver:
     return driver
 
 
-def test_demo_pages() -> None:
-    BROWSERS_FACTORY = {
-        "chrome": create_browser_chrome,
-        "firefox": create_browser_firefox,
-    }
+BROWSERS_FACTORY = {
+    "chrome": create_browser_chrome,
+    "firefox": create_browser_firefox,
+}
+
+
+@pytest.mark.parametrize(
+    "file, wait_secs",
+    [(Path(f), float(os.environ.get('WAIT_SECS', '2'))) for f in glob.glob(str(DEMO_PAGES_PATH / '*.html'))],
+)
+def test_demo_pages(file: Path, wait_secs: float) -> None:
+    print(file)
     num_err = 0
-    for f in glob.glob(str(DEMO_PAGES_PATH / '*.html')):
-        print(f'Loading {f}')
-        file = Path(f)
-        driver = BROWSERS_FACTORY[os.environ.get("BROWSER", "chrome")]()
-        driver.get(f'file://{file.absolute()}')
-        time.sleep(2)  # Wait for enough data to be loaded
-        driver.save_screenshot(f + '.png')
-        print(f'  title: {driver.title}')
-        print(f'  log messages:')
-        try:
-            for l in driver.get_log('browser'):
-                print(f'    {str(l)}')
-                if l['level'] != 'INFO':
-                    num_err += 1
-        except selenium.common.exceptions.WebDriverException as e:
-            # Logging interface not supported in Firefox
-            # see https://github.com/mozilla/geckodriver/issues/330
-            print(f'    !unable to retrieve browser logs: {e}')
-        driver.quit()
+    driver = BROWSERS_FACTORY[os.environ.get("BROWSER", "chrome")]()
+    driver.get(f'file://{file.absolute()}')
+    time.sleep(wait_secs)  # Wait for enough data to be loaded
+    driver.save_screenshot(str(file) + '.png')
+    print(f'  title: {driver.title}')
+    print(f'  log messages:')
+    try:
+        for l in driver.get_log('browser'):
+            print(f'    {str(l)}')
+            if l['level'] != 'INFO':
+                num_err += 1
+    except selenium.common.exceptions.WebDriverException as e:
+        # Logging interface not supported in Firefox
+        # see https://github.com/mozilla/geckodriver/issues/330
+        print(f'    !unable to retrieve browser logs: {e}')
+    driver.quit()
     assert num_err == 0

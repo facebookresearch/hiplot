@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@teamsupercell/typings-for-css-modules-loader": "^2.1.0",
+    "assert": "^2.0.0",
     "css-loader": "^3.4.1",
     "file-loader": "^5.0.2",
     "json5": "^2.1.1",

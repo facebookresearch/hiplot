@@ -43,14 +43,14 @@ interface PluginInfo {
     render: (plugin_data: HiPlotPluginData) => JSX.Element;
 };
 
-interface HiPlotComponentProps {
+export interface HiPlotProps {
     experiment: HiPlotExperiment | null;
     is_webserver: boolean;
     plugins: Array<PluginInfo>;
     persistent_state?: PersistentState;
 };
 
-interface HiPlotComponentState {
+interface HiPlotState {
     experiment: HiPlotExperiment | null;
     version: number;
     loadStatus: HiPlotLoadStatus;
@@ -69,12 +69,13 @@ function make_hiplot_data(persistent_state?: PersistentState): HiPlotPluginData 
         context_menu_ref: React.createRef(),
         colorby: new WatchedProperty('colorby'),
         experiment: null,
-        persistent_state: persistent_state !== undefined ? persistent_state : new PersistentStateInMemory("", {}),
         name: null,
+        window_state: null,
+        persistent_state: persistent_state !== undefined ? persistent_state : new PersistentStateInMemory("", {}),
     };
 }
 
-export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlotComponentState> {
+export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     // React refs
     domRoot: React.RefObject<HTMLDivElement> = React.createRef();
 
@@ -84,8 +85,9 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
     table: RowsDisplayTable = null;
 
     data: HiPlotPluginData;
+    plugins_window_state: {[plugin: string]: any} = {};
 
-    constructor(props: HiPlotComponentProps) {
+    constructor(props: HiPlotProps) {
         super(props);
         this.state = {
             experiment: props.experiment,
@@ -94,6 +96,7 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
             error: null,
         };
         this.data = make_hiplot_data(this.props.persistent_state);
+        props.plugins.forEach((info) => { this.plugins_window_state[info.name] = {}; });
 
         var rows = this.data.rows;
         rows['selected'].on_change(this.onSelectedChange.bind(this), this);
@@ -318,7 +321,8 @@ export class HiPlotComponent extends React.Component<HiPlotComponentProps, HiPlo
                     ...this.data,
                     ...(this.state.experiment._displays[plugin_info.name] ? this.state.experiment._displays[plugin_info.name] : {}),
                     name: plugin_info.name,
-                    persistent_state: this.data.persistent_state.children(plugin_info.name)
+                    persistent_state: this.data.persistent_state.children(plugin_info.name),
+                    window_state: this.plugins_window_state[plugin_info.name]
                 })}</React.Fragment>)}
             </div>
             }
@@ -364,25 +368,25 @@ class DocAndCredits extends React.Component {
     }
 };
 
+export const defaultPlugins = [
+    // Names correspond to values of hip.Displays
+    {name: "PARALLEL_PLOT", render: (plugin_data: HiPlotPluginData) => <ParallelPlot {...plugin_data} />},
+    {name: "XY", render: (plugin_data: HiPlotPluginData) => <PlotXY {...plugin_data} />},
+    {name: "DISTRIBUTION", render: (plugin_data: HiPlotPluginData) => <HiPlotDistributionPlugin {...plugin_data} />},
+    {name: "TABLE", render: (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />},
+];
+
 export function hiplot_setup(element: HTMLElement, extra?: object) {
-    var xydata = {};
-    var pplotdata = {};
-    var props: HiPlotComponentProps = {
+    var props: HiPlotProps = {
         experiment: null,
         is_webserver: true,
         persistent_state: new PersistentStateInURL("hip"),
-        plugins: [
-            // Names correspond to values of hip.Displays
-            {name: "PARALLEL_PLOT", render: (plugin_data: HiPlotPluginData) => <ParallelPlot data={pplotdata} {...plugin_data} />},
-            {name: "XY", render: (plugin_data: HiPlotPluginData) => <PlotXY data={xydata} {...plugin_data} />},
-            {name: "DISTRIBUTION", render: (plugin_data: HiPlotPluginData) => <HiPlotDistributionPlugin {...plugin_data} />},
-            {name: "TABLE", render: (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />},
-        ]
+        plugins: defaultPlugins,
     };
     if (extra !== undefined) {
         Object.assign(props, extra);
     }
-    return ReactDOM.render(<HiPlotComponent {...props} />, element);
+    return ReactDOM.render(<HiPlot {...props} />, element);
 }
 
 Object.assign(window, {

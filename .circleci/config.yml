@@ -10,7 +10,49 @@ commands:
       - attach_workspace:
           at: npm-build
       - run: cp -r npm-build/dist hiplot/static/built
-  test_selenium_e2e:
+  switch_to_dev_bundle:
+    steps:
+      - run:
+          name: Switch to dev bundle
+          when: always
+          command: |
+            . venv/bin/activate
+            rm -rf hiplot/static/built/*
+            cp -r npm-build/dist-dev/* hiplot/static/built
+            pip install --upgrade -e .[dev]
+  switch_to_test_bundle:
+    steps:
+      - run:
+          name: Switch to e2e test bundle
+          when: always
+          command: |
+            . venv/bin/activate
+            cp hiplot/static/built/hiplot_test.bundle.js hiplot/static/built/hiplot.bundle.js
+            pip install --upgrade -e .[dev]
+  run_test_e2e:
+    parameters:
+      browser:
+        type: string
+      bundle:
+        type: string
+      wait_secs:
+        type: integer
+        default: 2
+    steps:
+      - run:
+          name: Generate pages and end to end testing (<< parameters.bundle >>)
+          when: always
+          command: |
+            . venv/bin/activate
+            mkdir -p artifacts
+            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
+            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
+            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
+            WAIT_SECS=<< parameters.wait_secs >> BROWSER=<< parameters.browser >> pytest -s .circleci/test_e2e.py
+      - run:
+          name: Collect artifacts...
+          command: mv .circleci/demo_pages artifacts/<< parameters.bundle >>
+  test_render_selenium_setup:
     parameters:
       browser:
         type: string
@@ -32,35 +74,20 @@ commands:
           paths:
             - ./venv
           key: v2-e2e-selenium<< parameters.browser >>-dependencies-{{ checksum "requirements/main.txt" }}-{{ checksum "requirements/dev.txt" }}
-      - run:
-          name: Generate pages and end to end testing
-          when: always
-          command: |
-            . venv/bin/activate
-            mkdir artifacts
-            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
-            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
-            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
-            BROWSER=<< parameters.browser >> pytest -s .circleci/test_e2e.py
-      - run:
-          name: Collect artifacts...
-          command: mv .circleci/demo_pages artifacts/provided
-      - run:
-          name: Generate pages and end to end testing (dev bundle)
-          when: always
-          command: |
-            . venv/bin/activate
-            rm -rf hiplot/static/built/*
-            cp -r npm-build/dist-dev/* hiplot/static/built
-            pip install --upgrade -e .[dev]
-            rm -rf .circleci/demo_pages && mkdir .circleci/demo_pages
-            PAGES=`python -c "import hiplot.fetchers; print(\"\n\".join(list(hiplot.fetchers.README_DEMOS.keys())))"`
-            for p in $PAGES; do echo $p; hiplot-render --format html $p > .circleci/demo_pages/$p.html; done
-            BROWSER=<< parameters.browser >> pytest -s .circleci/test_e2e.py
-      - run:
-          name: Collect artifacts...
-          when: always
-          command: mv .circleci/demo_pages artifacts/dev
+  test_render_selenium:
+    parameters:
+      browser:
+        type: string
+    steps:
+      - test_render_selenium_setup:
+          browser: << parameters.browser >>
+      - run_test_e2e:
+          browser: << parameters.browser >>
+          bundle: provided
+      - switch_to_dev_bundle
+      - run_test_e2e:
+          browser: << parameters.browser >>
+          bundle: dev
       - store_artifacts:
           when: always
           path: ~/repo/artifacts
@@ -113,9 +140,9 @@ jobs:
       - checkout
       - run: npm install
       - run: mkdir -p npm-build/dist npm-build/dist-dev dist
-      - run: (npm run build-dev || true) && npm run build-dev
+      - run: npm run build-dev || npm run build-dev
       - run: mv dist/* npm-build/dist-dev/
-      - run: (npm run build || true) && npm run build
+      - run: npm run build || npm run build
       - run: npx tsc
       - run: mv dist/* npm-build/dist/ && mkdir -p hiplot/static/built/ && cp npm-build/dist/hiplot.bundle.js hiplot/static/built/
       - store_artifacts:
@@ -156,20 +183,37 @@ jobs:
           when: always
           path: pack
 
-  browser-e2e-chrome:
+  browser-teste2e-chrome:
     docker:
       - image: selenium/standalone-chrome
     working_directory: ~/repo
     steps:
-      - test_selenium_e2e:
+      - test_render_selenium_setup:
+          browser: chrome
+      - switch_to_dev_bundle
+      - switch_to_test_bundle
+      - run_test_e2e:
+          browser: chrome
+          bundle: testdev
+          wait_secs: 15
+      - store_artifacts:
+          when: always
+          path: ~/repo/artifacts
+
+  browser-render-chrome:
+    docker:
+      - image: selenium/standalone-chrome
+    working_directory: ~/repo
+    steps:
+      - test_render_selenium:
           browser: chrome
 
-  browser-e2e-firefox:
+  browser-render-firefox:
     docker:
       - image: selenium/standalone-firefox
     working_directory: ~/repo
     steps:
-      - test_selenium_e2e:
+      - test_render_selenium:
           browser: firefox
 
   docs-build:
@@ -349,13 +393,19 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - browser-e2e-chrome:
+      - browser-render-chrome:
           requires:
             - npm-build
           filters:
             tags:
               only: /.*/
-      - browser-e2e-firefox:
+      - browser-teste2e-chrome:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
+      - browser-render-firefox:
           requires:
             - npm-build
           filters:
@@ -384,8 +434,9 @@ workflows:
             - pypi-build
             - npm-build
             - docs-build
-            - browser-e2e-chrome
-            - browser-e2e-firefox
+            - browser-teste2e-chrome
+            - browser-render-chrome
+            - browser-render-firefox
             - mypy_pytest
           filters:
             tags:
@@ -397,8 +448,9 @@ workflows:
             - pypi-build
             - npm-build
             - docs-build
-            - browser-e2e-chrome
-            - browser-e2e-firefox
+            - browser-teste2e-chrome
+            - browser-render-chrome
+            - browser-render-firefox
             - mypy_pytest
           filters:
             tags:
