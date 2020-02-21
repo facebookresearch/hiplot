@@ -44,13 +44,14 @@ BROWSERS_FACTORY = {
 
 
 @pytest.mark.parametrize(
-    "file, wait_secs",
-    [(Path(f), float(os.environ.get('WAIT_SECS', '2'))) for f in glob.glob(str(DEMO_PAGES_PATH / '*.html'))],
+    "file, wait_secs, browser",
+    [(Path(f), float(os.environ.get('WAIT_SECS', '2')), os.environ.get("BROWSER", "chrome"))
+     for f in glob.glob(str(DEMO_PAGES_PATH / '*.html'))],
 )
-def test_demo_pages(file: Path, wait_secs: float) -> None:
+def test_demo_pages(file: Path, wait_secs: float, browser: str) -> None:
     print(file)
     num_err = 0
-    driver = BROWSERS_FACTORY[os.environ.get("BROWSER", "chrome")]()
+    driver = BROWSERS_FACTORY[browser]()
     driver.get(f'file://{file.absolute()}')
     time.sleep(wait_secs)  # Wait for enough data to be loaded
     driver.save_screenshot(str(file) + '.png')
