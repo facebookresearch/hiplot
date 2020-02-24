@@ -15,7 +15,7 @@ Multiple points can share the same parent - this is especially useful when repre
 
 
 
-.. literalinclude:: ../hiplot/fetchers.py
+.. literalinclude:: ../hiplot/fetchers_demo.py
     :start-after: DEMO_LINE_XY_BEGIN
     :end-before: DEMO_LINE_XY_END
 
@@ -25,7 +25,7 @@ Multiple points can share the same parent - this is especially useful when repre
     <iframe src="https://facebookresearch.github.io/hiplot/_static/demo/demo_line_xy.html" height="1000px" style="width: 865px; margin-left: -20px"></iframe>
 
 
-
+.. _frontendRenderingSettings:
 
 Frontend rendering settings
 ----------------------------
@@ -38,7 +38,7 @@ It is possible to customize how the data is rendered:
     :start-after: EXPERIMENT_SETTINGS_SNIPPET1_BEGIN
     :end-before: EXPERIMENT_SETTINGS_SNIPPET1_END
 
-* Or in the invididual components with :meth:`hiplot.Experiment.display_data`
+* Or for invididual components with :meth:`hiplot.Experiment.display_data` (see :ref:`displaysReference` for all possible values)
 
 .. literalinclude:: ../hiplot/test_experiment.py
     :start-after: EXPERIMENT_SETTINGS_SNIPPET2_BEGIN

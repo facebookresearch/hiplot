@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Displays reference &#8212; HiPlot 0.1.5 documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="Python classes reference" href="py_reference.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="py_reference.html" title="Python classes reference"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.5 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="
+    index.html" class="text-logo">HiPlot</a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py_reference.html">Python classes reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Displays reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#parallel-plot">Parallel Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plotxy">PlotXY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#distribution">Distribution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+    
+  </div>
+</div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>Displays reference</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="displays-reference">
+<span id="displaysreference"></span><h1>Displays reference<a class="headerlink" href="#displays-reference" title="Permalink to this headline">¶</a></h1>
+<p>HiPlot consists of multiple independant displays. Each of those can be configured using <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_data" title="hiplot.Experiment.display_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_data()</span></code></a> (see also <a class="reference internal" href="experiment_settings.html#frontendrenderingsettings"><span class="std std-ref">Frontend rendering settings</span></a> for an example).</p>
+<div class="section" id="parallel-plot">
+<h2>Parallel Plot<a class="headerlink" href="#parallel-plot" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp._displays[hip.Displays.PARALLEL_PLOT]`</span>
+<span class="kr">interface</span> <span class="nx">ParallelPlotDisplayData</span> <span class="p">{</span>
+  <span class="c1">// Ordering of the columns</span>
+  <span class="nx">order?</span>: <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
+
+  <span class="c1">// Hidden columns, that won&#39;t appear in the parallel plot</span>
+  <span class="nx">hide?</span>: <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
+
+  <span class="c1">// These columns will be inverted (higher values are below)</span>
+  <span class="nx">invert?</span>: <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
+
+  <span class="c1">// Categorical columns with more distinct values that this won&#39;t be displayed</span>
+  <span class="nx">categoricalMaximumValues</span>: <span class="kt">number</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="plotxy">
+<h2>PlotXY<a class="headerlink" href="#plotxy" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp._displays[hip.Displays.XY]`</span>
+<span class="kr">export</span> <span class="kr">interface</span> <span class="nx">PlotXYDisplayData</span> <span class="p">{</span>
+  <span class="nx">axis_x</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">axis_y</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">,</span>
+  <span class="nx">lines_thickness</span>: <span class="kt">number</span><span class="p">;</span>
+  <span class="nx">lines_opacity</span>: <span class="kt">number</span><span class="p">;</span>
+  <span class="nx">dots_thickness</span>: <span class="kt">number</span><span class="p">;</span>
+  <span class="nx">dots_opacity</span>: <span class="kt">number</span><span class="p">;</span>
+
+  <span class="c1">// Default height in pixels</span>
+  <span class="nx">height?</span>: <span class="kt">number</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="distribution">
+<h2>Distribution<a class="headerlink" href="#distribution" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp._displays[hip.Displays.DISTRIBUTION]`</span>
+<span class="kr">interface</span> <span class="nx">DistributionDisplayData</span> <span class="p">{</span>
+    <span class="c1">// Number of bins for distribution of numeric variables</span>
+    <span class="nx">nbins</span>: <span class="kt">number</span><span class="p">;</span>
+
+    <span class="c1">// Animation duration in ms when data changes</span>
+    <span class="nx">animateMs</span>: <span class="kt">number</span><span class="p">;</span>
+
+    <span class="c1">// Default axis for the distribution plot</span>
+    <span class="nx">axis?</span>: <span class="kt">string</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="py_reference.html" title="previous chapter (use the left arrow)">Python classes reference</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="contributing.html" title="next chapter (use the right arrow)">Contributing</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="py_reference.html" title="Python classes reference"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.5 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2020, Facebook AI Research (FAIR). Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

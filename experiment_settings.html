@@ -13,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>More about hiplot.Experiment &#8212; HiPlot 0.1.4 documentation</title>
+    <title>More about hiplot.Experiment &#8212; HiPlot 0.1.5 documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.5 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="container-wrapper">
@@ -69,7 +69,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="py_reference.html">HiPlot classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py_reference.html">Python classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins_reference.html">Displays reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 </ul>
 
@@ -136,7 +137,7 @@ When a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" t
 </div>
 <iframe src="https://facebookresearch.github.io/hiplot/_static/demo/demo_line_xy.html" height="1000px" style="width: 865px; margin-left: -20px"></iframe></div>
 <div class="section" id="frontend-rendering-settings">
-<h2>Frontend rendering settings<a class="headerlink" href="#frontend-rendering-settings" title="Permalink to this headline">¶</a></h2>
+<span id="frontendrenderingsettings"></span><h2>Frontend rendering settings<a class="headerlink" href="#frontend-rendering-settings" title="Permalink to this headline">¶</a></h2>
 <p>It is possible to customize how the data is rendered:</p>
 <ul class="simple">
 <li><p>Either globally by attributing a <a class="reference internal" href="py_reference.html#hiplot.ValueType" title="hiplot.ValueType"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ValueType</span></code></a> to columns</p></li>
@@ -150,7 +151,7 @@ When a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" t
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Or in the invididual components with <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_data" title="hiplot.Experiment.display_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_data()</span></code></a></p></li>
+<li><p>Or for invididual components with <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_data" title="hiplot.Experiment.display_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_data()</span></code></a> (see <a class="reference internal" href="plugins_reference.html#displaysreference"><span class="std std-ref">Displays reference</span></a> for all possible values)</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># Provide configuration for the parallel plot</span>
     <span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
@@ -212,7 +213,7 @@ When a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" t
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.5 documentation</a> &#187;</li> 
       </ul>
     </div>
 <script type="text/javascript">
