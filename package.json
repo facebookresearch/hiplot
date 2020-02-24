@@ -31,6 +31,8 @@
     "underscore": "^1.9.1"
   },
   "devDependencies": {
+    "@teamsupercell/typings-for-css-modules-loader": "^2.1.0",
+    "assert": "^2.0.0",
     "css-loader": "^3.4.1",
     "file-loader": "^5.0.2",
     "json5": "^2.1.1",
@@ -43,7 +45,8 @@
     "typescript": "^3.7.5",
     "url-loader": "^3.0.0",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "worker-loader": "^2.0.0"
   },
   "scripts": {
     "build": "webpack --display-error-details --progress",

@@ -6,31 +6,25 @@
  */
 
 
-export class State {
+export interface PersistentState {
+    get: (name: string, def_value?: any) => any;
+    set: (name: string, value: any) => void;
+    children: (name: string) => PersistentState;
+};
+
+export class PersistentStateInURL {
     prefix: string;
+    params = {}; // In case history doesnt work, like when we are embedded in an iframe
     constructor(name: string) {
         this.prefix = name == '' ? '' : name + '.';
     }
-    get(name: string, def_value?: any) {
-        return PageState.get(this.prefix + name, def_value);
+    get(name: string, def_value?: any): any {
+        return this._get(this.prefix + name, def_value);
     }
-    set(name: string, value: any) {
-        return PageState.set(this.prefix + name, value);
+    set(name: string, value: any): void {
+        this._set(this.prefix + name, value);
     }
-    clear() {
-        PageState.clear_all(self.name);
-    }
-    children(name: string) {
-        return new State(this.prefix + name);
-    }
-};
-
-class GlobalPageState {
-    params = {}; // In case history doesnt work, like when we are embedded in an iframe
-    create_state(name: string): State {
-        return new State(name);
-    }
-    get(name: string, default_value?: any) {
+    _get(name: string, default_value?: any): any {
         if (this.params[name] !== undefined) {
             return this.params[name];
         }
@@ -41,7 +35,7 @@ class GlobalPageState {
         }
         return JSON.parse(value);
     }
-    set(name: string, new_value: any) {
+    _set(name: string, new_value: any): void {
         const searchParams = new URLSearchParams(location.search);
         searchParams.set(name, JSON.stringify(new_value));
         try {
@@ -50,19 +44,31 @@ class GlobalPageState {
             this.params[name] = new_value;
         }
     }
-    clear_all(prefix: string) {
-        const searchParams = new URLSearchParams(location.search);
-        for (var param_name in searchParams.keys()) {
-            if (param_name.startsWith(prefix)) {
-                searchParams.delete(param_name);
-            }
-        }
-        try {
-            history.replaceState({}, 'title', '?' + searchParams.toString());
-        } catch(e) {
-            this.params = {};
-        }
+    children(name: string) {
+        return new PersistentStateInURL(this.prefix + name);
     }
-}
+};
 
-export var PageState = new GlobalPageState();
+export class PersistentStateInMemory {
+    prefix: string;
+    params = {};
+    constructor(name: string, params: {[key: string]: any}) {
+        this.prefix = name == '' ? '' : name + '.';
+        this.params = params;
+    }
+    get(name: string, def_value?: any) {
+        var v = this.params[this.prefix + name];
+        return v !== undefined ? v : def_value;
+    }
+    set(name: string, value: any) {
+        this.params[this.prefix + name] = value;
+    }
+    clear() {
+        Object.keys(this.params)
+            .filter(key => key.startsWith(this.prefix))
+            .forEach(key => delete this.params[key]);
+    }
+    children(name: string) {
+        return new PersistentStateInMemory(this.prefix + name, this.params);
+    }
+};

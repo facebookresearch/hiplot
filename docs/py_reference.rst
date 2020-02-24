@@ -1,5 +1,5 @@
 
-HiPlot classes reference
+Python classes reference
 ========================
 
 :class:`hiplot.Experiment`

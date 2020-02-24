@@ -7,4 +7,4 @@ from .experiment import (Experiment, ExperimentFetcherDoesntApply, ExperimentVal
 from .server import run_server, run_server_main
 from . import fetchers
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"

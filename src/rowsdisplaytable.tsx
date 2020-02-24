@@ -14,8 +14,7 @@ dt(window, $);
 import dtReorder from "datatables.net-colreorder-bs4";
 dtReorder(window, $);
 
-import { Datapoint } from "./types";
-//@ts-ignore
+import { Datapoint, ParamType } from "./types";
 import style from "./hiplot.css";
 import { HiPlotPluginData } from "./plugin";
 import _ from "underscore";
@@ -35,37 +34,47 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     }
     componentDidMount() {
         this.dom = $(this.table_ref.current);
-        this.ordered_cols = ['uid'];
-        var me = this;
+        this.ordered_cols = ['', 'uid'];
+        const me = this;
         $.each(this.props.params_def, function(k: string, def) {
-            if (k == me.ordered_cols[0]) {
+            if (k == 'uid') {
                 return;
             }
             me.ordered_cols.push(k);
         });
         this.dom.empty();
+        var columns: Array<{[k: string]: any}> = this.ordered_cols.map(function(x) {
+            return {
+                'title': x,
+                'defaultContent': 'null',
+                'type': x == '' ? 'html' : (me.props.params_def[x].numeric ? "num" : "string"),
+            };
+        });
+        columns[0]['render'] = function(data, type, row, meta) {
+            if (!me.dt) {
+                return '';
+            }
+            const individualUidColIdx = me.dt.colReorder.order().indexOf(1);
+            const color = me.props.get_color_for_row(me.props.dp_lookup[row[individualUidColIdx]], 1.0);
+            return `<span class="${style.colorBlock}" style="background-color: ${color}" />`;
+        };
         this.dt = this.dom.DataTable({
-            columns: this.ordered_cols.map(function(x) {
-                if (x == "uid") {
-                    return {
-                        'title': x,
-                        'defaultContent': 'null',
-                        'createdCell': function (td, row_uid, rowData, row, col) {
-                            var color = me.props.get_color_for_row(me.props.dp_lookup[row_uid], 1.0);
-                            $(td).prepend($('<span>').addClass('color-block').css('background-color', color));
-                        }
-                    }
-                }
-                return {
-                    'title': x,
-                    'defaultContent': 'null'
-                };
-            }),
+            columns: columns,
             data: [],
             deferRender: true, // Create HTML elements only when displayed
+            headerCallback: function headerCallback(thead: HTMLTableRowElement, data: Array<Array<any>>, start: number, end: number, display) {
+                Array.from(thead.cells).forEach(function(th, i) {
+                    const col = th.innerHTML;
+                    if (col != '' && me.dt === null && me.props.context_menu_ref !== undefined) {
+                        th.addEventListener('contextmenu', e => {
+                            me.props.context_menu_ref.current.show(e.pageX, e.pageY, col);
+                            e.preventDefault();
+                        });
+                    }
+                });
+            },
             //@ts-ignore
             colReorder: true,
-            buttons: ['csv'],
         });
         this.empty = true;
         this.dom.find('tbody')
@@ -73,9 +82,9 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 if (!me.dt || me.empty) {
                     return;
                 }
-                var rowIdx = me.dt.cell(this).index().row;
-                var row = me.dt.row(rowIdx);
-                var individualUidColIdx = me.dt.colReorder.order().indexOf(0);
+                const rowIdx = me.dt.cell(this).index().row;
+                const row = me.dt.row(rowIdx);
+                const individualUidColIdx = me.dt.colReorder.order().indexOf(1);
 
                 $(me.dt.cells().nodes()).removeClass(style.highlight);
                 $(row.nodes()).addClass(style.highlight);
@@ -85,30 +94,33 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 if (!me.dt || me.empty) {
                     return;
                 }
-                var rowIdx = me.dt.cell(this).index().row;
+                const rowIdx = me.dt.cell(this).index().row;
                 $(me.dt.row(rowIdx).nodes()).removeClass(style.highlight);
                 me.props.rows['highlighted'].set([]);
             });
 
         me.set_selected(me.props.rows['selected'].get());
-        me.props.rows['selected'].on_change(function(selection) {
+        me.props.rows['selected'].on_change(_.debounce(function(selection) {
             me.set_selected(selection);
-        }, this);
+        }, 150), this);
     }
     set_selected(selected: Array<Datapoint>) {
-        var dt = this.dt;
-        var ordered_cols = this.ordered_cols;
+        const dt = this.dt;
+        if (!dt) {
+            return;
+        }
+        const ordered_cols = this.ordered_cols;
 
         dt.clear();
         dt.rows.add(selected.map(function(row) {
-            return dt.colReorder.transpose([...Array(ordered_cols.length).keys()]).map(x => row[ordered_cols[x]]);
+            return dt.colReorder.transpose([...Array(ordered_cols.length).keys()]).map(x => x == '' ? '' : row[ordered_cols[x]]);
         }));
         dt.draw();
         this.empty = selected.length == 0;
     }
     render() {
         return (
-        <div className={`${style.wrap} container-fluid`}>
+        <div className={`${style.wrap} container-fluid ${style["horizontal-scrollable"]}`}>
         <div className={"row"}>
             <div className={`col-md-12 sample-table-container`}>
             <table ref={this.table_ref} className="sample-rows-table display table table-striped table-bordered dataTable">
@@ -120,7 +132,9 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     }
     componentWillUnmount() {
         if (this.dt) {
-            this.dt.destroy();
+            const dt = this.dt;
+            this.dt = null;
+            dt.destroy();
         }
         this.props.rows.off(this);
     }

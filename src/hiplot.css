@@ -208,3 +208,13 @@ tr.highlight {
 .min-height-100 {
   min-height: 100vh;
 }
+
+.horizontal-scrollable {
+  overflow-x: auto;
+}
+
+.colorBlock {
+  height: 10px;
+  width: 10px;
+  display: inline-block;
+}

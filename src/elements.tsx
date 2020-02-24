@@ -5,10 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-//@ts-ignore
 import style from "./elements.css";
 import React from "react";
-import { HiPlotLoadStatus, URL_LOAD_URI } from "./types";
+import { HiPlotLoadStatus, PSTATE_LOAD_URI } from "./types";
 import { HiPlotPluginData } from "./plugin";
 import { RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
 
@@ -32,7 +31,6 @@ interface State {
 }
 
 export class RunsSelectionTextArea extends React.Component<Props, State> {
-    container = React.createRef<HTMLDivElement>();
     textarea = React.createRef<HTMLTextAreaElement>();
 
     constructor(props: Props) {
@@ -48,7 +46,7 @@ export class RunsSelectionTextArea extends React.Component<Props, State> {
             elem.style.height = elem.scrollHeight + 'px';
             return;
         }
-        elem.style.height = '25px';
+        elem.style.height = '55px';
     }
     onKeyDown(evt: React.KeyboardEvent<HTMLTextAreaElement>) {
         if (evt.which === 13 && !evt.shiftKey) {
@@ -72,19 +70,18 @@ export class RunsSelectionTextArea extends React.Component<Props, State> {
     }
     render() {
         return (
-        <div ref={this.container} className={this.props.hasFocus || !this.props.minimizeWhenOutOfFocus ? " col-md-11" : " col-md-3"}>
-            <textarea
-                ref={this.textarea}
-                className={style.runsSelectionTextarea}
-                disabled={!this.props.enabled}
-                value={this.state.value}
-                onKeyDown={this.onKeyDown.bind(this)}
-                onInput={this.onInput.bind(this)}
-                onChange={(evt) => this.setState({value: evt.target.value})}
-                onFocus={this.onFocusChange.bind(this)}
-                onBlur={this.onFocusChange.bind(this)}
-                placeholder="Experiments to load"></textarea>
-        </div>);
+        <textarea
+            style={{height: "55px", flex: 1, minWidth: "100px"}}
+            ref={this.textarea}
+            className={style.runsSelectionTextarea}
+            disabled={!this.props.enabled}
+            value={this.state.value}
+            onKeyDown={this.onKeyDown.bind(this)}
+            onInput={this.onInput.bind(this)}
+            onChange={(evt) => this.setState({value: evt.target.value})}
+            onFocus={this.onFocusChange.bind(this)}
+            onBlur={this.onFocusChange.bind(this)}
+            placeholder="Experiments to load"></textarea>);
     }
 }
 
@@ -151,7 +148,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         <React.Fragment>
             {hasTextArea &&
                 <RunsSelectionTextArea
-                    initialValue={this.props.url_state.get(URL_LOAD_URI, '')}
+                    initialValue={this.props.persistent_state.get(PSTATE_LOAD_URI, '')}
                     enabled={this.props.loadStatus != HiPlotLoadStatus.Loading}
                     minimizeWhenOutOfFocus={this.props.loadStatus == HiPlotLoadStatus.Loaded}
                     onSubmit={this.props.onRequestLoadExperiment}
@@ -162,7 +159,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
 
             {this.props.loadStatus == HiPlotLoadStatus.Loaded && !this.state.isTextareaFocused &&
                 <React.Fragment>
-                    <div className="col-md-5">
+                    <div className={style.controlGroup}>
                         <RestoreDataBtn rows={this.props.rows} />
                         <KeepDataBtn rows={this.props.rows} />
                         <ExcludeDataBtn rows={this.props.rows} />
@@ -174,7 +171,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
 
                         <div style={{clear:'both'}}></div>
                     </div>
-                    <div className={hasTextArea ? "col-md-3" : "col-md-6"}>
+                    <div className={style.controlGroup}>
                         <div style={{"fontFamily": "monospace"}}>
             Selected: <strong ref={this.selected_count_ref} style={{"minWidth": "4em", "textAlign": "right", "display": "inline-block"}}>??</strong>
                     /<strong ref={this.total_count_ref} style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>??</strong> (<span ref={this.selected_pct_ref}>??</span>%)
@@ -186,15 +183,13 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
     }
     render() {
         var controlsOrTutorial = this.state.hasTutorial ?
-            (<div className="col-md-11">
+            (<div>
                 <HiPlotTutorial navbarRoot={this.controls_root_ref} onTutorialDone={(() => this.setState({hasTutorial: false})).bind(this)}/>
             </div>) :
             this.renderControls();
         return (<div ref={this.controls_root_ref} className={"container-fluid " + style.header}>
-        <div className={"form-row"}>
-            <div className="col-md-1">
-                <img style={{height: '55px'}} src={IconSVG} />
-            </div>
+        <div className={"d-flex flex-wrap"}>
+            <img style={{height: '55px'}} src={IconSVG} />
             {controlsOrTutorial}
         </div></div>);
     }
