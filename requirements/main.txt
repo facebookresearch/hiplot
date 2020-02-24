@@ -1,4 +1,4 @@
 ipython>=7.0.1
 flask
 flask-compress
-bs4
+beautifulsoup4
