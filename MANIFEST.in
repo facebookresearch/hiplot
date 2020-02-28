@@ -1,3 +1,4 @@
 include LICENSE README.md
 include requirements/*.txt
 include hiplot/static/built/hiplot.bundle.js
+include hiplot/templates/*
