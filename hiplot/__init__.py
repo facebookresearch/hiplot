@@ -7,4 +7,8 @@ from .experiment import (Experiment, ExperimentFetcherDoesntApply, ExperimentVal
 from .server import run_server, run_server_main
 from . import fetchers
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
+__all__ = [
+    'Experiment', 'ExperimentFetcherDoesntApply', 'ExperimentValidationError', 'ExperimentValidationCircularRef',
+    'ExperimentValidationMissingParent', 'Datapoint', 'ExperimentDisplayed', 'ValueDef', 'ValueType', 'Displays'
+]
