@@ -54,7 +54,7 @@ setup(
     packages=find_packages(),
     install_requires=requirements["main"],
     extras_require={"dev": requirements["dev"]},
-    package_data={"hiplot": ["py.typed", "static/**", "templates/**"]},
+    package_data={"hiplot": ["py.typed", "static/*", "static/built/*", "templates/*"]},
     include_package_data=True,
     scripts=['scripts/hiplot', 'scripts/hiplot-render'],
     python_requires='>=3.6',
