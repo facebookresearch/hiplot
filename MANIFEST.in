@@ -1,5 +1,6 @@
 include LICENSE README.md
 include requirements/*.txt
-include hiplot/static/**
-include hiplot/templates/**
+include hiplot/static/*
+include hiplot/static/built/*
+include hiplot/templates/*
 include hiplot/py.typed

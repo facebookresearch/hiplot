@@ -336,20 +336,31 @@ jobs:
             python setup.py bdist_wheel
             mv dist pypi-build
       - run:
-          name: Run wheel and check package
+          name: verify package
           command: |
-            python -c "from pathlib import Path;files = Path('hiplot.egg-info/SOURCES.txt').read_text().split(); assert 'LICENSE' in files"
+            . ./venv/bin/activate
+            twine check pypi-build/dist/*
+      - run:
+          name: test install from wheel
+          command: |
             python3 -m venv test_wheel
             . test_wheel/bin/activate
             cd ..
             ls
             pip install project/pypi-build/dist/hiplot-*any.whl
             python -c "import hiplot as hip; hip.Experiment"
+            hiplot-render demo --format html > /dev/null
       - run:
-          name: verify package
+          name: test install from sdist
           command: |
-            . ./venv/bin/activate
-            twine check pypi-build/dist/*
+            python -c "from pathlib import Path;files = Path('hiplot.egg-info/SOURCES.txt').read_text().split(); assert 'LICENSE' in files"
+            python3 -m venv test_sdist
+            . test_sdist/bin/activate
+            cd ..
+            ls
+            pip install project/pypi-build/dist/hiplot-*.tar.gz
+            python -c "import hiplot as hip; hip.Experiment"
+            hiplot-render demo --format html > /dev/null
       - persist_to_workspace:
           root: pypi-build
           paths: dist
@@ -471,7 +482,7 @@ workflows:
             - mypy_pytest
           filters:
             tags:
-              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)/
+              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.post(0|[1-9][0-9]*))?/
             branches:
               ignore: /.*/
       - npm-deploy:
