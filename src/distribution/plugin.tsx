@@ -113,6 +113,9 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
     }
     componentWillUnmount() {
         this.props.rows.off(this);
+        if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
+            this.props.context_menu_ref.current.removeCallbacks(this);
+        }
     }
     onResize(height: number, width: number) {
         if (height != this.state.height || width != this.state.width) {
