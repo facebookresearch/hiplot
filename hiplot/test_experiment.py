@@ -4,7 +4,10 @@
 
 import tempfile
 import shutil
+
 import pytest
+import pandas as pd
+
 import hiplot as hip
 
 
@@ -21,6 +24,14 @@ def test_merge() -> None:
 
 def test_from_iterable() -> None:
     xp = hip.Experiment.from_iterable([{"uid": 1, "k": "v1"}, {"uid": 2, "k": "v2"}])
+    assert len(xp.datapoints) == 2
+    xp.validate()
+    xp._asdict()
+
+
+def test_from_dataframe() -> None:
+    df = pd.DataFrame([{"uid": 1, "k": "v1"}, {"uid": 2, "k": "v2"}])
+    xp = hip.Experiment.from_dataframe(df)
     assert len(xp.datapoints) == 2
     xp.validate()
     xp._asdict()

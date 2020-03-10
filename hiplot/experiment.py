@@ -316,6 +316,15 @@ class Experiment(_DictSerializable):
             return Experiment.from_iterable(csv.DictReader(file))
 
     @staticmethod
+    def from_dataframe(dataframe) -> "Experiment":  # No type hint to avoid having pandas as an additional dependency
+        """
+        Creates a HiPlot experiment from a pandas DataFrame.
+
+        :param dataframe: Pandas DataFrame
+        """
+        return Experiment.from_iterable(dataframe.to_dict(orient='records'))
+
+    @staticmethod
     def merge(xp_dict: Dict[str, "Experiment"]) -> "Experiment":
         """
         Merge several experiments into a single one
