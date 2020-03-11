@@ -316,7 +316,7 @@ class Experiment(_DictSerializable):
             return Experiment.from_iterable(csv.DictReader(file))
 
     @staticmethod
-    def from_dataframe(dataframe) -> "Experiment":  # No type hint to avoid having pandas as an additional dependency
+    def from_dataframe(dataframe: Any) -> "Experiment":  # No type hint to avoid having pandas as an additional dependency
         """
         Creates a HiPlot experiment from a pandas DataFrame.
 
