@@ -131,7 +131,7 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
     def __init__(self, xp: exp.Experiment, comm_name: str) -> None:
         self._exp = xp
         self._num_recv = 0
-        self._selected_ids: List[int] = []
+        self._selected_ids: List[str] = []
         self._last_selection_id = -2
         self._last_msg: Optional[Dict[str, Any]] = None  # For debugging
 
