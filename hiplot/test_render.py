@@ -5,7 +5,7 @@
 from html.parser import HTMLParser
 from typing import List, Tuple, Optional
 from bs4 import BeautifulSoup
-from .fetchers import README_DEMOS
+from .fetchers_demo import README_DEMOS
 from .render import get_index_html_template
 
 
