@@ -8,3 +8,4 @@ m2r
 twine
 guzzle_sphinx_theme
 pre-commit
+pandas
