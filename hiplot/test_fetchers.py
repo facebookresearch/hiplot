@@ -8,7 +8,8 @@ import tempfile
 import shutil
 import pytest
 from . import experiment as exp
-from .fetchers import load_demo, load_csv, load_json, README_DEMOS
+from .fetchers import load_demo, load_csv, load_json
+from .fetchers_demo import README_DEMOS
 
 
 def test_fetcher_demo() -> None:

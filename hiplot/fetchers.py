@@ -103,10 +103,16 @@ def load_fairseq(uri: str) -> hip.Experiment:
             raise hip.ExperimentFetcherDoesntApply("No log file found")
     lines = train_log.read_text(encoding="utf-8").split('\n')
 
-    xp = hip.Experiment()
-    epoch_to_dp: Dict[int, hip.Datapoint] = {}
+    datapoints: List[Dict[str, Any]] = []
     params: Dict[str, Any] = {}
+    logs_prefix_re = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \| [A-Z]* \| )"
     for l in lines:
+        # Strip log prefix
+        # eg "2020-03-08 16:48:16 | INFO | "
+        m = re.match(logs_prefix_re, l)
+        if m is not None:
+            l = l[m.span()[1]:]
+        # Arguments: Namespace(...)
         if l.startswith('Namespace('):
             # format: Namespace(activation_dropout=0.1, activation_fn='relu', ...)
             # Ideally we want to do: `eval("dict(activation_dropout=0.1, activation_fn='relu', ...)")`
@@ -118,14 +124,17 @@ def load_fairseq(uri: str) -> hip.Experiment:
                 for kw in node.body[0].value.keywords  # type: ignore
             }
             continue
+        # Results in JSON format
+        # valid | {"epoch": 33, "valid_loss": "0.723", "valid_ppl": "1.65", ...}
+        if l.startswith("valid | {"):
+            json_string = l.split('|', 1)[-1].lstrip()
+            valid_metrics = json.loads(json_string)
+            datapoints.append(valid_metrics)
+        # For older version of fairseq
         if l.startswith('| epoch'):
             l = l.lstrip('| epoch')
             epoch = int(l[:3])
-            if epoch not in epoch_to_dp:
-                dp = hip.Datapoint(uid=str(epoch), values={"epoch": epoch, **params},
-                                   from_uid=None if epoch - 1 not in epoch_to_dp else str(epoch - 1))
-                epoch_to_dp[epoch] = dp
-                xp.datapoints.append(dp)
+            values: Dict[str, Any] = {"epoch": epoch}
             # | epoch 002 | loss 8.413 | ...
             # | epoch 002 | valid on 'valid' subset | loss 7.599 | nll_loss 7.599 | ...
             parts = l.split('|')[1:]
@@ -139,9 +148,18 @@ def load_fairseq(uri: str) -> hip.Experiment:
                 key = prefix + p[::-1].split(' ', 1)[1][::-1].strip()
                 value = p[::-1].split(' ', 1)[0][::-1].strip()
                 try:
-                    epoch_to_dp[epoch].values[key] = float(value)
+                    values[key] = float(value)
                 except ValueError:
-                    epoch_to_dp[epoch].values[key] = value
+                    values[key] = value
+            datapoints.append(values)
+    datapoints = [{
+        **values,
+        **params
+    } for values in datapoints]
+    datapoints.sort(key=lambda d: d["epoch"])
+    xp = hip.Experiment.from_iterable(datapoints)
+    for dp, next_dp in zip(xp.datapoints, xp.datapoints[1:]):
+        next_dp.from_uid = dp.uid
     return xp
 
 
