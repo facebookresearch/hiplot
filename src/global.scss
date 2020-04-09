@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// This is needed to override styles when embeded in Jupyter notebook
+.scoped_css_bootstrap :link, .scoped_css_bootstrap :visited {
+    text-decoration: none;
+}
 .scoped_css_bootstrap {
     @import "bootstrap/scss/bootstrap.scss";
 }
