@@ -63,6 +63,7 @@ def html_inlinize(html: str, replace_local: bool = True) -> str:
         file = Path(static_root, src)
         new_tag = soup.new_tag("script")
         new_tag.string = file.read_text(encoding="utf-8")
+        new_tag["type"] = i["type"]
         i.replace_with(new_tag)
     return str(soup)
 
