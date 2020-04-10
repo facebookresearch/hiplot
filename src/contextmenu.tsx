@@ -43,10 +43,12 @@ export class ContextMenu extends React.Component<ContextMenuProps, ContextMenuSt
     removeCallbacks(obj: any) {
         this.trigger_callbacks = this.trigger_callbacks.filter(trigger => trigger.obj != obj);
     }
-    show(x: number, y: number, column: string) {
+    show(pageX: number, pageY: number, column: string) {
+        // This assumes parent has `relative` positioning
+        var parent = this.context_menu_div.current.parentElement.getBoundingClientRect();
         this.setState({
-            top: y - 10,
-            left: Math.max(0, x - 90),
+            top: Math.max(0, pageY - 10 - parent.y),
+            left: Math.max(0, pageX - 90 - parent.x),
             visible: true,
             column: column
         });

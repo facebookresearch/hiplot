@@ -10,5 +10,6 @@
     text-decoration: none;
 }
 .scoped_css_bootstrap {
+    position:relative;
     @import "bootstrap/scss/bootstrap.scss";
 }
