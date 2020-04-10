@@ -376,7 +376,7 @@ export const defaultPlugins = [
     {name: "TABLE", render: (plugin_data: HiPlotPluginData) => <RowsDisplayTable {...plugin_data} />},
 ];
 
-export function hiplot_setup(element: HTMLElement, extra?: object) {
+export function hiplot_setup(element: HTMLElement, extra?: any) {
     var props: HiPlotProps = {
         experiment: null,
         is_webserver: true,
