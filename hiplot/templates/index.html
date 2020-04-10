@@ -6,7 +6,7 @@
     <link rel="icon" href="static/icon.png" />
   </head>
   <body style="margin:0px">
-    <div id="hiplot">Loading HiPlot...
+    <div id="hiplot_element_id" style="background-color: white"><div style="text-align: center">Loading HiPlot...</div>
       <noscript>
         HiPlot needs JavaScript to run
       </noscript>
@@ -14,7 +14,6 @@
 
     <script src="static/built/hiplot.bundle.js" type="module" ></script>
     <script type="text/javascript">
-    var globalHiPlot = undefined;
     function _hiplot_setup() {
       if (typeof hiplot_setup == "undefined") {
         console.warn("waiting for HiPlot bundle to be loaded...");
@@ -25,7 +24,8 @@
         is_webserver: true,
       };
       /*ON_LOAD_SCRIPT_INJECT*/
-      globalHiPlot = hiplot_setup(document.getElementById("hiplot"), options);
+      var hiplot_instance = hiplot_setup(document.getElementById("hiplot_element_id"), options);
+      /*AFTER_SETUP_SCRIPT_INJECT*/
     }
     if (document.readyState == "complete") {
       _hiplot_setup();

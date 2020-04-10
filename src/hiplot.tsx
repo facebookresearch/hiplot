@@ -71,7 +71,7 @@ function make_hiplot_data(persistent_state?: PersistentState): HiPlotPluginData 
         experiment: null,
         name: null,
         window_state: null,
-        persistent_state: persistent_state !== undefined ? persistent_state : new PersistentStateInMemory("", {}),
+        persistent_state: persistent_state !== undefined && persistent_state !== null ? persistent_state : new PersistentStateInMemory("", {}),
     };
 }
 
@@ -385,6 +385,9 @@ export function hiplot_setup(element: HTMLElement, extra?: object) {
     };
     if (extra !== undefined) {
         Object.assign(props, extra);
+    }
+    if (extra.persistent_state_url_prefix !== undefined) {
+        props.persistent_state = new PersistentStateInURL(extra.persistent_state_url_prefix);
     }
     return ReactDOM.render(<HiPlot {...props} />, element);
 }

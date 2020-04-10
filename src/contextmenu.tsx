@@ -71,6 +71,6 @@ export class ContextMenu extends React.Component<ContextMenuProps, ContextMenuSt
         }
     }
     render() {
-        return (<div ref={this.context_menu_div} className="dropdown-menu dropdown-menu-sm context-menu"></div>);
+        return (<div ref={this.context_menu_div} className="dropdown-menu dropdown-menu-sm context-menu" style={{"fontSize": 16}}></div>);
     }
 };

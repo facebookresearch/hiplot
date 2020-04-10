@@ -12,4 +12,20 @@
 .scoped_css_bootstrap {
     position:relative;
     @import "bootstrap/scss/bootstrap.scss";
+
+    // Put some stuff from rem to em (root font size is 10px on Notebooks, 16px with bootstrap)
+    .dropdown-header {
+        font-size: 0.875em;
+        padding: 0.5em 1.5em;
+    }
+    .dropdown-menu {
+        font-size: 1em;
+        min-width: 10em;
+        padding: 0.5em 0;
+        margin: 0.125em 0 0;
+        border-radius: 0.25em;
+    }
+    .dropdown-item {
+        padding: 0.25em 1.5em;
+    }
 }
