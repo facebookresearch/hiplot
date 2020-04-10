@@ -7,12 +7,20 @@
 
 import $ from "jquery";
 import React from "react";
+
 //@ts-ignore
-import dt from "datatables.net-bs4";
+import dt from "datatables.net";
+//@ts-ignore
+import dtBs4 from "datatables.net-bs4";
+//@ts-ignore
+import dtReorder from "datatables.net-colreorder";
+//@ts-ignore
+import dtReorderBs4 from "datatables.net-colreorder-bs4";
+
 dt(window, $);
-//@ts-ignore
-import dtReorder from "datatables.net-colreorder-bs4";
+dtBs4(window, $);
 dtReorder(window, $);
+dtReorderBs4(window, $);
 
 import { Datapoint, ParamType } from "./types";
 import style from "./hiplot.css";
