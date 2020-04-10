@@ -99,7 +99,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         props.plugins.forEach((info) => { this.plugins_window_state[info.name] = {}; });
 
         var rows = this.data.rows;
-        rows['selected'].on_change(this.onSelectedChange.bind(this), this);
+        rows['selected'].on_change(_.debounce(this.onSelectedChange.bind(this), 200), this);
         rows['all'].on_change(this.recomputeParamsDef.bind(this), this);
     }
     static defaultProps = {
