@@ -92,10 +92,14 @@ def display_exp(
 ) -> IPythonExperimentDisplayed:
     comm_id = f"comm_{uuid.uuid4().hex[:6]}"
     displayed_xp = IPythonExperimentDisplayed(xp, comm_id)
-    index_html = make_experiment_standalone_page(options={
-        'experiment': xp._asdict(),
-        **({"persistent_state_url_prefix": store_state_url} if store_state_url is not None else {"persistent_state": None})
-    })
+    options: t.Dict[str, t.Any] = {
+        'experiment': xp._asdict()
+    }
+    if store_state_url is not None:
+        options.update({"persistent_state_url_prefix": store_state_url})
+    else:
+        options.update({"persistent_state": None})
+    index_html = make_experiment_standalone_page(options=options)
     index_html = index_html.replace(
         "/*AFTER_SETUP_SCRIPT_INJECT*/",
         f"""/*AFTER_SETUP_SCRIPT_INJECT*/
