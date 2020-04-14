@@ -72,6 +72,7 @@ function make_hiplot_data(persistent_state?: PersistentState): HiPlotPluginData 
         name: null,
         window_state: null,
         persistent_state: persistent_state !== undefined && persistent_state !== null ? persistent_state : new PersistentStateInMemory("", {}),
+        sendMessage: null,
     };
 }
 
@@ -80,7 +81,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     domRoot: React.RefObject<HTMLDivElement> = React.createRef();
 
     comm = null;
-    comm_selection_id: number = 0;
+    comm_message_id: number = 0;
 
     table: RowsDisplayTable = null;
 
@@ -96,6 +97,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             error: null,
         };
         this.data = make_hiplot_data(this.props.persistent_state);
+        this.data.sendMessage = this.sendMessage.bind(this);
         props.plugins.forEach((info) => { this.plugins_window_state[info.name] = {}; });
 
         var rows = this.data.rows;
@@ -105,15 +107,20 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     static defaultProps = {
         is_webserver: false,
     };
-    onSelectedChange(selection: Array<Datapoint>): void {
-        this.comm_selection_id += 1;
+    sendMessage(type: string, data: any): void {
         if (this.comm !== null) {
             this.comm.send({
-                'type': 'selection',
-                'selection_id': this.comm_selection_id,
-                'selected': selection.map(row => '' + row['uid'])
+                'type': type,
+                'message_id': this.comm_message_id,
+                'data': data,
             });
+            this.comm_message_id += 1;
         }
+    }
+    onSelectedChange(selection: Array<Datapoint>): void {
+        this.sendMessage("selection", {
+            'selected': selection.map(row => '' + row['uid'])
+        })
     }
     recomputeParamsDef(all_data: Array<Datapoint>): void {
         Object.assign(this.data.params_def, infertypes(this.data.persistent_state.children(PSTATE_PARAMS), all_data, this.data.params_def));

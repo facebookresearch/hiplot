@@ -357,3 +357,10 @@ class ExperimentDisplayed(metaclass=ABCMeta):
         """
         Returns a list of currently rendered datapoints in the parallel plot
         """
+
+    @abstractmethod
+    def get_brush_extents(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Returns a dictionnary, where keys corresponds to columns currently brushed in parallel plot,
+        and values contain information about the current brush.
+        """

@@ -28,4 +28,6 @@ export interface HiPlotPluginData {
     window_state: any;
     // Data that persists upon page reload, sharing link etc...
     persistent_state: PersistentState;
+
+    sendMessage: (type: string, data: any) => void,
 };
