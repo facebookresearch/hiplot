@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
   
@@ -284,7 +284,7 @@
             <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="s1">&#39;Not a single datapoint&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Experiment.display"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentDisplayed&quot;</span><span class="p">:</span>
+<div class="viewcode-block" id="Experiment.display"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">store_state_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentDisplayed&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays an experiment in an ipython notebook.</span>
 
@@ -294,7 +294,7 @@
         <span class="kn">from</span> <span class="nn">.ipython</span> <span class="kn">import</span> <span class="n">display_exp</span>  <span class="c1"># pylint: disable=cyclic-import</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">display_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="o">=</span><span class="n">force_full_width</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">display_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="o">=</span><span class="n">force_full_width</span><span class="p">,</span> <span class="n">store_state_url</span><span class="o">=</span><span class="n">store_state_url</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Experiment.to_html"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
