@@ -70,19 +70,17 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
             # We are not in an ipython environment - for example in testing
             pass
 
-    @staticmethod
-    def throw_no_data_received() -> None:
-        raise GetSelectedFailure(
-            """No data received from the front-end. Please make sure that:
+    no_data_received_error = GetSelectedFailure(
+        """No data received from the front-end. Please make sure that:
     1. You don't call "get_selected" on the same cell
     2. The interface has loaded
     3. You are in a Jupyter notebook (Jupyter lab is *not* supported)"""
-        )
+    )
 
     def get_selected(self) -> t.List[exp.Datapoint]:
         last_selection = self._last_data_per_type.get("selection")
         if last_selection is None:
-            self.throw_no_data_received()
+            raise self.no_data_received_error
         selected_set = set(last_selection["selected"])
         datapoints = [i for i in self._exp.datapoints if i.uid in selected_set]
         assert len(datapoints) == len(selected_set)
@@ -91,8 +89,8 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
     def get_brush_extents(self) -> t.Dict[str, t.Dict[str, t.Any]]:
         last_msg = self._last_data_per_type.get("brush_extents")
         if last_msg is None:
-            self.throw_no_data_received()
-        return last_msg
+            raise self.no_data_received_error
+        return last_msg  # type: ignore
 
 
 def display_exp(
