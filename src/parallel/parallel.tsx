@@ -296,6 +296,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
               me.props.context_menu_ref.current.show(d3.event.pageX, d3.event.pageY, d);
             }
             d3.event.preventDefault();
+            d3.event.stopPropagation();
           })
           .append("title")
             .text("Click to invert. Drag to reorder. Right click for options.");
