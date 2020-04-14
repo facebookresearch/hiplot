@@ -3,6 +3,7 @@
 # LICENSE file in the root directory of this source tree.
 
 
+import uuid
 import base64
 import json
 from typing import Any, Dict
@@ -63,6 +64,7 @@ def html_inlinize(html: str, replace_local: bool = True) -> str:
         file = Path(static_root, src)
         new_tag = soup.new_tag("script")
         new_tag.string = file.read_text(encoding="utf-8")
+        new_tag["type"] = i["type"]
         i.replace_with(new_tag)
     return str(soup)
 
@@ -77,10 +79,12 @@ def make_experiment_standalone_page(options: Dict[str, Any]) -> str:
     }
     hiplot_options.update(options)
 
-    index_html = html_inlinize(get_index_html_template())
+    index_html = get_index_html_template()
+    index_html = index_html.replace("hiplot_element_id", f"hiplot_{uuid.uuid4().hex}")
     index_html = index_html.replace(
         "/*ON_LOAD_SCRIPT_INJECT*/",
         f"""/*ON_LOAD_SCRIPT_INJECT*/
         Object.assign(options, eval('(' + {escapejs(json.dumps(hiplot_options))} + ')'));
         """)
+    index_html = html_inlinize(index_html)
     return index_html

@@ -185,7 +185,7 @@ class Experiment(_DictSerializable):
             raise ExperimentValidationError('Not a single datapoint')
         return self
 
-    def display(self, force_full_width: bool = False) -> "ExperimentDisplayed":
+    def display(self, force_full_width: bool = False, store_state_url: Optional[str] = None) -> "ExperimentDisplayed":
         """
         Displays an experiment in an ipython notebook.
 
@@ -195,7 +195,7 @@ class Experiment(_DictSerializable):
         from .ipython import display_exp  # pylint: disable=cyclic-import
 
         self.validate()
-        return display_exp(self, force_full_width=force_full_width)
+        return display_exp(self, force_full_width=force_full_width, store_state_url=store_state_url)
 
     def to_html(self, file: Optional[Union[Path, str, IO[str]]] = None) -> str:
         """

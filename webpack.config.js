@@ -44,6 +44,10 @@ module.exports = env => { return {
     module: {
         rules: [
             {
+              test: /datatables\.net.*/,
+              loader: 'imports-loader?define=>false'
+            },
+            {
                 test: /\.(png|jp(e*)g|svg)$/,
                 use: [{
                     loader: 'url-loader',
