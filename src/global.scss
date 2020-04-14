@@ -28,4 +28,10 @@
     .dropdown-item {
         padding: 0.25em 1.5em;
     }
+
+    // Datatables
+    @import "../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css";
+    .dt-buttons {
+        margin-left: 10px;
+    }
 }

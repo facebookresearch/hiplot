@@ -16,11 +16,18 @@ import dtBs4 from "datatables.net-bs4";
 import dtReorder from "datatables.net-colreorder";
 //@ts-ignore
 import dtReorderBs4 from "datatables.net-colreorder-bs4";
+//@ts-ignore
+import dtButtons from "datatables.net-buttons";
+//@ts-ignore
+import dtButtonsBs4 from "datatables.net-buttons-bs4";
 
 dt(window, $);
 dtBs4(window, $);
 dtReorder(window, $);
 dtReorderBs4(window, $);
+dtButtons(window, $);
+dtButtonsBs4(window, $);
+
 
 import { Datapoint, ParamType } from "./types";
 import style from "./hiplot.css";
@@ -32,6 +39,7 @@ interface RowsDisplayTableState {
 
 export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisplayTableState> {
     table_ref: React.RefObject<HTMLTableElement> = React.createRef();
+    table_container: React.RefObject<HTMLDivElement> = React.createRef();
     dt = null;
     dom: JQuery;
     ordered_cols: Array<string> = [];
@@ -82,8 +90,30 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 });
             },
             //@ts-ignore
+            buttons: [
+                {
+                    text: 'Select results',
+                    className: 'btn-sm btn-outline-primary d-none',
+                    action: this.setSelectedToSearchResult.bind(this)
+                }
+            ],
+            //@ts-ignore
             colReorder: true,
         });
+        const btnsContainer = $(this.table_container.current).find('.col-md-6:eq(1)');
+        btnsContainer.addClass("btn-group");
+        this.dt.buttons().container().appendTo(btnsContainer);
+        btnsContainer.find(".dt-buttons").removeClass("btn-group");
+        this.dom.on( 'search.dt', function () {
+            const node = this.dt.buttons()[0].node;
+            node.classList.remove("d-none");
+            node.classList.remove("btn-secondary");
+            const searchResults = this.dt.rows( { filter : 'applied'} );
+            if (this.dt.search() == "" || searchResults.nodes().length == 0) {
+                node.classList.add("d-none");
+            }
+        }.bind(this));
+
         this.empty = true;
         this.dom.find('tbody')
             .on('mouseenter', 'td', function () {
@@ -107,12 +137,25 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 me.props.rows['highlighted'].set([]);
             });
 
-        me.set_selected(me.props.rows['selected'].get());
+        me.setSelected(me.props.rows['selected'].get());
         me.props.rows['selected'].on_change(_.debounce(function(selection) {
-            me.set_selected(selection);
+            me.setSelected(selection);
         }, 150), this);
     }
-    set_selected(selected: Array<Datapoint>) {
+    setSelectedToSearchResult() {
+        const dt = this.dt;
+        if (!dt) {
+            return;
+        }
+        const searchResults = dt.rows( { filter : 'applied'} );
+        const uidIdx = this.ordered_cols.indexOf("uid");
+        var searchResultsDatapoints = [];
+        $.each(searchResults.data(), function(index, value) {
+            searchResultsDatapoints.push(this.props.dp_lookup[value[uidIdx]]);
+        }.bind(this));
+        this.props.rows.selected.set(searchResultsDatapoints);
+    }
+    setSelected(selected: Array<Datapoint>) {
         const dt = this.dt;
         if (!dt) {
             return;
@@ -130,7 +173,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         return (
         <div className={`${style.wrap} container-fluid ${style["horizontal-scrollable"]}`}>
         <div className={"row"}>
-            <div className={`col-md-12 sample-table-container`}>
+            <div ref={this.table_container} className={`col-md-12 sample-table-container`}>
             <table ref={this.table_ref} className="sample-rows-table display table table-striped table-bordered dataTable">
             </table>
             </div>
