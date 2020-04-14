@@ -164,7 +164,9 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             } else {
                 setVals.push(v);
             }
-            if (typeof v != "number" && !is_special_num && isNaN(v)) {
+            // Detect non-numeric column
+            if ((typeof v != "number" && !is_special_num && isNaN(v)) ||
+                    v === true || v === false) {
                 numeric = false;
                 return;
             }
