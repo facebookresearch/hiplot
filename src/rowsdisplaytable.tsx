@@ -85,6 +85,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                         th.addEventListener('contextmenu', e => {
                             me.props.context_menu_ref.current.show(e.pageX, e.pageY, col);
                             e.preventDefault();
+                            e.stopPropagation();
                         });
                     }
                 });
