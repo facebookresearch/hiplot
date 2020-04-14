@@ -152,6 +152,13 @@ def demo_distribution(**kwargs: Any) -> hip.Experiment:
     return xp
 
 
+def demo_bool() -> hip.Experiment:
+    return hip.Experiment.from_iterable([
+        {"bool": True},
+        {"bool": False}
+    ])
+
+
 README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_big": lambda: demo(1000),
@@ -163,4 +170,5 @@ README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
     "demo_distribution_cat": lambda: demo_distribution(axis="cat"),
     "demo_distribution_num": lambda: demo_distribution(axis="numeric"),
     "demo_distribution_num_100bins": lambda: demo_distribution(axis="numeric", nbins=100),
+    "demo_bool": demo_bool,
 }
