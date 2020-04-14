@@ -62,7 +62,9 @@ export class ContextMenu extends React.Component<ContextMenuProps, ContextMenuSt
         cm.style.top = `${this.state.top}px`;
         cm.style.left = `${this.state.left}px`;
         cm.classList.toggle('show', this.state.visible);
-        if (this.state.visible && !prevState.visible) {
+        const needsUpdate = (this.state.visible && !prevState.visible) ||
+            (this.state.column != prevState.column);
+        if (needsUpdate) {
             cm.innerHTML = '';
             var me = this;
             this.trigger_callbacks.forEach(function(trigger) {
