@@ -111,20 +111,18 @@ def display_exp(
         options.update({"persistent_state": None})
     index_html = make_experiment_standalone_page(options=options)
     index_html = index_html.replace(
-        "/*AFTER_SETUP_SCRIPT_INJECT*/",
-        f"""/*AFTER_SETUP_SCRIPT_INJECT*/
-(function () {{
+        "/*ON_LOAD_SCRIPT_INJECT*/",
+        f"""/*ON_LOAD_SCRIPT_INJECT*/
 const comm_id = {escapejs(comm_id)};
 try {{
     console.log("Setting up communication channel with Jupyter: ", comm_id);
     var comm = Jupyter.notebook.kernel.comm_manager.new_comm(comm_id, {{'type': 'hello'}});
-    hiplot_instance.setup_comm(comm);
+    Object.assign(options, {{"comm": comm}});
 }}
 catch(err) {{
     console.warn('Unable to create Javascript <-> Python communication channel' +
         ' (are you in a Jupyter notebook? Jupyter labs is *not* supported!)');
 }}
-}})()
         """)
 
     if force_full_width:

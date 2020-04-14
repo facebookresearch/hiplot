@@ -48,6 +48,7 @@ export interface HiPlotProps {
     is_webserver: boolean;
     plugins: Array<PluginInfo>;
     persistent_state?: PersistentState;
+    comm: any; // Communication object for Jupyter notebook
 };
 
 interface HiPlotState {
@@ -80,7 +81,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     // React refs
     domRoot: React.RefObject<HTMLDivElement> = React.createRef();
 
-    comm = null;
     comm_message_id: number = 0;
 
     table: RowsDisplayTable = null;
@@ -106,10 +106,11 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     }
     static defaultProps = {
         is_webserver: false,
+        comm: null,
     };
     sendMessage(type: string, data: any): void {
-        if (this.comm !== null) {
-            this.comm.send({
+        if (this.props.comm !== null) {
+            this.props.comm.send({
                 'type': type,
                 'message_id': this.comm_message_id,
                 'data': data,
@@ -203,11 +204,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
                 throw error;
             }
         );
-    }
-    setup_comm(comm_) {
-        this.comm = comm_;
-        console.log("Setting up communication channel", comm_);
-        this.onSelectedChange(this.data.rows['selected'].get());
     }
     componentWillUnmount() {
         this.data.context_menu_ref.current.removeCallbacks(this);
@@ -389,6 +385,7 @@ export function hiplot_setup(element: HTMLElement, extra?: any) {
         is_webserver: true,
         persistent_state: new PersistentStateInURL("hip"),
         plugins: defaultPlugins,
+        comm: null,
     };
     if (extra !== undefined) {
         Object.assign(props, extra);

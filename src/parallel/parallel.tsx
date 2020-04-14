@@ -336,6 +336,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
       // Render full foreground
       brush();
+      me.sendBrushExtents();
     };
 
     // Highlight polylines
