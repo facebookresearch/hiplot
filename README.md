@@ -14,7 +14,7 @@ There are 2 modes to HiPlot:
 
 
 ```bash
-pip install hiplot
+pip install hiplot  # Or for conda users: conda install -c conda-forge hiplot
 ```
 
 If you have a jupyter notebook, you can get started with something as simple as:
@@ -32,8 +32,10 @@ hip.Experiment.from_iterable(data).display()
 
 ## Links
 
+* Blog post: https://ai.facebook.com/blog/hiplot-high-dimensional-interactive-plots-made-easy/
 * Documentation: https://facebookresearch.github.io/hiplot/index.html
 * Pypi package: https://pypi.org/project/hiplot/
+* Conda package: https://anaconda.org/conda-forge/hiplot
 * NPM package: https://www.npmjs.com/package/hiplot
 
 ## Credits
