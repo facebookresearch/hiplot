@@ -186,17 +186,22 @@ class Experiment(_DictSerializable):
             raise ExperimentValidationError('Not a single datapoint')
         return self
 
-    def display(self, force_full_width: bool = False, store_state_url: Optional[str] = None) -> "ExperimentDisplayed":
+    def display(self, force_full_width: bool = False, store_state_key: Optional[str] = None) -> "ExperimentDisplayed":
         """
         Displays an experiment in an ipython notebook.
 
         :param force_full_width: allows to force to have 100% width on Jupyter Notebooks only.
-        :returns: An `ExperimentDisplayed` object that can be used to fetch a list of `Datapoint` - only implemented for Jupyter notebook.
+        :param store_state_key: a string identifier for the HiPlot instance.
+            If not `None`, HiPlot will store dynamic modifications (removing/reordering columns...)
+            in the URL, and restore them when calling `display` with the same value for `store_state_key` - see :ref:`tutoNotebookState`
+        :returns: An :class:`ExperimentDisplayed` object that can be used to interact with the visualization
+            - only implemented for Jupyter notebook.
+            See :ref:`tutonotebookdisplayedexperiment`
         """
         from .ipython import display_exp  # pylint: disable=cyclic-import
 
         self.validate()
-        return display_exp(self, force_full_width=force_full_width, store_state_url=store_state_url)
+        return display_exp(self, force_full_width=force_full_width, store_state_url=store_state_key)
 
     def to_html(self, file: Optional[Union[Path, str, IO[str]]] = None) -> str:
         """
@@ -353,8 +358,19 @@ ExperimentFetcher = Callable[[str], Experiment]
 
 
 class ExperimentDisplayed(metaclass=ABCMeta):
+    """
+    Class that allows to communicate with a displayed HiPlot visualization in a Jupyter notebook.
+    Read more in :ref:`tutoNotebookDisplayedExperiment`
+    """
     @abstractmethod
     def get_selected(self) -> List[Datapoint]:
         """
         Returns a list of currently rendered datapoints in the parallel plot
+        """
+
+    @abstractmethod
+    def get_brush_extents(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Returns a dictionnary, where keys corresponds to columns currently brushed in parallel plot,
+        and values contain information about the current brush.
         """

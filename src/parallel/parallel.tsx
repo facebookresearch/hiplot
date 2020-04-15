@@ -13,7 +13,7 @@ import * as d3 from "d3";
 import _ from 'underscore';
 
 import { Datapoint, ParamType } from "../types";
-import { create_d3_scale } from "../infertypes";
+import { create_d3_scale, scale_pixels_range } from "../infertypes";
 import style from "../hiplot.css";
 import { HiPlotPluginData } from "../plugin";
 import { ResizableH } from "../lib/resizable";
@@ -65,7 +65,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
   xscale: any;
 
-  debounced_brush: any;
+  brush: any;
+  onBrushChange_debounced: any;
+  sendBrushExtents_debounced: any;
 
   // Rendering
   root_ref: React.RefObject<HTMLDivElement> = React.createRef();
@@ -95,6 +97,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       brush_count: 0,
       dragging: null,
     };
+    this.onBrushChange_debounced = _.throttle(this.onBrushChange.bind(this), 75);
+    this.sendBrushExtents_debounced = _.debounce(this.sendBrushExtents.bind(this), 400);
   }
   static defaultProps = {
     categoricalMaximumValues: 80,
@@ -136,6 +140,10 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     }
     this.props.window_state.height = this.state.height;
   }
+  onBrushChange(): void {
+    this.sendBrushExtents_debounced();
+    this.brush();
+  }
   onResize(height: number, width: number): void {
     if (this.state.height != height || this.state.width != width) {
       this.setState({height: height, width: width});
@@ -152,6 +160,18 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           </svg>
     </div>
     </ResizableH>);
+  }
+  sendBrushExtents(): void {
+    const yscales = this.yscale;
+    var colToScale = {};
+    this.dimensions_dom.selectAll("." + style.brush).each(function(dim) {
+      const sel: d3.BrushSelection = d3.brushSelection(this);
+      if (sel === null) {
+        return;
+      }
+      colToScale[dim] = scale_pixels_range(yscales[dim], sel as [number, number]);
+    });
+    this.props.sendMessage("brush_extents", colToScale);
   }
   componentDidMount() {
     const isColHidden = function(k: string) {
@@ -317,6 +337,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
       // Render full foreground
       brush();
+      me.sendBrushExtents();
     };
 
     // Highlight polylines
@@ -377,8 +398,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       // Reset brushes - but only trigger call to "brush" once
       me.d3brush.on("brush", null).on("end", null);
       me.d3brush.move(me.dimensions_dom.selectAll("." + style.brush), null);
-      me.d3brush.on("brush", me.debounced_brush).on("end", me.debounced_brush);
-      me.debounced_brush();
+      me.d3brush.on("brush", me.onBrushChange_debounced).on("end", me.onBrushChange_debounced);
+      me.onBrushChange_debounced();
     }
 
     // Handles a brush event, toggling the display of foreground lines.
@@ -444,7 +465,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
       props.rows['selected'].set(selected);
     }
-    this.debounced_brush = _.throttle(brush.bind(this), 75);
+    this.brush = brush;
 
     props.rows['selected'].on_change(function(selected) {
       // Render selected lines
@@ -553,7 +574,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     this.h = this.state.height - this.m[0] - this.m[2];
     //@ts-ignore
     this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */).ticks(1+this.state.height/50);
-    this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.debounced_brush).on("end", this.debounced_brush);
+    this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.onBrushChange_debounced).on("end", this.onBrushChange_debounced);
     // Scale chart and canvas height
     this.div.style("height", (this.state.height) + "px")
 

@@ -49,8 +49,7 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
         self._exp = xp
         self._num_recv = 0
         self._selected_ids: t.List[str] = []
-        self._last_selection_id = -2
-        self._last_msg: t.Optional[t.Dict[str, t.Any]] = None  # For debugging
+        self._last_data_per_type: t.Dict[str, t.Any] = {}
 
         def target_func(comm: Comm, open_msg: t.Dict[str, t.Any]) -> None:  # pylint: disable=unused-argument
             # comm is the kernel Comm instance
@@ -60,9 +59,9 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
             @comm.on_msg  # type: ignore
             def _recv(msg: t.Dict[str, t.Any]) -> None:
                 self._num_recv += 1
-                self._last_msg = msg
-                self._selected_ids = msg["content"]["data"]["selected"]
-                self._last_selection_id = msg["content"]["data"]["selection_id"]
+                msg_data = msg["content"]["data"]
+                print(msg_data)
+                self._last_data_per_type[msg_data["type"]] = msg_data["data"]
 
         try:
             ip: Any = get_ipython()  # type: ignore  # pylint: disable=undefined-variable
@@ -71,18 +70,27 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
             # We are not in an ipython environment - for example in testing
             pass
 
-    def get_selected(self) -> t.List[exp.Datapoint]:
-        if self._num_recv == 0:
-            raise GetSelectedFailure(
-                """No data received from the front-end. Please make sure that:
+    no_data_received_error = GetSelectedFailure(
+        """No data received from the front-end. Please make sure that:
     1. You don't call "get_selected" on the same cell
     2. The interface has loaded
     3. You are in a Jupyter notebook (Jupyter lab is *not* supported)"""
-            )
-        selected_set = set(self._selected_ids)
+    )
+
+    def get_selected(self) -> t.List[exp.Datapoint]:
+        last_selection = self._last_data_per_type.get("selection")
+        if last_selection is None:
+            raise self.no_data_received_error
+        selected_set = set(last_selection["selected"])
         datapoints = [i for i in self._exp.datapoints if i.uid in selected_set]
         assert len(datapoints) == len(selected_set)
         return datapoints
+
+    def get_brush_extents(self) -> t.Dict[str, t.Dict[str, t.Any]]:
+        last_msg = self._last_data_per_type.get("brush_extents")
+        if last_msg is None:
+            raise self.no_data_received_error
+        return last_msg  # type: ignore
 
 
 def display_exp(
@@ -101,20 +109,18 @@ def display_exp(
         options.update({"persistent_state": None})
     index_html = make_experiment_standalone_page(options=options)
     index_html = index_html.replace(
-        "/*AFTER_SETUP_SCRIPT_INJECT*/",
-        f"""/*AFTER_SETUP_SCRIPT_INJECT*/
-(function () {{
+        "/*ON_LOAD_SCRIPT_INJECT*/",
+        f"""/*ON_LOAD_SCRIPT_INJECT*/
 const comm_id = {escapejs(comm_id)};
 try {{
     console.log("Setting up communication channel with Jupyter: ", comm_id);
     var comm = Jupyter.notebook.kernel.comm_manager.new_comm(comm_id, {{'type': 'hello'}});
-    hiplot_instance.setup_comm(comm);
+    Object.assign(options, {{"comm": comm}});
 }}
 catch(err) {{
     console.warn('Unable to create Javascript <-> Python communication channel' +
         ' (are you in a Jupyter notebook? Jupyter labs is *not* supported!)');
 }}
-}})()
         """)
 
     if force_full_width:

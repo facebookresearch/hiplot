@@ -168,10 +168,8 @@ export function scale_add_outliers(scale_orig) {
       if (Number.isNaN(x) || x == Infinity || x == -Infinity || x == "inf" || x == "-inf" || x === null) {
           if (ascending_order) {
               return range[1];
-              //return range[0] + (origin_scale_size + range[1]) / 2;
           }
           return range[1];
-          //return (range[1] + range[0] - origin_scale_size) / 2;
       }
       var scale_orig_value_rel = (scale_orig(x) - range[0]) / (range[1] - range[0]) * origin_scale_size;
       return ascending_order ? range[0] + scale_orig_value_rel : range[0] - scale_orig_value_rel;

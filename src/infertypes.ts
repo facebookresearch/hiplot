@@ -85,13 +85,40 @@ export function create_d3_scale(pd: ParamDef): any {
     if (pd.special_values.length && [ParamType.NUMERIC, ParamType.NUMERICLOG, ParamType.NUMERICPERCENTILE].indexOf(pd.type) >= 0) {
         scale = scale_add_outliers(scale);
     }
+    scale.hip_type = pd.type;
+    scale.hip_num_values = pd.distinct_values.length;
     return scale;
+}
+
+export function scale_pixels_range(scale: any, extents: [number, number]): any {
+    const scaleToNorm = d3.scaleLinear().domain(scale.range()).range([0, 1]);
+    const normalized = [scaleToNorm(extents[0]), scaleToNorm(extents[1])];
+    switch (scale.hip_type as ParamType) {
+        case ParamType.CATEGORICAL:
+            const domain: Array<string> = scale.domain();
+            const selectedValues = domain.slice(
+                Math.ceil(Math.min(normalized[0], normalized[1]) * (domain.length - 1)),
+                Math.floor(Math.max(normalized[0], normalized[1]) * (domain.length - 1) + 1)
+            );
+            return {
+                "type": scale.hip_type,
+                "brush_extents_normalized": normalized,
+                "values": selectedValues,
+            };
+        case ParamType.NUMERIC:
+        case ParamType.NUMERICLOG:
+        case ParamType.NUMERICPERCENTILE:
+            return {
+                "type": scale.hip_type,
+                "brush_extents_normalized": normalized,
+                "range": [scale.invert(extents[0]), scale.invert(extents[1])],
+            };
+    }
 }
 
 export function colorScheme(pd: ParamDef, value: any, alpha: number): string {
     if (pd.type == ParamType.CATEGORICAL) {
         function compute_val2color() {
-            // Compute this lazyly - the call to "DistinctColors" is quite slow :/
             if (pd.__val2color !== undefined) {
                 return;
             }
