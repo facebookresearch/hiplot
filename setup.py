@@ -15,7 +15,11 @@ from setuptools.command.install import install
 
 requirements: Dict[str, List[str]] = {}
 for extra in ["dev", "main"]:
-    requirements[extra] = Path(f"requirements/{extra}.txt").read_text().splitlines()
+    # Skip `package @ git+[repo_url]` because not supported by pypi
+    requirements[extra] = [r
+                           for r in Path(f"requirements/{extra}.txt").read_text().splitlines()
+                           if '@' not in r
+                           ]
 
 
 # Find version number in __init__
