@@ -254,17 +254,22 @@ function wrap_scale<T, V>(scale_orig: any, domain_to_scale: (x: T) => V, scale_t
     function copy() {
         return wrap_scale(scale_orig.copy(), domain_to_scale, scale_to_domain);
     };
+    function range() {
+        const r = scale_orig.range.apply(scale_orig, arguments);
+        return r == scale_orig ? scale : r;
+    }
 
     var new_ticks = {}, new_tickFormat = {};
     cpy_properties(scale_orig, scale);
     Object.assign(scale, {
         'domain': domain,
+        'range': range,
         'invert': invert,
         'copy': copy,
         '__scale_orig': scale_orig,
         'ticks': new_ticks,
         'tickFormat': new_tickFormat,
-    })
+    });
     cpy_properties(scale_orig.ticks, new_ticks);
     cpy_properties(scale_orig.tickFormat, new_tickFormat);
     scale.ticks.apply = function(_, tickArguments_) {
