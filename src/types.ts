@@ -114,6 +114,7 @@ export enum ParamType {
     NUMERIC = "numeric",
     NUMERICLOG = "numericlog",
     NUMERICPERCENTILE = "numericpercentile",
+    TIMESTAMP = "timestamp",
 };
 
 export interface HiPlotValueDef {

@@ -5,6 +5,7 @@
 import uuid
 import random
 import math
+import time
 from typing import Dict, Any, List, Callable
 
 from . import experiment as hip
@@ -44,7 +45,7 @@ def demo_line_xy() -> hip.Experiment:
             values={
                 'generation': i,
                 'param': 10 ** random.uniform(-1, 1),
-                'loss': random.uniform(-5, 5)
+                'loss': random.uniform(-5, 5),
             })
         if i > 10:
             from_parent = random.choice(exp.datapoints[-10:])
@@ -105,15 +106,16 @@ def demo(n: int = 100) -> hip.Experiment:
             "chkpt": uuid.uuid4().hex[:6],
             "time": t + random.uniform(-0.2, 0.2),
             "force_numericlog": random.uniform(1, 100),
+            'timestamp': int(time.time() + (task_idx * 2000)),
         }
 
     current_pop: List[Dict[str, Any]] = [dict(uid=f"init{i}", params=fake_params(), last_ckpt_uid=None) for i in range(10)]
     continue_num = 0
-    for time in range(n):
+    for task_idx in range(n):
         # All drop checkpoints
         for p in current_pop:
             ckpt_uid = f"{p['uid']}_{uuid.uuid4().hex[:6]}"
-            xp.datapoints.append(hip.Datapoint(uid=ckpt_uid, from_uid=p['last_ckpt_uid'], values={**p['params'], **fake_metrics(time)}))
+            xp.datapoints.append(hip.Datapoint(uid=ckpt_uid, from_uid=p['last_ckpt_uid'], values={**p['params'], **fake_metrics(task_idx)}))
             p['last_ckpt_uid'] = ckpt_uid
 
         # Randomly drop some
@@ -127,6 +129,7 @@ def demo(n: int = 100) -> hip.Experiment:
     xp.parameters_definition["c"].colors = {"red": "rgb(255, 0, 0)", "green": "rgb(0, 255, 0)", "black": "rgb(0, 0, 0)"}
     xp.parameters_definition["force_numericlog"].type = hip.ValueType.NUMERIC_LOG
     xp.parameters_definition["pctile"].type = hip.ValueType.NUMERIC_PERCENTILE
+    xp.parameters_definition["timestamp"].type = hip.ValueType.TIMESTAMP
     return xp
 
 
