@@ -130,18 +130,19 @@ export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
     return scale;
 }
 
+function cpy_properties(from, to) {
+    for (var prop in from){
+        if (from.hasOwnProperty(prop)){
+        to[prop] = from[prop];
+        }
+    }
+}
+
 export function scale_add_outliers(scale_orig) {
     /**
      * This functions adds NaN/Inf/-Inf to any d3 scale.
      * One tick is added for these special values as well.
      */
-    function cpy_properties(from, to) {
-      for (var prop in from){
-        if (from.hasOwnProperty(prop)){
-          to[prop] = from[prop];
-        }
-      }
-    };
     /**
      * There are 2 options:
      * -  Either the scale is in ascending order (range[1] > range[0])
@@ -233,4 +234,65 @@ export function scale_add_outliers(scale_orig) {
       return scale_add_outliers(scale_orig.copy());
     };
     return scale;
+}
+
+function wrap_scale<T, V>(scale_orig: any, domain_to_scale: (x: T) => V, scale_to_domain: (x: V) => T): any {
+    var scale: any = function(x: T): number {
+        return scale_orig(domain_to_scale(x));
+    }
+    function domain(new_domain?: [T, T]) {
+        if (new_domain === undefined) {
+            const scale_domain = scale_orig.domain();
+            return [scale_to_domain(scale_domain[0]), scale_to_domain(scale_domain[1])];
+        }
+        scale_orig.domain([domain_to_scale(new_domain[0]), domain_to_scale(new_domain[1])]);
+        return scale;
+    };
+    function invert(y: number) {
+        return scale_to_domain(scale_orig.invert(y));
+    };
+    function copy() {
+        return wrap_scale(scale_orig.copy(), domain_to_scale, scale_to_domain);
+    };
+
+    var new_ticks = {}, new_tickFormat = {};
+    cpy_properties(scale_orig, scale);
+    Object.assign(scale, {
+        'domain': domain,
+        'invert': invert,
+        'copy': copy,
+        '__scale_orig': scale_orig,
+        'ticks': new_ticks,
+        'tickFormat': new_tickFormat,
+    })
+    cpy_properties(scale_orig.ticks, new_ticks);
+    cpy_properties(scale_orig.tickFormat, new_tickFormat);
+    scale.ticks.apply = function(_, tickArguments_) {
+        var args = [tickArguments_[0]];
+        const ta = scale_orig.ticks.apply(scale_orig, args);
+        return ta.map(scale_to_domain);
+    };
+    scale.tickFormat.apply = function(_, tickArguments_) {
+        var args = [tickArguments_[0]];
+        var fn = scale_orig.tickFormat.apply(scale_orig, args);
+        return function(x) {
+          return fn(domain_to_scale(x));
+        }
+    };
+    return scale;
+}
+
+export function d3_scale_timestamp() {
+    // There is a trick: usually timestamps are in seconds, but JS timestamps are in ms
+    function timestamp_to_jsdate(timestamp: any): Date {
+        if (timestamp instanceof Date) {
+            return timestamp;
+        }
+        return new Date(timestamp * 1000);
+    }
+    function jsdate_to_timestamp(date: Date): number {
+        return date.getTime() / 1000;
+    }
+    const ts = wrap_scale(d3.scaleTime(), timestamp_to_jsdate, jsdate_to_timestamp);
+    return ts;
 }

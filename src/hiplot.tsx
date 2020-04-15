@@ -236,6 +236,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             [ParamType.NUMERIC]: 'Number',
             [ParamType.NUMERICLOG]: 'Number (log-scale)',
             [ParamType.NUMERICPERCENTILE]: 'Number (percentile-scale)',
+            [ParamType.TIMESTAMP]: 'Timestamp',
         };
 
         var contextmenu = $(cm);

@@ -45,6 +45,7 @@ class ValueType(Enum):
     NUMERIC = 'numeric'                         #: Numeric value on a linear scale. Supports integers, floats, NaNs and inf
     NUMERIC_LOG = 'numericlog'                  #: Same as NUMERIC, displayed on a logarithmic scale.
     NUMERIC_PERCENTILE = 'numericpercentile'    #: Same as NUMERIC, displayed on a percentile scale.
+    TIMESTAMP = 'timestamp'                     #: Timestamps in seconds (only integers)
 
 
 class Displays:

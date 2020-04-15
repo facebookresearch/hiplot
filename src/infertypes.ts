@@ -10,7 +10,7 @@ import * as d3 from "d3";
 import randomColor from "../node_modules/randomcolor/randomColor.js";
 
 import { PersistentState } from "./lib/savedstate";
-import { d3_scale_percentile, scale_add_outliers } from "./lib/d3_scales";
+import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers } from "./lib/d3_scales";
 import { Datapoint, ParamType, HiPlotValueDef } from "./types";
 
 
@@ -69,6 +69,9 @@ export function create_d3_scale_without_outliers(pd: ParamDef): any {
         }
         var min = pd.force_value_min !== null ? pd.force_value_min : dv[0];
         var max = pd.force_value_max !== null ? pd.force_value_max : dv[dv.length - 1];
+        if (pd.type == ParamType.TIMESTAMP) {
+            return d3_scale_timestamp().domain([min, max]);
+        }
         if (pd.type == ParamType.NUMERICLOG) {
             return d3.scaleLog().domain([min, max]);
         }
@@ -150,6 +153,7 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
         var url_state = url_states.children(key);
         var optional = false;
         var numeric = ["uid", "from_uid"].indexOf(key) == -1;
+        var can_be_timestamp = numeric;
         var setVals = [];
         var special_values_set = new Set();
         table.forEach(function(row) {
@@ -168,7 +172,10 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             if ((typeof v != "number" && !is_special_num && isNaN(v)) ||
                     v === true || v === false) {
                 numeric = false;
-                return;
+                can_be_timestamp = false;
+            }
+            if (!Number.isSafeInteger(v) || v < 0) {
+                can_be_timestamp = false;
             }
         });
         var special_values = Array.from(special_values_set);
@@ -230,6 +237,9 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
                 info.type_options.push(ParamType.NUMERICLOG);
             }
             info.type_options.push(ParamType.NUMERICPERCENTILE);
+            if (can_be_timestamp) {
+                info.type_options.push(ParamType.TIMESTAMP);
+            }
         }
         return info;
     }
