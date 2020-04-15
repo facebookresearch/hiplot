@@ -16,6 +16,13 @@ Python classes reference
    :members:
 
 
+:class:`hiplot.ExperimentDisplayed`
+-----------------------------------
+
+.. autoclass:: hiplot.ExperimentDisplayed
+   :members:
+
+
 Columns type/scales
 --------------------------------
 .. autoclass:: hiplot.ValueType

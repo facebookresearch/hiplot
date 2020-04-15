@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Displays reference" href="plugins_reference.html" />
-    <link rel="prev" title="Advanced uses: Webserver" href="tuto_webserver.html" />
+    <link rel="prev" title="Advanced uses: notebooks" href="tuto_notebook.html" />
   
    
 
@@ -40,7 +40,7 @@
           <a href="plugins_reference.html" title="Displays reference"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="tuto_webserver.html" title="Advanced uses: Webserver"
+          <a href="tuto_notebook.html" title="Advanced uses: notebooks"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.7.post3 documentation</a> &#187;</li> 
       </ul>
@@ -65,9 +65,11 @@
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_notebook.html">Advanced uses: notebooks</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python classes reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#hiplot-experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#hiplot-datapoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Datapoint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hiplot-experimentdisplayed"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ExperimentDisplayed</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#columns-type-scales">Columns type/scales</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#hiplot-server">HiPlot server</a></li>
@@ -135,14 +137,21 @@
 </div>
 <dl class="py method">
 <dt id="hiplot.Experiment.display">
-<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">force_full_width</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">store_state_url</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ExperimentDisplayed<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">force_full_width</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">store_state_key</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ExperimentDisplayed<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays an experiment in an ipython notebook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>force_full_width</strong> – allows to force to have 100% width on Jupyter Notebooks only.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>force_full_width</strong> – allows to force to have 100% width on Jupyter Notebooks only.</p></li>
+<li><p><strong>store_state_key</strong> – a string identifier for the HiPlot instance.
+If not <cite>None</cite>, HiPlot will store dynamic modifications (removing/reordering columns…)
+in the URL, and restore them when calling <cite>display</cite> with the same value for <cite>store_state_key</cite> - see <a class="reference internal" href="tuto_notebook.html#tutonotebookstate"><span class="std std-ref">Remembering state between runs</span></a></p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An <cite>ExperimentDisplayed</cite> object that can be used to fetch a list of <cite>Datapoint</cite> - only implemented for Jupyter notebook.</p>
+<dd class="field-even"><p>An <a class="reference internal" href="#hiplot.ExperimentDisplayed" title="hiplot.ExperimentDisplayed"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExperimentDisplayed</span></code></a> object that can be used to interact with the visualization
+- only implemented for Jupyter notebook.
+See <a class="reference internal" href="tuto_notebook.html#tutonotebookdisplayedexperiment"><span class="std std-ref">Interactions with displayed visualization</span></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -292,6 +301,29 @@ It can have a parent if it originates from another one (offspring).</p>
 </dd></dl>
 
 </div>
+<div class="section" id="hiplot-experimentdisplayed">
+<h2><a class="reference internal" href="#hiplot.ExperimentDisplayed" title="hiplot.ExperimentDisplayed"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ExperimentDisplayed</span></code></a><a class="headerlink" href="#hiplot-experimentdisplayed" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="hiplot.ExperimentDisplayed">
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ExperimentDisplayed</code><a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentDisplayed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ExperimentDisplayed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class that allows to communicate with a displayed HiPlot visualization in a Jupyter notebook.
+Read more in <a class="reference internal" href="tuto_notebook.html#tutonotebookdisplayedexperiment"><span class="std std-ref">Interactions with displayed visualization</span></a></p>
+<dl class="py method">
+<dt id="hiplot.ExperimentDisplayed.get_brush_extents">
+<em class="property">abstract </em><code class="sig-name descname">get_brush_extents</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span><a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentDisplayed.get_brush_extents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ExperimentDisplayed.get_brush_extents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionnary, where keys corresponds to columns currently brushed in parallel plot,
+and values contain information about the current brush.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hiplot.ExperimentDisplayed.get_selected">
+<em class="property">abstract </em><code class="sig-name descname">get_selected</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>hiplot.experiment.Datapoint<span class="p">]</span><a class="reference internal" href="_modules/hiplot/experiment.html#ExperimentDisplayed.get_selected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ExperimentDisplayed.get_selected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of currently rendered datapoints in the parallel plot</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="columns-type-scales">
 <h2>Columns type/scales<a class="headerlink" href="#columns-type-scales" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
@@ -367,7 +399,7 @@ It can have a parent if it originates from another one (offspring).</p>
   <div class="footer-relations">
     
       <div class="pull-left">
-        <a class="btn btn-default" href="tuto_webserver.html" title="previous chapter (use the left arrow)">Advanced uses: Webserver</a>
+        <a class="btn btn-default" href="tuto_notebook.html" title="previous chapter (use the left arrow)">Advanced uses: notebooks</a>
       </div>
     
       <div class="pull-right">
@@ -389,7 +421,7 @@ It can have a parent if it originates from another one (offspring).</p>
           <a href="plugins_reference.html" title="Displays reference"
              >next</a> |</li>
         <li class="right" >
-          <a href="tuto_webserver.html" title="Advanced uses: Webserver"
+          <a href="tuto_notebook.html" title="Advanced uses: notebooks"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.7.post3 documentation</a> &#187;</li> 
       </ul>

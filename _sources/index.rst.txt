@@ -32,6 +32,7 @@ HiPlot documentation
    getting_started
    experiment_settings
    tuto_webserver
+   tuto_notebook
    py_reference
    plugins_reference
    contributing

@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>Advanced uses: notebooks &#8212; HiPlot 0.1.7.post3 documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python classes reference" href="py_reference.html" />
+    <link rel="prev" title="Advanced uses: Webserver" href="tuto_webserver.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py_reference.html" title="Python classes reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tuto_webserver.html" title="Advanced uses: Webserver"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.7.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="
+    index.html" class="text-logo">HiPlot</a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Advanced uses: notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#remembering-state-between-runs">Remembering state between runs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interactions-with-displayed-visualization">Interactions with displayed visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="py_reference.html">Python classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins_reference.html">Displays reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+    
+  </div>
+</div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>Advanced uses: notebooks</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="advanced-uses-notebooks">
+<span id="tutonotebook"></span><h1>Advanced uses: notebooks<a class="headerlink" href="#advanced-uses-notebooks" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="remembering-state-between-runs">
+<span id="tutonotebookstate"></span><h2>Remembering state between runs<a class="headerlink" href="#remembering-state-between-runs" title="Permalink to this headline">¶</a></h2>
+<p>While it’s possible to change the visualization settings in python using <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_data" title="hiplot.Experiment.display_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_data()</span></code></a> and <a class="reference internal" href="py_reference.html#hiplot.ValueDef" title="hiplot.ValueDef"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ValueDef</span></code></a>, it is more convenient to
+define XY plots, change column types or coloring in the user interface directly. However, all of this is reset when executing the cell a second time.</p>
+<p>If you set <code class="docutils literal notranslate"><span class="pre">store_state_key</span></code> to a unique identifier in <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display()</span></code></a>, HiPlot’s state will be stored in the URL,
+and restored when <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display()</span></code></a> is called a second time later with the same parameter.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This visualization&#39;s state will be recovered when the cell is re-run</span>
+<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;SGD&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">}]</span>
+<span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">store_state_key</span><span class="o">=</span><span class="s2">&quot;cell1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="interactions-with-displayed-visualization">
+<span id="tutonotebookdisplayedexperiment"></span><h2>Interactions with displayed visualization<a class="headerlink" href="#interactions-with-displayed-visualization" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This feature is currently supported for Jupyter Notebooks only. In particular, it does <strong>not</strong> work with Jupyter Lab.</p>
+</div>
+<p>HiPlot visualizations are highly interactive, allowing the user to filter and slice through the data. When running in Jupyter Notebooks, it is possible to
+retrieve some information about the state of the visualization.</p>
+<p>When calling <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display()</span></code></a>, a <a class="reference internal" href="py_reference.html#hiplot.ExperimentDisplayed" title="hiplot.ExperimentDisplayed"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ExperimentDisplayed</span></code></a> object is returned.
+Behind the hook, a Javascript-Python communication channel is established with the python notebook kernel, that HiPlot’s javascript frontend uses to send information
+about selected datapoints, filtering, …</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># A Jupyter Notebook cell</span>
+<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;SGD&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;dropout&#39;</span><span class="p">:</span><span class="mf">0.3</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">}]</span>
+<span class="n">displayed_exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/displayed_experiment.png"><img alt="_images/displayed_experiment.png" src="_images/displayed_experiment.png" style="width: 800px;" /></a>
+</div>
+<p>After the visualization has loaded, and in another cell, python code can query information from HiPlot</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">displayed_exp</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>  <span class="c1"># Return all the datapoints currently selected</span>
+<span class="go"> [&lt;hiplot.experiment.Datapoint at 0x10b32dc10&gt;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">displayed_exp</span><span class="o">.</span><span class="n">get_brush_extents</span><span class="p">()</span>  <span class="c1"># Retrieve brush extents in the parallel plot</span>
+<span class="go"> {&#39;dropout&#39;: {&#39;type&#39;: &#39;numeric&#39;,</span>
+<span class="go">  &#39;brush_extents_normalized&#39;: [1, 0.6015169902912622],</span>
+<span class="go">  &#39;range&#39;: [0.3, 0.22030339805825244]},</span>
+<span class="go"> &#39;lr&#39;: {&#39;type&#39;: &#39;numeric&#39;,</span>
+<span class="go">  &#39;brush_extents_normalized&#39;: [1, 0.5918082524271845],</span>
+<span class="go">  &#39;range&#39;: [0.1, 0.05958901699029127]},</span>
+<span class="go"> &#39;optimizer&#39;: {&#39;type&#39;: &#39;categorical&#39;,</span>
+<span class="go">  &#39;brush_extents_normalized&#39;: [1, 0],</span>
+<span class="go">  &#39;values&#39;: [&#39;Adam&#39;, &#39;SGD&#39;]}}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While all columns will have a <code class="code docutils literal notranslate"><span class="pre">type</span></code> and a brush extent (<code class="code docutils literal notranslate"><span class="pre">brush_extents_normalized</span></code>), only numeric columns have a <code class="code docutils literal notranslate"><span class="pre">range</span></code> field. Categorical fields have a list of selected values instead</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The user can modify the data type of variables - so the data type returned by <a class="reference internal" href="py_reference.html#hiplot.ExperimentDisplayed.get_brush_extents" title="hiplot.ExperimentDisplayed.get_brush_extents"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.ExperimentDisplayed.get_brush_extents()</span></code></a> does not always match the one provided in Python.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="tuto_webserver.html" title="previous chapter (use the left arrow)">Advanced uses: Webserver</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="py_reference.html" title="next chapter (use the right arrow)">Python classes reference</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py_reference.html" title="Python classes reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tuto_webserver.html" title="Advanced uses: Webserver"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.7.post3 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    &copy; Copyright 2020, Facebook AI Research (FAIR). Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>

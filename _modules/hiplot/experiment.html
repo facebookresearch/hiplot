@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tuto_webserver.html">Advanced uses: Webserver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tuto_notebook.html">Advanced uses: notebooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../py_reference.html">Python classes reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../plugins_reference.html">Displays reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
@@ -285,17 +286,22 @@
             <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="s1">&#39;Not a single datapoint&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Experiment.display"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">store_state_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentDisplayed&quot;</span><span class="p">:</span>
+<div class="viewcode-block" id="Experiment.display"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">store_state_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentDisplayed&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays an experiment in an ipython notebook.</span>
 
 <span class="sd">        :param force_full_width: allows to force to have 100% width on Jupyter Notebooks only.</span>
-<span class="sd">        :returns: An `ExperimentDisplayed` object that can be used to fetch a list of `Datapoint` - only implemented for Jupyter notebook.</span>
+<span class="sd">        :param store_state_key: a string identifier for the HiPlot instance.</span>
+<span class="sd">            If not `None`, HiPlot will store dynamic modifications (removing/reordering columns...)</span>
+<span class="sd">            in the URL, and restore them when calling `display` with the same value for `store_state_key` - see :ref:`tutoNotebookState`</span>
+<span class="sd">        :returns: An :class:`ExperimentDisplayed` object that can be used to interact with the visualization</span>
+<span class="sd">            - only implemented for Jupyter notebook.</span>
+<span class="sd">            See :ref:`tutonotebookdisplayedexperiment`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">.ipython</span> <span class="kn">import</span> <span class="n">display_exp</span>  <span class="c1"># pylint: disable=cyclic-import</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">display_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="o">=</span><span class="n">force_full_width</span><span class="p">,</span> <span class="n">store_state_url</span><span class="o">=</span><span class="n">store_state_url</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">display_exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="o">=</span><span class="n">force_full_width</span><span class="p">,</span> <span class="n">store_state_url</span><span class="o">=</span><span class="n">store_state_key</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Experiment.to_html"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -451,12 +457,23 @@
 <span class="n">ExperimentFetcher</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Experiment</span><span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">ExperimentDisplayed</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="ExperimentDisplayed"><a class="viewcode-back" href="../../py_reference.html#hiplot.ExperimentDisplayed">[docs]</a><span class="k">class</span> <span class="nc">ExperimentDisplayed</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that allows to communicate with a displayed HiPlot visualization in a Jupyter notebook.</span>
+<span class="sd">    Read more in :ref:`tutoNotebookDisplayedExperiment`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExperimentDisplayed.get_selected"><a class="viewcode-back" href="../../py_reference.html#hiplot.ExperimentDisplayed.get_selected">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of currently rendered datapoints in the parallel plot</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="ExperimentDisplayed.get_brush_extents"><a class="viewcode-back" href="../../py_reference.html#hiplot.ExperimentDisplayed.get_brush_extents">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_brush_extents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionnary, where keys corresponds to columns currently brushed in parallel plot,</span>
+<span class="sd">        and values contain information about the current brush.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
 </pre></div>
 
           </div>
