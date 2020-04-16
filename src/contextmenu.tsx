@@ -45,10 +45,10 @@ export class ContextMenu extends React.Component<ContextMenuProps, ContextMenuSt
     }
     show(pageX: number, pageY: number, column: string) {
         // This assumes parent has `relative` positioning
-        var parent = this.context_menu_div.current.parentElement.getBoundingClientRect();
+        var parent = $(this.context_menu_div.current.parentElement).offset();
         this.setState({
-            top: Math.max(0, pageY - 10 - parent.y),
-            left: Math.max(0, pageX - 90 - parent.x),
+            top: Math.max(0, pageY - 10 - parent.top),
+            left: Math.max(0, pageX - 90 - parent.left),
             visible: true,
             column: column
         });
