@@ -17,6 +17,7 @@ import { ResizableH } from "../lib/resizable";
 
 
 export interface HiPlotDistributionPluginState {
+    initialHeight: number,
     height: number,
     width: number,
     axis?: string,
@@ -54,8 +55,10 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
         if (axis && this.props.params_def[axis] === undefined) {
             axis = undefined;
         }
+        const initialHeight = d3.min([d3.max([document.body.clientHeight-540, 240]), 500]);
         this.state = {
-            height: d3.min([d3.max([document.body.clientHeight-540, 240]), 500]),
+            initialHeight: initialHeight,
+            height: initialHeight,
             width: 0,
             histData: {selected: [], all: props.rows.all.get()},
             axis: axis,
@@ -105,7 +108,7 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
         }.bind(this), this);
     }
     componentDidUpdate(prevProps: HiPlotPluginData, prevState: HiPlotDistributionPluginState) {
-        if (prevState.axis != this.state.axis) {
+        if (prevState.axis != this.state.axis && this.state.axis !== undefined) {
             if (this.props.persistent_state) {
                 this.props.persistent_state.set('axis', this.state.axis);
             }
@@ -122,11 +125,14 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
             this.setState({height: height, width: width});
         }
     }
+    disable(): void {
+      this.setState({width: 0, axis: undefined, height: this.state.initialHeight});
+    }
     render() {
         if (this.state.axis === undefined) {
             return [];
         }
-        return (<ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 150)}>
+        return (<ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 150)} onRemove={this.disable.bind(this)}>
             {this.state.width > 0 && <DistributionPlot
                 axis={this.state.axis}
                 height={this.state.height}

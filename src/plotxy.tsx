@@ -36,6 +36,7 @@ interface PlotXYProps extends HiPlotPluginData, PlotXYDisplayData {
 
 interface PlotXYState extends PlotXYDisplayData {
   width: number,
+  initialHeight: number,
   height: number,
   enabled: boolean,
 };
@@ -82,6 +83,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       axis_y: get_default_axis('axis_y'),
       width: 0,
       height: height,
+      initialHeight: height
     };
     this.state = {
       ...state,
@@ -439,12 +441,15 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       this.setState({height: height, width: width});
     }
   }
+  disable(): void {
+    this.setState({enabled: false, width: 0, axis_x: null, axis_y: null, height: this.state.initialHeight});
+  }
   render() {
     if (!this.state.enabled) {
       return [];
     }
     return (
-    <ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 100)}>
+    <ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 100)} onRemove={this.disable.bind(this)}>
       {this.state.width > 0 && <div ref={this.root_ref} className="checkpoints-graph" style={{"height": this.state.height}}>
           <canvas ref={this.canvas_lines_ref} className={style["checkpoints-graph-lines"]} style={{position: 'absolute'}}></canvas>
           <canvas ref={this.canvas_highlighted_ref} className={style["checkpoints-graph-highlights"]} style={{position: 'absolute'}}></canvas>

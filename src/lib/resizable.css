@@ -19,3 +19,7 @@
     height: 4px;
     cursor: row-resize;
 }
+
+.pendingDelete {
+    background-color: red;
+}
