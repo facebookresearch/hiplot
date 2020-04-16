@@ -95,7 +95,6 @@ export class AllDatasets {
         public experiment_all: Dataset = new Dataset("experiment_all"),
         public all: Dataset = new Dataset("all"),                       // Everything after filtering
         public selected: Dataset = new Dataset("selected"),             // What we currently select (with parallel plot)
-        public rendered: Dataset = new Dataset("rendered"),             // What we have rendered on the screen
         public highlighted: Dataset = new Dataset("highlighted"),       // What is highlighted (when we hover a row)
     ) {
 
@@ -104,7 +103,6 @@ export class AllDatasets {
         this.experiment_all.off(obj);
         this.all.off(obj);
         this.selected.off(obj);
-        this.rendered.off(obj);
         this.highlighted.off(obj);
     }
 }

@@ -135,18 +135,12 @@ export class RestoreDataBtn extends React.Component<HiPlotDataControlProps, HiPl
 
 export class SelectedCountProgressBar extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
     selectedBar: React.RefObject<HTMLDivElement> = React.createRef();
-    renderedBar: React.RefObject<HTMLDivElement> = React.createRef();
     componentDidMount() {
         var rows = this.props.rows;
         var selectedBar = this.selectedBar.current;
-        var renderedBar = this.renderedBar.current;
         rows.selected.on_change(function(selected) {
             var total = rows.all.get().length;
             selectedBar.style.width = (100*selected.length/total) + "%";
-        }, this);
-        rows.rendered.on_change(function(rendered) {
-            var total = rows.selected.get().length;
-            renderedBar.style.width = (100*rendered.length/total) + "%";
         }, this);
     }
     componentWillUnmount() {
@@ -157,7 +151,7 @@ export class SelectedCountProgressBar extends React.Component<HiPlotDataControlP
         return (
             <div className={style.fillbar}>
                 <div ref={this.selectedBar} className={style.selectedBar}>
-                    <div ref={this.renderedBar} className={style.renderedBar}>&nbsp;</div>
+                    <div style={{'width': '100%'}} className={style.renderedBar}>&nbsp;</div>
                 </div>
             </div>
         );

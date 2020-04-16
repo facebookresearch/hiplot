@@ -643,7 +643,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
     var shuffled_data: Array<Datapoint> = _.shuffle(selected);
 
-    this.props.rows['rendered'].set([]);
     ctx.clearRect(0,0,this.w+1,this.h+1);
 
     // Adjusts rendering speed
@@ -657,7 +656,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     // render a batch of polylines
     function render_range(selection: Array<Datapoint>, i: number, max: number, opacity: number) {
       var s = selection.slice(i,max);
-      me.props.rows['rendered'].append(s);
       s.forEach(function(d) {
         me.path(d, ctx, me.props.get_color_for_row(d, opacity));
       });
