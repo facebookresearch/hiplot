@@ -39,7 +39,6 @@ export class WatchedProperty {
 export class Dataset {
     rows: Array<Datapoint> = [];
     on_change_fn: Array<{cb: (rows: Array<Datapoint>) => void, obj: any}> = [];
-    on_append_fn: Array<{cb: (rows: Array<Datapoint>) => void, obj: any}> = [];
     named_childs: {[key: string]: Dataset} = {};
     constructor(public name: string) {
 
@@ -64,9 +63,6 @@ export class Dataset {
         this.on_change_fn.forEach(function(trigger) {
             trigger.cb(rows);
         });
-        this.on_append_fn.forEach(function(trigger) {
-            trigger.cb(new_rows);
-        });
         Object.entries(this.named_childs).forEach(function(val) {
             val[1]._append(new_rows);
         });
@@ -77,14 +73,8 @@ export class Dataset {
     on_change(cb: (rows: Array<Datapoint>) => void, obj: any) {
         this.on_change_fn.push({cb: cb, obj: obj});
     }
-    on_append(cb: (new_rows: Array<Datapoint>) => void, obj: any) {
-        this.on_append_fn.push({cb: cb, obj: obj});
-    }
     off(obj: any) {
         this.on_change_fn = this.on_change_fn.filter(function(value) {
-            return value.obj != obj;
-        });
-        this.on_append_fn = this.on_append_fn.filter(function(value) {
             return value.obj != obj;
         });
     }
