@@ -86,5 +86,4 @@ def make_experiment_standalone_page(options: Dict[str, Any]) -> str:
         f"""/*ON_LOAD_SCRIPT_INJECT*/
         Object.assign(options, eval('(' + {escapejs(json.dumps(hiplot_options))} + ')'));
         """)
-    index_html = html_inlinize(index_html)
     return index_html
