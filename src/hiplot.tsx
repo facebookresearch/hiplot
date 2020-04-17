@@ -13,15 +13,15 @@ import ReactDOM from "react-dom";
 import JSON5 from "json5";
 import './global';
 
-import { WatchedProperty, Datapoint, ParamType, HiPlotExperiment, AllDatasets, HiPlotLoadStatus, PSTATE_COLOR_BY, PSTATE_LOAD_URI, PSTATE_PARAMS } from "./types";
+import { Datapoint, ParamType, HiPlotExperiment, HiPlotLoadStatus, PSTATE_COLOR_BY, PSTATE_LOAD_URI, PSTATE_PARAMS, DatapointLookup, IDatasets } from "./types";
 import { RowsDisplayTable } from "./rowsdisplaytable";
-import { infertypes, colorScheme } from "./infertypes";
+import { infertypes, colorScheme, ParamDefMap } from "./infertypes";
 import { PersistentState, PersistentStateInMemory, PersistentStateInURL } from "./lib/savedstate";
 import { ParallelPlot } from "./parallel/parallel";
 import { PlotXY } from "./plotxy";
-import { SelectedCountProgressBar } from "./controls";
+import { SelectedCountProgressBar, HiPlotDataControlProps } from "./controls";
 import { ErrorDisplay, HeaderBar } from "./elements";
-import { HiPlotPluginData } from "./plugin";
+import { HiPlotPluginData, HiPlotPluginDataWithoutDatasets } from "./plugin";
 
 //@ts-ignore
 import LogoSVG from "../hiplot/static/logo.svg";
@@ -35,7 +35,7 @@ export { PlotXY } from "./plotxy";
 export { ParallelPlot } from "./parallel/parallel";
 export { RowsDisplayTable } from "./rowsdisplaytable";
 export { HiPlotPluginData } from "./plugin";
-export { Datapoint, HiPlotExperiment, AllDatasets, HiPlotLoadStatus } from "./types";
+export { Datapoint, HiPlotExperiment, IDatasets, HiPlotLoadStatus } from "./types";
 
 
 interface PluginInfo {
@@ -51,42 +51,26 @@ export interface HiPlotProps {
     comm: any; // Communication object for Jupyter notebook
 };
 
-interface HiPlotState {
+interface HiPlotState extends IDatasets {
     experiment: HiPlotExperiment | null;
     version: number;
     loadStatus: HiPlotLoadStatus;
     error: string;
-}
-
-function make_hiplot_data(persistent_state?: PersistentState): HiPlotPluginData {
-    return {
-        params_def: {},
-        rows: new AllDatasets(),
-        get_color_for_row: null,
-        render_row_text: function(row: Datapoint) {
-            return row.uid;
-        },
-        dp_lookup: {},
-        context_menu_ref: React.createRef(),
-        colorby: new WatchedProperty('colorby'),
-        experiment: null,
-        name: null,
-        window_state: null,
-        persistent_state: persistent_state !== undefined && persistent_state !== null ? persistent_state : new PersistentStateInMemory("", {}),
-        sendMessage: null,
-    };
+    params_def: ParamDefMap;
+    dp_lookup: DatapointLookup;
+    colorby: string;
+    // Data that persists upon page reload, sharing link etc...
+    persistent_state: PersistentState;
 }
 
 export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     // React refs
-    domRoot: React.RefObject<HTMLDivElement> = React.createRef();
+    contextMenuRef = React.createRef<ContextMenu>();
 
     comm_message_id: number = 0;
 
-    table: RowsDisplayTable = null;
-
-    data: HiPlotPluginData;
     plugins_window_state: {[plugin: string]: any} = {};
+    onSelectedChange_debounced: () => void;
 
     constructor(props: HiPlotProps) {
         super(props);
@@ -95,19 +79,46 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             version: 0,
             loadStatus: HiPlotLoadStatus.None,
             error: null,
+            dp_lookup: {},
+            rows_all_unfiltered: [],
+            rows_filtered: [],
+            rows_selected: [],
+            rows_highlighted: [],
+            params_def: {},
+            colorby: null,
+            persistent_state: props.persistent_state !== undefined && props.persistent_state !== null ? props.persistent_state : new PersistentStateInMemory("", {}),
         };
-        this.data = make_hiplot_data(this.props.persistent_state);
-        this.data.sendMessage = this.sendMessage.bind(this);
         props.plugins.forEach((info) => { this.plugins_window_state[info.name] = {}; });
-
-        var rows = this.data.rows;
-        rows['selected'].on_change(_.debounce(this.onSelectedChange.bind(this), 200), this);
-        rows['all'].on_change(this.recomputeParamsDef.bind(this), this);
+        this.onSelectedChange_debounced = _.debounce(this.onSelectedChange.bind(this), 200);
     }
     static defaultProps = {
         is_webserver: false,
         comm: null,
     };
+    makeDatasets(experiment: HiPlotExperiment | null, dp_lookup: DatapointLookup): IDatasets {
+        if (experiment) {
+            const rows_all_unfiltered = experiment.datapoints.map(function(t) {
+                var obj_with_uid = $.extend({
+                    "uid": t.uid,
+                    "from_uid": t.from_uid,
+                }, t.values);
+                dp_lookup[t.uid] = obj_with_uid;
+                return obj_with_uid;
+            });
+            return {
+                rows_all_unfiltered: rows_all_unfiltered,
+                rows_filtered: rows_all_unfiltered,
+                rows_selected: rows_all_unfiltered,
+                rows_highlighted: []
+            };
+        }
+        return {
+            rows_all_unfiltered: [],
+            rows_filtered: [],
+            rows_selected: [],
+            rows_highlighted: []
+        };
+    }
     sendMessage(type: string, data: any): void {
         if (this.props.comm !== null) {
             this.props.comm.send({
@@ -118,39 +129,22 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             this.comm_message_id += 1;
         }
     }
-    onSelectedChange(selection: Array<Datapoint>): void {
+    onSelectedChange(): void {
         this.sendMessage("selection", {
-            'selected': selection.map(row => '' + row['uid'])
+            'selected': this.state.rows_selected.map(row => '' + row['uid'])
         })
-    }
-    recomputeParamsDef(all_data: Array<Datapoint>): void {
-        Object.assign(this.data.params_def, infertypes(this.data.persistent_state.children(PSTATE_PARAMS), all_data, this.data.params_def));
     }
     _loadExperiment(experiment: HiPlotExperiment) {
         //console.log('Load xp', experiment);
-        var me = this;
-        me.data.experiment = experiment;
-        var rows = this.data.rows;
-
         // Generate dataset for Parallel Plot
-        me.data.dp_lookup = {};
-        rows['experiment_all'].set(experiment.datapoints.map(function(t) {
-            var csv_obj = $.extend({
-                "uid": t.uid,
-                "from_uid": t.from_uid,
-            }, t.values);
-            me.data.dp_lookup[t.uid] = csv_obj;
-            return csv_obj;
-        }));
-        rows['all'].set(rows['experiment_all'].get());
-        rows['selected'].set(rows['experiment_all'].get());
-
-        me.data.params_def = infertypes(this.data.persistent_state.children(PSTATE_PARAMS), rows['all'].get(), experiment.parameters_definition);
+        var dp_lookup = {};
+        const datasets = this.makeDatasets(experiment, dp_lookup);
+        const params_def = infertypes(this.state.persistent_state.children(PSTATE_PARAMS), datasets.rows_filtered, experiment.parameters_definition);
 
         // Color handling
         function get_default_color() {
             function select_as_coloring_score(r) {
-                var pd = me.data.params_def[r];
+                var pd = params_def[r];
                 var score = 0;
                 if (pd.colors !== null) {
                     score += 100;
@@ -163,20 +157,26 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
                 }
                 return score;
             };
-            var possibles = Object.keys(me.data.params_def).sort((a, b) => select_as_coloring_score(b) - select_as_coloring_score(a));
+            var possibles = Object.keys(params_def).sort((a, b) => select_as_coloring_score(b) - select_as_coloring_score(a));
             return possibles[0];
         }
-        this.data.colorby.set(this.data.persistent_state.get(PSTATE_COLOR_BY, get_default_color()));
-        if (me.data.params_def[this.data.colorby.get()] === undefined) {
-            this.data.colorby.set(get_default_color());
+        var colorby = this.state.persistent_state.get(PSTATE_COLOR_BY, get_default_color());
+        if (params_def[colorby] === undefined) {
+            colorby = get_default_color();
         }
-        this.data.colorby.on_change(function(f) {
-            me.data.persistent_state.set(PSTATE_COLOR_BY, f);
-        }, this);
-        this.data.get_color_for_row = function(trial: Datapoint, alpha: number) {
-            return colorScheme(me.data.params_def[me.data.colorby.get()], trial[me.data.colorby.get()], alpha);
-        };
+        this.setState(function(state, props) { return {
+            experiment: experiment,
+            version: state.version + 1,
+            loadStatus: HiPlotLoadStatus.Loaded,
+            dp_lookup: dp_lookup,
+            colorby: colorby,
+            params_def: params_def,
+            ...datasets,
+        }; });
     }
+    getColorForRow(trial: Datapoint, alpha: number): string {
+        return colorScheme(this.state.params_def[this.state.colorby], trial[this.state.colorby], alpha);
+    };
     loadWithPromise(prom: Promise<any>) {
         var me = this;
         me.setState({loadStatus: HiPlotLoadStatus.Loading});
@@ -191,11 +191,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
                 return;
             }
             me._loadExperiment(data.experiment);
-            me.setState(function(state, props) { return {
-                experiment: data.experiment,
-                version: state.version + 1,
-                loadStatus: HiPlotLoadStatus.Loaded,
-            }; });
         })
         .catch(
             error => {
@@ -206,14 +201,13 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         );
     }
     componentWillUnmount() {
-        this.data.context_menu_ref.current.removeCallbacks(this);
-        this.data.rows.off(this);
-        this.data.colorby.off(this);
+        if (this.contextMenuRef.current) {
+            this.contextMenuRef.current.removeCallbacks(this);
+        }
     }
     componentDidMount() {
         // Setup contextmenu when we right-click a parameter
-        var me = this;
-        me.data.context_menu_ref.current.addCallback(this.columnContextMenu.bind(this), this);
+        this.contextMenuRef.current.addCallback(this.columnContextMenu.bind(this), this);
 
         // Load experiment provided in constructor if any
         if (this.props.experiment !== null) {
@@ -222,15 +216,18 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             }.bind(this)));
         }
         else {
-            var load_uri = this.data.persistent_state.get(PSTATE_LOAD_URI);
+            var load_uri = this.state.persistent_state.get(PSTATE_LOAD_URI);
             if (load_uri !== undefined) {
                 this.loadURI(load_uri);
             }
         }
     }
-    componentDidUpdate() {
-        if (this.state.loadStatus == HiPlotLoadStatus.None) {
-            this.data = make_hiplot_data(this.props.persistent_state);
+    componentDidUpdate(prevProps: HiPlotProps, prevState: HiPlotState): void {
+        if (prevState.rows_selected != this.state.rows_selected) {
+            this.onSelectedChange_debounced();
+        }
+        if (prevState.colorby != this.state.colorby && this.state.colorby) {
+            this.state.persistent_state.set(PSTATE_COLOR_BY, this.state.colorby);
         }
     }
     columnContextMenu(column: string, cm: HTMLDivElement) {
@@ -244,16 +241,24 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
 
         var contextmenu = $(cm);
         contextmenu.append($('<h6 class="dropdown-header">Data scaling</h6>'));
-        this.data.params_def[column].type_options.forEach(function(possible_type) {
+        this.state.params_def[column].type_options.forEach(function(this: HiPlot, possible_type) {
           var option = $('<a class="dropdown-item" href="#">').text(VAR_TYPE_TO_NAME[possible_type]);
-          if (possible_type == this.data.params_def[column].type) {
+          if (possible_type == this.state.params_def[column].type) {
             option.addClass('disabled').css('pointer-events', 'none');
           }
-          option.click(function(event) {
+          option.click(function(this: HiPlot, event) {
             contextmenu.css('display', 'none');
-            this.data.params_def[column].type = possible_type;
-            this.data.persistent_state.children(PSTATE_PARAMS).children(column).set('type', possible_type);
-            this.data.rows['all'].append([]); // Trigger recomputation of the parameters + rerendering
+            this.setState(function(state: Readonly<HiPlotState>, props) { return {
+                    params_def: {
+                        ...state.params_def,
+                        [column]: {
+                            ...state.params_def[column],
+                            type: possible_type
+                        }
+                    }
+                };
+            });
+            this.state.persistent_state.children(PSTATE_PARAMS).children(column).set('type', possible_type);
             event.preventDefault();
           }.bind(this));
           contextmenu.append(option);
@@ -262,17 +267,19 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
 
         // Color by
         var link_colorize = $('<a class="dropdown-item" href="#">Use for coloring</a>');
-        link_colorize.click(function(event) {
-            this.data.colorby.set(column);
+        link_colorize.click(function(this: HiPlot, event) {
+            this.setState({
+                colorby: column,
+            });
             event.preventDefault();
         }.bind(this));
-        if (this.data.colorby.get() == column) {
+        if (this.state.colorby == column) {
             link_colorize.addClass('disabled').css('pointer-events', 'none');
         }
         contextmenu.append(link_colorize);
     }
     onRefreshDataBtn() {
-        this.loadURI(this.data.persistent_state.get(PSTATE_LOAD_URI));
+        this.loadURI(this.state.persistent_state.get(PSTATE_LOAD_URI));
     }
     loadURI(uri: string) {
         this.loadWithPromise(new Promise(function(resolve, reject) {
@@ -297,20 +304,71 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         }));
     }
     onRunsTextareaSubmitted(uri: string) {
-        this.data.persistent_state.set(PSTATE_LOAD_URI, uri);
+        this.state.persistent_state.set(PSTATE_LOAD_URI, uri);
         this.loadURI(uri);
     }
-
+    createNewParamsDef(rows_filtered: Array<Datapoint>): ParamDefMap {
+        var new_pd = Object.assign({}, this.state.params_def);
+        Object.assign(new_pd, infertypes(this.state.persistent_state.children(PSTATE_PARAMS), rows_filtered, this.state.params_def))
+        return new_pd;
+    }
+    restoreAllRows(): void {
+        /**
+         * When we hit `Restore` button
+         */
+        this.setState(function(this: HiPlot, state: Readonly<HiPlotState>, props): Partial<HiPlotState> {
+            const new_filtered = state.rows_all_unfiltered;
+            const new_pd = this.createNewParamsDef(new_filtered);
+            return {
+                rows_filtered: new_filtered,
+                params_def: new_pd,
+            };
+        }.bind(this));
+    };
+    filterRows(keep: boolean): void {
+        /**
+         * When we hit Keep (keep=true), or Exclude (keep=false) buttons
+         */
+        this.setState(function(this: HiPlot, state: Readonly<HiPlotState>, props): Partial<HiPlotState> {
+            const new_filtered = keep ? state.rows_selected : _.difference(state.rows_filtered, state.rows_selected);
+            const new_pd = this.createNewParamsDef(new_filtered);
+            return {
+                rows_filtered: new_filtered,
+                params_def: new_pd,
+            };
+        }.bind(this));
+    };
+    setSelected(rows: Array<Datapoint>): void {
+        this.setState({rows_selected: rows});
+    }
+    setHighlighted(rows: Array<Datapoint>): void {
+        this.setState({rows_highlighted: rows});
+    }
+    renderRowText(row: Datapoint): string {
+        return row.uid;
+    };
     render() {
+        const datasets: IDatasets = {
+            rows_all_unfiltered: this.state.rows_all_unfiltered,
+            rows_filtered: this.state.rows_filtered,
+            rows_highlighted: this.state.rows_highlighted,
+            rows_selected: this.state.rows_selected
+        };
+        const controlProps: HiPlotDataControlProps = {
+            restoreAllRows: this.restoreAllRows.bind(this),
+            filterRows: this.filterRows.bind(this),
+            ...datasets
+        };
         return (
         <div className="scoped_css_bootstrap">
-            <div ref={this.domRoot} className={style.hiplot}>
-            <SelectedCountProgressBar rows={this.data.rows} />
+            <div className={style.hiplot}>
+            <SelectedCountProgressBar {...controlProps} />
             <HeaderBar
                 onRequestLoadExperiment={this.props.is_webserver ? this.onRunsTextareaSubmitted.bind(this) : null}
                 onRequestRefreshExperiment={this.props.is_webserver ? this.onRefreshDataBtn.bind(this) : null}
                 loadStatus={this.state.loadStatus}
-                {...this.data}
+                initialLoadUri={this.state.persistent_state.get(PSTATE_LOAD_URI, '')}
+                {...controlProps}
             />
             {this.state.loadStatus == HiPlotLoadStatus.Error &&
                 <ErrorDisplay error={this.state.error} />
@@ -318,15 +376,25 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             {this.state.loadStatus != HiPlotLoadStatus.Loaded &&
                 <DocAndCredits />
             }
-            <ContextMenu ref={this.data.context_menu_ref}/>
+            <ContextMenu ref={this.contextMenuRef}/>
             {this.state.loadStatus == HiPlotLoadStatus.Loaded &&
             <div>
                 {this.props.plugins.map((plugin_info, idx) => <React.Fragment key={idx}>{plugin_info.render({
-                    ...this.data,
                     ...(this.state.experiment._displays[plugin_info.name] ? this.state.experiment._displays[plugin_info.name] : {}),
+                    ...datasets,
                     name: plugin_info.name,
-                    persistent_state: this.data.persistent_state.children(plugin_info.name),
-                    window_state: this.plugins_window_state[plugin_info.name]
+                    persistent_state: this.state.persistent_state.children(plugin_info.name),
+                    window_state: this.plugins_window_state[plugin_info.name],
+                    sendMessage: this.sendMessage.bind(this),
+                    get_color_for_row: this.getColorForRow.bind(this),
+                    experiment: this.state.experiment,
+                    params_def: this.state.params_def,
+                    dp_lookup: this.state.dp_lookup,
+                    colorby: this.state.colorby,
+                    render_row_text: this.renderRowText.bind(this),
+                    context_menu_ref: this.contextMenuRef,
+                    setSelected: this.setSelected.bind(this),
+                    setHighlighted: this.setHighlighted.bind(this),
                 })}</React.Fragment>)}
             </div>
             }

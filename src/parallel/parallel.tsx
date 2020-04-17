@@ -106,11 +106,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   }
   componentWillUnmount() {
     d3.select(this.svgg_ref.current).selectAll("*").remove();
-    this.props.rows.off(this);
-    this.props.colorby.off(this);
     this.animloop.stop();
   };
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: ParallelPlotData, prevState: ParallelPlotState) {
     if (prevState.height != this.state.height || prevState.width != this.state.width) {
         if (this.on_resize != null) {
           this.on_resize();
@@ -128,15 +126,61 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     if (prevState.dimensions != this.state.dimensions && this.xscale !== undefined) {
       var g: any = d3.select(this.svgg_ref.current).selectAll(".dimension");
       this.xscale.domain(this.state.dimensions);
-      this.dimensions_dom.filter(function(p) { return this.state.dimensions.indexOf(p) == -1; }.bind(this)).remove();
+      this.dimensions_dom.filter(function(this: ParallelPlot, p) { return this.state.dimensions.indexOf(p) == -1; }.bind(this)).remove();
       if (!this.state.dragging) {
         g = g.transition();
       }
-      g.attr("transform", function(p) { return "translate(" + this.position(p) + ")"; }.bind(this));
+      g.attr("transform", function(this: ParallelPlot, p) { return "translate(" + this.position(p) + ")"; }.bind(this));
       this.update_ticks();
     }
+    // Highlight polylines
+    if (prevProps.rows_highlighted != this.props.rows_highlighted) {
+      this.highlighted.clearRect(0, 0, this.w, this.h);
+      if (this.props.rows_highlighted.length == 0) {
+        d3.select(this.foreground_ref.current).style("opacity", null);
+      }
+      else {
+        d3.select(this.foreground_ref.current).style("opacity", "0.25");
+        this.props.rows_highlighted.forEach(function(this: ParallelPlot, dp: Datapoint) {
+          this.path(dp, this.highlighted, this.props.get_color_for_row(dp, 1));
+        }.bind(this));
+      }
+    }
+    // Rescale to new dataset domain:
+    // reset yscales, preserving inverted state
+    if (prevProps.params_def != this.props.params_def) {
+      this.brush_clear_all();
+
+      // When removing data, some columns might no longer exist
+      // and we want to remove those
+      var drop_scales = [];
+      this.state.dimensions.forEach(function(this: ParallelPlot, d) {
+        var new_scale = this.createScale(d);
+        if (new_scale === null) {
+          drop_scales.push(d);
+          return;
+        }
+        this.yscale[d] = new_scale;
+      }.bind(this));
+      drop_scales.forEach(function(this: ParallelPlot, d, i) {
+        this.remove_axis(d);
+      }.bind(this));
+
+      this.update_ticks();
+
+      if (this.animloop) {
+        this.animloop.stop();
+      }
+    }
+    // When we need to redraw lines
+    if (prevProps.rows_selected != this.props.rows_selected) {
+      this.setState(function(prevState) { return { brush_count: prevState.brush_count + 1}; });
+    }
     if (prevState.brush_count != this.state.brush_count) {
-      this.paths(this.props.rows.selected.get(), this.foreground, this.state.brush_count);
+      this.paths(this.props.rows_selected, this.foreground, this.state.brush_count);
+    }
+    if (prevProps.colorby != this.props.colorby && this.brush) {
+      this.brush();
     }
     this.props.window_state.height = this.state.height;
   }
@@ -206,9 +250,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     }
     return this.xscale(d);
   }.bind(this);
+
   initParallelPlot() {
     var me = this;
-    var props = this.props;
 
     var div = this.div = d3.select(me.root_ref.current);
     var svg = d3.select(me.svg_ref.current);
@@ -279,7 +323,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
           // remove axis if dragged all the way left
           if (me.state.dragging.pos < 12 || me.state.dragging.pos > me.w-12) {
-            remove_axis(d);
+            me.remove_axis(d);
           } else {
             me.setState({order: Array.from(me.state.dimensions)});
           }
@@ -340,19 +384,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       me.sendBrushExtents();
     };
 
-    // Highlight polylines
-    props.rows['highlighted'].on_change(function(highlighted_rows) {
-      me.highlighted.clearRect(0, 0, me.w, me.h);
-      if (highlighted_rows.length == 0) {
-        d3.select(me.foreground_ref.current).style("opacity", null);
-        return;
-      }
-      d3.select(me.foreground_ref.current).style("opacity", "0.25");
-      highlighted_rows.forEach(function(dp) {
-        me.path(dp, me.highlighted, props.get_color_for_row(dp, 1));
-      })
-    }, me);
-
     function invert_axis(d: string) {
       // save extent before inverting
       var extents = brush_extends();
@@ -394,16 +425,10 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       return extents;
     }
 
-    function brush_clear_all() {
-      // Reset brushes - but only trigger call to "brush" once
-      me.d3brush.on("brush", null).on("end", null);
-      me.d3brush.move(me.dimensions_dom.selectAll("." + style.brush), null);
-      me.d3brush.on("brush", me.onBrushChange_debounced).on("end", me.onBrushChange_debounced);
-      me.onBrushChange_debounced();
-    }
-
-    // Handles a brush event, toggling the display of foreground lines.
     function brush() {
+      /**
+       * Called whenever a brush happens. Recomputes which points are selected.
+       */
       if (me.props.context_menu_ref !== undefined) {
         me.props.context_menu_ref.current.hide();
       }
@@ -452,7 +477,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
       // Get lines within extents
       var selected = [];
-      var all_data = props.rows['all'].get();
+      var all_data = me.props.rows_filtered;
       all_data
         .map(function(d) {
           return actives.every(function(dimension) {
@@ -462,42 +487,10 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
             return extent[0] <= scale(value) && scale(value) <= extent[1];
           }) ? selected.push(d) : null;
         });
-
-      props.rows['selected'].set(selected);
+      me.props.setSelected(selected);
     }
     this.brush = brush;
 
-    props.rows['selected'].on_change(function(selected) {
-      // Render selected lines
-      me.setState(function(prevState) { return { brush_count: prevState.brush_count + 1}; });
-    }, me);
-
-    // Rescale to new dataset domain:
-    // reset yscales, preserving inverted state
-    props.rows['all'].on_change(function(new_data) {
-      brush_clear_all();
-
-      // When removing data, some columns might no longer exist
-      // and we want to remove those
-      var drop_scales = [];
-      me.state.dimensions.forEach(function(d) {
-        var new_scale = me.createScale(d);
-        if (new_scale === null) {
-          drop_scales.push(d);
-          return;
-        }
-        me.yscale[d] = new_scale;
-      });
-      drop_scales.forEach(function(d, i) {
-        remove_axis(d);
-      });
-
-      me.update_ticks();
-
-      if (this.animloop) {
-        this.animloop.stop();
-      }
-    }, me);
 
     // scale to window size
     this.on_resize = _.debounce(function() {
@@ -522,26 +515,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       brush();
     }, 100);
 
-    function remove_axis(d) {
-      var pd = props.params_def[d];
-      if (pd !== undefined) {
-        me.setState(function(prevState, props) {
-          var newHide = new Set(prevState.hide);
-          newHide.add(d);
-          return {
-            hide: newHide
-          };
-        });
-      }
-      me.setState(function(ps, __) { return {
-        dimensions: _.difference(ps.dimensions, [d])
-      }});
-    }
-
     me.compute_dimensions();
     _loadWithProvidedData();
 
-    me.props.colorby.on_change(brush, me);
     // Trigger initial brush
     me.setState(function(prevState) { return { brush_count: prevState.brush_count + 1}; });
   }
@@ -674,6 +650,31 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     }
     this.animloop = d3.timer(animloop);
   }.bind(this);
+
+
+  brush_clear_all(): void {
+    // Reset brushes - but only trigger call to "brush" once
+    this.d3brush.on("brush", null).on("end", null);
+    this.d3brush.move(this.dimensions_dom.selectAll("." + style.brush), null);
+    this.d3brush.on("brush", this.onBrushChange_debounced).on("end", this.onBrushChange_debounced);
+    this.onBrushChange_debounced();
+  }
+
+  remove_axis(d: string): void {
+    var pd = this.props.params_def[d];
+    if (pd !== undefined) {
+      this.setState(function(prevState, props) {
+        var newHide = new Set(prevState.hide);
+        newHide.add(d);
+        return {
+          hide: newHide
+        };
+      });
+    }
+    this.setState(function(ps, __) { return {
+      dimensions: _.difference(ps.dimensions, [d])
+    }});
+  }
 
   path = function(d: Datapoint, ctx: CanvasRenderingContext2D, color?: string) {
     if (color) ctx.strokeStyle = color;

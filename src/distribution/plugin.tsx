@@ -11,7 +11,6 @@ import * as d3 from "d3";
 
 import { HiPlotPluginData } from "../plugin";
 import _ from "underscore";
-import { Datapoint } from "../types";
 import { DistributionPlot, HistogramData } from "./plot";
 import { ResizableH } from "../lib/resizable";
 
@@ -60,7 +59,7 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
             initialHeight: initialHeight,
             height: initialHeight,
             width: 0,
-            histData: {selected: [], all: props.rows.all.get()},
+            histData: {selected: [], all: props.rows_filtered},
             axis: axis,
         };
     }
@@ -86,26 +85,6 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
                 contextmenu.append(option);
             }, this);
         }
-        this.props.rows.selected.on_change(function(new_dps: Datapoint[]) {
-            this.setState(function(s: HiPlotDistributionPluginState, p) {
-                return {
-                    histData: {
-                        ...s.histData,
-                        selected: new_dps,
-                    }
-                };
-            });
-        }.bind(this), this);
-        this.props.rows.all.on_change(function(new_dps: Datapoint[]) {
-            this.setState(function(s: HiPlotDistributionPluginState, p) {
-                return {
-                    histData: {
-                        ...s.histData,
-                        all: new_dps,
-                    }
-                };
-            });
-        }.bind(this), this);
     }
     componentDidUpdate(prevProps: HiPlotPluginData, prevState: HiPlotDistributionPluginState) {
         if (prevState.axis != this.state.axis && this.state.axis !== undefined) {
@@ -113,9 +92,29 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
                 this.props.persistent_state.set('axis', this.state.axis);
             }
         }
+        if (this.state.histData.all != this.props.rows_filtered) {
+            this.setState(function(s: HiPlotDistributionPluginState, p) {
+                return {
+                    histData: {
+                        ...s.histData,
+                        all: this.props.rows_filtered,
+                        selected: this.props.rows_selected,
+                    }
+                };
+            }.bind(this));
+        }
+        else if (this.state.histData.selected != this.props.rows_selected) {
+            this.setState(function(s: HiPlotDistributionPluginState, p) {
+                return {
+                    histData: {
+                        ...s.histData,
+                        selected: this.props.rows_selected,
+                    }
+                };
+            }.bind(this));
+        }
     }
     componentWillUnmount() {
-        this.props.rows.off(this);
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }

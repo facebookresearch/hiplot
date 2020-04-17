@@ -7,21 +7,20 @@
 
 
 import { ParamDefMap } from "./infertypes";
-import { AllDatasets, DatapointLookup, WatchedProperty, Datapoint, HiPlotExperiment } from "./types";
+import { IDatasets, DatapointLookup, Datapoint, HiPlotExperiment } from "./types";
 import { ContextMenu } from "./contextmenu";
 import { PersistentState } from "./lib/savedstate";
 
 
-export interface HiPlotPluginData {
+export interface HiPlotPluginDataWithoutDatasets {
     experiment: HiPlotExperiment;
     params_def: ParamDefMap,
-    rows: AllDatasets,
     get_color_for_row: (uid: Datapoint, opacity: number) => string,
     render_row_text: (rows: Datapoint) => string,
     dp_lookup: DatapointLookup,
 
     context_menu_ref?: React.RefObject<ContextMenu>;
-    colorby: WatchedProperty;
+    colorby: string;
     name: string;
 
     // Data that persists until we close the window
@@ -30,4 +29,10 @@ export interface HiPlotPluginData {
     persistent_state: PersistentState;
 
     sendMessage: (type: string, data: any) => void,
+
+    setSelected: (new_selected: Array<Datapoint>) => void;
+    setHighlighted: (new_highlighted: Array<Datapoint>) => void;
+}
+
+export interface HiPlotPluginData extends IDatasets, HiPlotPluginDataWithoutDatasets {
 };

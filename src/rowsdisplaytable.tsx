@@ -44,6 +44,9 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     dom: JQuery;
     ordered_cols: Array<string> = [];
     empty: boolean;
+
+    setSelected_debounced: (selected: Array<Datapoint>) => void = _.debounce(this.setSelected, 150);
+
     constructor(props: HiPlotPluginData) {
         super(props);
         this.state = {};
@@ -127,7 +130,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
 
                 $(me.dt.cells().nodes()).removeClass(style.highlight);
                 $(row.nodes()).addClass(style.highlight);
-                me.props.rows['highlighted'].set([me.props.dp_lookup[row.data()[individualUidColIdx]]]);
+                me.props.setHighlighted([me.props.dp_lookup[row.data()[individualUidColIdx]]]);
             })
             .on("mouseout", "td", function() {
                 if (!me.dt || me.empty) {
@@ -135,13 +138,15 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 }
                 const rowIdx = me.dt.cell(this).index().row;
                 $(me.dt.row(rowIdx).nodes()).removeClass(style.highlight);
-                me.props.rows['highlighted'].set([]);
+                me.props.setHighlighted([]);
             });
 
-        me.setSelected(me.props.rows['selected'].get());
-        me.props.rows['selected'].on_change(_.debounce(function(selection) {
-            me.setSelected(selection);
-        }, 150), this);
+        me.setSelected(me.props.rows_selected);
+    }
+    componentDidUpdate(prevProps: HiPlotPluginData): void {
+        if (prevProps.rows_selected != this.props.rows_selected) {
+            this.setSelected_debounced(this.props.rows_selected);
+        }
     }
     setSelectedToSearchResult() {
         const dt = this.dt;
@@ -154,7 +159,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         $.each(searchResults.data(), function(index, value) {
             searchResultsDatapoints.push(this.props.dp_lookup[value[uidIdx]]);
         }.bind(this));
-        this.props.rows.selected.set(searchResultsDatapoints);
+        this.props.setSelected(searchResultsDatapoints);
     }
     setSelected(selected: Array<Datapoint>) {
         const dt = this.dt;
@@ -188,6 +193,5 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
             this.dt = null;
             dt.destroy();
         }
-        this.props.rows.off(this);
     }
 }

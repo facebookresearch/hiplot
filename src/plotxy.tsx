@@ -8,12 +8,13 @@
 import $ from "jquery";
 import * as d3 from "d3";
 
-import { ParamDefMap, create_d3_scale } from "./infertypes";
+import { create_d3_scale } from "./infertypes";
 import style from "./hiplot.css";
 import { HiPlotPluginData } from "./plugin";
 import React from "react";
 import { ResizableH } from "./lib/resizable";
 import _ from "underscore";
+import { Datapoint } from "./types";
 
 
 // DISPLAYS_DATA_DOC_BEGIN
@@ -41,12 +42,21 @@ interface PlotXYState extends PlotXYDisplayData {
   enabled: boolean,
 };
 
-export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
-  on_resize: () => void = null;
-  params_def: ParamDefMap;
-  svg: any;
+interface PlotXYInternal {
   clear_canvas: () => void;
   update_axis: () => void;
+  recompute_scale: () => void;
+  draw_selected_rows: () => void;
+  draw_highlighted: () => void;
+};
+
+
+export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
+  on_resize: () => void = null;
+
+  plot: PlotXYInternal;
+
+  svg: any;
 
   root_ref: React.RefObject<HTMLDivElement> = React.createRef();
   container_ref: React.RefObject<HTMLDivElement> = React.createRef();
@@ -126,14 +136,11 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       }, this);
     }
   }
-  mountPlotXY() {
+  mountPlotXY(this: PlotXY): PlotXYInternal {
     var me = this;
-    var props = this.props;
-    me.params_def = props.params_def;
 
     var div = d3.select(this.root_ref.current);
     me.svg = div.select("svg");
-    var dp_lookup = props.dp_lookup;
     var currently_displayed = [];
     var rerender_all_points = [];
     var zoom_brush: d3.BrushBehavior<unknown>;
@@ -153,14 +160,14 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     function redraw_axis_and_rerender() {
       var rerender_all_points_before = rerender_all_points;
       redraw_axis();
-      me.clear_canvas();
+      clear_canvas();
       $.each(rerender_all_points_before, function(_, fn) {
         fn();
       });
       rerender_all_points = rerender_all_points_before;
     }
     function create_scale(param: string, range) {
-      var scale = create_d3_scale(me.params_def[param])
+      var scale = create_d3_scale(me.props.params_def[param])
       scale.range(range);
       return scale;
     }
@@ -273,9 +280,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
           dot.select("text").text("No point found?!");
           return;
         }
-        props.rows['highlighted'].set([props.dp_lookup[closest['dp'].uid]]);
+        me.props.setHighlighted([me.props.dp_lookup[closest['dp'].uid]]);
         dot.attr("transform", `translate(${closest["layerX"]},${closest["layerY"]})`);
-        dot.select("text").text(props.render_row_text(closest['dp']));
+        dot.select("text").text(me.props.render_row_text(closest['dp']));
       }
 
       function entered() {
@@ -283,7 +290,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       }
 
       function left() {
-        props.rows['highlighted'].set([]);
+        me.props.setHighlighted([]);
         dot.attr("display", "none");
       }
     };
@@ -294,8 +301,8 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       if (c.lines_color) ctx.strokeStyle = c.lines_color;
       if (c.dots_color) ctx.fillStyle = c.dots_color;
       if (c.lines_width) ctx.lineWidth = c.lines_width;
-      var pdx = me.params_def[me.state.axis_x];
-      var pdy = me.params_def[me.state.axis_y];
+      var pdx = me.props.params_def[me.state.axis_x];
+      var pdy = me.props.params_def[me.state.axis_y];
       function is_err(value, scaled_value, def) {
         return value === undefined || value === null || isNaN(scaled_value) || (def.numeric && (value == 'inf' || value == '-inf'));
       }
@@ -323,7 +330,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         return;
       }
       if (dp.from_uid && c.lines_width > 0.0) {
-        var dp_prev = dp_lookup[dp.from_uid];
+        var dp_prev = me.props.dp_lookup[dp.from_uid];
         if (dp_prev) {
           var prev_pos = render_point_position(dp_prev);
           if (prev_pos !== null) {
@@ -344,18 +351,18 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       }
     };
 
-    // Render at the same pace as parallel plot
-    var xp_config = this.props;
-    function render_new_rows(new_rows) {
+    function draw_selected_rows() {
+      clear_canvas();
+      var xp_config = me.props;
       var area = me.state.height * me.state.width / 400000;
-      var lines_opacity = xp_config.lines_opacity !== null ? xp_config.lines_opacity : d3.min([3 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
-      var dots_opacity = xp_config.dots_opacity !== null ? xp_config.dots_opacity : d3.min([4 * area / Math.pow(props.rows.selected.get().length, 0.3), 1]);
-      new_rows.forEach(function(dp) {
+      var lines_opacity = xp_config.lines_opacity !== null ? xp_config.lines_opacity : d3.min([3 * area / Math.pow(me.props.rows_selected.length, 0.3), 1]);
+      var dots_opacity = xp_config.dots_opacity !== null ? xp_config.dots_opacity : d3.min([4 * area / Math.pow(me.props.rows_selected.length, 0.3), 1]);
+      me.props.rows_selected.forEach(function(dp: Datapoint) {
         var call_render = function() {
           render_dp(dp, graph_lines, {
-            'lines_color': props.get_color_for_row(dp, lines_opacity),
+            'lines_color': me.props.get_color_for_row(dp, lines_opacity),
             'lines_width': xp_config.lines_thickness,
-            'dots_color': props.get_color_for_row(dp, dots_opacity),
+            'dots_color': me.props.get_color_for_row(dp, dots_opacity),
             'dots_thickness': xp_config.dots_thickness,
             'remember': true,
           });
@@ -367,7 +374,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       });
     }
 
-    this.clear_canvas = function() {
+    function clear_canvas() {
       graph_lines.clearRect(0, 0, me.state.width, me.state.height);
       highlights.clearRect(0, 0, me.state.width, me.state.height);
       currently_displayed = [];
@@ -375,10 +382,11 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     };
 
     // Draw highlights
-    props.rows['highlighted'].on_change(function(highlighted) {
+    function draw_highlighted() {
       if (!me.state.enabled) {
         return;
       }
+      const highlighted = me.props.rows_highlighted;
       highlights.clearRect(0, 0, me.state.width, me.state.height);
       d3.select(me.canvas_highlighted_ref.current).style("opacity", "0");
       d3.select(me.canvas_lines_ref.current).style("opacity", "1.0");
@@ -390,7 +398,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       // Find all runs + parents
       highlighted.forEach(function(dp) {
         while (dp !== undefined) {
-          var color = props.get_color_for_row(dp, 1.0).split(',');
+          var color = me.props.get_color_for_row(dp, 1.0).split(',');
           render_dp(dp, highlights, {
             'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
             'lines_width': 4,
@@ -400,41 +408,37 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
           if (dp.from_uid === null) {
             break;
           }
-          dp = dp_lookup[dp.from_uid];
+          dp = me.props.dp_lookup[dp.from_uid];
         }
       });
-    }, this);
+    }
 
     // Change axis
-    this.update_axis = function() {
+    function update_axis() {
       var rerender_all_points_before = rerender_all_points;
       recompute_scale(true);
-      me.clear_canvas();
+      clear_canvas();
       $.each(rerender_all_points_before, function(_, fn) {
         fn();
       });
       rerender_all_points = rerender_all_points_before;
     };
-    this.update_axis();
-
-    // Callbacks
-    props.rows['all'].on_change(function(new_data) {
-        recompute_scale();
-        render_new_rows(props.rows['selected'].get());
-    }, this);
-    props.rows['selected'].on_change(function(all_rows) {
-      me.clear_canvas();
-      render_new_rows(all_rows);
-    }.bind(this), this);
+    update_axis();
 
     // Initial lines
-    render_new_rows(props.rows['selected'].get());
+    draw_selected_rows();
 
-    this.on_resize = _.throttle(function() {
+    this.on_resize = _.throttle(function(this: PlotXY) {
       recompute_scale();
-      me.clear_canvas();
-      render_new_rows(props.rows['selected'].get());
-    }, 75);
+      draw_selected_rows();
+    }.bind(this), 75);
+    return {
+      clear_canvas: clear_canvas,
+      update_axis: update_axis,
+      recompute_scale: recompute_scale,
+      draw_selected_rows: draw_selected_rows,
+      draw_highlighted: draw_highlighted,
+    };
   }
   onResize(height: number, width: number): void {
     if (this.state.height != height || this.state.width != width) {
@@ -459,25 +463,24 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     );
   }
   componentWillUnmount() {
-    if (this.clear_canvas) {
-      this.clear_canvas();
+    if (this.plot) {
+      this.plot.clear_canvas();
       this.svg.selectAll("*").remove();
     }
-    this.props.rows.off(this);
     if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
       this.props.context_menu_ref.current.removeCallbacks(this);
     }
   };
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: PlotXYProps, prevState) {
     var anyAxisChanged = false;
-    ['axis_x', 'axis_y'].forEach(function(d) {
+    ['axis_x', 'axis_y'].forEach(function(this: PlotXY, d: string) {
       if (prevState[d] != this.state[d]) {
         this.props.persistent_state.set(d, this.state[d]);
         anyAxisChanged = true;
       }
     }.bind(this));
     if (prevState.width == 0 && this.state.width > 0) {
-      this.mountPlotXY();
+      this.plot = this.mountPlotXY();
     }
     if (prevState.height != this.state.height || prevState.width != this.state.width) {
         if (this.on_resize) {
@@ -492,10 +495,23 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     else {
       if (this.state.enabled) {
         if (anyAxisChanged) {
-          this.update_axis();
+          this.plot.update_axis();
         }
       } else {
         this.setState({enabled: true});
+      }
+    }
+
+    // Check if data changed
+    if (this.plot) {
+      if (this.props.params_def != prevProps.params_def || this.props.colorby != prevProps.colorby) {
+        this.plot.recompute_scale();
+      }
+      if (this.props.rows_selected != prevProps.rows_selected) {
+        this.plot.draw_selected_rows();
+      }
+      if (this.props.rows_highlighted != prevProps.rows_highlighted) {
+        this.plot.draw_highlighted()
       }
     }
     this.props.window_state.height = this.state.height;

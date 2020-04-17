@@ -7,9 +7,9 @@
 
 import style from "./elements.css";
 import React from "react";
-import { HiPlotLoadStatus, PSTATE_LOAD_URI } from "./types";
+import { HiPlotLoadStatus, PSTATE_LOAD_URI, IDatasets } from "./types";
 import { HiPlotPluginData } from "./plugin";
-import { RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
+import { HiPlotDataControlProps, RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
 
 //@ts-ignore
 import IconSVG from "../hiplot/static/icon.svg";
@@ -86,10 +86,11 @@ export class RunsSelectionTextArea extends React.Component<Props, State> {
 }
 
 
-interface HeaderBarProps extends HiPlotPluginData {
+interface HeaderBarProps extends IDatasets, HiPlotDataControlProps {
     onRequestLoadExperiment?: (uri: string) => void;
     onRequestRefreshExperiment?: () => void;
     loadStatus: HiPlotLoadStatus;
+    initialLoadUri: string;
 };
 
 interface HeaderBarState {
@@ -114,23 +115,14 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         if (!this.selected_count_ref.current) {
             return;
         }
-        const selected_count = this.props.rows.selected.get().length;
-        const total_count = this.props.rows.all.get().length;
+        const selected_count = this.props.rows_selected.length;
+        const total_count = this.props.rows_filtered.length;
         this.selected_count_ref.current.innerText = '' + selected_count;
         this.selected_pct_ref.current.innerText = '' + (100 * selected_count / total_count).toPrecision(3);
         this.total_count_ref.current.innerText = '' + total_count;
     }
     componentDidMount() {
-        this.props.rows.selected.on_change(function(rows) {
-            this.recomputeMetrics();
-        }.bind(this), this);
-        this.props.rows.all.on_change(function(rows) {
-            this.recomputeMetrics();
-        }.bind(this), this);
         this.recomputeMetrics();
-    }
-    componentWillUnmount() {
-        this.props.rows.off(this);
     }
     componentDidUpdate() {
         this.recomputeMetrics();
@@ -148,7 +140,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         <React.Fragment>
             {hasTextArea &&
                 <RunsSelectionTextArea
-                    initialValue={this.props.persistent_state.get(PSTATE_LOAD_URI, '')}
+                    initialValue={this.props.initialLoadUri}
                     enabled={this.props.loadStatus != HiPlotLoadStatus.Loading}
                     minimizeWhenOutOfFocus={this.props.loadStatus == HiPlotLoadStatus.Loaded}
                     onSubmit={this.props.onRequestLoadExperiment}
@@ -160,13 +152,13 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
             {this.props.loadStatus == HiPlotLoadStatus.Loaded && !this.state.isTextareaFocused &&
                 <React.Fragment>
                     <div className={style.controlGroup}>
-                        <RestoreDataBtn rows={this.props.rows} />
-                        <KeepDataBtn rows={this.props.rows} />
-                        <ExcludeDataBtn rows={this.props.rows} />
+                        <RestoreDataBtn {...this.props} />
+                        <KeepDataBtn {...this.props} />
+                        <ExcludeDataBtn {...this.props} />
                         {this.props.onRequestRefreshExperiment != null &&
                             <button title="Refresh + restore data removed" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
                         }
-                        <ExportDataCSVBtn rows={this.props.rows} />
+                        <ExportDataCSVBtn {...this.props} />
                         <button title="Start HiPlot tutorial" onClick={this.onToggleTutorial.bind(this)}>Help</button>
 
                         <div style={{clear:'both'}}></div>

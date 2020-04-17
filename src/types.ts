@@ -13,89 +13,12 @@ export interface Datapoint {
 };
 export interface DatapointLookup { [key: string]: Datapoint};
 
-export class WatchedProperty {
-    __on_change_handlers: Array<{cb: (value: any) => void, obj: any}> = [];
-    value = undefined;
-    constructor(public name: string) {
-
-    }
-    set(value: any) {
-        this.value = value;
-        this.__on_change_handlers.forEach(function(trigger) {
-            trigger.cb(value);
-        });
-    }
-    get() {
-        return this.value;
-    }
-    on_change(cb: (value: any) => void, obj: any) {
-        this.__on_change_handlers.push({cb: cb, obj: obj});
-    }
-    off(obj: any) {
-        this.__on_change_handlers = this.__on_change_handlers.filter(trigger => trigger.obj != obj);
-    }
-}
-
-export class Dataset {
-    rows: Array<Datapoint> = [];
-    on_change_fn: Array<{cb: (rows: Array<Datapoint>) => void, obj: any}> = [];
-    named_childs: {[key: string]: Dataset} = {};
-    constructor(public name: string) {
-
-    }
-    set(new_rows: Array<Datapoint>) {
-        this._set(new_rows);
-    }
-    append(new_rows: Array<Datapoint>) {
-        this._append(new_rows);
-    }
-    _set(new_rows: Array<Datapoint>) {
-        var rows = this.rows = new_rows;
-        this.on_change_fn.forEach(function(trigger) {
-            trigger.cb(rows);
-        });
-        Object.entries(this.named_childs).forEach(function(val) {
-            val[1]._set(new_rows);
-        });
-    }
-    _append(new_rows: Array<Datapoint>) {
-        var rows = this.rows = this.rows.concat(new_rows);
-        this.on_change_fn.forEach(function(trigger) {
-            trigger.cb(rows);
-        });
-        Object.entries(this.named_childs).forEach(function(val) {
-            val[1]._append(new_rows);
-        });
-    }
-    get(): Array<Datapoint> {
-        return this.rows;
-    }
-    on_change(cb: (rows: Array<Datapoint>) => void, obj: any) {
-        this.on_change_fn.push({cb: cb, obj: obj});
-    }
-    off(obj: any) {
-        this.on_change_fn = this.on_change_fn.filter(function(value) {
-            return value.obj != obj;
-        });
-    }
-}
-
-export class AllDatasets {
-    constructor(
-        public experiment_all: Dataset = new Dataset("experiment_all"),
-        public all: Dataset = new Dataset("all"),                       // Everything after filtering
-        public selected: Dataset = new Dataset("selected"),             // What we currently select (with parallel plot)
-        public highlighted: Dataset = new Dataset("highlighted"),       // What is highlighted (when we hover a row)
-    ) {
-
-    }
-    off(obj: any) {
-        this.experiment_all.off(obj);
-        this.all.off(obj);
-        this.selected.off(obj);
-        this.highlighted.off(obj);
-    }
-}
+export interface IDatasets {
+    rows_all_unfiltered: Array<Datapoint>; // Everything returned by the server
+    rows_filtered: Array<Datapoint>; // Everything after filtering (`Keep` / `Exclude`)
+    rows_selected: Array<Datapoint>; // What we currently select (with parallel plot)
+    rows_highlighted: Array<Datapoint>; // What is highlighted (when we hover a row)
+};
 
 export enum ParamType {
     CATEGORICAL = "categorical",
