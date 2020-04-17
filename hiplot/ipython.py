@@ -6,6 +6,7 @@ import uuid
 import html
 import typing as t
 import json
+from pathlib import Path
 
 import IPython.display
 from ipykernel.comm import Comm
@@ -15,6 +16,18 @@ from .render import escapejs, make_experiment_standalone_page
 
 class GetSelectedFailure(Exception):
     pass
+
+
+class NotebookJSBundleInjector:
+    injected = False
+
+    @classmethod
+    def ensure_injected(cls) -> None:
+        if cls.injected:
+            return
+        bundle = Path(__file__).parent / "static" / "built" / "hiplot.bundle.js"
+        IPython.display.display(IPython.display.Javascript(bundle.read_text("utf-8")))
+        cls.injected = True
 
 
 def jupyter_make_full_width(content: str) -> str:
@@ -108,6 +121,8 @@ def display_exp(
     else:
         options.update({"persistent_state": None})
     index_html = make_experiment_standalone_page(options=options)
+    # Remove line that references the script bundle - prevents an HTTP error in the notebook
+    index_html = index_html.replace('src="static/built/hiplot.bundle.js"', '')
     index_html = index_html.replace(
         "/*ON_LOAD_SCRIPT_INJECT*/",
         f"""/*ON_LOAD_SCRIPT_INJECT*/
@@ -125,5 +140,6 @@ catch(err) {{
 
     if force_full_width:
         index_html = jupyter_make_full_width(index_html)
+    NotebookJSBundleInjector.ensure_injected()
     IPython.display.display(IPython.display.HTML(index_html))
     return displayed_xp

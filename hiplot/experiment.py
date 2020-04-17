@@ -10,7 +10,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Optional, List, Dict, Any, Iterable, Union, Callable, Set, IO
 
-from .render import make_experiment_standalone_page
+from .render import make_experiment_standalone_page, html_inlinize
 
 
 DisplayableType = Union[bool, int, float, str]
@@ -215,6 +215,7 @@ class Experiment(_DictSerializable):
         html = make_experiment_standalone_page(options={
             'experiment': self._asdict()
         })
+        html = html_inlinize(html)
         if file is not None:
             if isinstance(file, (Path, str)):
                 Path(file).write_text(html, encoding="utf-8")

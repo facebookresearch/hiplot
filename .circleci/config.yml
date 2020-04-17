@@ -91,6 +91,28 @@ commands:
       - store_artifacts:
           when: always
           path: ~/repo/artifacts
+  run_jupyter_test:
+    steps:
+      - run:
+          name: Setup Jupyter notebook
+          when: always
+          command: |
+            . venv/bin/activate
+            pip install notebook
+      - run:
+          name: End to end testing for Jupyter notebook
+          when: always
+          command: |
+            . venv/bin/activate
+            jupyter notebook --port=8888 --ip=127.0.0.1 --notebook-dir=.circleci/ &
+            sleep 1
+            export NOTEBOOK_TOKEN=`jupyter notebook list | grep http | cut -d' ' -f1 | cut -d= -f2`
+            echo "Notebook running (pid $!): token = $NOTEBOOK_TOKEN"
+            pytest -s .circleci/test_notebook.py
+            kill -s 9 $!
+      - store_artifacts:
+          when: always
+          path: ~/repo/artifacts
 
 orbs:
   win: circleci/windows@2.2.0
@@ -183,7 +205,7 @@ jobs:
           when: always
           path: pack
 
-  browser-jupyter-chrome:
+  browser-jupyter-chrome-dev:
     docker:
       - image: selenium/standalone-chrome
     working_directory: ~/repo
@@ -191,21 +213,16 @@ jobs:
       - test_render_selenium_setup:
           browser: chrome
       - switch_to_dev_bundle
-      - run:
-          name: End to end testing for Jupyter notebook
-          when: always
-          command: |
-            . venv/bin/activate
-            pip install notebook
-            jupyter notebook --port=8888 --ip=127.0.0.1 --notebook-dir=.circleci/ &
-            sleep 1
-            export NOTEBOOK_TOKEN=`jupyter notebook list | grep http | cut -d' ' -f1 | cut -d= -f2`
-            echo "Notebook running (pid $!): token = $NOTEBOOK_TOKEN"
-            pytest -s .circleci/test_notebook.py
-            kill -s 9 $!
-      - store_artifacts:
-          when: always
-          path: ~/repo/artifacts
+      - run_jupyter_test
+
+  browser-jupyter-chrome:
+    docker:
+      - image: selenium/standalone-chrome
+    working_directory: ~/repo
+    steps:
+      - test_render_selenium_setup:
+          browser: chrome
+      - run_jupyter_test
 
   browser-teste2e-chrome:
     docker:
@@ -447,6 +464,12 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - browser-jupyter-chrome-dev:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
       - browser-render-firefox:
           requires:
             - npm-build
@@ -477,6 +500,7 @@ workflows:
             - npm-build
             - docs-build
             - browser-jupyter-chrome
+            - browser-jupyter-chrome-dev
             - browser-teste2e-chrome
             - browser-render-chrome
             - browser-render-firefox
@@ -492,6 +516,7 @@ workflows:
             - npm-build
             - docs-build
             - browser-jupyter-chrome
+            - browser-jupyter-chrome-dev
             - browser-teste2e-chrome
             - browser-render-chrome
             - browser-render-firefox
