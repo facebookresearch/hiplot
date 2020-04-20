@@ -35,9 +35,9 @@ export class HiPlotTester extends React.Component<{hiplotProps: HiPlotProps}, Te
     testSelection = [
         {name: "testSelect", test: this.testSelect},
         {name: "keepBtn", test: function() { this.testButton("Keep"); }},
-        {name: "kept", test: function() { assert(this.hiplot.current.data.rows.all.get().length == this.state.keepCount); } },
+        {name: "kept", test: function() { assert(this.hiplot.current.state.rows_filtered.length == this.state.keepCount); } },
         {name: "restoreBtn", test: function() { this.testButton("Restore"); }},
-        {name: "restored", test: function() { assert(this.hiplot.current.data.rows.all.get().length != this.state.keepCount); } },
+        {name: "restored", test: function() { assert(this.hiplot.current.state.rows_filtered.length != this.state.keepCount); } },
         {name: "testSelect", test: this.testSelect},
         {name: "excludeBtn", test: function() { this.testButton("Exclude"); }},
         {name: "restoreBtn", test: function() { this.testButton("Restore"); }},
@@ -58,17 +58,18 @@ export class HiPlotTester extends React.Component<{hiplotProps: HiPlotProps}, Te
 
     // Selection/highlights
     testSelect() {
-        const allRows = this.hiplot.current.data.rows.all.get();
-        this.hiplot.current.data.rows.selected.set(allRows.slice(0, this.state.keepCount));
+        const allRows = this.hiplot.current.state.rows_filtered;
+        this.hiplot.current.setSelected(allRows.slice(0, this.state.keepCount));
     }
     testSelectNone() {
-        this.hiplot.current.data.rows.selected.set([]);
+        this.hiplot.current.setSelected([]);
     }
     testSelectAll() {
-        this.hiplot.current.data.rows.selected.set(this.hiplot.current.data.rows.all.get());
+        const allRows = this.hiplot.current.state.rows_filtered;
+        this.hiplot.current.setSelected(allRows);
     }
     testHighlightAllSelected() {
-        this.hiplot.current.data.rows.highlighted.set(this.hiplot.current.data.rows.selected.get());
+        this.hiplot.current.setHighlighted(this.hiplot.current.state.rows_selected);
     }
 
     // Keep/restore/exclude buttons

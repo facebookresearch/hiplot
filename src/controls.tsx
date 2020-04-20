@@ -5,76 +5,60 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import $ from "jquery";
+
 import * as d3 from "d3";
 import * as _ from 'underscore';
 import React from "react";
 
-import { AllDatasets } from "./types";
+import { IDatasets } from "./types";
 import style from "./hiplot.css";
 
-interface HiPlotDataControlProps {
-    rows: AllDatasets;
+export interface HiPlotDataControlProps extends IDatasets {
+    restoreAllRows: () => void;
+    filterRows: (keep: boolean) => void;
 };
 
 interface HiPlotDataControlState {
     btnEnabled: boolean;
 }
 
-
-export class KeepDataBtn extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
+export class KeepOrExcludeDataBtn extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
     btnRef: React.RefObject<HTMLButtonElement> = React.createRef();
+    keep: boolean;
+    title: string;
+    label: string;
     constructor(props: HiPlotDataControlProps) {
         super(props);
         this.state = {
-            btnEnabled: false
+            btnEnabled: this.btnEnabled()
         };
     }
-    componentDidMount() {
-        var me = this;
-        var rows = this.props.rows;
-        var btn = this.btnRef.current;
-        rows['selected'].on_change(function(cb) {
-            me.setState({btnEnabled: 0 < cb.length && cb.length < rows['all'].get().length});
-        }, this);
-        $(btn).click(function(ev) {
-            rows['all'].set(rows['selected'].get());
-        });
+    btnEnabled(): boolean {
+        return 0 < this.props.rows_selected.length && this.props.rows_selected.length < this.props.rows_filtered.length;
     }
-    componentWillUnmount() {
-        this.props.rows.off(this);
+    componentDidUpdate() {
+        if (this.state.btnEnabled != this.btnEnabled()) {
+            this.setState({btnEnabled: this.btnEnabled()})
+        }
     }
-
+    onClick() {
+        this.props.filterRows(this.keep);
+    }
     render() {
-        return (<button title="Zoom in on selected data" ref={this.btnRef} className={style.keepData} disabled={!this.state.btnEnabled}>Keep</button>);
+        return (<button title={this.title} ref={this.btnRef} className={style.keepData} disabled={!this.state.btnEnabled} onClick={this.onClick.bind(this)}>{this.label}</button>);
     }
 };
 
-export class ExcludeDataBtn extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
-    constructor(props: HiPlotDataControlProps) {
-        super(props);
-        this.state = {
-            btnEnabled: false
-        };
-    }
-    componentDidMount() {
-        var me = this;
-        var rows = this.props.rows;
-        rows['selected'].on_change(function(cb) {
-            me.setState({btnEnabled: 0 < cb.length && cb.length < rows['all'].get().length});
-        }, this);
-    }
-    onClick() {
-        var new_data = _.difference(this.props.rows['all'].get(), this.props.rows['selected'].get());
-        this.props.rows['all'].set(new_data);
-    }
-    componentWillUnmount() {
-        this.props.rows.off(this);
-    }
+export class KeepDataBtn extends KeepOrExcludeDataBtn {
+    keep = true;
+    title = "Zoom in on selected data";
+    label = "Keep";
+};
 
-    render() {
-        return (<button title="Remove selected data" className={style.excludeData} disabled={!this.state.btnEnabled} onClick={this.onClick.bind(this)}>Exclude</button>);
-    }
+export class ExcludeDataBtn extends KeepOrExcludeDataBtn {
+    keep = false;
+    title = "Remove selected data";
+    label = "Exclude";
 };
 
 function downloadURL(url: string, filename: string) {
@@ -92,7 +76,7 @@ function downloadURL(url: string, filename: string) {
 
 export class ExportDataCSVBtn extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
     onClick() {
-        var all_selected = this.props.rows['selected'].get();
+        const all_selected = this.props.rows_selected;
         var csv: string = d3.csvFormat(all_selected);
         var blob = new Blob([csv], {type: "text/csv"});
         var url = window.URL.createObjectURL(blob);
@@ -108,24 +92,20 @@ export class RestoreDataBtn extends React.Component<HiPlotDataControlProps, HiPl
     constructor(props: HiPlotDataControlProps) {
         super(props);
         this.state = {
-            btnEnabled: false
+            btnEnabled: this.btnEnabled()
         };
     }
-    componentDidMount() {
-        var me = this;
-        var rows = this.props.rows;
-
-        function update() {
-            me.setState({btnEnabled: rows['all'].get().length != rows['experiment_all'].get().length});
-        }
-        rows['all'].on_change(update, this);
-        rows['experiment_all'].on_change(update, this);
+    btnEnabled(): boolean {
+        return this.props.rows_all_unfiltered.length != this.props.rows_filtered.length;
     }
-    componentWillUnmount() {
-        this.props.rows.off(this);
+    componentDidUpdate() {
+        const btnEnabled = this.btnEnabled()
+        if (btnEnabled != this.state.btnEnabled) {
+            this.setState({btnEnabled: btnEnabled});
+        }
     }
     onClick() {
-        this.props.rows['all'].set(this.props.rows['experiment_all'].get());
+        this.props.restoreAllRows();
     }
 
     render() {
@@ -135,29 +115,24 @@ export class RestoreDataBtn extends React.Component<HiPlotDataControlProps, HiPl
 
 export class SelectedCountProgressBar extends React.Component<HiPlotDataControlProps, HiPlotDataControlState> {
     selectedBar: React.RefObject<HTMLDivElement> = React.createRef();
-    renderedBar: React.RefObject<HTMLDivElement> = React.createRef();
     componentDidMount() {
-        var rows = this.props.rows;
-        var selectedBar = this.selectedBar.current;
-        var renderedBar = this.renderedBar.current;
-        rows.selected.on_change(function(selected) {
-            var total = rows.all.get().length;
-            selectedBar.style.width = (100*selected.length/total) + "%";
-        }, this);
-        rows.rendered.on_change(function(rendered) {
-            var total = rows.selected.get().length;
-            renderedBar.style.width = (100*rendered.length/total) + "%";
-        }, this);
+        this.updateBarWidth();
     }
-    componentWillUnmount() {
-        this.props.rows.off(this);
+    componentDidUpdate() {
+        this.updateBarWidth();
+    }
+    updateBarWidth() {
+        const selected = this.props.rows_selected.length;
+        const filtered = this.props.rows_filtered.length;
+        var selectedBar = this.selectedBar.current;
+        selectedBar.style.width = (100*selected/filtered) + "%";
     }
 
     render() {
         return (
             <div className={style.fillbar}>
                 <div ref={this.selectedBar} className={style.selectedBar}>
-                    <div ref={this.renderedBar} className={style.renderedBar}>&nbsp;</div>
+                    <div style={{'width': '100%'}} className={style.renderedBar}>&nbsp;</div>
                 </div>
             </div>
         );

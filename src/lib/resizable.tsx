@@ -16,12 +16,15 @@ interface ResizableHProps {
     onResize: (height: number, width: number) => void;
     borderSize: number;
     minHeight: number;
+
+    onRemove?: () => void;
 };
 
 interface ResizableHState {
     height: number;
     width: number;
     internalHeight: number;
+    removing: boolean;
 };
 
 export class ResizableH extends React.Component<ResizableHProps, ResizableHState> {
@@ -35,6 +38,7 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
             width: 0,
             height: this.props.initialHeight,
             internalHeight: this.props.initialHeight,
+            removing: false,
         };
         this.onWindowResizeDebounced = _.debounce(this.onWindowResize.bind(this), 100);
     }
@@ -67,7 +71,7 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
     }
     render() {
         return (
-            <div ref={this.div_ref} style={{"height": this.state.height}} className={style.resizableH}>{this.props.children}</div>
+            <div ref={this.div_ref} style={{"height": this.state.height}} className={`${style.resizableH} ${this.state.removing ? style.pendingDelete : ""}`}>{this.props.children}</div>
         );
     }
     onMouseMove = function(e: MouseEvent) {
@@ -79,6 +83,7 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
                 height: Math.max(this.props.minHeight, internalHeight),
                 internalHeight: internalHeight,
                 position: e.clientY,
+                removing: this.props.onRemove && internalHeight < this.props.minHeight,
             });
         }
     }.bind(this)
@@ -88,6 +93,9 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
         }
         this.m_pos = null;
         document.removeEventListener("mousemove", this.onMouseMove, false);
+        if (this.props.onRemove && this.state.removing) {
+            this.props.onRemove();
+        }
     }.bind(this)
     onWindowResize = function() {
         if (this.div_ref.current) {

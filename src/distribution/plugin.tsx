@@ -11,12 +11,12 @@ import * as d3 from "d3";
 
 import { HiPlotPluginData } from "../plugin";
 import _ from "underscore";
-import { Datapoint } from "../types";
 import { DistributionPlot, HistogramData } from "./plot";
 import { ResizableH } from "../lib/resizable";
 
 
 export interface HiPlotDistributionPluginState {
+    initialHeight: number,
     height: number,
     width: number,
     axis?: string,
@@ -54,10 +54,12 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
         if (axis && this.props.params_def[axis] === undefined) {
             axis = undefined;
         }
+        const initialHeight = d3.min([d3.max([document.body.clientHeight-540, 240]), 500]);
         this.state = {
-            height: d3.min([d3.max([document.body.clientHeight-540, 240]), 500]),
+            initialHeight: initialHeight,
+            height: initialHeight,
             width: 0,
-            histData: {selected: [], all: props.rows.all.get()},
+            histData: {selected: [], all: props.rows_filtered},
             axis: axis,
         };
     }
@@ -83,36 +85,36 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
                 contextmenu.append(option);
             }, this);
         }
-        this.props.rows.selected.on_change(function(new_dps: Datapoint[]) {
-            this.setState(function(s: HiPlotDistributionPluginState, p) {
-                return {
-                    histData: {
-                        ...s.histData,
-                        selected: new_dps,
-                    }
-                };
-            });
-        }.bind(this), this);
-        this.props.rows.all.on_change(function(new_dps: Datapoint[]) {
-            this.setState(function(s: HiPlotDistributionPluginState, p) {
-                return {
-                    histData: {
-                        ...s.histData,
-                        all: new_dps,
-                    }
-                };
-            });
-        }.bind(this), this);
     }
     componentDidUpdate(prevProps: HiPlotPluginData, prevState: HiPlotDistributionPluginState) {
-        if (prevState.axis != this.state.axis) {
+        if (prevState.axis != this.state.axis && this.state.axis !== undefined) {
             if (this.props.persistent_state) {
                 this.props.persistent_state.set('axis', this.state.axis);
             }
         }
+        if (this.state.histData.all != this.props.rows_filtered) {
+            this.setState(function(s: HiPlotDistributionPluginState, p) {
+                return {
+                    histData: {
+                        ...s.histData,
+                        all: this.props.rows_filtered,
+                        selected: this.props.rows_selected,
+                    }
+                };
+            }.bind(this));
+        }
+        else if (this.state.histData.selected != this.props.rows_selected) {
+            this.setState(function(s: HiPlotDistributionPluginState, p) {
+                return {
+                    histData: {
+                        ...s.histData,
+                        selected: this.props.rows_selected,
+                    }
+                };
+            }.bind(this));
+        }
     }
     componentWillUnmount() {
-        this.props.rows.off(this);
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }
@@ -122,11 +124,14 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
             this.setState({height: height, width: width});
         }
     }
+    disable(): void {
+      this.setState({width: 0, axis: undefined, height: this.state.initialHeight});
+    }
     render() {
         if (this.state.axis === undefined) {
             return [];
         }
-        return (<ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 150)}>
+        return (<ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 150)} onRemove={this.disable.bind(this)}>
             {this.state.width > 0 && <DistributionPlot
                 axis={this.state.axis}
                 height={this.state.height}
