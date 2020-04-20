@@ -49,10 +49,13 @@ class ValueType(Enum):
 
 
 class Displays:
-    PARALLEL_PLOT = 'PARALLEL_PLOT'
-    XY = 'XY'
-    TABLE = 'TABLE'
-    DISTRIBUTION = 'DISTRIBUTION'
+    """
+    See :meth:`Experiment.display_data` and :ref:`frontendRenderingSettings`
+    """
+    PARALLEL_PLOT = 'PARALLEL_PLOT'             #: Parallel plot data
+    XY = 'XY'                                   #: XY scatter/line plot data
+    TABLE = 'TABLE'                             #: Rows table data
+    DISTRIBUTION = 'DISTRIBUTION'               #: Distribution plot data
 
 
 class ValueDef(_DictSerializable):
