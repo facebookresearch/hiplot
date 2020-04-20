@@ -26,12 +26,14 @@ function hashCode(str: string): number {
 };
 
 export interface ParamDef extends HiPlotValueDef {
+    name: string,
     optional: boolean,
     numeric: boolean,
     distinct_values: Array<any>,
     special_values: Array<any>,
     type_options: Array<ParamType>,
     __val2color?: {[k: string]: any};
+    __colorscale?: any;
 }
 
 
@@ -149,14 +151,39 @@ export function colorScheme(pd: ParamDef, value: any, alpha: number): string {
         if (value === undefined || value === null || is_special_numeric(value)) {
             return 'rgba(0,0,0,' + alpha + ')';
         }
-        var scale = create_d3_scale_without_outliers(pd);
-        scale.range([0, 1]);
-        var colr = scale(value);
-        //var code = d3.interpolateViridis(colr);
-        //@ts-ignore
-        var code = d3.interpolateTurbo(colr);
-        var rgb = toRgb(code);
-        return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+        if (!pd.__colorscale) {
+            pd.__colorscale = create_d3_scale_without_outliers(pd);
+            pd.__colorscale.range([0, 1]);
+        }
+        const colr = pd.__colorscale(value);
+        function getColorMap() {
+            if (!pd.colormap) {
+                //@ts-ignore
+                return d3.interpolateTurbo;
+            }
+            var fn = d3[pd.colormap];
+            if (!fn) {
+                throw new Error(`Invalid color map ${pd.colormap} for column ${pd.name}`);
+            }
+            if (pd.colormap.startsWith("interpolate")) {
+                return fn; // This is a function
+            }
+            // Assume this is a scheme (eg array of colors)
+            if (typeof fn[0] != "string") {
+                fn = fn[fn.length - 1];
+            }
+            return function(colr: number) {
+                return fn[Math.min(fn.length - 1, Math.floor(colr * fn.length))];
+            };
+        }
+        const interpColFn = getColorMap();
+        try {
+            const code = interpColFn(colr);
+            const rgb = toRgb(code);
+            return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+        } catch (err) {
+            throw new Error(`Error below happened while computing color using color map "${pd.colormap}" for column ${pd.name}: is the colormap valid? (${err.toString()})`);
+        }
     }
 }
 
@@ -246,6 +273,7 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
         }
 
         var info = {
+            'name': key,
             'optional': optional,
             'numeric': numeric,
             'distinct_values': distinct_values,
@@ -254,6 +282,7 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
 
             'type': type,
             'colors': hint !== undefined ? hint.colors : null,
+            'colormap': hint !== undefined ? hint.colormap : null,
             'force_value_min': hint !== undefined && hint.force_value_min !== null ? hint.force_value_min : null,
             'force_value_max': hint !== undefined && hint.force_value_max !== null ? hint.force_value_max : null,
         };

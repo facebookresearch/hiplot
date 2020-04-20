@@ -95,6 +95,14 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         is_webserver: false,
         comm: null,
     };
+    static getDerivedStateFromError(error: Error) {
+        // Update state so the next render will show the fallback UI.
+        return {
+            experiment: null,
+            loadStatus: HiPlotLoadStatus.Error,
+            error: error.toString(),
+        };
+    }
     makeDatasets(experiment: HiPlotExperiment | null, dp_lookup: DatapointLookup): IDatasets {
         if (experiment) {
             const rows_all_unfiltered = experiment.datapoints.map(function(t) {
@@ -146,7 +154,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             function select_as_coloring_score(r) {
                 var pd = params_def[r];
                 var score = 0;
-                if (pd.colors !== null) {
+                if (pd.colors || pd.colormap) {
                     score += 100;
                 }
                 if (pd.type == ParamType.CATEGORICAL) {

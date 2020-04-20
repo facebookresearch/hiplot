@@ -57,21 +57,32 @@ class Displays:
 
 class ValueDef(_DictSerializable):
     """
-    Provides a custom type, color, etc.. for a column. See :attr:`hiplot.Experiment.parameters_definition`
+    Provides a custom type, color, etc.. for a column.
+
+    :ivar type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
+    :ivar colors: Categorical scales only: mapping from value to HTML color (either :code:`rgb(R, G, B)` or :code:`#RRGGBB`)
+    :ivar colormap: Numerical scales only: `D3 scale <https://github.com/d3/d3-scale-chromatic>`_ to use
+        (default scale is `interpolateTurbo <https://github.com/d3/d3-scale-chromatic#interpolateTurbo>`_)
+
+    See :attr:`hiplot.Experiment.parameters_definition`
     """
 
-    def __init__(self, value_type: Optional[ValueType] = None, colors: Optional[Dict[Any, str]] = None) -> None:
-        """
-        Overwrite the generated values for a column:
-            - type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
-            - colors: mapping from value to color in the format "rgb(R, G, B)" or "hsl(H, S, L)"
-        """
+    def __init__(
+            self,
+            value_type: Optional[ValueType] = None,
+            colors: Optional[Dict[Any, str]] = None,
+            colormap: Optional[str] = None
+    ) -> None:
         self.type = value_type
         self.colors = colors
+        self.colormap = colormap
         self.force_value_min: Optional[float] = None
         self.force_value_max: Optional[float] = None
 
     def force_range(self, minimum: float, maximum: float) -> "ValueDef":
+        """
+        Enforces the range of the column
+        """
         self.force_value_min = minimum
         self.force_value_max = maximum
         return self
@@ -79,15 +90,22 @@ class ValueDef(_DictSerializable):
     def validate(self) -> None:
         if self.colors is not None:
             for k, v in self.colors.items():
-                if not v.startswith("rgb(") and not v.startswith("hsl("):
+                if not v.startswith("rgb(") and not v.startswith("hsl(") and not v.startswith("#"):
                     raise ExperimentValidationError(
-                        f'Invalid color {v} for value {k}. Expected color to start with either "rgb(" or "hsl("'
+                        f'Invalid color {v} for value {k}. Expected color to start with "rgb(", "hsl(", or "#"'
                     )
+        # We don't want `d3.interpolateTurbo` but just `interpolateTurbo`
+        if self.colormap is not None and not self.colormap.startswith("interpolate") and not self.colormap.startswith("scheme"):
+            raise ExperimentValidationError(f"""Invalid colormap `{self.colormap}`.
+Valid colormaps can be found in https://github.com/d3/d3-scale-chromatic. Their name starts with `interpolate` or `scheme`.
+Examples include `interpolateSpectral`, `interpolateViridis`, `interpolateSinebow`, `schemeYlOrRd`
+""")
 
     def _asdict(self) -> Dict[str, Any]:
         return {
             "type": self.type.value if self.type is not None else None,
             "colors": self.colors,
+            "colormap": self.colormap,
             "force_value_min": self.force_value_min,
             "force_value_max": self.force_value_max,
         }
@@ -156,11 +174,7 @@ class Experiment(_DictSerializable):
                  ) -> None:
         self.datapoints = datapoints if datapoints is not None else []
         self.parameters_definition = parameters_definition if parameters_definition is not None else defaultdict(ValueDef)
-        self._displays: Dict[str, Dict[str, Any]] = {
-            Displays.PARALLEL_PLOT: {},
-            Displays.TABLE: {},
-            Displays.XY: {},
-        }
+        self._displays: Dict[str, Dict[str, Any]] = {}
 
     def validate(self) -> "Experiment":
         """

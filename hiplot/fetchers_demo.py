@@ -162,6 +162,24 @@ def demo_bool() -> hip.Experiment:
     ])
 
 
+def demo_color_interpolate() -> hip.Experiment:
+    exp = demo()
+    exp.parameters_definition["exp_metric"].colormap = "interpolateSinebow"
+    return exp
+
+
+def demo_color_scheme_ylrd() -> hip.Experiment:
+    exp = demo()
+    exp.parameters_definition["exp_metric"].colormap = "schemeYlOrRd"
+    return exp
+
+
+def demo_color_scheme_accent() -> hip.Experiment:
+    exp = demo()
+    exp.parameters_definition["exp_metric"].colormap = "schemeAccent"
+    return exp
+
+
 README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_big": lambda: demo(1000),
@@ -174,4 +192,7 @@ README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
     "demo_distribution_num": lambda: demo_distribution(axis="numeric"),
     "demo_distribution_num_100bins": lambda: demo_distribution(axis="numeric", nbins=100),
     "demo_bool": demo_bool,
+    "demo_color_interpolate": demo_color_interpolate,
+    "demo_color_scheme_ylrd": demo_color_scheme_ylrd,
+    "demo_color_scheme_accent": demo_color_scheme_accent,
 }

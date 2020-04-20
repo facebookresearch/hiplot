@@ -106,7 +106,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   }
   componentWillUnmount() {
     d3.select(this.svgg_ref.current).selectAll("*").remove();
-    this.animloop.stop();
+    if (this.animloop) {
+      this.animloop.stop();
+    }
   };
   componentDidUpdate(prevProps: ParallelPlotData, prevState: ParallelPlotState) {
     if (prevState.height != this.state.height || prevState.width != this.state.width) {

@@ -100,6 +100,8 @@ def test_doc() -> None:
     exp.parameters_definition["optionA"].type = hip.ValueType.NUMERIC_LOG
     # Force a column minimum/maximum values
     exp.parameters_definition["pct_success"].force_range(0, 100)
+    # Change d3 colormap (https://github.com/d3/d3-scale-chromatic) for non-categorical columns
+    exp.parameters_definition["exp_metric"].colormap = "interpolateSinebow"
     # EXPERIMENT_SETTINGS_SNIPPET1_END
     # EXPERIMENT_SETTINGS_SNIPPET2_BEGIN
     # Provide configuration for the parallel plot
