@@ -29,10 +29,11 @@ dtButtons(window, $);
 dtButtonsBs4(window, $);
 
 
-import { Datapoint, ParamType } from "./types";
+import { Datapoint } from "./types";
 import style from "./hiplot.css";
 import { HiPlotPluginData } from "./plugin";
 import _ from "underscore";
+import { FilterType } from "./filters";
 
 interface RowsDisplayTableState {
 };
@@ -144,7 +145,9 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         me.setSelected(me.props.rows_selected);
     }
     componentDidUpdate(prevProps: HiPlotPluginData): void {
-        if (prevProps.rows_selected != this.props.rows_selected) {
+        if (prevProps.rows_selected != this.props.rows_selected ||
+                prevProps.params_def != this.props.params_def ||
+                prevProps.colorby != this.props.colorby) {
             this.setSelected_debounced(this.props.rows_selected);
         }
     }
@@ -159,7 +162,17 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         $.each(searchResults.data(), function(index, value) {
             searchResultsDatapoints.push(this.props.dp_lookup[value[uidIdx]]);
         }.bind(this));
-        this.props.setSelected(searchResultsDatapoints);
+        var filter = {
+            type: FilterType.Search,
+            data: dt.search(),
+        };
+        if (this.props.rows_selected_filter) {
+            filter = {
+                type: FilterType.All,
+                data: [this.props.rows_selected_filter, filter]
+            };
+        }
+        this.props.setSelected(searchResultsDatapoints, filter);
     }
     setSelected(selected: Array<Datapoint>) {
         const dt = this.dt;

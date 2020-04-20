@@ -10,6 +10,7 @@ import { ParamDefMap } from "./infertypes";
 import { IDatasets, DatapointLookup, Datapoint, HiPlotExperiment } from "./types";
 import { ContextMenu } from "./contextmenu";
 import { PersistentState } from "./lib/savedstate";
+import { Filter } from "./filters";
 
 
 export interface HiPlotPluginDataWithoutDatasets {
@@ -23,6 +24,8 @@ export interface HiPlotPluginDataWithoutDatasets {
     colorby: string;
     name: string;
 
+    rows_selected_filter: Filter;
+
     // Data that persists until we close the window
     window_state: any;
     // Data that persists upon page reload, sharing link etc...
@@ -30,7 +33,7 @@ export interface HiPlotPluginDataWithoutDatasets {
 
     sendMessage: (type: string, data: any) => void,
 
-    setSelected: (new_selected: Array<Datapoint>) => void;
+    setSelected: (new_selected: Array<Datapoint>, filter: Filter | null) => void;
     setHighlighted: (new_highlighted: Array<Datapoint>) => void;
 }
 

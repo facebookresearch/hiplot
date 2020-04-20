@@ -44,27 +44,35 @@ BROWSERS_FACTORY = {
 
 
 @pytest.mark.parametrize(
-    "file, wait_secs, browser",
+    "file, timeout_secs, browser",
     [(Path(f), float(os.environ.get('WAIT_SECS', '2')), os.environ.get("BROWSER", "chrome"))
      for f in glob.glob(str(DEMO_PAGES_PATH / '*.html'))],
 )
-def test_demo_pages(file: Path, wait_secs: float, browser: str) -> None:
+def test_demo_pages(file: Path, timeout_secs: float, browser: str) -> None:
     print(file)
     num_err = 0
     driver = BROWSERS_FACTORY[browser]()
     driver.get(f'file://{file.absolute()}')
-    time.sleep(wait_secs)  # Wait for enough data to be loaded
+    timeout_time = time.time() + timeout_secs
+    done = False
+
+    def is_timeout() -> bool:
+        return time.time() > timeout_time
+
+    while not is_timeout() and not done:
+        time.sleep(1)
+        try:
+            for l in driver.get_log('browser'):
+                print(f'    {str(l)}')
+                if l['level'] != 'INFO':
+                    num_err += 1
+                if "Tests done!" in l['message']:
+                    done = True
+                    print("(tests finished)")
+        except selenium.common.exceptions.WebDriverException as e:
+            # Logging interface not supported in Firefox
+            # see https://github.com/mozilla/geckodriver/issues/330
+            print(f'    !unable to retrieve browser logs: {e}')
     driver.save_screenshot(str(file) + '.png')
-    print(f'  title: {driver.title}')
-    print(f'  log messages:')
-    try:
-        for l in driver.get_log('browser'):
-            print(f'    {str(l)}')
-            if l['level'] != 'INFO':
-                num_err += 1
-    except selenium.common.exceptions.WebDriverException as e:
-        # Logging interface not supported in Firefox
-        # see https://github.com/mozilla/geckodriver/issues/330
-        print(f'    !unable to retrieve browser logs: {e}')
     driver.quit()
     assert num_err == 0

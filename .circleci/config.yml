@@ -51,6 +51,7 @@ commands:
             WAIT_SECS=<< parameters.wait_secs >> BROWSER=<< parameters.browser >> pytest -s .circleci/test_e2e.py
       - run:
           name: Collect artifacts...
+          when: always
           command: mv .circleci/demo_pages artifacts/<< parameters.bundle >>
   test_render_selenium_setup:
     parameters:
@@ -236,7 +237,7 @@ jobs:
       - run_test_e2e:
           browser: chrome
           bundle: testdev
-          wait_secs: 15
+          wait_secs: 60
       - store_artifacts:
           when: always
           path: ~/repo/artifacts

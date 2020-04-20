@@ -38,7 +38,7 @@ export interface ParamDef extends HiPlotValueDef {
 
 
 const special_numerics = ['inf', '-inf', Infinity, -Infinity, null];
-function is_special_numeric(x) {
+export function is_special_numeric(x) {
     return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
 };
 
@@ -92,29 +92,40 @@ export function create_d3_scale(pd: ParamDef): any {
     return scale;
 }
 
-export function scale_pixels_range(scale: any, extents: [number, number]): any {
+export interface ScaleDomainRange {
+    type: ParamType,
+    brush_extents_normalized: [number, number],
+    values?: Array<any>,
+    range?: [number, number],
+    include_infnans?: boolean;
+};
+
+export function scale_pixels_range(scale: any, extents: [number, number]): ScaleDomainRange {
+    /**
+     * Converts scale range in pixels back to domain (aka inverts the scale)
+     */
     const scaleToNorm = d3.scaleLinear().domain(scale.range()).range([0, 1]);
-    const normalized = [scaleToNorm(extents[0]), scaleToNorm(extents[1])];
+    const normalized = [scaleToNorm(extents[0]), scaleToNorm(extents[1])] as [number, number];
     switch (scale.hip_type as ParamType) {
         case ParamType.CATEGORICAL:
             const domain: Array<string> = scale.domain();
-            const selectedValues = domain.slice(
-                Math.ceil(Math.min(normalized[0], normalized[1]) * (domain.length - 1)),
-                Math.floor(Math.max(normalized[0], normalized[1]) * (domain.length - 1) + 1)
-            );
+            const firstIdx = Math.ceil(Math.min(normalized[0], normalized[1]) * (domain.length - 1));
+            const lastIdx = Math.floor(Math.max(normalized[0], normalized[1]) * (domain.length - 1) + 1);
             return {
                 "type": scale.hip_type,
                 "brush_extents_normalized": normalized,
-                "values": selectedValues,
+                "values": domain.slice(firstIdx, lastIdx),
             };
         case ParamType.NUMERIC:
         case ParamType.NUMERICLOG:
         case ParamType.NUMERICPERCENTILE:
         case ParamType.TIMESTAMP:
+            const range = [scale.invert(extents[0]), scale.invert(extents[1])] as [number, number];
             return {
                 "type": scale.hip_type,
                 "brush_extents_normalized": normalized,
-                "range": [scale.invert(extents[0]), scale.invert(extents[1])],
+                "range": range,
+                "include_infnans": extents[0] <= scale(Infinity) && scale(Infinity) <= extents[1]
             };
     }
 }

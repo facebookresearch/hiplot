@@ -268,6 +268,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
             this.createDataScaleAndAxis();
         }
         if (prevProps.axis != this.props.axis ||
+            prevProps.param_def != this.props.param_def ||
             prevProps.nbins != this.props.nbins ||
             prevProps.histData != this.props.histData ||
             prevProps.width != this.props.width ||

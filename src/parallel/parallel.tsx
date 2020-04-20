@@ -17,6 +17,7 @@ import { create_d3_scale, scale_pixels_range } from "../infertypes";
 import style from "../hiplot.css";
 import { HiPlotPluginData } from "../plugin";
 import { ResizableH } from "../lib/resizable";
+import { Filter, FilterType, apply_filters } from "../filters";
 
 interface StringMapping<V> { [key: string]: V; };
 
@@ -49,7 +50,7 @@ interface ParallelPlotDisplayData {
 }
 // DISPLAYS_DATA_DOC_END
 
-interface ParallelPlotData extends HiPlotPluginData, ParallelPlotDisplayData {
+export interface ParallelPlotData extends HiPlotPluginData, ParallelPlotDisplayData {
 };
 
 export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlotState> {
@@ -175,14 +176,11 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       }
     }
     // When we need to redraw lines
-    if (prevProps.rows_selected != this.props.rows_selected) {
+    if (prevProps.rows_selected != this.props.rows_selected || prevProps.colorby != this.props.colorby || prevState.height != this.state.height || prevState.width != this.state.width) {
       this.setState(function(prevState) { return { brush_count: prevState.brush_count + 1}; });
     }
-    if (prevState.brush_count != this.state.brush_count) {
+    else if (prevState.brush_count != this.state.brush_count) {
       this.paths(this.props.rows_selected, this.foreground, this.state.brush_count);
-    }
-    if (prevProps.colorby != this.props.colorby && this.brush) {
-      this.brush();
     }
     this.props.window_state.height = this.state.height;
   }
@@ -478,8 +476,42 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         });
 
       // Get lines within extents
-      var selected = [];
-      var all_data = me.props.rows_filtered;
+      var filters: Array<Filter> = actives.map(function(dimension) {
+        const scale = me.yscale[dimension];
+        var extent = extents[dimension];
+        const range = scale_pixels_range(scale, extent);
+        if (range.type == ParamType.CATEGORICAL && !range.values) {
+          // Select nothing
+          return {
+            type: FilterType.Not,
+            data: {
+              type: FilterType.All,
+              data: [],
+            }
+          };
+        }
+        var min, max;
+        if (range.type == ParamType.CATEGORICAL) {
+          min = range.values[0];
+          max = range.values[range.values.length - 1];
+        }
+        else {
+          min = Math.min(...range.range);
+          max = Math.max(...range.range);
+        }
+        return {
+          type: FilterType.Range,
+          data: {
+            col: dimension,
+            type: range.type,
+            min: min,
+            max: max,
+            include_infnans: range.include_infnans,
+          }
+        };
+      });
+      const selected = apply_filters(me.props.rows_filtered, filters);
+      /*
       all_data
         .map(function(d) {
           return actives.every(function(dimension) {
@@ -489,7 +521,11 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
             return extent[0] <= scale(value) && scale(value) <= extent[1];
           }) ? selected.push(d) : null;
         });
-      me.props.setSelected(selected);
+      */
+      me.props.setSelected(selected, {
+        type: FilterType.All,
+        data: filters,
+      });
     }
     this.brush = brush;
 
@@ -514,7 +550,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       });
 
       // render data
-      brush();
+      this.setState(function(prevState) { return { brush_count: prevState.brush_count + 1}; });
     }, 100);
 
     me.compute_dimensions();
