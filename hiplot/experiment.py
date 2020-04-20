@@ -58,6 +58,15 @@ class Displays:
     DISTRIBUTION = 'DISTRIBUTION'               #: Distribution plot data
 
 
+def validate_colormap(cm: Optional[str]) -> None:
+    # We don't want `d3.interpolateTurbo` but just `interpolateTurbo`
+    if cm is not None and not cm.startswith("interpolate") and not cm.startswith("scheme"):
+        raise ExperimentValidationError(f"""Invalid colormap `{cm}`.
+Valid colormaps can be found in https://github.com/d3/d3-scale-chromatic. Their name starts with `interpolate` or `scheme`.
+Examples include `interpolateSpectral`, `interpolateViridis`, `interpolateSinebow`, `schemeYlOrRd`
+""")
+
+
 class ValueDef(_DictSerializable):
     """
     Provides a custom type, color, etc.. for a column.
@@ -97,12 +106,7 @@ class ValueDef(_DictSerializable):
                     raise ExperimentValidationError(
                         f'Invalid color {v} for value {k}. Expected color to start with "rgb(", "hsl(", or "#"'
                     )
-        # We don't want `d3.interpolateTurbo` but just `interpolateTurbo`
-        if self.colormap is not None and not self.colormap.startswith("interpolate") and not self.colormap.startswith("scheme"):
-            raise ExperimentValidationError(f"""Invalid colormap `{self.colormap}`.
-Valid colormaps can be found in https://github.com/d3/d3-scale-chromatic. Their name starts with `interpolate` or `scheme`.
-Examples include `interpolateSpectral`, `interpolateViridis`, `interpolateSinebow`, `schemeYlOrRd`
-""")
+        validate_colormap(self.colormap)
 
     def _asdict(self) -> Dict[str, Any]:
         return {
@@ -173,10 +177,13 @@ class Experiment(_DictSerializable):
 
     def __init__(self,
                  datapoints: Optional[List[Datapoint]] = None,
-                 parameters_definition: Optional[Dict[str, ValueDef]] = None
+                 parameters_definition: Optional[Dict[str, ValueDef]] = None,
+                 colormap: Optional[str] = None,
                  ) -> None:
         self.datapoints = datapoints if datapoints is not None else []
         self.parameters_definition = parameters_definition if parameters_definition is not None else defaultdict(ValueDef)
+        self.colormap = colormap if colormap is not None else "interpolateTurbo"
+        self.colorby: Optional[str] = None
         self._displays: Dict[str, Dict[str, Any]] = {}
 
     def validate(self) -> "Experiment":
@@ -201,6 +208,7 @@ class Experiment(_DictSerializable):
             p.validate()
         if not self.datapoints:
             raise ExperimentValidationError('Not a single datapoint')
+        validate_colormap(self.colormap)
         return self
 
     def display(self, force_full_width: bool = False, store_state_key: Optional[str] = None) -> "ExperimentDisplayed":
@@ -271,6 +279,8 @@ class Experiment(_DictSerializable):
         return {
             "datapoints": [d._asdict() for d in self.datapoints],
             "parameters_definition": {k: v._asdict() for k, v in self.parameters_definition.items()},
+            "colormap": self.colormap,
+            "colorby": self.colorby,
             "_displays": self._displays,
         }
 

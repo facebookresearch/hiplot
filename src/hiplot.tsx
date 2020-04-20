@@ -59,6 +59,7 @@ interface HiPlotState extends IDatasets {
     params_def: ParamDefMap;
     dp_lookup: DatapointLookup;
     colorby: string;
+    colormap: string;
     // Data that persists upon page reload, sharing link etc...
     persistent_state: PersistentState;
 }
@@ -76,6 +77,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         super(props);
         this.state = {
             experiment: props.experiment,
+            colormap: null,
             version: 0,
             loadStatus: HiPlotLoadStatus.None,
             error: null,
@@ -151,6 +153,9 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
 
         // Color handling
         function get_default_color() {
+            if (experiment.colorby && params_def[experiment.colorby]) {
+                return experiment.colorby;
+            }
             function select_as_coloring_score(r) {
                 var pd = params_def[r];
                 var score = 0;
@@ -174,6 +179,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         }
         this.setState(function(state, props) { return {
             experiment: experiment,
+            colormap: experiment.colormap,
             version: state.version + 1,
             loadStatus: HiPlotLoadStatus.Loaded,
             dp_lookup: dp_lookup,
@@ -183,7 +189,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         }; });
     }
     getColorForRow(trial: Datapoint, alpha: number): string {
-        return colorScheme(this.state.params_def[this.state.colorby], trial[this.state.colorby], alpha);
+        return colorScheme(this.state.params_def[this.state.colorby], trial[this.state.colorby], alpha, this.state.colormap);
     };
     loadWithPromise(prom: Promise<any>) {
         var me = this;

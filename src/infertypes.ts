@@ -110,6 +110,7 @@ export function scale_pixels_range(scale: any, extents: [number, number]): any {
         case ParamType.NUMERIC:
         case ParamType.NUMERICLOG:
         case ParamType.NUMERICPERCENTILE:
+        case ParamType.TIMESTAMP:
             return {
                 "type": scale.hip_type,
                 "brush_extents_normalized": normalized,
@@ -118,7 +119,7 @@ export function scale_pixels_range(scale: any, extents: [number, number]): any {
     }
 }
 
-export function colorScheme(pd: ParamDef, value: any, alpha: number): string {
+export function colorScheme(pd: ParamDef, value: any, alpha: number, defaultColorMap: string): string {
     if (pd.type == ParamType.CATEGORICAL) {
         function compute_val2color() {
             if (pd.__val2color !== undefined) {
@@ -156,16 +157,16 @@ export function colorScheme(pd: ParamDef, value: any, alpha: number): string {
             pd.__colorscale.range([0, 1]);
         }
         const colr = pd.__colorscale(value);
-        function getColorMap() {
-            if (!pd.colormap) {
-                //@ts-ignore
+        function parseColorMap(name: string, description: string) {
+            if (!name) {
+                // @ts-ignore
                 return d3.interpolateTurbo;
             }
-            var fn = d3[pd.colormap];
+            var fn = d3[name];
             if (!fn) {
-                throw new Error(`Invalid color map ${pd.colormap} for column ${pd.name}`);
+                throw new Error(`Invalid color map ${name} ${description}`);
             }
-            if (pd.colormap.startsWith("interpolate")) {
+            if (name.startsWith("interpolate")) {
                 return fn; // This is a function
             }
             // Assume this is a scheme (eg array of colors)
@@ -175,6 +176,12 @@ export function colorScheme(pd: ParamDef, value: any, alpha: number): string {
             return function(colr: number) {
                 return fn[Math.min(fn.length - 1, Math.floor(colr * fn.length))];
             };
+        }
+        function getColorMap() {
+            if (pd.colormap) {
+                return parseColorMap(pd.colormap, `for column ${pd.name}`);
+            }
+            return parseColorMap(defaultColorMap, `(global default color map)`);
         }
         const interpColFn = getColorMap();
         try {

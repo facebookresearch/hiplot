@@ -39,6 +39,8 @@ export interface HiPlotValueDef {
 export interface HiPlotExperiment {
     datapoints: Array<Datapoint>,
     parameters_definition: {[key: string]: HiPlotValueDef},
+    colormap: string;
+    colorby: string;
     _displays: {[key: string]: {[key2: string]: any}},
 }
 
