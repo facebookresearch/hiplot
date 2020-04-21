@@ -128,7 +128,12 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
                 dp_lookup[t.uid] = obj_with_uid;
                 return obj_with_uid;
             });
-            const rows_filtered = apply_filters(rows_all_unfiltered, initial_filters);
+            var rows_filtered = rows_all_unfiltered;
+            try {
+                rows_filtered = apply_filters(rows_all_unfiltered, initial_filters);
+            } catch (err) {
+                console.error("Error trying to apply filters", initial_filters, ":", err);
+            }
             return {
                 rows_all_unfiltered: rows_all_unfiltered,
                 rows_filtered: rows_filtered,
