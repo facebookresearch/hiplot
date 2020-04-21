@@ -16,6 +16,7 @@ import { Filter } from "./filters";
 export interface HiPlotPluginDataWithoutDatasets {
     experiment: HiPlotExperiment;
     params_def: ParamDefMap,
+
     get_color_for_row: (uid: Datapoint, opacity: number) => string,
     render_row_text: (rows: Datapoint) => string,
     dp_lookup: DatapointLookup,

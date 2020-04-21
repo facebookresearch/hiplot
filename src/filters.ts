@@ -6,6 +6,7 @@
  */
 
 
+import $ from "jquery";
 import { Datapoint, ParamType } from "./types";
 import { is_special_numeric } from "./infertypes";
 

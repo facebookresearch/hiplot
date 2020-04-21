@@ -131,6 +131,10 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             var rows_filtered = rows_all_unfiltered;
             try {
                 rows_filtered = apply_filters(rows_all_unfiltered, initial_filters);
+                if (!rows_filtered.length) {
+                    rows_filtered = rows_all_unfiltered;
+                    console.log("Not reapplying filters (would filter out all rows)");
+                }
             } catch (err) {
                 console.error("Error trying to apply filters", initial_filters, ":", err);
             }
@@ -166,8 +170,11 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     _loadExperiment(experiment: HiPlotExperiment) {
         // Generate dataset for Parallel Plot
         var dp_lookup = {};
-        const initFilters = this.state.persistent_state.get(PSTATE_FILTERS, []);
+        var initFilters = this.state.persistent_state.get(PSTATE_FILTERS, []);
         const datasets = this.makeDatasets(experiment, dp_lookup, initFilters);
+        if (datasets.rows_all_unfiltered == datasets.rows_filtered) {
+            initFilters = [];
+        }
         const params_def = infertypes(this.state.persistent_state.children(PSTATE_PARAMS), datasets.rows_filtered, experiment.parameters_definition);
 
         // Color handling

@@ -53,6 +53,12 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         this.state = {};
     }
     componentDidMount() {
+        this.mountDt();
+    }
+    mountDt() {
+        if (!this.props.params_def["uid"]) {
+            return;
+        }
         this.dom = $(this.table_ref.current);
         this.ordered_cols = ['', 'uid'];
         const me = this;
@@ -109,7 +115,10 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         btnsContainer.addClass("btn-group");
         this.dt.buttons().container().appendTo(btnsContainer);
         btnsContainer.find(".dt-buttons").removeClass("btn-group");
-        this.dom.on( 'search.dt', function () {
+        this.dom.on( 'search.dt', function (this: RowsDisplayTable) {
+            if (!this.dt) {
+                return;
+            }
             const node = this.dt.buttons()[0].node;
             node.classList.remove("d-none");
             node.classList.remove("btn-secondary");
@@ -145,8 +154,11 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         me.setSelected(me.props.rows_selected);
     }
     componentDidUpdate(prevProps: HiPlotPluginData): void {
-        if (prevProps.rows_selected != this.props.rows_selected ||
-                prevProps.params_def != this.props.params_def ||
+        if (prevProps.params_def != this.props.params_def) {
+            this.destroyDt();
+            this.mountDt();
+        }
+        else if (prevProps.rows_selected != this.props.rows_selected ||
                 prevProps.colorby != this.props.colorby) {
             this.setSelected_debounced(this.props.rows_selected);
         }
@@ -200,11 +212,14 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         </div>
         );
     }
-    componentWillUnmount() {
+    destroyDt() {
         if (this.dt) {
             const dt = this.dt;
             this.dt = null;
             dt.destroy();
         }
+    }
+    componentWillUnmount() {
+        this.destroyDt();
     }
 }
