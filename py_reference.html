@@ -116,7 +116,7 @@
 <h2><a class="reference internal" href="#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a><a class="headerlink" href="#hiplot-experiment" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="hiplot.Experiment">
-<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datapoints</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>hiplot.experiment.Datapoint<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parameters_definition</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>hiplot.experiment.ValueDef<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datapoints</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>hiplot.experiment.Datapoint<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parameters_definition</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>hiplot.experiment.ValueDef<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colormap</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#Experiment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object that can be rendered by HiPlot. It essential contains a list of metrics, but also some options on how to render it.</p>
 <p>See <a class="reference internal" href="#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Experiment.display()</span></code></a> to display an <a class="reference internal" href="#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">Experiment</span></code></a> in an ipython notebook.</p>
 <dl class="field-list simple">
@@ -264,6 +264,36 @@ Experiments with circular references, non-existent parents, or without datapoint
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="hiplot.Displays">
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">Displays</code><a class="reference internal" href="_modules/hiplot/experiment.html#Displays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Displays" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="#hiplot.Experiment.display_data" title="hiplot.Experiment.display_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Experiment.display_data()</span></code></a> and <a class="reference internal" href="experiment_settings.html#frontendrenderingsettings"><span class="std std-ref">Frontend rendering settings</span></a></p>
+<dl class="py attribute">
+<dt id="hiplot.Displays.DISTRIBUTION">
+<code class="sig-name descname">DISTRIBUTION</code><em class="property"> = 'DISTRIBUTION'</em><a class="headerlink" href="#hiplot.Displays.DISTRIBUTION" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distribution plot data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="hiplot.Displays.PARALLEL_PLOT">
+<code class="sig-name descname">PARALLEL_PLOT</code><em class="property"> = 'PARALLEL_PLOT'</em><a class="headerlink" href="#hiplot.Displays.PARALLEL_PLOT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parallel plot data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="hiplot.Displays.TABLE">
+<code class="sig-name descname">TABLE</code><em class="property"> = 'TABLE'</em><a class="headerlink" href="#hiplot.Displays.TABLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rows table data</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="hiplot.Displays.XY">
+<code class="sig-name descname">XY</code><em class="property"> = 'XY'</em><a class="headerlink" href="#hiplot.Displays.XY" title="Permalink to this definition">¶</a></dt>
+<dd><p>XY scatter/line plot data</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="hiplot-datapoint">
 <h2><a class="reference internal" href="#hiplot.Datapoint" title="hiplot.Datapoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Datapoint</span></code></a><a class="headerlink" href="#hiplot-datapoint" title="Permalink to this headline">¶</a></h2>
@@ -364,8 +394,25 @@ and values contain information about the current brush.</p>
 
 <dl class="py class">
 <dt id="hiplot.ValueDef">
-<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ValueDef</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value_type</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>hiplot.experiment.ValueType<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colors</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>Any<span class="p">, </span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#ValueDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ValueDef" title="Permalink to this definition">¶</a></dt>
-<dd><p>Provides a custom type, color, etc.. for a column. See <code class="xref py py-attr docutils literal notranslate"><span class="pre">hiplot.Experiment.parameters_definition</span></code></p>
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ValueDef</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value_type</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>hiplot.experiment.ValueType<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colors</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>Any<span class="p">, </span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colormap</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#ValueDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ValueDef" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides a custom type, color, etc.. for a column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> – Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, …</p></li>
+<li><p><strong>colors</strong> – Categorical scales only: mapping from value to HTML color (either <code class="code docutils literal notranslate"><span class="pre">rgb(R,</span> <span class="pre">G,</span> <span class="pre">B)</span></code> or <code class="code docutils literal notranslate"><span class="pre">#RRGGBB</span></code>)</p></li>
+<li><p><strong>colormap</strong> – Numerical scales only: <a class="reference external" href="https://github.com/d3/d3-scale-chromatic">D3 scale</a> to use
+(default scale is <a class="reference external" href="https://github.com/d3/d3-scale-chromatic#interpolateTurbo">interpolateTurbo</a>)</p></li>
+</ul>
+</dd>
+</dl>
+<p>See <code class="xref py py-attr docutils literal notranslate"><span class="pre">hiplot.Experiment.parameters_definition</span></code></p>
+<dl class="py method">
+<dt id="hiplot.ValueDef.force_range">
+<code class="sig-name descname">force_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">minimum</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">maximum</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ValueDef<a class="reference internal" href="_modules/hiplot/experiment.html#ValueDef.force_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ValueDef.force_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enforces the range of the column</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>

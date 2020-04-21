@@ -149,6 +149,8 @@ When a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" t
     <span class="n">exp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">[</span><span class="s2">&quot;optionA&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">ValueType</span><span class="o">.</span><span class="n">NUMERIC_LOG</span>
     <span class="c1"># Force a column minimum/maximum values</span>
     <span class="n">exp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">[</span><span class="s2">&quot;pct_success&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">force_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="c1"># Change d3 colormap (https://github.com/d3/d3-scale-chromatic) for non-categorical columns</span>
+    <span class="n">exp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">[</span><span class="s2">&quot;exp_metric&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="s2">&quot;interpolateSinebow&quot;</span>
 </pre></div>
 </div>
 <ul class="simple">
