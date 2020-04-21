@@ -31,6 +31,7 @@ export enum ParamType {
 export interface HiPlotValueDef {
     type: ParamType;
     colors: {[value: string]: string};
+    colormap: string | null;
     force_value_min: number | null;
     force_value_max: number | null;
 };
@@ -38,6 +39,8 @@ export interface HiPlotValueDef {
 export interface HiPlotExperiment {
     datapoints: Array<Datapoint>,
     parameters_definition: {[key: string]: HiPlotValueDef},
+    colormap: string;
+    colorby: string;
     _displays: {[key: string]: {[key2: string]: any}},
 }
 

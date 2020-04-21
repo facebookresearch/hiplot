@@ -8,6 +8,9 @@ Python classes reference
 .. autoclass:: hiplot.Experiment
    :members:
 
+.. autoclass:: hiplot.Displays
+   :members:
+
 
 :class:`hiplot.Datapoint`
 --------------------------------

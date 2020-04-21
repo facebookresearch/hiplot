@@ -49,29 +49,52 @@ class ValueType(Enum):
 
 
 class Displays:
-    PARALLEL_PLOT = 'PARALLEL_PLOT'
-    XY = 'XY'
-    TABLE = 'TABLE'
-    DISTRIBUTION = 'DISTRIBUTION'
+    """
+    See :meth:`Experiment.display_data` and :ref:`frontendRenderingSettings`
+    """
+    PARALLEL_PLOT = 'PARALLEL_PLOT'             #: Parallel plot data
+    XY = 'XY'                                   #: XY scatter/line plot data
+    TABLE = 'TABLE'                             #: Rows table data
+    DISTRIBUTION = 'DISTRIBUTION'               #: Distribution plot data
+
+
+def validate_colormap(cm: Optional[str]) -> None:
+    # We don't want `d3.interpolateTurbo` but just `interpolateTurbo`
+    if cm is not None and not cm.startswith("interpolate") and not cm.startswith("scheme"):
+        raise ExperimentValidationError(f"""Invalid colormap `{cm}`.
+Valid colormaps can be found in https://github.com/d3/d3-scale-chromatic. Their name starts with `interpolate` or `scheme`.
+Examples include `interpolateSpectral`, `interpolateViridis`, `interpolateSinebow`, `schemeYlOrRd`
+""")
 
 
 class ValueDef(_DictSerializable):
     """
-    Provides a custom type, color, etc.. for a column. See :attr:`hiplot.Experiment.parameters_definition`
+    Provides a custom type, color, etc.. for a column.
+
+    :ivar type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
+    :ivar colors: Categorical scales only: mapping from value to HTML color (either :code:`rgb(R, G, B)` or :code:`#RRGGBB`)
+    :ivar colormap: Numerical scales only: `D3 scale <https://github.com/d3/d3-scale-chromatic>`_ to use
+        (default scale is `interpolateTurbo <https://github.com/d3/d3-scale-chromatic#interpolateTurbo>`_)
+
+    See :attr:`hiplot.Experiment.parameters_definition`
     """
 
-    def __init__(self, value_type: Optional[ValueType] = None, colors: Optional[Dict[Any, str]] = None) -> None:
-        """
-        Overwrite the generated values for a column:
-            - type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
-            - colors: mapping from value to color in the format "rgb(R, G, B)" or "hsl(H, S, L)"
-        """
+    def __init__(
+            self,
+            value_type: Optional[ValueType] = None,
+            colors: Optional[Dict[Any, str]] = None,
+            colormap: Optional[str] = None
+    ) -> None:
         self.type = value_type
         self.colors = colors
+        self.colormap = colormap
         self.force_value_min: Optional[float] = None
         self.force_value_max: Optional[float] = None
 
     def force_range(self, minimum: float, maximum: float) -> "ValueDef":
+        """
+        Enforces the range of the column
+        """
         self.force_value_min = minimum
         self.force_value_max = maximum
         return self
@@ -79,15 +102,17 @@ class ValueDef(_DictSerializable):
     def validate(self) -> None:
         if self.colors is not None:
             for k, v in self.colors.items():
-                if not v.startswith("rgb(") and not v.startswith("hsl("):
+                if not v.startswith("rgb(") and not v.startswith("hsl(") and not v.startswith("#"):
                     raise ExperimentValidationError(
-                        f'Invalid color {v} for value {k}. Expected color to start with either "rgb(" or "hsl("'
+                        f'Invalid color {v} for value {k}. Expected color to start with "rgb(", "hsl(", or "#"'
                     )
+        validate_colormap(self.colormap)
 
     def _asdict(self) -> Dict[str, Any]:
         return {
             "type": self.type.value if self.type is not None else None,
             "colors": self.colors,
+            "colormap": self.colormap,
             "force_value_min": self.force_value_min,
             "force_value_max": self.force_value_max,
         }
@@ -152,15 +177,14 @@ class Experiment(_DictSerializable):
 
     def __init__(self,
                  datapoints: Optional[List[Datapoint]] = None,
-                 parameters_definition: Optional[Dict[str, ValueDef]] = None
+                 parameters_definition: Optional[Dict[str, ValueDef]] = None,
+                 colormap: Optional[str] = None,
                  ) -> None:
         self.datapoints = datapoints if datapoints is not None else []
         self.parameters_definition = parameters_definition if parameters_definition is not None else defaultdict(ValueDef)
-        self._displays: Dict[str, Dict[str, Any]] = {
-            Displays.PARALLEL_PLOT: {},
-            Displays.TABLE: {},
-            Displays.XY: {},
-        }
+        self.colormap = colormap if colormap is not None else "interpolateTurbo"
+        self.colorby: Optional[str] = None
+        self._displays: Dict[str, Dict[str, Any]] = {}
 
     def validate(self) -> "Experiment":
         """
@@ -184,6 +208,7 @@ class Experiment(_DictSerializable):
             p.validate()
         if not self.datapoints:
             raise ExperimentValidationError('Not a single datapoint')
+        validate_colormap(self.colormap)
         return self
 
     def display(self, force_full_width: bool = False, store_state_key: Optional[str] = None) -> "ExperimentDisplayed":
@@ -254,6 +279,8 @@ class Experiment(_DictSerializable):
         return {
             "datapoints": [d._asdict() for d in self.datapoints],
             "parameters_definition": {k: v._asdict() for k, v in self.parameters_definition.items()},
+            "colormap": self.colormap,
+            "colorby": self.colorby,
             "_displays": self._displays,
         }
 
