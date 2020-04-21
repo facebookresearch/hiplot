@@ -25,6 +25,7 @@
       };
       /*ON_LOAD_SCRIPT_INJECT*/
       var hiplot_instance = hiplot_setup(document.getElementById("hiplot_element_id"), options);
+      Object.assign(window, {'hiplot_last_instance': hiplot_instance});  // For debugging
       /*AFTER_SETUP_SCRIPT_INJECT*/
     }
     if (document.readyState == "complete") {
