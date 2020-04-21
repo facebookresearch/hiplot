@@ -42,11 +42,16 @@ BROWSERS_FACTORY = {
     "firefox": create_browser_firefox,
 }
 
+world_size = int(os.environ.get('CIRCLE_NODE_TOTAL', 1))
+rank = int(os.environ.get('CIRCLE_NODE_INDEX', 0))
+
 
 @pytest.mark.parametrize(
     "file, timeout_secs, browser",
     [(Path(f), float(os.environ.get('WAIT_SECS', '2')), os.environ.get("BROWSER", "chrome"))
-     for f in glob.glob(str(DEMO_PAGES_PATH / '*.html'))],
+     for i, f in enumerate(sorted(glob.glob(str(DEMO_PAGES_PATH / '*.html'))))
+     if (i % world_size) == rank
+     ],
 )
 def test_demo_pages(file: Path, timeout_secs: float, browser: str) -> None:
     print(file)

@@ -228,6 +228,7 @@ jobs:
   browser-teste2e-chrome:
     docker:
       - image: selenium/standalone-chrome
+    parallelism: 4
     working_directory: ~/repo
     steps:
       - test_render_selenium_setup:
