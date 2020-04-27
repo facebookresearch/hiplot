@@ -19,15 +19,16 @@ class GetSelectedFailure(Exception):
 
 
 class NotebookJSBundleInjector:
-    injected = False
+    """
+    TODO: Maybe we should do something smart here. Like inject only once?
+    But how to be robust to the user clearing the output of the cell where we injected the bundle?
+        If he then refreshes the page, HiPlot bundle is no longer injected...
+    """
 
     @classmethod
     def ensure_injected(cls) -> None:
-        if cls.injected:
-            return
         bundle = Path(__file__).parent / "static" / "built" / "hiplot.bundle.js"
         IPython.display.display(IPython.display.Javascript(bundle.read_text("utf-8")))
-        cls.injected = True
 
 
 def jupyter_make_full_width(content: str) -> str:
