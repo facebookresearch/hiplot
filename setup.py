@@ -24,23 +24,9 @@ for extra in ["dev", "main"]:
 
 # Find version number in __init__
 init_str = Path("hiplot/__init__.py").read_text()
-match = re.search(r"^__version__ = \"(?P<version>[\w\.]+?)\"$", init_str, re.MULTILINE)
+match = re.search(r"^__version__ = \"(?P<version>[\w\.]+?)\"", init_str, re.MULTILINE)
 assert match is not None, "Could not find version in hiplot/__init__.py"
 version = match.group("version")
-
-
-class VerifyVersionCommand(install):
-    """Custom command to verify that the git tag matches our version"""
-    description = 'verify that the git tag matches our version'
-
-    def run(self):
-        tag = os.getenv('CIRCLE_TAG')
-
-        if tag != version:
-            info = "Git tag: {0} does not match the version of this app: {1}".format(
-                tag, version
-            )
-            sys.exit(info)
 
 
 def readme() -> str:
@@ -48,7 +34,7 @@ def readme() -> str:
 
 
 setup(
-    name="hiplot",
+    name=os.environ.get("HIPLOT_PACKAGE", "hiplot"),
     version=version,
     description="High dimensional Interactive Plotting tool",
     long_description=readme(),
@@ -62,7 +48,4 @@ setup(
     include_package_data=True,
     scripts=['scripts/hiplot', 'scripts/hiplot-render'],
     python_requires='>=3.6',
-    cmdclass={
-        'verify': VerifyVersionCommand,
-    }
 )
