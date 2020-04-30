@@ -6,7 +6,7 @@ import uuid
 import random
 import math
 import time
-from typing import Dict, Any, List, Callable
+import typing as t
 
 from . import experiment as hip
 
@@ -69,9 +69,9 @@ def demo(n: int = 100) -> hip.Experiment:
     })
 
     # Some fake PBT-ish data
-    def fake_params() -> Dict[str, hip.DisplayableType]:
+    def fake_params() -> t.Dict[str, hip.DisplayableType]:
         r = random.random()
-        p: Dict[str, hip.DisplayableType] = {
+        p: t.Dict[str, hip.DisplayableType] = {
             "lr": 10 ** random.uniform(-5, 0),
             "seed": random.uniform(0, 10),
             "name": uuid.uuid4().hex[:6],
@@ -99,17 +99,17 @@ def demo(n: int = 100) -> hip.Experiment:
             p["special_values"] = random.choice([math.inf, -math.inf, math.nan])
         return p
 
-    def fake_metrics(t: float) -> Dict[str, hip.DisplayableType]:
+    def fake_metrics(tm: float) -> t.Dict[str, hip.DisplayableType]:
         return {
             "exp_metric": 10 ** random.uniform(-5, 0),
             "pct_success": random.uniform(10, 90),
             "chkpt": uuid.uuid4().hex[:6],
-            "time": t + random.uniform(-0.2, 0.2),
+            "time": tm + random.uniform(-0.2, 0.2),
             "force_numericlog": random.uniform(1, 100),
             'timestamp': int(time.time() + (task_idx * 2000)),
         }
 
-    current_pop: List[Dict[str, Any]] = [dict(uid=f"init{i}", params=fake_params(), last_ckpt_uid=None) for i in range(10)]
+    current_pop: t.List[t.Dict[str, t.Any]] = [dict(uid=f"init{i}", params=fake_params(), last_ckpt_uid=None) for i in range(10)]
     continue_num = 0
     for task_idx in range(n):
         # All drop checkpoints
@@ -146,7 +146,7 @@ def demo_force_scale() -> hip.Experiment:
     return xp
 
 
-def demo_distribution(**kwargs: Any) -> hip.Experiment:
+def demo_distribution(**kwargs: t.Any) -> hip.Experiment:
     xp = hip.Experiment.from_iterable([{
         'cat': random.choice(["a", "b", "c", "d", "e", "f", "g", "h"]),
         'numeric': random.uniform(0.0, 1.0),
@@ -180,7 +180,26 @@ def demo_color_scheme_accent() -> hip.Experiment:
     return exp
 
 
-README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
+def demo_axis_style() -> hip.Experiment:
+    data: t.List[t.Dict[str, t.Any]] = []
+    for _ in range(100):
+        data.append({
+            **{
+                f'param{i}': random.uniform(0, 1)
+                for i in range(6)
+            },
+            'loss': random.uniform(0, 100),
+            'metric': 10 ** random.uniform(0, 10)
+        })
+    xp = hip.Experiment.from_iterable(data)
+    for i in range(6):
+        xp.parameters_definition[f"param{i}"].label_css = "badge badge-pill badge-secondary"
+    xp.parameters_definition["loss"].label_css = "badge badge-pill badge-primary"
+    xp.parameters_definition["metric"].label_css = "badge badge-pill badge-info"
+    return xp
+
+
+README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_big": lambda: demo(1000),
     "demo_change_column_properties": demo_change_column_properties,
@@ -195,4 +214,5 @@ README_DEMOS: Dict[str, Callable[[], hip.Experiment]] = {
     "demo_color_interpolate": demo_color_interpolate,
     "demo_color_scheme_ylrd": demo_color_scheme_ylrd,
     "demo_color_scheme_accent": demo_color_scheme_accent,
+    "demo_axis_style": demo_axis_style,
 }

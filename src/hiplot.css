@@ -13,8 +13,6 @@
 }
 .hiplot {
   font-family: Ubuntu, Tahoma, Helvetica, sans-serif;
-  font-size: 12px;
-  line-height: 1.4em;
   background: #f7f7f7;
   color: #404040;
 }
@@ -80,13 +78,16 @@
 .axis text {
   fill: #111;
   text-anchor: right;
-  font-size: 11px;
+  font-size: 0.8rem;
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
 }
-.axis text.label {
-  font-size: 12px;
+.axis .tickSelected {
+  font-size: 1rem;
+  font-weight: bold;
+}
+.axis .label {
   cursor: move;
-  padding-bottom: 24px;
+  font-size: 0.8rem;
 }
 .dark .axis text {
   fill: #f2f2f2;

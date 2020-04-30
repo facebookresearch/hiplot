@@ -15,6 +15,7 @@ import React from "react";
 import { ResizableH } from "./lib/resizable";
 import _ from "underscore";
 import { Datapoint } from "./types";
+import { foCreateAxisLabel, foDynamicSizeFitContent } from "./lib/svghelpers";
 
 
 // DISPLAYS_DATA_DOC_BEGIN
@@ -191,19 +192,27 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         .attr("transform", `translate(${margin.left - 10},0)`)
         .call(d3.axisLeft(y_scale).ticks(1+me.state.height / 40).tickSizeInner(margin.left + margin.right - me.state.width))
         .call(g => g.select(".domain").remove())
-        .call(g => g.select(".tick:last-of-type text").clone()
+        .call(g => g.select(".tick:last-of-type").append(function() { return foCreateAxisLabel(me.props.params_def[me.state.axis_y], me.props.context_menu_ref); })
             .attr("x", 3)
             .attr("text-anchor", "start")
-            .attr("font-weight", "bold")
-            .text(me.state.axis_y));
+            .classed("plotxy-label", true))
+        .call(g => g.selectAll(".plotxy-label").each(function() { foDynamicSizeFitContent(this); }))
+        .attr("font-size", null);
       xAxis = g => g
         .attr("transform", `translate(0,${me.state.height - margin.bottom})`)
         .call(d3.axisBottom(x_scale).ticks(1+me.state.width / 80).tickSizeInner(margin.bottom + margin.top - me.state.height))
-        .call(g => g.select(".tick:last-of-type text").clone()
+        // Make odd ticks below (to prevent overlap when very long labels)
+        .call(g => g
+          .selectAll(".tick text")
+          .attr("y", function(d: string, i: number) { return 4 + 16 * (i%2); } )
+        )
+        .call(g => g.select(".tick:last-of-type").append(function() { return foCreateAxisLabel(me.props.params_def[me.state.axis_x], me.props.context_menu_ref); })
             .attr("y", 22)
             .attr("text-anchor", "end")
             .attr("font-weight", "bold")
-            .text(me.state.axis_x));
+            .classed("plotxy-label", true))
+        .call(g => g.selectAll(".plotxy-label").each(function() { foDynamicSizeFitContent(this); }))
+        .attr("font-size", null);
       div.selectAll("canvas")
         .attr("width", me.state.width - margin.left - margin.right)
         .attr("height", me.state.height - margin.top - margin.bottom);

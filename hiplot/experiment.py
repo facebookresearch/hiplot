@@ -75,6 +75,7 @@ class ValueDef(_DictSerializable):
     :ivar colors: Categorical scales only: mapping from value to HTML color (either :code:`rgb(R, G, B)` or :code:`#RRGGBB`)
     :ivar colormap: Numerical scales only: `D3 scale <https://github.com/d3/d3-scale-chromatic>`_ to use
         (default scale is `interpolateTurbo <https://github.com/d3/d3-scale-chromatic#interpolateTurbo>`_)
+    :ivar label_css: Space-separated bootstrap CSS classes to apply on the label when supported
 
     See :attr:`hiplot.Experiment.parameters_definition`
     """
@@ -83,11 +84,13 @@ class ValueDef(_DictSerializable):
             self,
             value_type: Optional[ValueType] = None,
             colors: Optional[Dict[Any, str]] = None,
-            colormap: Optional[str] = None
+            colormap: Optional[str] = None,
+            label_css: Optional[str] = None
     ) -> None:
         self.type = value_type
         self.colors = colors
         self.colormap = colormap
+        self.label_css = label_css
         self.force_value_min: Optional[float] = None
         self.force_value_max: Optional[float] = None
 
@@ -115,6 +118,7 @@ class ValueDef(_DictSerializable):
             "colormap": self.colormap,
             "force_value_min": self.force_value_min,
             "force_value_max": self.force_value_max,
+            "label_css": self.label_css,
         }
 
 
