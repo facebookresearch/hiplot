@@ -34,7 +34,7 @@ def readme() -> str:
 
 
 setup(
-    name=os.environ.get("HIPLOT_PACKAGE", "hiplot"),
+    name="hiplot",  # CI_PACKAGE_NAME: replaced by ci for hiplot-master
     version=version,
     description="High dimensional Interactive Plotting tool",
     long_description=readme(),
