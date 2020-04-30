@@ -135,12 +135,11 @@ commands:
             echo "Building $HIPLOT_PACKAGE $HIPLOT_VERSION"
 
             # Set version
-            rm hiplot/__init__.py
             git show HEAD:hiplot/__init__.py | sed '/__version__/d' > hiplot/__init__.py
             echo "__version__ = \"$HIPLOT_VERSION\"" >> hiplot/__init__.py
 
             # Set package name
-            echo "export HIPLOT_PACKAGE=$HIPLOT_PACKAGE" >> $BASH_ENV
+            git show HEAD:setup.py | sed "s/name=\"hiplot\"/name=\"$HIPLOT_PACKAGE\"/" > setup.py
       - run:
           name: create packages
           command: |
