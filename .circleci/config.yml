@@ -114,6 +114,93 @@ commands:
       - store_artifacts:
           when: always
           path: ~/repo/artifacts
+  pip_build:
+    steps:
+      - attach_workspace:
+          at: hiplot/static
+      - run:
+          name: install dependencies
+          command: |
+            apt-get update
+            apt-get install python3-venv -y
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements/dev.txt
+            pip install -r requirements/main.txt
+      - run:
+          name: Set version and package name
+          command: |
+            HIPLOT_VERSION=`cat .hiplot_version`
+            HIPLOT_PACKAGE=`cat .hiplot_package`
+            echo "Building $HIPLOT_PACKAGE $HIPLOT_VERSION"
+
+            # Set version
+            rm hiplot/__init__.py
+            git show HEAD:hiplot/__init__.py | sed '/__version__/d' > hiplot/__init__.py
+            echo "__version__ = \"$HIPLOT_VERSION\"" >> hiplot/__init__.py
+
+            # Set package name
+            echo "export HIPLOT_PACKAGE=$HIPLOT_PACKAGE" >> $BASH_ENV
+      - run:
+          name: create packages
+          command: |
+            . venv/bin/activate
+            rm -rf dist && mkdir dist pypi-build
+            # create a source distribution
+            python setup.py sdist
+            # create a wheel
+            python setup.py bdist_wheel
+            mv dist pypi-build
+      - run:
+          name: verify package
+          command: |
+            . ./venv/bin/activate
+            twine check pypi-build/dist/*
+      - run:
+          name: test install from wheel
+          command: |
+            python3 -m venv test_wheel
+            . test_wheel/bin/activate
+            cd ..
+            ls project/pypi-build/dist/
+            pip install project/pypi-build/dist/*.whl
+            python -c "import hiplot as hip; hip.Experiment"
+            python -c "import hiplot as hip; print(hip.__version__)"
+            hiplot-render demo --format html > /dev/null
+      - run:
+          name: test install from sdist
+          command: |
+            python3 -m venv test_sdist
+            . test_sdist/bin/activate
+            cd ..
+            ls project/pypi-build/dist/
+            pip install project/pypi-build/dist/*.tar.gz
+            python -c "import hiplot as hip; hip.Experiment"
+            hiplot-render demo --format html > /dev/null
+      - persist_to_workspace:
+          root: pypi-build
+          paths: dist
+      - store_artifacts:
+          when: always
+          path: pypi-build
+  pypi_deploy:
+    steps:
+      - attach_workspace:
+          at: pypi-build
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = danthe3rd" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: upload to pypi
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install twine
+            du -h pypi-build/dist/*
+            twine upload pypi-build/dist/hiplot-*
 
 orbs:
   win: circleci/windows@2.2.0
@@ -326,88 +413,32 @@ jobs:
       - image: python:3.7
     steps:
       - checkout
-      - attach_workspace:
-          at: hiplot/static
       - run:
-          name: install dependencies
-          command: |
-            apt-get update
-            apt-get install python3-venv -y
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements/dev.txt
-            pip install -r requirements/main.txt
-      - run:
-          name: verify git tag vs. version
-          command: |
-            . venv/bin/activate
-            echo "CIRCLE_TAG = $CIRCLE_TAG"
-            export CIRCLE_TAG=${CIRCLE_TAG:-`cat hiplot/__init__.py | grep __version__ | cut -d\" -f2`}
-            echo "Set CIRCLE_TAG = $CIRCLE_TAG"
-            python setup.py verify
-      - run:
-          name: create packages
-          command: |
-            . venv/bin/activate
-            rm -rf dist && mkdir dist pypi-build
-            # create a source distribution
-            python setup.py sdist
-            # create a wheel
-            python setup.py bdist_wheel
-            mv dist pypi-build
-      - run:
-          name: verify package
-          command: |
-            . ./venv/bin/activate
-            twine check pypi-build/dist/*
-      - run:
-          name: test install from wheel
-          command: |
-            python3 -m venv test_wheel
-            . test_wheel/bin/activate
-            cd ..
-            ls
-            pip install project/pypi-build/dist/hiplot-*any.whl
-            python -c "import hiplot as hip; hip.Experiment"
-            hiplot-render demo --format html > /dev/null
-      - run:
-          name: test install from sdist
-          command: |
-            python -c "from pathlib import Path;files = Path('hiplot.egg-info/SOURCES.txt').read_text().split(); assert 'LICENSE' in files"
-            python3 -m venv test_sdist
-            . test_sdist/bin/activate
-            cd ..
-            ls
-            pip install project/pypi-build/dist/hiplot-*.tar.gz
-            python -c "import hiplot as hip; hip.Experiment"
-            hiplot-render demo --format html > /dev/null
-      - persist_to_workspace:
-          root: pypi-build
-          paths: dist
-      - store_artifacts:
-          when: always
-          path: pypi-build
+          name: Set package name and version
+          command: echo $CIRCLE_TAG > .hiplot_version && echo "hiplot" > .hiplot_package
+      - pip_build
 
   pypi-deploy:
     docker:
       - image: python:3.7
     steps:
-      - attach_workspace:
-          at: pypi-build
+      - pypi_deploy
+
+  pypi-build-master:
+    docker:
+      - image: python:3.7
+    steps:
+      - checkout
       - run:
-          name: init .pypirc
-          command: |
-            echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = danthe3rd" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-      - run:
-          name: upload to pypi
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install twine
-            du -h pypi-build/dist/*
-            twine upload pypi-build/dist/hiplot-*
+          name: Set package name and version
+          command: echo "`git describe --tags --abbrev=0 master`.dev`git rev-list --count HEAD`" > .hiplot_version && echo "hiplot-master" > .hiplot_package
+      - pip_build
+
+  pypi-deploy-master:
+    docker:
+      - image: python:3.7
+    steps:
+      - pypi_deploy
 
   win-tests:
     executor:
@@ -494,8 +525,33 @@ workflows:
           requires:
             - npm-build
           filters:
+            branches:
+              ignore: /.*/
             tags:
               only: /.*/
+      - pypi-build-master:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
+      - pypi-deploy-master:
+          requires:
+            - pypi-build-master
+            - npm-build
+            - docs-build
+            - browser-jupyter-chrome
+            - browser-jupyter-chrome-dev
+            - browser-teste2e-chrome
+            - browser-render-chrome
+            - browser-render-firefox
+            - mypy_pytest
+            - pypi-deploy
+          filters:
+            branches:
+              only: master
+            tags: # Re-deploy master build when pushing a new tag
+              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.post(0|[1-9][0-9]*))?/
       - pypi-deploy:
           requires:
             - pypi-build

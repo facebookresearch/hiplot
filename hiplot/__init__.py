@@ -7,8 +7,8 @@ from .experiment import (Experiment, ExperimentFetcherDoesntApply, ExperimentVal
 from .server import run_server, run_server_main
 from . import fetchers
 
-__version__ = "0.1.9.post2"
 __all__ = [
     'Experiment', 'ExperimentFetcherDoesntApply', 'ExperimentValidationError', 'ExperimentValidationCircularRef',
     'ExperimentValidationMissingParent', 'Datapoint', 'ExperimentDisplayed', 'ValueDef', 'ValueType', 'Displays'
 ]
+__version__ = "0.0.0"  # Set by CI upon deploy

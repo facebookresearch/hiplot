@@ -26,6 +26,7 @@ import re
 from pathlib import Path
 import os
 import sys
+import subprocess
 sys.path.insert(0, os.path.abspath('..'))
 
 
@@ -70,11 +71,7 @@ github_doc_root = 'https://github.com/facebookresearch/hiplot'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-init_str = Path("../hiplot/__init__.py").read_text()
-match = re.search(r"^__version__ = \"(?P<version>[\w\.]+?)\"$", init_str, re.MULTILINE)
-assert match is not None, "Could not find version in hiplot/__init__.py"
-# The full version, including alpha/beta/rc tags.
-release = match.group("version")
+release = os.environ.get("CIRCLE_TAG", subprocess.check_output(["git", "describe", "--tags", "--abbrev=0", "master"]).decode('utf-8'))
 
 # The short X.Y version.
 version = '.'.join(release.split('.')[:2])
