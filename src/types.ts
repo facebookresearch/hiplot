@@ -28,15 +28,16 @@ export enum ParamType {
     TIMESTAMP = "timestamp",
 };
 
-export interface HiPlotValueDef {
+export interface HiPlotValueDef { // Mirror of python `hip.ValueDef`
     type: ParamType;
     colors: {[value: string]: string};
     colormap: string | null;
     force_value_min: number | null;
     force_value_max: number | null;
+    label_css: string | null;
 };
 
-export interface HiPlotExperiment {
+export interface HiPlotExperiment { // Mirror of python `hip.Experiment`
     datapoints: Array<Datapoint>,
     parameters_definition: {[key: string]: HiPlotValueDef},
     colormap: string;

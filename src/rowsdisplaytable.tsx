@@ -70,10 +70,11 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         });
         this.dom.empty();
         var columns: Array<{[k: string]: any}> = this.ordered_cols.map(function(x) {
+            const pd = me.props.params_def[x];
             return {
-                'title': x,
+                'title': x == '' ? '' : $("<span />").attr("class", pd.label_css).text(x)[0].outerHTML,
                 'defaultContent': 'null',
-                'type': x == '' ? 'html' : (me.props.params_def[x].numeric ? "num" : "string"),
+                'type': x == '' ? 'html' : (pd.numeric ? "num" : "string"),
             };
         });
         columns[0]['render'] = function(data, type, row, meta) {
@@ -89,8 +90,8 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
             data: [],
             deferRender: true, // Create HTML elements only when displayed
             headerCallback: function headerCallback(thead: HTMLTableRowElement, data: Array<Array<any>>, start: number, end: number, display) {
-                Array.from(thead.cells).forEach(function(th, i) {
-                    const col = th.innerHTML;
+                Array.from(thead.cells).forEach(function(th: HTMLElement, i) {
+                    const col = th.innerText;
                     if (col != '' && me.dt === null && me.props.context_menu_ref !== undefined) {
                         th.addEventListener('contextmenu', e => {
                             me.props.context_menu_ref.current.show(e.pageX, e.pageY, col);

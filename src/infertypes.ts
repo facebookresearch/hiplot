@@ -303,6 +303,7 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             'colormap': hint !== undefined ? hint.colormap : null,
             'force_value_min': hint !== undefined && hint.force_value_min !== null ? hint.force_value_min : null,
             'force_value_max': hint !== undefined && hint.force_value_max !== null ? hint.force_value_max : null,
+            'label_css': hint !== undefined && hint.label_css !== null ? hint.label_css : "",
         };
         // What other types we can render as?
         if (numeric) {

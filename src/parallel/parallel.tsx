@@ -18,6 +18,7 @@ import style from "../hiplot.css";
 import { HiPlotPluginData } from "../plugin";
 import { ResizableH } from "../lib/resizable";
 import { Filter, FilterType, apply_filters } from "../filters";
+import { foDynamicSizeFitContent, foCreateAxisLabel } from "../lib/svghelpers";
 
 interface StringMapping<V> { [key: string]: V; };
 
@@ -60,7 +61,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   w: number;
   h: number;
 
-  dimensions_dom: any = null;
+  dimensions_dom: d3.Selection<SVGGElement, string, null, undefined> = null;
   render_speed = 10;
   animloop: d3.Timer = null;
 
@@ -208,7 +209,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   sendBrushExtents(): void {
     const yscales = this.yscale;
     var colToScale = {};
-    this.dimensions_dom.selectAll("." + style.brush).each(function(dim) {
+    this.dimensions_dom.selectAll("." + style.brush).each(function(this: SVGGElement, dim: string) {
       const sel: d3.BrushSelection = d3.brushSelection(this);
       if (sel === null) {
         return;
@@ -348,22 +349,14 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           .attr("class", style.axis)
           .attr("transform", "translate(0,0)")
           .each(function(d) { d3.select(this).call(me.axis.scale(me.yscale[d])); })
-        .append("svg:text")
+        .append(function(dim) { return foCreateAxisLabel(me.props.params_def[dim], me.props.context_menu_ref); })
+          .attr("y", function(d: string, i: number) { return -21 - 16 * (i%3); } )
           .attr("text-anchor", "middle")
-          .attr("y", function(d,i) { return -14 - 16 * (i%3); } )
-          .attr("x", 0)
-          .classed(style.label, true)
-          .classed("pplot-label", true)
-          .text(String)
-          .on("contextmenu", function(d) {
-            if (me.props.context_menu_ref !== undefined) {
-              me.props.context_menu_ref.current.show(d3.event.pageX, d3.event.pageY, d);
-            }
-            d3.event.preventDefault();
-            d3.event.stopPropagation();
-          })
-          .append("title")
-            .text("Click to invert. Drag to reorder. Right click for options.");
+          .attr("title", "Click to invert. Drag to reorder. Right click for options.") // TODO
+          .classed("pplot-label", true);
+      me.dimensions_dom.selectAll(".pplot-label").each(function(this: SVGForeignObjectElement, d: string) {
+        foDynamicSizeFitContent(this);
+      })
 
       // Add and store a brush for each axis.
       me.dimensions_dom.append("svg:g")
@@ -419,7 +412,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
     function brush_extends() {
       var extents = {};
-      me.dimensions_dom.selectAll("." + style.brush).each(function(dim) {
+      me.dimensions_dom.selectAll("." + style.brush).each(function(this: SVGGElement, dim: string) {
         extents[dim] = d3.brushSelection(this);
       });
       return extents;
@@ -446,8 +439,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
             var extent = extents[dimension];
             d3.select(this)
               .selectAll('text')
-              .style('font-weight', 'bold')
-              .style('font-size', '13px')
+              .classed(style.tickSelected, true)
               .style('display', function() {
                 if (d3.select(this).classed(style.label)) {
                   return null;
@@ -458,8 +450,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           } else {
             d3.select(this)
               .selectAll('text')
-              .style('font-size', null)
-              .style('font-weight', null)
+              .classed(style.tickSelected, false)
               .style('display', null);
           }
           d3.select(this)
