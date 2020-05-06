@@ -177,6 +177,7 @@
 <span class="sd">    :ivar colors: Categorical scales only: mapping from value to HTML color (either :code:`rgb(R, G, B)` or :code:`#RRGGBB`)</span>
 <span class="sd">    :ivar colormap: Numerical scales only: `D3 scale &lt;https://github.com/d3/d3-scale-chromatic&gt;`_ to use</span>
 <span class="sd">        (default scale is `interpolateTurbo &lt;https://github.com/d3/d3-scale-chromatic#interpolateTurbo&gt;`_)</span>
+<span class="sd">    :ivar label_css: Space-separated bootstrap CSS classes to apply on the label when supported</span>
 
 <span class="sd">    See :attr:`hiplot.Experiment.parameters_definition`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -185,11 +186,13 @@
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">value_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ValueType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">colormap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">colormap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">label_css</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">value_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="n">colors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">colormap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_css</span> <span class="o">=</span> <span class="n">label_css</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">force_value_min</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">force_value_max</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -217,6 +220,7 @@
             <span class="s2">&quot;colormap&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span><span class="p">,</span>
             <span class="s2">&quot;force_value_min&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">force_value_min</span><span class="p">,</span>
             <span class="s2">&quot;force_value_max&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">force_value_max</span><span class="p">,</span>
+            <span class="s2">&quot;label_css&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_css</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
