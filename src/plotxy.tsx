@@ -201,16 +201,28 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       xAxis = g => g
         .attr("transform", `translate(0,${me.state.height - margin.bottom})`)
         .call(d3.axisBottom(x_scale).ticks(1+me.state.width / 80).tickSizeInner(margin.bottom + margin.top - me.state.height))
-        // Make odd ticks below (to prevent overlap when very long labels)
-        .call(g => g
-          .selectAll(".tick text")
-          .attr("y", function(d: string, i: number) { return 4 + 16 * (i%2); } )
-        )
-        .call(g => g.select(".tick:last-of-type").append(function() { return foCreateAxisLabel(me.props.params_def[me.state.axis_x], me.props.context_menu_ref); })
+        .call(g => g.select(".tick:last-of-type").each(function(this: SVGGElement) {
+          const fo = foCreateAxisLabel(me.props.params_def[me.state.axis_x], me.props.context_menu_ref);
+          d3.select(fo)
             .attr("y", 22)
             .attr("text-anchor", "end")
             .attr("font-weight", "bold")
-            .classed("plotxy-label", true))
+            .classed("plotxy-label", true);
+          const clone = this.cloneNode(false);
+          clone.appendChild(fo);
+          this.parentElement.appendChild(clone);
+        }))
+        // Make odd ticks below (to prevent overlap when very long labels)
+        .call(g => g
+          .selectAll(".tick")
+          .each(function(this: SVGGElement, d: string, i: number) {
+            const line = this.children[0] as SVGLineElement;
+            if (this.childElementCount == 2 && (this.children[1] as SVGTextElement).textLength.baseVal.value && line.nodeName == "line") {
+              this.transform.baseVal.getItem(0).matrix.f += 20 * (i % 2);
+              line.setAttribute("y2", `${parseFloat(line.getAttribute("y2")) - 20 * (i % 2)}`);
+            }
+          })
+        )
         .call(g => g.selectAll(".plotxy-label").each(function() { foDynamicSizeFitContent(this); }))
         .attr("font-size", null);
       div.selectAll("canvas")
