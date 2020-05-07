@@ -80,8 +80,8 @@ module.exports = env => { return {
                   loader: "css-loader",
                   options: {
                     modules: {
-                      // localIdentName: '[local]__[hash:base64:5]',
-                      localIdentName: '[local]',
+                      localIdentName: '[local]__[hash:base64:5]',
+                      //localIdentName: '[local]',
                     }
                   }
                 },
