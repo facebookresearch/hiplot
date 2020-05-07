@@ -425,9 +425,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       if (me.props.context_menu_ref !== undefined) {
         me.props.context_menu_ref.current.hide();
       }
-      if (me.animloop) {
-        me.animloop.stop();
-      }
       var extents = brush_extends();
       var actives = me.state.dimensions.filter(function(p) { return extents[p] !== null; });
 
@@ -677,7 +674,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     if (this.animloop) {
       this.animloop.stop();
     }
-    this.animloop = d3.timer(animloop);
+    if (n > 0) {
+      this.animloop = d3.timer(animloop);
+    }
   }.bind(this);
 
 
