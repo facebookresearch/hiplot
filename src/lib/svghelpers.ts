@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
 import * as d3 from "d3";
 import { ParamDef } from "../infertypes";
 import style from "../hiplot.css";
@@ -19,10 +27,11 @@ export function foDynamicSizeFitContent(fo: SVGForeignObjectElement) {
     fo.style.overflow = "visible";
 }
 
-export function foCreateAxisLabel(pd: ParamDef, cm: React.RefObject<ContextMenu>): SVGForeignObjectElement {
+export function foCreateAxisLabel(pd: ParamDef, cm: React.RefObject<ContextMenu>, tooltip: string = "Right click for options"): SVGForeignObjectElement {
     const fo = document.createElementNS('http://www.w3.org/2000/svg',"foreignObject");
     d3.select(fo).append("xhtml:span")
         .attr("class", pd.label_css)
+        .classed(style.tooltipContainer, true)
         .classed("d-inline-block", true)
         .classed(style.label, true)
         .html(pd.name)
@@ -32,6 +41,10 @@ export function foCreateAxisLabel(pd: ParamDef, cm: React.RefObject<ContextMenu>
             }
             d3.event.preventDefault();
             d3.event.stopPropagation();
-        });
+        })
+        .append("span")
+            .classed(style.tooltiptext, true)
+            .classed(style.tooltipBot, true)
+            .text(tooltip);
     return fo;
 }
