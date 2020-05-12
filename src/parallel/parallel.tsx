@@ -349,7 +349,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           .attr("class", style.axis)
           .attr("transform", "translate(0,0)")
           .each(function(d) { d3.select(this).call(me.axis.scale(me.yscale[d])); })
-        .append(function(dim) { return foCreateAxisLabel(me.props.params_def[dim], me.props.context_menu_ref); })
+        .append(function(dim) { return foCreateAxisLabel(me.props.params_def[dim], me.props.context_menu_ref, "Drag to move, right click for options"); })
           .attr("y", function(d: string, i: number) { return -21 - 16 * (i%3); } )
           .attr("text-anchor", "middle")
           .attr("title", "Click to invert. Drag to reorder. Right click for options.") // TODO

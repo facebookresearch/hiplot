@@ -219,3 +219,31 @@ tr.highlight {
   width: 10px;
   display: inline-block;
 }
+
+/* Tooltips when hovering column labels */
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltipBot {
+  top: 100%;
+  left: 0%;
+}
+/* Tooltip text */
+.tooltipContainer .tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltipContainer:hover .tooltiptext {
+  visibility: visible;
+}
