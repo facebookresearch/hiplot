@@ -8,6 +8,7 @@
 // This file is largely inspired from the snippet by Kai Chang
 // available in http://bl.ocks.org/syntagmatic/3150059
 
+import $ from "jquery";
 import React from "react";
 import * as d3 from "d3";
 import _ from 'underscore';
@@ -33,6 +34,12 @@ interface ParallelPlotState {
 
   dragging: {col: string, pos: number, origin: number, dragging: boolean};
 };
+
+interface PPlotInternal {
+  redraw_axis: () => void;
+  brush: () => void;
+};
+
 
 // DISPLAYS_DATA_DOC_BEGIN
 // Corresponds to values in the dict of `exp._displays[hip.Displays.PARALLEL_PLOT]`
@@ -60,6 +67,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   // Available space minus margins
   w: number;
   h: number;
+
+  pplot: PPlotInternal;
 
   dimensions_dom: d3.Selection<SVGGElement, string, null, undefined> = null;
   render_speed = 10;
@@ -111,6 +120,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     if (this.animloop) {
       this.animloop.stop();
     }
+    if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
+        this.props.context_menu_ref.current.removeCallbacks(this);
+    }
   };
   componentDidUpdate(prevProps: ParallelPlotData, prevState: ParallelPlotState) {
     if (prevState.height != this.state.height || prevState.width != this.state.width) {
@@ -131,6 +143,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       var g: any = d3.select(this.svgg_ref.current).selectAll(".dimension");
       this.xscale.domain(this.state.dimensions);
       this.dimensions_dom.filter(function(this: ParallelPlot, p) { return this.state.dimensions.indexOf(p) == -1; }.bind(this)).remove();
+      this.dimensions_dom = this.dimensions_dom.filter(function(this: ParallelPlot, p) { return this.state.dimensions.indexOf(p) !== -1; }.bind(this));
       if (!this.state.dragging) {
         g = g.transition();
       }
@@ -150,13 +163,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         }.bind(this));
       }
     }
-    // Rescale to new dataset domain:
-    // reset yscales, preserving inverted state
-    if (prevProps.params_def != this.props.params_def) {
-      this.brush_clear_all();
-
-      // When removing data, some columns might no longer exist
-      // and we want to remove those
+    // Recompute scales - when dimensions got removed, or scaling changed for one
+    if (this.pplot && (this.state.dimensions != prevState.dimensions || prevProps.params_def != this.props.params_def)) {
       var drop_scales = [];
       this.state.dimensions.forEach(function(this: ParallelPlot, d) {
         var new_scale = this.createScale(d);
@@ -169,7 +177,15 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       drop_scales.forEach(function(this: ParallelPlot, d, i) {
         this.remove_axis(d);
       }.bind(this));
-
+    }
+    // Dimension added - redraw missing axis
+    const oldDimsSet = new Set(prevState.dimensions);
+    if (this.pplot && ![...this.state.dimensions].every(value => oldDimsSet.has(value))) {
+      this.pplot.redraw_axis();
+    }
+    // Rescale to new dataset domain
+    if (this.pplot && prevProps.params_def != this.props.params_def) {
+      this.brush_clear_all();
       this.update_ticks();
 
       if (this.animloop) {
@@ -187,7 +203,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   }
   onBrushChange(): void {
     this.sendBrushExtents_debounced();
-    this.brush();
+    this.pplot.brush();
   }
   onResize(height: number, width: number): void {
     if (this.state.height != height || this.state.width != width) {
@@ -243,6 +259,21 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       dimensions: dimensions,
       order: Array.from(dimensions),
     }, this.initParallelPlot.bind(this));
+
+    if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
+        this.props.context_menu_ref.current.addCallback(this.columnContextMenu.bind(this), this);
+    }
+  }
+  columnContextMenu(column: string, cm: HTMLDivElement) {
+    if (!this.can_restore_axis(column)) {
+      return;
+    }
+    var restore_btn = $(`<a class="dropdown-item" href="#">Restore in Parallel Plot</a>`);
+    restore_btn.click(function(this: ParallelPlot, event) {
+        this.restore_axis(column);
+        event.preventDefault();
+    }.bind(this));
+    $(cm).append(restore_btn);
   }
 
   position = function(d: string): number {
@@ -268,7 +299,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     // SVG for ticks, labels, and interactions
 
     // Load the data and visualization
-    function _loadWithProvidedData() {
+    function redraw_axis() {
       // Extract the list of numerical dimensions and create a scale for each.
       me.xscale.domain(me.state.dimensions);
 
@@ -336,6 +367,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           me.setState({dragging: null});
         });
       }
+      if (me.dimensions_dom) {
+        me.dimensions_dom.remove();
+      }
       me.dimensions_dom = d3.select(me.svgg_ref.current).selectAll(".dimension")
           .data(me.state.dimensions)
         .enter().append("svg:g")
@@ -348,7 +382,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       me.dimensions_dom.append("svg:g")
           .attr("class", style.axis)
           .attr("transform", "translate(0,0)")
-          .each(function(d) { d3.select(this).call(me.axis.scale(me.yscale[d])); })
+          .each(function(d) { console.assert(me.yscale[d], d, me.yscale, this); d3.select(this).call(me.axis.scale(me.yscale[d])); })
         .append(function(dim) { return foCreateAxisLabel(me.props.params_def[dim], me.props.context_menu_ref, "Drag to move, right click for options"); })
           .attr("y", function(d: string, i: number) { return -21 - 16 * (i%3); } )
           .attr("text-anchor", "middle")
@@ -371,10 +405,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       me.dimensions_dom.selectAll(".extent")
           .append("title")
             .text("Drag or resize this filter");
-
-      // Render full foreground
-      brush();
-      me.sendBrushExtents();
     };
 
     function invert_axis(d: string) {
@@ -426,7 +456,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         me.props.context_menu_ref.current.hide();
       }
       var extents = brush_extends();
-      var actives = me.state.dimensions.filter(function(p) { return extents[p] !== null; });
+      var actives = me.state.dimensions.filter(function(p) { return extents[p] !== null && extents[p] !== undefined; });
 
       // hack to hide ticks beyond extent
       me.dimensions_dom
@@ -515,7 +545,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         data: filters,
       });
     }
-    this.brush = brush;
 
 
     // scale to window size
@@ -542,10 +571,19 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     }, 100);
 
     me.compute_dimensions();
-    _loadWithProvidedData();
+    redraw_axis();
+
+    // Render full foreground
+    brush();
+    me.sendBrushExtents();
 
     // Trigger initial brush
     me.setState(function(prevState) { return { brush_count: prevState.brush_count + 1}; });
+
+    me.pplot = {
+      'redraw_axis': redraw_axis,
+      'brush': brush,
+    };
   }
 
   setScaleRange(k: string) {
@@ -704,6 +742,23 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     }});
   }
 
+  can_restore_axis(d: string): boolean {
+    return this.state.dimensions.indexOf(d) === -1 && this.state.hide.has(d);
+  }
+  restore_axis(d: string): void {
+    // Already displayed or not hidden
+    if (!this.can_restore_axis(d)) {
+      return;
+    }
+    this.setState(function(prevState, props) {
+      var newHide = new Set(prevState.hide);
+      newHide.delete(d);
+      return {
+        hide: newHide,
+        dimensions: prevState.dimensions.concat([d])
+      };
+    });
+  }
   path = function(d: Datapoint, ctx: CanvasRenderingContext2D, color?: string) {
     if (color) ctx.strokeStyle = color;
     var has_started = false;

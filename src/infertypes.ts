@@ -104,6 +104,8 @@ export function scale_pixels_range(scale: any, extents: [number, number]): Scale
     /**
      * Converts scale range in pixels back to domain (aka inverts the scale)
      */
+    console.assert(scale, "No scale provided to `scale_pixels_range`");
+    console.assert(extents, "No extents provided to `scale_pixels_range`", extents);
     const scaleToNorm = d3.scaleLinear().domain(scale.range()).range([0, 1]);
     const normalized = [scaleToNorm(extents[0]), scaleToNorm(extents[1])] as [number, number];
     switch (scale.hip_type as ParamType) {
