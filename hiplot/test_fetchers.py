@@ -8,7 +8,7 @@ import tempfile
 import shutil
 import pytest
 from . import experiment as exp
-from .fetchers import load_demo, load_csv, load_json
+from .fetchers import load_demo, load_csv, load_json, MultipleFetcher
 from .fetchers_demo import README_DEMOS
 
 
@@ -54,3 +54,13 @@ def test_demo_from_readme() -> None:
     for k, v in README_DEMOS.items():
         print(k)
         v().validate()._asdict()
+
+
+def test_fetcher_multi() -> None:
+    test_string = r"""multi://{
+"test1": "test2"
+}
+xp2"""
+    f = MultipleFetcher([])
+    eof = f.partial(test_string)
+    assert test_string[eof:] == "\nxp2"
