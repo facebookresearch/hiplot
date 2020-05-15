@@ -40,7 +40,7 @@ retrieve some information about the state of the visualization.
 
 
 When calling :meth:`hiplot.Experiment.display`, a :class:`hiplot.ExperimentDisplayed` object is returned.
-Behind the hook, a Javascript-Python communication channel is established with the python notebook kernel, that HiPlot's javascript frontend uses to send information
+Behind the hood, a Javascript-Python communication channel is established with the python notebook kernel, that HiPlot's javascript frontend uses to send information
 about selected datapoints, filtering, ...
 
 
@@ -63,7 +63,7 @@ After the visualization has loaded, and in another cell, python code can query i
 >>> displayed_exp.get_selected()  # Return all the datapoints currently selected
  [<hiplot.experiment.Datapoint at 0x10b32dc10>]
 
->>> displayed_exp.get_brush_extents()  # Retrieve brush extents in the parallel plot
+>>> displayed_exp.get_brush_extents()  # Retrieve current brush extents in the parallel plot
  {'dropout': {'type': 'numeric',
   'brush_extents_normalized': [1, 0.6015169902912622],
   'range': [0.3, 0.22030339805825244]},

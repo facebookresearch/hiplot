@@ -134,7 +134,7 @@ and restored when <a class="reference internal" href="py_reference.html#hiplot.E
 <p>HiPlot visualizations are highly interactive, allowing the user to filter and slice through the data. When running in Jupyter Notebooks, it is possible to
 retrieve some information about the state of the visualization.</p>
 <p>When calling <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display()</span></code></a>, a <a class="reference internal" href="py_reference.html#hiplot.ExperimentDisplayed" title="hiplot.ExperimentDisplayed"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ExperimentDisplayed</span></code></a> object is returned.
-Behind the hook, a Javascript-Python communication channel is established with the python notebook kernel, that HiPlot’s javascript frontend uses to send information
+Behind the hood, a Javascript-Python communication channel is established with the python notebook kernel, that HiPlot’s javascript frontend uses to send information
 about selected datapoints, filtering, …</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># A Jupyter Notebook cell</span>
 <span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
@@ -152,7 +152,7 @@ about selected datapoints, filtering, …</p>
 <span class="go"> [&lt;hiplot.experiment.Datapoint at 0x10b32dc10&gt;]</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">displayed_exp</span><span class="o">.</span><span class="n">get_brush_extents</span><span class="p">()</span>  <span class="c1"># Retrieve brush extents in the parallel plot</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">displayed_exp</span><span class="o">.</span><span class="n">get_brush_extents</span><span class="p">()</span>  <span class="c1"># Retrieve current brush extents in the parallel plot</span>
 <span class="go"> {&#39;dropout&#39;: {&#39;type&#39;: &#39;numeric&#39;,</span>
 <span class="go">  &#39;brush_extents_normalized&#39;: [1, 0.6015169902912622],</span>
 <span class="go">  &#39;range&#39;: [0.3, 0.22030339805825244]},</span>
