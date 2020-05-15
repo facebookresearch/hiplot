@@ -44,7 +44,7 @@ export class ResizableH extends React.Component<ResizableHProps, ResizableHState
     }
     static defaultProps = {
         borderSize: 4,
-        minHeight: 50,
+        minHeight: 100,
     }
     componentDidMount() {
         var div = $(this.div_ref.current);

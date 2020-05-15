@@ -198,7 +198,10 @@
   background: #444;
 }
 
-.checkpoints-graph-svg :global(.tick) line {
+.plotxy-graph-svg :global(.tick) line {
+  color: #9a9a9a26;
+}
+.distr-graph-svg :global(.tick) line {
   color: #9a9a9a26;
 }
 

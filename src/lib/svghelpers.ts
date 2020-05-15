@@ -27,24 +27,26 @@ export function foDynamicSizeFitContent(fo: SVGForeignObjectElement) {
     fo.style.overflow = "visible";
 }
 
-export function foCreateAxisLabel(pd: ParamDef, cm: React.RefObject<ContextMenu>, tooltip: string = "Right click for options"): SVGForeignObjectElement {
+export function foCreateAxisLabel(pd: ParamDef, cm?: React.RefObject<ContextMenu>, tooltip: string = "Right click for options"): SVGForeignObjectElement {
     const fo = document.createElementNS('http://www.w3.org/2000/svg',"foreignObject");
-    d3.select(fo).append("xhtml:span")
+    const sel = d3.select(fo).append("xhtml:span")
         .attr("class", pd.label_css)
         .classed(style.tooltipContainer, true)
         .classed("d-inline-block", true)
         .classed(style.label, true)
         .html(pd.name)
         .on("contextmenu", function() {
-            if (cm !== undefined) {
+            if (cm) {
                 cm.current.show(d3.event.pageX, d3.event.pageY, pd.name);
+                d3.event.preventDefault();
+                d3.event.stopPropagation();
             }
-            d3.event.preventDefault();
-            d3.event.stopPropagation();
         })
-        .append("span")
+    if (tooltip) {
+        sel.append("span")
             .classed(style.tooltiptext, true)
             .classed(style.tooltipBot, true)
             .text(tooltip);
+    }
     return fo;
 }
