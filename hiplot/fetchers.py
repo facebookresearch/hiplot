@@ -41,22 +41,27 @@ def load_xp_with_fetchers_partial(fetchers: tp.List[hip.ExperimentFetcher], uri:
     for f in fetchers:
         try:
             endoffetcher = eol
-            if hasattr(f, "partial"):
-                endoffetcher = f.partial(uri)  # type: ignore
+            if hasattr(f, "get_uri_length"):
+                endoffetcher = f.get_uri_length(uri)  # type: ignore
             return f(uri[:endoffetcher]), endoffetcher
         except hip.ExperimentFetcherDoesntApply:
             continue
     raise NoFetcherFound(uri)
 
 
-def load_xp_with_fetchers(fetchers: tp.List[hip.ExperimentFetcher], uri: str) -> hip.Experiment:
+def load_xps_with_fetchers(fetchers: tp.List[hip.ExperimentFetcher], uri: str) -> tp.List[hip.Experiment]:
     uri = uri.lstrip()
     xps: tp.List[hip.Experiment] = []
     while uri:
         xp, endfetcher = load_xp_with_fetchers_partial(fetchers, uri)
         uri = uri[endfetcher:].lstrip()
         xps.append(xp)
-    assert xps, uri
+    assert xps, uri  # If URI is empty, we should raise in `load_xp_with_fetchers_partial`
+    return xps
+
+
+def load_xp_with_fetchers(fetchers: tp.List[hip.ExperimentFetcher], uri: str) -> hip.Experiment:
+    xps = load_xps_with_fetchers(fetchers, uri)
     return hip.Experiment.merge({
         f"{i}": xp
         for i, xp in enumerate(xps)
@@ -77,7 +82,7 @@ class MultipleFetcher:
             return hip.Experiment.merge({v: load_xp_with_fetchers(self.fetchers, v) for v in defs})
         return hip.Experiment.merge({k: load_xp_with_fetchers(self.fetchers, v) for k, v in defs.items()})
 
-    def partial(self, uri: str) -> int:
+    def get_uri_length(self, uri: str) -> int:
         """
         Returns the end position of the multi block
         """

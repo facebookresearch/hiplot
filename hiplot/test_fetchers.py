@@ -8,7 +8,7 @@ import tempfile
 import shutil
 import pytest
 from . import experiment as exp
-from .fetchers import load_demo, load_csv, load_json, MultipleFetcher
+from .fetchers import load_demo, load_csv, load_json, MultipleFetcher, get_fetchers, load_xps_with_fetchers
 from .fetchers_demo import README_DEMOS
 
 
@@ -56,11 +56,23 @@ def test_demo_from_readme() -> None:
         v().validate()._asdict()
 
 
-def test_fetcher_multi() -> None:
+def test_fetcher_multi_get_uri_length() -> None:
     test_string = r"""multi://{
 "test1": "test2"
 }
 xp2"""
     f = MultipleFetcher([])
-    eof = f.partial(test_string)
+    eof = f.get_uri_length(test_string)
     assert test_string[eof:] == "\nxp2"
+
+
+def test_multilines() -> None:
+    test_uri = r"""demo
+multi://{
+"xp1": "demo",
+"xp2": "demo"
+}
+demo
+"""
+    fetchers = get_fetchers([])
+    assert len(load_xps_with_fetchers(fetchers, test_uri)) == 3
