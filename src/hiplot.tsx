@@ -17,7 +17,7 @@ import { Datapoint, ParamType, HiPlotExperiment, HiPlotLoadStatus, PSTATE_COLOR_
 import { RowsDisplayTable } from "./rowsdisplaytable";
 import { infertypes, colorScheme, ParamDefMap } from "./infertypes";
 import { PersistentState, PersistentStateInMemory, PersistentStateInURL } from "./lib/savedstate";
-import { ParallelPlot, ParallelPlotData } from "./parallel/parallel";
+import { ParallelPlot } from "./parallel/parallel";
 import { PlotXY } from "./plotxy";
 import { SelectedCountProgressBar, HiPlotDataControlProps } from "./controls";
 import { ErrorDisplay, HeaderBar } from "./elements";

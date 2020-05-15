@@ -165,9 +165,10 @@ export function colorScheme(pd: ParamDef, value: any, alpha: number, defaultColo
         if (value === undefined || value === null || is_special_numeric(value)) {
             return 'rgba(0,0,0,' + alpha + ')';
         }
-        if (!pd.__colorscale) {
+        if (!pd.__colorscale || pd.__colorscale.__type !== pd.type) {
             pd.__colorscale = create_d3_scale_without_outliers(pd);
             pd.__colorscale.range([0, 1]);
+            pd.__colorscale.__type = pd.type;
         }
         const colr = Math.max(0, Math.min(1, pd.__colorscale(value)));
         function parseColorMap(name: string, description: string) {
