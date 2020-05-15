@@ -9,6 +9,7 @@ import React from "react";
 import * as d3 from "d3";
 import style from "../hiplot.css";
 import { create_d3_scale_without_outliers, ParamDef } from "../infertypes";
+import { foCreateAxisLabel, foDynamicSizeFitContent } from "../lib/svghelpers";
 import { ParamType, Datapoint } from "../types";
 
 const margin = {top: 20, right: 20, bottom: 50, left: 60};
@@ -45,6 +46,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
     axisBottom = React.createRef<SVGSVGElement>();
     axisLeft = React.createRef<SVGSVGElement>();
     axisRight = React.createRef<SVGSVGElement>();
+    axisBottomName = React.createRef<SVGGElement>();
 
     svgContainer = React.createRef<SVGSVGElement>();
     histAll = React.createRef<SVGSVGElement>();
@@ -79,6 +81,16 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
         if (this.isVertical()) {
             dataScale.range([0, this.figureWidth()]);
             d3.select(this.axisBottom.current).call(d3.axisBottom(dataScale).ticks(1 + this.props.width/50));
+            d3.select(this.axisBottomName.current).append(function() {
+                    return foCreateAxisLabel(this.props.param_def, null, null);
+                }.bind(this))
+                    .classed("distrplot_axislabel", true)
+                    .attr("x", -4)
+                    .attr("text-anchor", "end");
+            d3.select(this.axisBottomName.current).select(".distrplot_axislabel")
+                .each(function(this: SVGForeignObjectElement) {
+                    foDynamicSizeFitContent(this);
+                });
             this.axisRight.current.innerHTML = '';
         } else {
             dataScale.range([this.figureHeight(), 0]);
@@ -86,8 +98,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
                 .transition()
                 .duration(animate ? this.props.animateMs : 0)
                 .call(d3.axisRight(dataScale).ticks(1 + this.props.height/50))
-                    .attr("text-anchor", "end")
-                    .selectAll("text").attr("x", -4);
+                    .attr("text-anchor", "end");
             d3.select(this.axisLeft.current)
                 .transition()
                 .duration(animate ? this.props.animateMs : 0)
@@ -284,7 +295,6 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
     }
 
     render() {
-        const bottomAxisLabel = this.isVertical() ? this.props.axis : "Density";
         const leftAxisLabel = this.isVertical() ? "Density" : this.props.axis;
         return (<div>
             <svg width={this.props.width} height={this.props.height}>
@@ -298,8 +308,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
                     <g className="axisLeft" ref={this.axisLeft}></g>
                     <g className="axisRight" ref={this.axisRight} transform={`translate(${this.figureWidth()}, 0)`}></g>
                     <g className="axisBottom" ref={this.axisBottom} transform={`translate(0, ${this.figureHeight()})`}></g>
-                    <g transform={`translate(${this.figureWidth()}, ${this.props.height - margin.top - 20})`} textAnchor="end" fontWeight="bold">
-                        <text>{bottomAxisLabel}</text>
+                    <g ref={this.axisBottomName} transform={`translate(${this.figureWidth()}, ${this.props.height - margin.top - 30})`} textAnchor="end" fontWeight="bold">
                     </g>
                 </g>
             </svg>

@@ -480,10 +480,10 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     }
     return (
     <ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 100)} onRemove={this.disable.bind(this)}>
-      {this.state.width > 0 && <div ref={this.root_ref} className="checkpoints-graph" style={{"height": this.state.height}}>
-          <canvas ref={this.canvas_lines_ref} className={style["checkpoints-graph-lines"]} style={{position: 'absolute'}}></canvas>
-          <canvas ref={this.canvas_highlighted_ref} className={style["checkpoints-graph-highlights"]} style={{position: 'absolute'}}></canvas>
-          <svg className={style["checkpoints-graph-svg"]} style={{position: 'absolute'}}></svg>
+      {this.state.width > 0 && <div ref={this.root_ref} style={{"height": this.state.height}}>
+          <canvas ref={this.canvas_lines_ref} className={style["plotxy-graph-lines"]} style={{position: 'absolute'}}></canvas>
+          <canvas ref={this.canvas_highlighted_ref} className={style["plotxy-graph-highlights"]} style={{position: 'absolute'}}></canvas>
+          <svg className={style["plotxy-graph-svg"]} style={{position: 'absolute'}}></svg>
       </div>}
     </ResizableH>
     );
