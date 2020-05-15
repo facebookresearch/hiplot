@@ -251,3 +251,14 @@ tr.highlight {
 .tooltipContainer:hover .tooltiptext {
   visibility: visible;
 }
+
+
+/* Histogram */
+.histSelected line {
+  stroke: black;
+  stroke-width: 2;
+}
+.histAll rect {
+  fill: rgb(148, 103, 189);
+}
+@import "elements.scss";
