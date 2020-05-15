@@ -13,7 +13,7 @@ import glob
 import os
 import importlib
 import importlib.util
-from typing import Dict, List, Optional, Callable, Any
+import typing as tp
 from pathlib import Path
 
 from . import experiment as hip
@@ -21,23 +21,58 @@ from .fetchers_demo import README_DEMOS
 
 
 class NoFetcherFound(Exception):
-    pass
+    def __init__(self, uri: str):
+        super().__init__(f"Unable to fetch an HiPlot experiment from '{uri}'")
 
 
-def load_xp_with_fetchers(fetchers: List[hip.ExperimentFetcher], uri: str) -> hip.Experiment:
+def load_xp_with_fetchers_partial(fetchers: tp.List[hip.ExperimentFetcher], uri: str) -> tp.Tuple[hip.Experiment, int]:
+    """
+    Attempts to parse an uri.
+    Returns a corresponding experiment, and position in uri following the last used character.
+
+    Example:
+    /path1
+    /path2
+    Returns the Experiment for `/path1` and position the substring `\n/path2`
+    """
+    eol = uri.find("\n")
+    if eol == -1:
+        eol = len(uri)
     for f in fetchers:
         try:
-            return f(uri)
+            endoffetcher = eol
+            if hasattr(f, "get_uri_length"):
+                endoffetcher = f.get_uri_length(uri)  # type: ignore
+            return f(uri[:endoffetcher]), endoffetcher
         except hip.ExperimentFetcherDoesntApply:
             continue
     raise NoFetcherFound(uri)
 
 
+def load_xps_with_fetchers(fetchers: tp.List[hip.ExperimentFetcher], uri: str) -> tp.List[hip.Experiment]:
+    uri = uri.lstrip()
+    xps: tp.List[hip.Experiment] = []
+    while uri:
+        xp, endfetcher = load_xp_with_fetchers_partial(fetchers, uri)
+        uri = uri[endfetcher:].lstrip()
+        xps.append(xp)
+    assert xps, uri  # If URI is empty, we should raise in `load_xp_with_fetchers_partial`
+    return xps
+
+
+def load_xp_with_fetchers(fetchers: tp.List[hip.ExperimentFetcher], uri: str) -> hip.Experiment:
+    xps = load_xps_with_fetchers(fetchers, uri)
+    return hip.Experiment.merge({
+        f"{i}": xp
+        for i, xp in enumerate(xps)
+    }) if len(xps) > 1 else xps[0]
+
+
 class MultipleFetcher:
     MULTI_PREFIX = "multi://"
 
-    def __init__(self, fetchers: List[hip.ExperimentFetcher]) -> None:
-        self.fetchers: List[hip.ExperimentFetcher] = fetchers + [self]
+    def __init__(self, fetchers: tp.List[hip.ExperimentFetcher]) -> None:
+        self.fetchers: tp.List[hip.ExperimentFetcher] = fetchers + [self]
 
     def __call__(self, uri: str) -> hip.Experiment:
         if not uri.startswith(self.MULTI_PREFIX):
@@ -46,6 +81,16 @@ class MultipleFetcher:
         if isinstance(defs, list):
             return hip.Experiment.merge({v: load_xp_with_fetchers(self.fetchers, v) for v in defs})
         return hip.Experiment.merge({k: load_xp_with_fetchers(self.fetchers, v) for k, v in defs.items()})
+
+    def get_uri_length(self, uri: str) -> int:
+        """
+        Returns the end position of the multi block
+        """
+        if not uri.startswith(self.MULTI_PREFIX):
+            raise hip.ExperimentFetcherDoesntApply()
+        decoder = json.JSONDecoder()
+        _, current_read_offset = decoder.raw_decode(uri[len(self.MULTI_PREFIX):])
+        return len(self.MULTI_PREFIX) + current_read_offset
 
 
 def load_demo(uri: str) -> hip.Experiment:
@@ -85,6 +130,8 @@ def load_json(uri: str) -> hip.Experiment:
 
 def load_fairseq(uri: str) -> hip.Experiment:
     # pylint:disable=too-many-locals
+    # pylint:disable=too-many-branches
+    # pylint:disable=too-many-statements
     PREFIX = 'fairseq://'
     if not uri.startswith(PREFIX):
         raise hip.ExperimentFetcherDoesntApply()
@@ -103,8 +150,8 @@ def load_fairseq(uri: str) -> hip.Experiment:
             raise hip.ExperimentFetcherDoesntApply("No log file found")
     lines = train_log.read_text(encoding="utf-8").split('\n')
 
-    datapoints: List[Dict[str, Any]] = []
-    params: Dict[str, Any] = {}
+    datapoints: tp.List[tp.Dict[str, tp.Any]] = []
+    params: tp.Dict[str, tp.Any] = {}
     logs_prefix_re = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \| [A-Z]* \| )"
     for l in lines:
         # Strip log prefix
@@ -134,7 +181,7 @@ def load_fairseq(uri: str) -> hip.Experiment:
         if l.startswith('| epoch'):
             l = l.lstrip('| epoch')
             epoch = int(l[:3])
-            values: Dict[str, Any] = {"epoch": epoch}
+            values: tp.Dict[str, tp.Any] = {"epoch": epoch}
             # | epoch 002 | loss 8.413 | ...
             # | epoch 002 | valid on 'valid' subset | loss 7.599 | nll_loss 7.599 | ...
             parts = l.split('|')[1:]
@@ -164,7 +211,7 @@ def load_fairseq(uri: str) -> hip.Experiment:
 
 
 class Wav2letterLoader:
-    def _parse_metrics(self, file: Path) -> List[Dict[str, Any]]:
+    def _parse_metrics(self, file: Path) -> tp.List[tp.Dict[str, tp.Any]]:
         # 001_perf:
         '''
 # date\tkey1\tkey2...
@@ -172,11 +219,11 @@ class Wav2letterLoader:
 '''
         PERF_PREFIX = 'perf_'
         lines = file.read_text(encoding="utf-8").split('\n')
-        metrics: List[Dict[str, Any]] = []
+        metrics: tp.List[tp.Dict[str, tp.Any]] = []
         for _, l in enumerate(lines[1:]):
             if l == '':
                 continue
-            epoch_metrics: Dict[str, Any] = {}
+            epoch_metrics: tp.Dict[str, tp.Any] = {}
             for name, val in zip(lines[0].split()[1:], l.split()):
                 try:
                     epoch_metrics[PERF_PREFIX + name] = float(val)
@@ -193,7 +240,7 @@ class Wav2letterLoader:
         perfs = list(glob.glob(str(Path(uri) / '*_perf')))
         perfs.sort()
 
-        prev_ckpt_name: Optional[str] = None
+        prev_ckpt_name: tp.Optional[str] = None
         xp = hip.Experiment()
         for p in perfs:
             mtrics = self._parse_metrics(Path(p))
@@ -210,15 +257,15 @@ class Wav2letterLoader:
 load_wav2letter = Wav2letterLoader()
 
 
-def _get_module_by_name_in_cwd(name: str) -> Any:
+def _get_module_by_name_in_cwd(name: str) -> tp.Any:
     spec = importlib.util.spec_from_file_location(name, str(Path(os.getcwd()) / f"{name}.py"))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)  # type: ignore
     return module
 
 
-def get_fetchers(add_fetchers: List[str]) -> List[hip.ExperimentFetcher]:
-    xp_fetchers: List[hip.ExperimentFetcher] = [load_demo, load_csv, load_json, load_fairseq, load_wav2letter]
+def get_fetchers(add_fetchers: tp.List[str]) -> tp.List[hip.ExperimentFetcher]:
+    xp_fetchers: tp.List[hip.ExperimentFetcher] = [load_demo, load_csv, load_json, load_fairseq, load_wav2letter]
     for fetcher_spec in add_fetchers:
         parts = fetcher_spec.split(".")
         try:
