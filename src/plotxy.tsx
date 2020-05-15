@@ -40,7 +40,7 @@ interface PlotXYState extends PlotXYDisplayData {
   width: number,
   initialHeight: number,
   height: number,
-  enabled: boolean,
+  hover_uid: string | null,
 };
 
 interface PlotXYInternal {
@@ -49,12 +49,11 @@ interface PlotXYInternal {
   recompute_scale: () => void;
   draw_selected_rows: () => void;
   draw_highlighted: () => void;
+  on_resize: () => void;
 };
 
 
 export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
-  on_resize: () => void = null;
-
   plot: PlotXYInternal;
 
   svg: any;
@@ -98,7 +97,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     };
     this.state = {
       ...state,
-      enabled: state.axis_x !== null && state.axis_y !== null,
+      hover_uid: null,
     };
   }
   static defaultProps = {
@@ -181,7 +180,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       me.svg.append("g").attr("class", "brush").call(zoom_brush);
     }
     function recompute_scale(force: boolean = false) {
-      if (!force && !me.state.enabled) {
+      if (!force && !me.isEnabled()) {
         return;
       }
       x_scale_orig = x_scale = create_scale(me.state.axis_x, [margin.left, me.state.width - margin.right]);
@@ -301,7 +300,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
           dot.select("text").text("No point found?!");
           return;
         }
-        me.props.setHighlighted([me.props.dp_lookup[closest['dp'].uid]]);
+        me.setState({
+          hover_uid: closest['dp'].uid,
+        });
         dot.attr("transform", `translate(${closest["layerX"]},${closest["layerY"]})`);
         dot.select("text").text(me.props.render_row_text(closest['dp']));
       }
@@ -311,7 +312,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       }
 
       function left() {
-        me.props.setHighlighted([]);
+        me.setState({
+          hover_uid: null,
+        });
         dot.attr("display", "none");
       }
     };
@@ -389,7 +392,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
           });
         };
         rerender_all_points.push(call_render);
-        if (me.state.enabled) {
+        if (me.isEnabled()) {
           call_render();
         }
       });
@@ -404,7 +407,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
 
     // Draw highlights
     function draw_highlighted() {
-      if (!me.state.enabled) {
+      if (!me.isEnabled()) {
         return;
       }
       const highlighted = me.props.rows_highlighted;
@@ -449,16 +452,18 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     // Initial lines
     draw_selected_rows();
 
-    this.on_resize = _.throttle(function(this: PlotXY) {
-      recompute_scale();
-      draw_selected_rows();
-    }.bind(this), 75);
     return {
       clear_canvas: clear_canvas,
       update_axis: update_axis,
       recompute_scale: recompute_scale,
       draw_selected_rows: draw_selected_rows,
       draw_highlighted: draw_highlighted,
+      on_resize: _.debounce(function(this: PlotXY) {
+        if (this.isEnabled()) {
+          recompute_scale();
+          draw_selected_rows();
+        }
+      }.bind(this), 150)
     };
   }
   onResize(height: number, width: number): void {
@@ -467,10 +472,10 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     }
   }
   disable(): void {
-    this.setState({enabled: false, width: 0, axis_x: null, axis_y: null, height: this.state.initialHeight});
+    this.setState({axis_x: null, axis_y: null, height: this.state.initialHeight});
   }
   render() {
-    if (!this.state.enabled) {
+    if (!this.isEnabled()) {
       return [];
     }
     return (
@@ -492,7 +497,13 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       this.props.context_menu_ref.current.removeCallbacks(this);
     }
   };
+  isEnabled() {
+    return this.state.axis_x !== null && this.state.axis_y !== null;
+  }
   componentDidUpdate(prevProps: PlotXYProps, prevState) {
+    if (this.state.width == 0) {
+      return; // Loading...
+    }
     var anyAxisChanged = false;
     ['axis_x', 'axis_y'].forEach(function(this: PlotXY, d: string) {
       if (prevState[d] != this.state[d]) {
@@ -500,26 +511,32 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         anyAxisChanged = true;
       }
     }.bind(this));
-    if (prevState.width == 0 && this.state.width > 0) {
+    if (this.isEnabled() && !this.plot) {
       this.plot = this.mountPlotXY();
     }
     if (prevState.height != this.state.height || prevState.width != this.state.width) {
-        if (this.on_resize) {
-          this.on_resize();
+        if (this.plot) {
+          this.plot.on_resize();
         }
     }
-    if (this.state.axis_x === null || this.state.axis_y === null) {
-      if (this.state.enabled) {
-        this.setState({enabled: false});
+    if (!this.isEnabled()) {
+      this.plot = null;
+      if (this.state.hover_uid !== null) {
+        this.setState({
+          hover_uid: null,
+        });
       }
     }
     else {
-      if (this.state.enabled) {
-        if (anyAxisChanged) {
-          this.plot.update_axis();
-        }
+      if (anyAxisChanged) {
+        this.plot.update_axis();
+      }
+    }
+    if (this.state.hover_uid != prevState.hover_uid) {
+      if (this.state.hover_uid === null) {
+        this.props.setHighlighted([]);
       } else {
-        this.setState({enabled: true});
+        this.props.setHighlighted([this.props.dp_lookup[this.state.hover_uid]]);
       }
     }
 

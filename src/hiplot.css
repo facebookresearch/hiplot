@@ -238,6 +238,7 @@ tr.highlight {
   text-align: center;
   padding: 5px;
   border-radius: 6px;
+  min-width: 80px;
 
   position: absolute;
   z-index: 1;
