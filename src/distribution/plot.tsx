@@ -7,6 +7,7 @@
 
 import React from "react";
 import * as d3 from "d3";
+import style from "../hiplot.css";
 import { create_d3_scale_without_outliers, ParamDef } from "../infertypes";
 import { ParamType, Datapoint } from "../types";
 
@@ -151,13 +152,16 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
             d3.select(this.axisLeft.current)
                 .transition()
                 .duration(animate ? this.props.animateMs : 0)
-                .call(d3.axisLeft(densityScale));
+                .call(d3.axisLeft(densityScale)
+                    .ticks(1 + this.props.height/50)
+                    .tickSizeInner(-(this.props.width - margin.left - margin.right))
+                );
         } else {
             densityScale = densityScale.range([0, this.figureWidth()])
             d3.select(this.axisBottom.current)
                 .transition()
                 .duration(animate ? this.props.animateMs : 0)
-                .call(d3.axisBottom(densityScale));
+                .call(d3.axisBottom(densityScale).ticks(1 + this.props.width/50));
             // Compute reordering of the bins - we want to display higher densities first.
             var ordered1 = Array.from(binsOrdering).sort((a, b) => allHist.selected.bins[a].length - allHist.selected.bins[b].length);
             ordered1.forEach(function(value, idx) {
@@ -288,7 +292,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
                     <text style={{stroke: "white", strokeWidth: "0.2em"}}>{leftAxisLabel}</text>
                     <text>{leftAxisLabel}</text>
                 </g>
-                <g ref={this.svgContainer} transform={`translate(${margin.left}, ${margin.top})`}>
+                <g ref={this.svgContainer} className={style['distr-graph-svg']} transform={`translate(${margin.left}, ${margin.top})`}>
                     <g ref={this.histAll}></g>
                     <g ref={this.histSelected}></g>
                     <g className="axisLeft" ref={this.axisLeft}></g>
