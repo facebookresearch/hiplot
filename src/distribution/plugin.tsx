@@ -19,7 +19,7 @@ export interface HiPlotDistributionPluginState {
     initialHeight: number,
     height: number,
     width: number,
-    axis?: string,
+    axis: string | null,
     histData: HistogramData;
 };
 
@@ -44,15 +44,15 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
     container_ref: React.RefObject<HTMLDivElement> = React.createRef();
     constructor(props: DistributionPluginProps) {
         super(props);
-        var axis = this.props.persistent_state.get('axis');
-        if (axis !== undefined && this.props.params_def[axis] === undefined) {
-            axis = undefined;
+        var axis = this.props.persistent_state.get('axis', null);
+        if (axis && this.props.params_def[axis] === undefined) {
+            axis = null;
         }
-        if (axis === undefined) {
+        if (!axis) {
             axis = this.props.axis;
         }
         if (axis && this.props.params_def[axis] === undefined) {
-            axis = undefined;
+            axis = null;
         }
         const initialHeight = d3.min([d3.max([document.body.clientHeight-540, 240]), 500]);
         this.state = {
@@ -60,7 +60,7 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
             height: initialHeight,
             width: 0,
             histData: {selected: [], all: props.rows_filtered},
-            axis: axis,
+            axis: axis !== undefined ? axis : null, // Convert undefined into null
         };
     }
     static defaultProps = {
@@ -87,7 +87,7 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
         }
     }
     componentDidUpdate(prevProps: HiPlotPluginData, prevState: HiPlotDistributionPluginState) {
-        if (prevState.axis != this.state.axis && this.state.axis !== undefined) {
+        if (prevState.axis != this.state.axis) {
             if (this.props.persistent_state) {
                 this.props.persistent_state.set('axis', this.state.axis);
             }
@@ -125,19 +125,21 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
         }
     }
     disable(): void {
-      this.setState({width: 0, axis: undefined, height: this.state.initialHeight});
+      this.setState({width: 0, axis: null, height: this.state.initialHeight});
     }
     render() {
-        if (this.state.axis === undefined) {
+        if (this.state.axis === null) {
             return [];
         }
+        const param_def = this.props.params_def[this.state.axis];
+        console.assert(param_def !== undefined, this.state.axis);
         return (<ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 150)} onRemove={this.disable.bind(this)}>
             {this.state.width > 0 && <DistributionPlot
                 axis={this.state.axis}
                 height={this.state.height}
                 width={this.state.width}
                 histData={this.state.histData}
-                param_def={this.props.params_def[this.state.axis]}
+                param_def={param_def}
                 nbins={this.props.nbins}
                 animateMs={this.props.animateMs}
             />}
