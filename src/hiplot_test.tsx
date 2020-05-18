@@ -185,6 +185,7 @@ export function hiplot_setup(element: HTMLElement, extra?: object) {
         persistent_state: new PersistentStateInURL("hip"),
         plugins: defaultPlugins,
         comm: null,
+        dark: false,
     };
     if (extra !== undefined) {
         Object.assign(props, extra);

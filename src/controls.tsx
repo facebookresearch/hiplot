@@ -27,6 +27,7 @@ export class KeepOrExcludeDataBtn extends React.Component<HiPlotDataControlProps
     keep: boolean;
     title: string;
     label: string;
+    style: string;
     constructor(props: HiPlotDataControlProps) {
         super(props);
         this.state = {
@@ -45,7 +46,7 @@ export class KeepOrExcludeDataBtn extends React.Component<HiPlotDataControlProps
         this.props.filterRows(this.keep);
     }
     render() {
-        return (<button title={this.title} ref={this.btnRef} className={style.keepData} disabled={!this.state.btnEnabled} onClick={this.onClick.bind(this)}>{this.label}</button>);
+        return (<button title={this.title} ref={this.btnRef} className={`btn btn-sm btn-${this.style}`} disabled={!this.state.btnEnabled} onClick={this.onClick.bind(this)}>{this.label}</button>);
     }
 };
 
@@ -53,12 +54,14 @@ export class KeepDataBtn extends KeepOrExcludeDataBtn {
     keep = true;
     title = "Zoom in on selected data";
     label = "Keep";
+    style = "success";
 };
 
 export class ExcludeDataBtn extends KeepOrExcludeDataBtn {
     keep = false;
     title = "Remove selected data";
     label = "Exclude";
+    style = "danger";
 };
 
 function downloadURL(url: string, filename: string) {
@@ -84,7 +87,7 @@ export class ExportDataCSVBtn extends React.Component<HiPlotDataControlProps, Hi
     }
 
     render() {
-        return (<button title="Export data as CSV" onClick={this.onClick.bind(this)}>Export</button>);
+        return (<button title="Export data as CSV" className="btn btn-sm btn-light" onClick={this.onClick.bind(this)}>Export</button>);
     }
 };
 
@@ -109,7 +112,7 @@ export class RestoreDataBtn extends React.Component<HiPlotDataControlProps, HiPl
     }
 
     render() {
-        return (<button title="Remove all applied filters" className={style.restoreData} disabled={!this.state.btnEnabled} onClick={this.onClick.bind(this)}>Restore</button>);
+        return (<button title="Remove all applied filters" className="btn btn-sm btn-sm btn-info" disabled={!this.state.btnEnabled} onClick={this.onClick.bind(this)}>Restore</button>);
     }
 };
 
@@ -136,39 +139,5 @@ export class SelectedCountProgressBar extends React.Component<HiPlotDataControlP
                 </div>
             </div>
         );
-    }
-};
-
-interface ThemeToggleProps {
-    root: React.RefObject<HTMLElement>;
-};
-
-interface ThemeToggleState {
-    dark: boolean;
-}
-
-export class ThemeToggle extends React.Component<ThemeToggleProps, ThemeToggleState> {
-    btnRef: React.RefObject<HTMLButtonElement> = React.createRef();
-    constructor(props) {
-        super(props);
-        this.state = {'dark': false};
-    }
-    onClick() {
-        this.setState(function(s, p) { return {dark: !s.dark}});
-    }
-    componentDidUpdate() {
-        if (this.props.root.current === null) {
-            return;
-        }
-        if (this.state.dark) {
-            this.props.root.current.classList.add(style.dark);
-        }
-        else {
-            this.props.root.current.classList.remove(style.dark);
-        }
-    }
-
-    render() {
-        return (<button title="Toggle dark/light theme" ref={this.btnRef} onClick={this.onClick.bind(this)}>{this.state.dark ? "Light" : "Dark"}</button>);
     }
 };

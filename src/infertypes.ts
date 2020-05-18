@@ -156,14 +156,14 @@ export function colorScheme(pd: ParamDef, value: any, alpha: number, defaultColo
         compute_val2color();
         var c = pd.__val2color[value];
         if (c === undefined) {
-            c = 'rgb(0, 0, 0)';
+            return `rgb(100,100,100,${alpha})`;
         }
         console.assert((c.startsWith('rgb(') || c.startsWith('hsl(')), c);
         return c.slice(0, 3) + 'a' + c.slice(3, c.length - 1) + ',' + alpha + ')';
     }
     else {
         if (value === undefined || value === null || is_special_numeric(value)) {
-            return 'rgba(0,0,0,' + alpha + ')';
+            return `rgb(100,100,100,${alpha})`;
         }
         if (!pd.__colorscale || pd.__colorscale.__type !== pd.type) {
             pd.__colorscale = create_d3_scale_without_outliers(pd);
