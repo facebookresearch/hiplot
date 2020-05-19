@@ -501,9 +501,6 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     return this.state.axis_x !== null && this.state.axis_y !== null;
   }
   componentDidUpdate(prevProps: PlotXYProps, prevState) {
-    if (this.state.width == 0) {
-      return; // Loading...
-    }
     var anyAxisChanged = false;
     ['axis_x', 'axis_y'].forEach(function(this: PlotXY, d: string) {
       if (prevState[d] != this.state[d]) {
@@ -511,6 +508,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         anyAxisChanged = true;
       }
     }.bind(this));
+    if (this.state.width == 0) {
+      return; // Loading...
+    }
     if (this.isEnabled() && !this.plot) {
       this.plot = this.mountPlotXY();
     }

@@ -198,7 +198,7 @@ function test_plotxy(this: HiPlotTester): Array<Test> {
     const plotxy = this.plotxy.bind(this);
 
     const selectAxis = function(this: HiPlotTester, idx: number) {
-        const k = Object.keys(this.hiplot.current.state.params_def);
+        const k = Object.keys(this.hiplot.current.state.params_def).filter(v => v != "uid" && v != "from_uid");
         return k[idx % k.length];
     }.bind(this);
 
