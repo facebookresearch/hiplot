@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+.scoped_css_bootstrap--dark {
+    @import "bs-dark.scss";
+}
+.scoped_css_bootstrap--light {
+    @import "bootstrap/scss/bootstrap.scss";
+}
+
+@each $theme in "dark", "light" {
+    // This is needed to override styles when embeded in Jupyter notebook
+    .scoped_css_bootstrap--#{$theme} :link, .scoped_css_bootstrap--#{$theme} :visited {
+        text-decoration: none;
+    }
+    .scoped_css_bootstrap--#{$theme} {
+        position:relative;
+
+        @import "../../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css";
+
+        // Put some stuff from rem to em (root font size is 10px on Notebooks, 16px with bootstrap)
+        .dropdown-header {
+            font-size: 0.875em;
+            padding: 0.5em 1.5em;
+        }
+        .dropdown-menu {
+            font-size: 1em;
+            min-width: 10em;
+            padding: 0.5em 0;
+            margin: 0.125em 0 0;
+            border-radius: 0.25em;
+        }
+        .dropdown-item {
+            padding: 0.25em 1.5em;
+        }
+        table {
+            table-layout: auto;
+        }
+
+        // Datatables
+        .dt-buttons {
+            margin-left: 10px;
+        }
+        .table-hover tbody tr:hover {
+            color: #fff;
+            background-color: rgba(147, 138, 138, 0.26);
+        }
+        button:disabled {
+            cursor: unset;
+        }
+
+        // Unset some jupyterlab theme
+        tbody tr:nth-child(even) {
+            background: unset;
+        }
+        table {
+            color: unset;
+        }
+    }
+}

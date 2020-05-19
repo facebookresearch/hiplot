@@ -5,14 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import style from "./elements.css";
+import style from "./hiplot.css";
 import React from "react";
-import { HiPlotLoadStatus, PSTATE_LOAD_URI, IDatasets } from "./types";
-import { HiPlotPluginData } from "./plugin";
+import { HiPlotLoadStatus, IDatasets } from "./types";
 import { HiPlotDataControlProps, RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
 
 //@ts-ignore
 import IconSVG from "../hiplot/static/icon.svg";
+//@ts-ignore
+import IconSVGW from "../hiplot/static/icon-w.svg";
+
 import { HiPlotTutorial } from "./tutorial/tutorial";
 
 
@@ -91,6 +93,7 @@ interface HeaderBarProps extends IDatasets, HiPlotDataControlProps {
     onRequestRefreshExperiment?: () => void;
     loadStatus: HiPlotLoadStatus;
     initialLoadUri: string;
+    dark: boolean;
 };
 
 interface HeaderBarState {
@@ -156,17 +159,18 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                         <KeepDataBtn {...this.props} />
                         <ExcludeDataBtn {...this.props} />
                         {this.props.onRequestRefreshExperiment != null &&
-                            <button title="Refresh + restore data removed" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
+                            <button title="Refresh + restore data removed" className="btn btn-sm btn-light" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
                         }
                         <ExportDataCSVBtn {...this.props} />
-                        <button title="Start HiPlot tutorial" onClick={this.onToggleTutorial.bind(this)}>Help</button>
+                        <button title="Start HiPlot tutorial" className="btn btn-sm btn-light" onClick={this.onToggleTutorial.bind(this)}>Help</button>
 
                         <div style={{clear:'both'}}></div>
                     </div>
                     <div className={style.controlGroup}>
                         <div style={{"fontFamily": "monospace"}}>
             Selected: <strong ref={this.selected_count_ref} style={{"minWidth": "4em", "textAlign": "right", "display": "inline-block"}}>??</strong>
-                    /<strong ref={this.total_count_ref} style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>??</strong> (<span ref={this.selected_pct_ref}>??</span>%)
+                    /<strong ref={this.total_count_ref} style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>??</strong> (
+                        <span style={{"minWidth": "3em", "textAlign": "right", "display": "inline-block"}} ref={this.selected_pct_ref}>??</span>%)
                         </div>
                     </div>
                 </React.Fragment>
@@ -181,7 +185,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
             this.renderControls();
         return (<div ref={this.controls_root_ref} className={"container-fluid " + style.header}>
         <div className={"d-flex flex-wrap"}>
-            <img style={{height: '55px'}} src={IconSVG} />
+            <img style={{height: '55px'}} src={this.props.dark ? IconSVGW : IconSVG} />
             {controlsOrTutorial}
         </div></div>);
     }

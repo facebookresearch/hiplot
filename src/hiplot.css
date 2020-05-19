@@ -16,15 +16,8 @@
   background: #f7f7f7;
   color: #404040;
 }
-.dark {
-  background: #131313;
-  color: #e3e3e3;
-}
 .hiplot a {
   text-decoration: none;
-}
-.dark a {
-  color: #5ae;
 }
 .wrap {
   padding: 0 3.5%;
@@ -44,10 +37,6 @@
   fill: rgba(100,100,100,0.15);
   stroke: #fff;
 }
-.dark .brush rect.extent {
-  fill: rgba(100,100,100,0.15);
-  stroke: #ddd;
-}
 .hiplot .brush:hover rect.extent {
   stroke: #222;
   stroke-dasharray: 5,5;
@@ -61,16 +50,10 @@
 .background {
   fill: none;
 }
-.dark .background {
-  fill: none;
-}
 .axis line, .axis path {
   fill: none;
   stroke: #777;
   stroke-width: 1;
-}
-.dark .axis line, .dark .axis path {
-  stroke: #777;
 }
 .axis :global(.tick) {
   width: 200px;
@@ -88,13 +71,6 @@
 .axis .label {
   cursor: move;
   font-size: 13px;
-}
-.dark .axis text {
-  fill: #f2f2f2;
-  text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
-}
-.dark .axis text.label {
-  fill: #ddd;
 }
 .quarter, .third, .half {
   float: left;
@@ -124,27 +100,7 @@
 .hiplot small {
   line-height: 1.2em;
 }
-.hiplot button:disabled {
-  color: #555 !important;
-  opacity: 0.4;
-}
-.settings button:disabled {
-  display: none;
-}
-.dark button:disabled {
-  opacity: 0.2;
-}
-.hiplot .restoreData,
-.hiplot .keepData,
-.hiplot .excludeData {
-  font-weight:bold
-}
-.hiplot .keepData:hover:enabled {
-  color: #080;
-}
-.hiplot .excludeData:hover:enabled {
-  color: #900;
-}
+
 
 .renderedBar,
 .selectedBar {
@@ -174,6 +130,12 @@
   height: 24px;
   line-height: 24px;
 }
+.header button {
+  border-color: black !important;
+}
+.header button:disabled{
+  border: solid 1px transparent !important;
+}
 
 /* Scrollbars */
 
@@ -191,22 +153,13 @@
   background: #b5b5b5;
   border-radius: 12px;
 }
-.dark ::-webkit-scrollbar-track {
-  background: #222;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: #444;
-}
+
 
 .plotxy-graph-svg :global(.tick) line {
   color: #9a9a9a26;
 }
 .distr-graph-svg :global(.tick) line {
   color: #9a9a9a26;
-}
-
-tr.highlight {
-  background-color: #e2e2e2 !important;
 }
 
 .min-height-100 {
@@ -250,4 +203,96 @@ tr.highlight {
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltipContainer:hover .tooltiptext {
   visibility: visible;
+}
+
+
+/* Histogram */
+.histSelected line {
+  stroke: black;
+  stroke-width: 2;
+}
+.histAll rect {
+  fill: rgb(148, 103, 189);
+}
+
+
+.runsSelectionTextarea {
+  width:  100%;
+  height:  50px;
+  font-family:monospace;
+  font-size: 12pt;
+  resize: none;
+  overflow: hidden;
+}
+
+.hasFocus {
+  height: 25px !important;
+}
+
+.header {
+  border-bottom: 1px solid rgba(100,100,100,0.35);
+  background: #e2e2e2;
+  padding: 6px 24px 4px;
+  line-height: 24px;
+}
+.header h1 {
+  display: inline-block;
+  margin: 0px 14px 0 0;
+}
+.header button {
+  vertical-align: top;
+}
+
+.controlGroup {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+
+/* dark theme */
+
+.dark .header {
+  background: #040404;
+  color: #f3f3f3;
+}
+
+.dark {
+  background: #131313;
+  color: #e3e3e3;
+}
+.dark a {
+  color: #5ae;
+}
+.dark .background {
+  fill: none;
+}
+.dark .brush rect.extent {
+  fill: rgba(100,100,100,0.15);
+  stroke: #ddd;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #222;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #444;
+}
+.dark .axis text {
+  fill: #f2f2f2;
+  text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
+}
+.dark .axis text.label {
+  fill: #ddd;
+}
+.dark .axis line, .dark .axis path {
+  stroke: #777;
+}
+.dark .header button:enabled {
+  border-color: white !important;
+}
+.dark .histSelected line {
+  stroke: white;
+  stroke-width: 2;
+}
+.dark .histAll rect {
+  fill:rgb(99, 80, 117);
 }

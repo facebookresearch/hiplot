@@ -138,8 +138,8 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 const row = me.dt.row(rowIdx);
                 const individualUidColIdx = me.dt.colReorder.order().indexOf(1);
 
-                dom.find(`.${style.highlight}`).removeClass(style.highlight);
-                $(row.nodes()).addClass(style.highlight);
+                dom.find(`.table-primary`).removeClass("table-primary");
+                $(row.nodes()).addClass("table-primary");
                 me.props.setHighlighted([me.props.dp_lookup[row.data()[individualUidColIdx]]]);
             })
             .on("mouseout", "td", function() {
@@ -147,7 +147,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                     return;
                 }
                 const rowIdx = me.dt.cell(this).index().row;
-                $(me.dt.row(rowIdx).nodes()).removeClass(style.highlight);
+                $(me.dt.row(rowIdx).nodes()).removeClass("table-primary");
                 me.props.setHighlighted([]);
             });
 
@@ -244,7 +244,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
         <div className={`${style.wrap} container-fluid ${style["horizontal-scrollable"]}`}>
         <div className={"row"}>
             <div ref={this.table_container} className={`col-md-12 sample-table-container`}>
-            <table ref={this.table_ref} className="sample-rows-table display table table-striped table-bordered dataTable">
+            <table ref={this.table_ref} className="table-hover table-sm sample-rows-table display table-striped table-bordered dataTable">
             </table>
             </div>
         </div>

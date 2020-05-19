@@ -17,7 +17,6 @@ const margin = {top: 20, right: 20, bottom: 50, left: 60};
 interface BinsDrawData {
     bins: d3.Bin<any, any>[];
     g: SVGSVGElement;
-    color: any;
     draw_fn: any;
 };
 
@@ -136,13 +135,11 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
             selected: {
                 bins: histogram(this.props.histData.selected),
                 g: this.histAll.current,
-                color: d3.schemeCategory10[4],
                 draw_fn: this.drawHistogramRects.bind(this),
             },
             all: {
                 bins: histogram(this.props.histData.all),
                 g: this.histSelected.current,
-                color: "black",
                 draw_fn: this.drawHistogramLines.bind(this),
             }
         };
@@ -211,9 +208,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
                 .attr(`${dataCoord}1`, (d, i) => dataScale(hist.bins[binsOrdering[i]].x0) + 1)
                 .attr(`${densityCoord}1`, (d, i) => densityScaleFromLength(d))
                 .attr(`${dataCoord}2`, (d, i) => dataScale(hist.bins[binsOrdering[i]].x1))
-                .attr(`${densityCoord}2`, (d, i) => densityScaleFromLength(d))
-                .style("stroke", hist.color)
-                .style("stroke-width", 2);
+                .attr(`${densityCoord}2`, (d, i) => densityScaleFromLength(d));
 
         u
             .exit()
@@ -252,8 +247,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
                 .attr("width", function(d) { return dataScale(d.x1) - dataScale(d.x0) -1 ; })
                 .attr("height", function(d) {
                     return this.figureHeight() - densityScaleFromLength(d);
-                }.bind(this))
-                .style("fill", hist.color);
+                }.bind(this));
         } else {
             ut
                 //.attr("y", 1)
@@ -262,8 +256,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
                 .attr("height", function(d, i) {
                     const delta = Math.abs(dataScale(hist.bins[binsOrdering[i]].x1) - dataScale(hist.bins[binsOrdering[i]].x0));
                     return delta > 2 ? delta - 1 : delta;
-                }.bind(this))
-                .style("fill", hist.color);
+                }.bind(this));
         }
 
         u
@@ -303,8 +296,8 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
                     <text>{leftAxisLabel}</text>
                 </g>
                 <g ref={this.svgContainer} className={style['distr-graph-svg']} transform={`translate(${margin.left}, ${margin.top})`}>
-                    <g ref={this.histAll}></g>
-                    <g ref={this.histSelected}></g>
+                    <g className={style.histAll} ref={this.histAll}></g>
+                    <g className={style.histSelected} ref={this.histSelected}></g>
                     <g className="axisLeft" ref={this.axisLeft}></g>
                     <g className="axisRight" ref={this.axisRight} transform={`translate(${this.figureWidth()}, 0)`}></g>
                     <g className="axisBottom" ref={this.axisBottom} transform={`translate(0, ${this.figureHeight()})`}></g>

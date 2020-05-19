@@ -11,7 +11,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 //@ts-ignore
 import JSON5 from "json5";
-import './global';
+import './style/global';
 
 import { Datapoint, ParamType, HiPlotExperiment, HiPlotLoadStatus, PSTATE_COLOR_BY, PSTATE_LOAD_URI, PSTATE_PARAMS, DatapointLookup, IDatasets, PSTATE_FILTERS } from "./types";
 import { RowsDisplayTable } from "./rowsdisplaytable";
@@ -25,6 +25,8 @@ import { HiPlotPluginData } from "./plugin";
 
 //@ts-ignore
 import LogoSVG from "../hiplot/static/logo.svg";
+//@ts-ignore
+import LogoSVGW from "../hiplot/static/logo-w.svg";
 //@ts-ignore
 import style from "./hiplot.css";
 import { ContextMenu } from "./contextmenu";
@@ -50,6 +52,7 @@ export interface HiPlotProps {
     plugins: PluginsMap;
     persistent_state?: PersistentState;
     comm: any; // Communication object for Jupyter notebook
+    dark: boolean;
 };
 
 interface HiPlotState extends IDatasets {
@@ -67,6 +70,16 @@ interface HiPlotState extends IDatasets {
 
     // Data that persists upon page reload, sharing link etc...
     persistent_state: PersistentState;
+    dark: boolean;
+}
+
+function detectIsDarkTheme(): boolean {
+    // Hack: detect dark/light theme in Jupyter Lab
+    const jupyterLabAttrLightTheme = "data-jp-theme-light";
+    if (document.body.hasAttribute(jupyterLabAttrLightTheme)) {
+        return document.body.getAttribute(jupyterLabAttrLightTheme) == "false";
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
 export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
@@ -98,6 +111,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             rows_highlighted: [],
             params_def: {},
             colorby: null,
+            dark: this.props.dark === null ? detectIsDarkTheme() : this.props.dark,
             persistent_state: props.persistent_state !== undefined && props.persistent_state !== null ? props.persistent_state : new PersistentStateInMemory("", {}),
         };
         Object.keys(props.plugins).forEach((name, index) => {
@@ -109,6 +123,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     static defaultProps = {
         is_webserver: false,
         comm: null,
+        dark: null,
     };
     static getDerivedStateFromError(error: Error) {
         // Update state so the next render will show the fallback UI.
@@ -449,21 +464,22 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             };
         }.bind(this);
         return (
-        <div className="scoped_css_bootstrap">
-            <div className={style.hiplot}>
+        <div className={`scoped_css_bootstrap--${this.state.dark ? "dark" : "light"}`}>
+            <div className={`${style.hiplot} ${this.state.dark ? style.dark : ""}`}>
             <SelectedCountProgressBar {...controlProps} />
             <HeaderBar
                 onRequestLoadExperiment={this.props.is_webserver ? this.onRunsTextareaSubmitted.bind(this) : null}
                 onRequestRefreshExperiment={this.props.is_webserver ? this.onRefreshDataBtn.bind(this) : null}
                 loadStatus={this.state.loadStatus}
                 initialLoadUri={this.state.persistent_state.get(PSTATE_LOAD_URI, '')}
+                dark={this.state.dark}
                 {...controlProps}
             />
             {this.state.loadStatus == HiPlotLoadStatus.Error &&
                 <ErrorDisplay error={this.state.error} />
             }
             {this.state.loadStatus != HiPlotLoadStatus.Loaded &&
-                <DocAndCredits />
+                <DocAndCredits dark={this.state.dark} />
             }
             <ContextMenu ref={this.contextMenuRef}/>
             {this.state.loadStatus == HiPlotLoadStatus.Loaded &&
@@ -486,14 +502,18 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     }
 }
 
-class DocAndCredits extends React.Component {
+interface DocsCreditsProps {
+    dark: boolean;
+};
+
+class DocAndCredits extends React.Component<DocsCreditsProps> {
     render() {
         return (
             <div className="container hide-when-loaded">
               <div className="row">
                 <div className="col-md-3"></div>
                 <div className="col-md-6">
-                    <img src={LogoSVG} />
+                    <img src={this.props.dark ? LogoSVGW : LogoSVG} />
                 </div>
                 <div className="col-md-3"></div>
                 <div className="col-md-6">
@@ -535,7 +555,7 @@ export const defaultPlugins: PluginsMap = {
 };
 
 export function hiplot_setup(element: HTMLElement, extra?: any) {
-    var props: HiPlotProps = {
+    var props = {
         experiment: null,
         is_webserver: true,
         persistent_state: new PersistentStateInURL("hip"),
