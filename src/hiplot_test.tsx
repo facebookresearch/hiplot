@@ -13,6 +13,7 @@ import { PersistentStateInURL } from "./lib/savedstate";
 import React from "react";
 import ReactDOM from "react-dom";
 import assert from "assert";
+import { PlotXY } from "./plotxy";
 
 
 interface TesterState {
@@ -67,6 +68,7 @@ export class HiPlotTester extends React.Component<{hiplotProps: HiPlotProps}, Te
         {name: "changeColor", test: this.testChangeColor},
         {name: "changeColor", test: this.testChangeColor},
         ...test_pplot.bind(this)(),
+        ...test_plotxy.bind(this)(),
     ];
 
     // Selection/highlights
@@ -130,6 +132,15 @@ export class HiPlotTester extends React.Component<{hiplotProps: HiPlotProps}, Te
             clearTimeout(this.timeout);
         }
     }
+    simulateRefresh() {
+        const exp = this.hiplot.current.state.experiment;
+        assert(exp);
+        this.hiplot.current.loadWithPromise(new Promise(function(rs, rj) {
+            rs({
+                experiment: exp
+            });
+        }));
+    }
 
     render() {
         return <div ref={this.root} style={{width: this.state.width}}><HiPlot ref={this.hiplot} key={this.state.renderNum} {...this.props.hiplotProps} /></div>;
@@ -137,8 +148,13 @@ export class HiPlotTester extends React.Component<{hiplotProps: HiPlotProps}, Te
 
     pplot(): ParallelPlot {
         const pplot = this.hiplot.current.getPlugin(ParallelPlot);
-        console.assert(pplot);
+        assert(pplot);
         return pplot;
+    }
+    plotxy(): PlotXY {
+        const plotxy = this.hiplot.current.getPlugin(PlotXY);
+        assert(plotxy);
+        return plotxy;
     }
 };
 
@@ -177,6 +193,33 @@ function test_pplot(this: HiPlotTester): Array<Test> {
     }
     return prefix("pplot", tests);
 }
+
+function test_plotxy(this: HiPlotTester): Array<Test> {
+    const plotxy = this.plotxy.bind(this);
+
+    const selectAxis = function(this: HiPlotTester, idx: number) {
+        const k = Object.keys(this.hiplot.current.state.params_def).filter(v => v != "uid" && v != "from_uid");
+        return k[idx % k.length];
+    }.bind(this);
+
+    var tests: Array<Test> = [
+        {name: 'enable', test: function() {
+            plotxy().setState({axis_x: selectAxis(0), axis_y: selectAxis(1)});
+        }},
+        {name: 'change_axis_x', test: function() {
+            plotxy().setState({axis_x: selectAxis(2), axis_y: selectAxis(1)});
+        }},
+        {name: 'refresh', test: function() {
+            this.simulateRefresh();
+        }},
+        {name: 'axisKept', test: function() {
+            assert(plotxy().state.axis_x == selectAxis(2), `axis_x error: ${plotxy().state}`);
+            assert(plotxy().state.axis_y == selectAxis(1), `axis_y error: ${plotxy().state}`);
+        }}
+    ];
+    return prefix("plotxy", tests);
+}
+
 
 export function hiplot_setup(element: HTMLElement, extra?: object) {
     var props: HiPlotProps = {
