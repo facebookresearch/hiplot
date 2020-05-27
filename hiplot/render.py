@@ -9,15 +9,13 @@ import json
 from typing import Any, Dict
 from pathlib import Path
 
-from bs4 import BeautifulSoup
-import jinja2
-
 
 def escapejs(val: Any) -> str:
     return json.dumps(str(val))
 
 
 def render_jinja_html(template_loc: str, file_name: str) -> str:
+    import jinja2
     return jinja2.Environment(loader=jinja2.FileSystemLoader(template_loc + "/")).get_template(file_name).render()
 
 
@@ -26,6 +24,7 @@ def html_inlinize(html: str, replace_local: bool = True) -> str:
     Includes external CSS, JS and images directly in the HTML
     (only for files with a relative path)
     """
+    from bs4 import BeautifulSoup
     SUFFIX_TO_TYPE = {
         '.png': 'image/png',
         '.svg': 'image/svg+xml',
