@@ -59,10 +59,28 @@ module.exports = env => { return {
             },
             {
               test: /\.s(a|c)ss$/,
-              exclude: /\.module.(s(a|c)ss)$/,
+              exclude: /global.(s(a|c)ss)$/,
               loader: [
                 'style-loader',
-                'css-loader',
+                {
+                  loader: "css-loader",
+                  options: {
+                   modules: true
+                  }
+                },
+                {
+                  loader: 'sass-loader',
+                  options: {
+                    sourceMap: true
+                  }
+                }
+              ]
+            },
+            {
+              test: /global.(s(a|c)ss)$/,
+              loader: [
+                'style-loader',
+                "css-loader",
                 {
                   loader: 'sass-loader',
                   options: {
