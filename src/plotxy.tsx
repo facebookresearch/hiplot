@@ -9,7 +9,7 @@ import $ from "jquery";
 import * as d3 from "d3";
 
 import { create_d3_scale } from "./infertypes";
-import style from "./hiplot.css";
+import style from "./hiplot.scss";
 import { HiPlotPluginData } from "./plugin";
 import React from "react";
 import { ResizableH } from "./lib/resizable";

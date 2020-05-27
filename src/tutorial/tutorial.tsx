@@ -7,7 +7,7 @@
 
 import $ from "jquery";
 import React from "react";
-import style from "./tutorial.css";
+import style from "./tutorial.scss";
 
 interface TutorialStepProps {
     rootRef: React.RefObject<HTMLElement>;

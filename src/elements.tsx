@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import style from "./hiplot.css";
+import style from "./hiplot.scss";
 import React from "react";
 import { HiPlotLoadStatus, IDatasets } from "./types";
 import { HiPlotDataControlProps, RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";

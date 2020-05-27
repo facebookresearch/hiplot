@@ -11,7 +11,7 @@ import * as _ from 'underscore';
 import React from "react";
 
 import { IDatasets } from "./types";
-import style from "./hiplot.css";
+import style from "./hiplot.scss";
 
 export interface HiPlotDataControlProps extends IDatasets {
     restoreAllRows: () => void;

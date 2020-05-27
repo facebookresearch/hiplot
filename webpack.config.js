@@ -72,22 +72,6 @@ module.exports = env => { return {
               ]
             },
             {
-              test: /\.css$/i,
-              use: [
-                "style-loader",
-                "@teamsupercell/typings-for-css-modules-loader",
-                {
-                  loader: "css-loader",
-                  options: {
-                    modules: {
-                      localIdentName: '[local]__[hash:base64:5]',
-                      //localIdentName: '[local]',
-                    }
-                  }
-                },
-              ]
-            },
-            {
                 test: /\.worker.ts?$/,
                 loader: 'worker-loader',
                 options: { inline: true, fallback: false }
