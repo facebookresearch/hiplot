@@ -543,7 +543,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
               }) ? selected_pixels.push(d) : null;
             });
           if (selected_pixels.length != selected.length || _.difference(selected_pixels, selected).length) {
-              console.error("Warning! Filter ", filters, " does not match actually selected rows", selected_pixels, " Computed rows with filter:", selected);
+              console.error(`Warning! Filter on ${actives.join(" ")} (`, filters, ") does not match actually selected rows", selected_pixels, " Computed rows with filter:", selected);
           }
       }
       me.props.setSelected(selected, {
