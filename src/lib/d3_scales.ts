@@ -26,21 +26,39 @@ export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
     console.assert(values.length >= 2);
     var domain_idx = [0, values.length - 1];
     var scaleOutput = d3.scaleLinear().domain([0, 1]);
-    var scale: any = function(x) {
-        var idx = d3.bisect(values, x, domain_idx[0], domain_idx[1]);
-        console.assert(domain_idx[0] <= idx && idx <= domain_idx[1]);
-        var pctile = (idx - domain_idx[0]) / (domain_idx[1] - domain_idx[0]);
+    var scale: any = function(x: number): number {
+        if (x == Infinity || x == -Infinity || isNaN(x)) {
+            return scaleOutput(-1);
+        }
+        const upper = d3.bisectLeft(values, x, domain_idx[0], domain_idx[1]);
+        var pctile = (upper - domain_idx[0]) / (domain_idx[1] - domain_idx[0]);
+        if (values[upper] !== x && upper > domain_idx[0]) {
+            // For example when rendering axis ticks
+            const lower = upper - 1;
+            const lowerV = values[lower];
+            const upperV = values[upper];
+            console.assert(lowerV != upperV, "values should be distinct", lowerV, upperV);
+            console.assert(lowerV <= x && x <= upperV, `percentile_scale(${x}): lowerV=${lowerV}, x=${x}, upperV=${upperV}`, {
+                'values': values,
+                'lower': lower,
+                'domain_idx': domain_idx,
+            });
+            const a = (x - lowerV) / (upperV - lowerV);
+            pctile = (lower + a) / (domain_idx[1] - domain_idx[0]);
+        }
         return scaleOutput(pctile);
     };
     function invert(y) {
         y = scaleOutput.invert(y) * (domain_idx[1] - domain_idx[0]);
-        if (y > domain_idx[1]) {
-            return values[domain_idx[1]];
+        y = Math.min(y, domain_idx[1]);
+        y = Math.max(y, domain_idx[0]);
+        const lower = Math.floor(y);
+        const upper = Math.ceil(y);
+        if (lower == upper) {
+            return values[lower];
         }
-        if (y < domain_idx[0]) {
-            return values[domain_idx[0]];
-        }
-        return values[Math.round(y)];
+        const a = y - lower;
+        return values[upper] * a + values[lower] * (1 - a);
     };
     function range_fn(r) {
         if (r === undefined) {
@@ -72,7 +90,10 @@ export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
         new_scale.range(scaleOutput.range());
         return new_scale;
     };
-    function ticks(n) {
+    function ticks(n: number): number[] {
+        if (n >= domain_idx[1] - domain_idx[0] + 1) {
+            return values.slice(domain_idx[0], domain_idx[1] + 1)
+        }
         var t = [];
         for (var i = 0; i < n; ++i) {
             // Find the roundest number in the intervalle
@@ -85,7 +106,7 @@ export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
                 val = start;
             }
             else {
-                function toPrecisionFloor(v, p) {
+                function toPrecisionFloor(v: number, p: number): number {
                     if (v < 0) {
                         return -toPrecisionFloor(-v, p);
                     } else if (v == 0) {
@@ -109,7 +130,7 @@ export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
         return t;
     };
     function tickFormat() {
-        return function(val) {
+        return function(val: number): string {
             var precision = 1;
             while (precision < 20 && parseFloat(val.toPrecision(precision)) != val) {
                 ++precision;

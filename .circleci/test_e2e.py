@@ -44,6 +44,9 @@ BROWSERS_FACTORY = {
 
 world_size = int(os.environ.get('CIRCLE_NODE_TOTAL', 1))
 rank = int(os.environ.get('CIRCLE_NODE_INDEX', 0))
+print("\nDistributed settings:")
+print("Rank: ", rank)
+print("World size:", world_size)
 
 
 @pytest.mark.parametrize(

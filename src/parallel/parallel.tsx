@@ -96,6 +96,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   yscale: StringMapping<any> = {}; // d3.scale
   axis: d3.Axis<number>;
   d3brush = d3.brushY();
+
   constructor(props: ParallelPlotData) {
     super(props);
     this.state = {
@@ -510,8 +511,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         }
         var min, max;
         if (range.type == ParamType.CATEGORICAL) {
-          min = range.values[0];
-          max = range.values[range.values.length - 1];
+          min = `${range.values[0]}`;
+          max = `${range.values[range.values.length - 1]}`;
         }
         else {
           min = Math.min(...range.range);
@@ -529,17 +530,22 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         };
       });
       const selected = apply_filters(me.props.rows_filtered, filters);
-      /*
-      all_data
-        .map(function(d) {
-          return actives.every(function(dimension) {
-            var scale = me.yscale[dimension];
-            var extent = extents[dimension];
-            var value = d[dimension];
-            return extent[0] <= scale(value) && scale(value) <= extent[1];
-          }) ? selected.push(d) : null;
-        });
-      */
+
+      if (me.props.asserts) {
+          var selected_pixels = [];
+          me.props.rows_filtered
+            .map(function(d) {
+              return actives.every(function(dimension) {
+                var scale = me.yscale[dimension];
+                var extent = extents[dimension];
+                var value = d[dimension];
+                return extent[0] <= scale(value) && scale(value) <= extent[1];
+              }) ? selected_pixels.push(d) : null;
+            });
+          if (selected_pixels.length != selected.length || _.difference(selected_pixels, selected).length) {
+              console.error(`Warning! Filter on ${actives.join(" ")} (`, filters, ") does not match actually selected rows", selected_pixels, " Computed rows with filter:", selected);
+          }
+      }
       me.props.setSelected(selected, {
         type: FilterType.All,
         data: filters,

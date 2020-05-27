@@ -36,6 +36,8 @@ export interface HiPlotPluginDataWithoutDatasets {
 
     setSelected: (new_selected: Array<Datapoint>, filter: Filter | null) => void;
     setHighlighted: (new_highlighted: Array<Datapoint>) => void;
+
+    asserts: boolean;
 }
 
 export interface HiPlotPluginData extends IDatasets, HiPlotPluginDataWithoutDatasets {

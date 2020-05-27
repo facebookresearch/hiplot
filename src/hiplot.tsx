@@ -53,6 +53,7 @@ export interface HiPlotProps {
     persistent_state?: PersistentState;
     comm: any; // Communication object for Jupyter notebook
     dark: boolean;
+    asserts: boolean;
 };
 
 interface HiPlotState extends IDatasets {
@@ -92,7 +93,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     onSelectedChange_debounced: () => void;
 
     plugins_ref: Array<React.RefObject<PluginClass>> = []; // For debugging/tests
-    ENABLE_ASSERTS: boolean = false;
 
     constructor(props: HiPlotProps) {
         super(props);
@@ -413,7 +413,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         if (filter && _.isEqual(filter, this.state.rows_selected_filter)) {
             return;
         }
-        if (filter && this.ENABLE_ASSERTS) {
+        if (filter && this.props.asserts) {
             const new_rows = apply_filter(this.state.rows_filtered, filter);
             if (new_rows.length != rows.length || _.difference(new_rows, rows).length) {
                 console.error("Warning! Filter ", filter, " does not match given rows", rows, " Computed rows with filter:", new_rows);
@@ -461,6 +461,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
                 context_menu_ref: this.contextMenuRef,
                 setSelected: this.setSelected.bind(this),
                 setHighlighted: this.setHighlighted.bind(this),
+                asserts: this.props.asserts,
             };
         }.bind(this);
         return (
@@ -561,6 +562,7 @@ export function hiplot_setup(element: HTMLElement, extra?: any) {
         persistent_state: new PersistentStateInURL("hip"),
         plugins: defaultPlugins,
         comm: null,
+        asserts: false,
     };
     if (extra !== undefined) {
         Object.assign(props, extra);
