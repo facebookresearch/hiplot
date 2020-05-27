@@ -39,7 +39,7 @@
     "imports-loader": "^0.8.0",
     "json5": "^2.1.1",
     "license-webpack-plugin": "^2.1.3",
-    "node-sass": "^4.13.1",
+    "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
     "sass-loader": "^8.0.0",
     "source-map-loader": "^0.2.4",
@@ -48,7 +48,7 @@
     "typed-scss-modules": "^1.3.0",
     "typescript": "^3.7.5",
     "url-loader": "^3.0.0",
-    "webpack": "^4.41.2",
+    "webpack": "^4.43.0",
     "webpack-cli": "^3.3.10",
     "worker-loader": "^2.0.0"
   },
@@ -57,7 +57,6 @@
     "build-dev": "npm-run-all tsm webpack-dev",
     "build-dev-watch": "npm-run-all tsm webpack-dev-watch",
     "prepublish": "npm-run-all prepublish-ts prepublish-scss",
-
     "tsm": "tsm src -i node_modules/",
     "webpack": "webpack --display-error-details --progress",
     "webpack-dev": "webpack --display-error-details --progress -d",
