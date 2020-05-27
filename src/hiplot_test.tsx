@@ -111,7 +111,6 @@ export class HiPlotTester extends React.Component<{hiplotProps: HiPlotProps}, Te
     }
     componentDidMount() {
         this.timeout = setInterval(this.checkStartTesting.bind(this), 500);
-        this.hiplot.current.ENABLE_ASSERTS = true;
     }
     componentDidUpdate() {
         if (this.state.testDone) {
@@ -143,7 +142,7 @@ export class HiPlotTester extends React.Component<{hiplotProps: HiPlotProps}, Te
     }
 
     render() {
-        return <div ref={this.root} style={{width: this.state.width}}><HiPlot ref={this.hiplot} key={this.state.renderNum} {...this.props.hiplotProps} /></div>;
+        return <div ref={this.root} style={{width: this.state.width}}><HiPlot ref={this.hiplot} key={this.state.renderNum} {...this.props.hiplotProps}/></div>;
     }
 
     pplot(): ParallelPlot {
@@ -171,9 +170,8 @@ function test_pplot(this: HiPlotTester): Array<Test> {
     function brushIdx(pplot: ParallelPlot, colIdx: number) {
         var brush_el = d3.select(pplot.svg_ref.current).selectAll<SVGGElement, any>(".pplot-brush");
         const size = brush_el.size();
-        colIdx = colIdx % size;
-        brush_el = brush_el.filter(function (d, i) { return i === colIdx;})
-        pplot.d3brush.move(brush_el, [100, 200]);
+        brush_el = brush_el.filter(function (d, i) { return i === colIdx % size;})
+        pplot.d3brush.move(brush_el, [colIdx % 3 == 0 ? 0 : 100, 200]);
     }
     const brushKeepRestore = function(this: HiPlotTester, colIdx: number) {
         var tests: Array<Test> = [
@@ -229,6 +227,7 @@ export function hiplot_setup(element: HTMLElement, extra?: object) {
         plugins: defaultPlugins,
         comm: null,
         dark: false,
+        asserts: true,
     };
     if (extra !== undefined) {
         Object.assign(props, extra);
