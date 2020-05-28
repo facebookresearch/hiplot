@@ -220,9 +220,8 @@ function test_plotxy(this: HiPlotTester): Array<Test> {
     return prefix("plotxy", tests);
 }
 
-
 export function render(element: HTMLElement, extra?: object) {
     var props: HiPlotProps = build_props(extra);
     Object.assign(props, {asserts: true})
-    return ReactDOM.render(<HiPlotTester hiplotProps={props} />, element);
+    return ReactDOM.render(<React.StrictMode><HiPlotTester hiplotProps={props} /></React.StrictMode>, element);
 }

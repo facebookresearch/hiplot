@@ -41,5 +41,5 @@ export function build_props(extra?: any): HiPlotProps {
 }
 
 export function render(element: HTMLElement, extra?: any) {
-    return ReactDOM.render(<HiPlot {...build_props(extra)} />, element);
+    return ReactDOM.render(<React.StrictMode><HiPlot {...build_props(extra)} /></React.StrictMode>, element);
 }

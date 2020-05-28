@@ -92,10 +92,10 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
     )
 
     def get_selected(self) -> t.List[exp.Datapoint]:
-        last_selection = self._last_data_per_type.get("selection")
-        if last_selection is None:
+        last_selected_uids = self._last_data_per_type.get("selected_uids")
+        if last_selected_uids is None:
             raise self.no_data_received_error
-        selected_set = set(last_selection["selected"])
+        selected_set = set(last_selected_uids)
         datapoints = [i for i in self._exp.datapoints if i.uid in selected_set]
         assert len(datapoints) == len(selected_set)
         return datapoints
@@ -132,8 +132,20 @@ def display_exp(
 const comm_id = {escapejs(comm_id)};
 try {{
     console.log("Setting up communication channel with Jupyter: ", comm_id);
-    var comm = Jupyter.notebook.kernel.comm_manager.new_comm(comm_id, {{'type': 'hello'}});
-    Object.assign(options, {{"comm": comm}});
+    const comm = Jupyter.notebook.kernel.comm_manager.new_comm(comm_id, {{'type': 'hello'}});
+    var comm_message_id = 0;
+    function send_data_change(type, data) {{
+        comm.send({{
+            'type': type,
+            'message_id': comm_message_id,
+            'data': data,
+        }});
+        comm_message_id += 1;
+    }};
+    Object.assign(options, {{"on_change": {{
+        "selected_uids": send_data_change,
+        "brush_extents": send_data_change,
+    }}}});
 }}
 catch(err) {{
     console.warn('Unable to create Javascript <-> Python communication channel' +

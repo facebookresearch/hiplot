@@ -15,19 +15,20 @@ const webpack = require("webpack");
 const distPath = path.resolve(__dirname, 'dist');
 
 class WhenDoneCopyToHiplotStaticDir {
-  constructor(test) {
-    this.test = test;
+  constructor(installs) {
+    this.installs = installs;
   }
   apply(compiler) {
     compiler.hooks.afterEmit.tap('WhenDoneCopyToHiplotStaticDir', (
       stats /* stats is passed as argument when done hook is tapped.  */
     ) => {
-      var pyBuilt = path.resolve(__dirname, 'hiplot', 'static', 'built');
-      try {
-          fs.mkdirSync(pyBuilt, {recursive: true});
-      } catch (err) { /* `recursive` option is node >= 10.0. Otherwise will throw if the directory already exists */ }
-      const target = this.test ? "hiplot_test" : "hiplot";
-      fs.copyFileSync(path.resolve(distPath, `${target}.bundle.js`), path.resolve(pyBuilt, 'hiplot.bundle.js'));
+      for (let dest in this.installs) {
+        const origin = path.resolve(distPath, this.installs[dest]);
+        try {
+            fs.mkdirSync(path.dirname(dest), {recursive: true});
+        } catch (err) { /* `recursive` option is node >= 10.0. Otherwise will throw if the directory already exists */ }
+        fs.copyFileSync(origin, dest);
+      }
     });
   }
 }
@@ -41,8 +42,8 @@ This source code is licensed under the MIT license found in the\n\
 LICENSE file in the root directory of this source tree."),
     //new BundleAnalyzerPlugin()
   ];
-  if (config.web) {
-    plugins.push(new WhenDoneCopyToHiplotStaticDir(config.test));
+  if (config.installs) {
+    plugins.push(new WhenDoneCopyToHiplotStaticDir(config.installs));
   }
   return {
     resolve: {
@@ -137,11 +138,27 @@ LICENSE file in the root directory of this source tree."),
 }};
 
 module.exports = [
-// Web config - for hiplot webserver and notebook
-env => { return {
+// Web config - for hiplot webserver, notebook and streamlit
+env => {
+  const pyBuilt = path.resolve(__dirname, 'hiplot', 'static', 'built');
+  const webServerBundle = path.resolve(pyBuilt, 'hiplot.bundle.js');
+
+  const pyBuiltSt = path.resolve(pyBuilt, 'streamlit_component');
+  const streamlitBundle = path.resolve(pyBuiltSt, 'hiplot_streamlit.bundle.js');
+  const streamlitHTML = path.resolve(pyBuiltSt, 'index.html');
+  var installs = {
+    [webServerBundle]: 'hiplot.bundle.js',
+    [streamlitBundle]: 'hiplot_streamlit.bundle.js',
+    [streamlitHTML]: '../src/index_streamlit.html'
+  };
+  if (env && env.test) {
+    installs[webServerBundle] = 'hiplot_test.bundle.js';
+  }
+  return {
     entry: {
       'hiplot': `./src/hiplot_web.tsx`,
       'hiplot_test': `./src/hiplot_test.tsx`,
+      'hiplot_streamlit': `./src/hiplot_streamlit.tsx`,
     },
     output: {
         path: distPath,
@@ -149,7 +166,7 @@ env => { return {
         library: 'hiplot',
         libraryTarget: 'var'
     },
-    ...exportConfig({web: true, test: env && env.test}),
+    ...exportConfig({web: true, installs: installs}),
 }},
 // Node config - for npm library
 {

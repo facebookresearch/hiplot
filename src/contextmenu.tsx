@@ -33,7 +33,9 @@ export class ContextMenu extends React.Component<ContextMenuProps, ContextMenuSt
             left: 0,
         };
         this.hide = function() {
-            this.setState({visible: false});
+            if (this.state.visible) {
+                this.setState({visible: false});
+            }
         }.bind(this);
         $(window).on("click", this.hide);
     }

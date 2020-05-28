@@ -32,6 +32,7 @@
     "datatables.net-fixedheader-bs4": "^3.1.6",
     "datatables.net-responsive-bs4": "^2.2.3",
     "file-loader": "^5.0.2",
+    "hoist-non-react-statics": "^3.3.2",
     "imports-loader": "^0.8.0",
     "jquery": "^3.4.1",
     "json5": "^2.1.3",

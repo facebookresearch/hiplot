@@ -222,16 +222,18 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     </ResizableH>);
   }
   sendBrushExtents = _.debounce(function(this: ParallelPlot): void {
-    const yscales = this.yscale;
-    var colToScale = {};
-    this.dimensions_dom.selectAll("." + style.brush).each(function(this: SVGGElement, dim: string) {
-      const sel: d3.BrushSelection = d3.brushSelection(this);
-      if (sel === null) {
-        return;
-      }
-      colToScale[dim] = scale_pixels_range(yscales[dim], sel as [number, number]);
-    });
-    this.props.sendMessage("brush_extents", colToScale);
+    this.props.sendMessage("brush_extents", function(this: ParallelPlot) {
+      const yscales = this.yscale;
+      var colToScale = {};
+      this.dimensions_dom.selectAll("." + style.brush).each(function(this: SVGGElement, dim: string) {
+        const sel: d3.BrushSelection = d3.brushSelection(this);
+        if (sel === null) {
+          return;
+        }
+        colToScale[dim] = scale_pixels_range(yscales[dim], sel as [number, number]);
+      });
+      return colToScale;
+    }.bind(this));
   }.bind(this), 400);
   forceHideColumn = function(pd: ParamDef) {
     return pd === undefined ||

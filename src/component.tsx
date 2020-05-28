@@ -74,7 +74,7 @@ export interface HiPlotProps {
     experiment: HiPlotExperiment | null;
     plugins: PluginsMap;
     persistentState?: PersistentState;
-    comm: any; // Communication object for Jupyter notebook
+    on_change: {[k: string]: Array<(type: string, data: any) => void>}; // callbacks when selection changes, etc...
     dark: boolean;
     asserts: boolean;
     dataProvider: any;
@@ -82,7 +82,6 @@ export interface HiPlotProps {
 
 interface HiPlotState extends IDatasets {
     experiment: HiPlotExperiment | null;
-    version: number;
     loadStatus: HiPlotLoadStatus;
     loadPromise: CancelablePromise | null;
     error: string;
@@ -126,8 +125,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     // React refs
     contextMenuRef = React.createRef<ContextMenu>();
 
-    comm_message_id: number = 0;
-
     plugins_window_state: {[plugin: string]: any} = {};
 
     plugins_ref: Array<React.RefObject<PluginClass>> = []; // For debugging/tests
@@ -137,7 +134,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         this.state = {
             experiment: props.experiment,
             colormap: null,
-            version: 0,
             loadStatus: HiPlotLoadStatus.None,
             loadPromise: null,
             error: null,
@@ -168,6 +164,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         plugins: defaultPlugins,
         experiment: null,
         dataProvider: null,
+        on_change: null,
     };
     static getDerivedStateFromError(error: Error) {
         // Update state so the next render will show the fallback UI.
@@ -211,20 +208,19 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             rows_highlighted: []
         };
     }
-    sendMessage(type: string, data: any): void {
-        if (this.props.comm !== null) {
-            this.props.comm.send({
-                'type': type,
-                'message_id': this.comm_message_id,
-                'data': data,
-            });
-            this.comm_message_id += 1;
+    sendMessage(type: string, get_data: () => any): void {
+        if (this.props.on_change !== null && this.props.on_change[type] && this.props.on_change[type].length) {
+            const data = get_data();
+            this.props.on_change[type].forEach(function(callback) {
+                callback(type, data);
+            })
         }
     }
-    onSelectedChange = _.debounce(function(this: HiPlot): void {
-        this.sendMessage("selection", {
-            'selected': this.state.rows_selected.map(row => '' + row['uid'])
-        })
+    callSelectedUidsHooks = _.debounce(function(this: HiPlot): void {
+        this.sendMessage("selected_uids", function() { return this.state.rows_selected.map(row => '' + row['uid'])}.bind(this));
+    }.bind(this), 200);
+    callFilteredUidsHooks = _.debounce(function(this: HiPlot): void {
+        this.sendMessage("filtered_uids", function() { return this.state.rows_filtered.map(row => '' + row['uid'])}.bind(this));
     }.bind(this), 200);
     _loadExperiment(experiment: HiPlotExperiment) {
         // Generate dataset for Parallel Plot
@@ -266,7 +262,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         this.setState(function(state, props) { return {
             experiment: experiment,
             colormap: experiment.colormap,
-            version: state.version + 1,
             loadStatus: HiPlotLoadStatus.Loaded,
             dp_lookup: dp_lookup,
             colorby: colorby,
@@ -293,33 +288,43 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         if (this.state.loadPromise) {
             this.state.loadPromise.cancel();
         }
-        this.onSelectedChange.cancel();
+        this.callSelectedUidsHooks.cancel();
+        this.callFilteredUidsHooks.cancel();
     }
     componentDidMount() {
         // Setup contextmenu when we right-click a parameter
         this.contextMenuRef.current.addCallback(this.columnContextMenu.bind(this), this);
 
         // Load experiment provided in constructor if any
-        if (this.props.experiment !== null) {
+        if (this.props.experiment) {
             this.loadWithPromise(new Promise(function(resolve, reject) {
                 resolve({experiment: this.props.experiment});
             }.bind(this)));
         }
     }
     componentDidUpdate(prevProps: HiPlotProps, prevState: HiPlotState): void {
-        if (prevState.rows_selected != this.state.rows_selected) {
-            this.onSelectedChange();
-        }
         if (prevState.rows_filtered_filters != this.state.rows_filtered_filters) {
             this.state.persistentState.set(PSTATE_FILTERS, this.state.rows_filtered_filters);
         }
         if (prevState.colorby != this.state.colorby && this.state.colorby) {
             this.state.persistentState.set(PSTATE_COLOR_BY, this.state.colorby);
         }
-        if (this.props.experiment !== prevProps.experiment) {
-            this.loadWithPromise(new Promise(function(resolve, reject) {
-                resolve({experiment: this.props.experiment});
-            }.bind(this)));
+        if (this.state.loadStatus != HiPlotLoadStatus.Loading) {
+            if (this.props.experiment !== null &&
+                ((this.state.loadStatus == HiPlotLoadStatus.Error && this.props.experiment !== prevProps.experiment) ||
+                (this.state.loadStatus != HiPlotLoadStatus.Error && this.props.experiment !== this.state.experiment))) {
+                this.loadWithPromise(new Promise(function(resolve, reject) {
+                    resolve({experiment: this.props.experiment});
+                }.bind(this)));
+            }
+            else {
+                if (prevState.rows_selected != this.state.rows_selected) {
+                    this.callSelectedUidsHooks();
+                }
+                if (prevState.rows_filtered != this.state.rows_filtered) {
+                    this.callFilteredUidsHooks();
+                }
+            }
         }
         if (this.state.loadStatus == HiPlotLoadStatus.Loading &&
             this.state.loadPromise != prevState.loadPromise) {
