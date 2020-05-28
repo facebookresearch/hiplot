@@ -8,13 +8,14 @@
 const path = require('path');
 const fs = require('fs');
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const webpack = require("webpack");
 
 const distPath = path.resolve(__dirname, 'dist');
 
 class WhenDoneCopyToHiplotStaticDir {
-  constructor(env) {
-    this.env = env;
+  constructor(test) {
+    this.test = test;
   }
   apply(compiler) {
     compiler.hooks.afterEmit.tap('WhenDoneCopyToHiplotStaticDir', (
@@ -24,13 +25,25 @@ class WhenDoneCopyToHiplotStaticDir {
       try {
           fs.mkdirSync(pyBuilt, {recursive: true});
       } catch (err) { /* `recursive` option is node >= 10.0. Otherwise will throw if the directory already exists */ }
-      const target = this.env && this.env.test ? "hiplot_test" : "hiplot";
+      const target = this.test ? "hiplot_test" : "hiplot";
       fs.copyFileSync(path.resolve(distPath, `${target}.bundle.js`), path.resolve(pyBuilt, 'hiplot.bundle.js'));
     });
   }
 }
 
-const exportConfig = {
+const exportConfig = function(config = {}) {
+  var plugins = [
+    new LicenseWebpackPlugin(),
+    new webpack.BannerPlugin(
+" Copyright (c) Facebook, Inc. and its affiliates.\n\n\
+This source code is licensed under the MIT license found in the\n\
+LICENSE file in the root directory of this source tree."),
+    //new BundleAnalyzerPlugin()
+  ];
+  if (config.web) {
+    plugins.push(new WhenDoneCopyToHiplotStaticDir(config.test));
+  }
+  return {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.json', '.css', '.svg', '.scss'],
     },
@@ -58,7 +71,7 @@ const exportConfig = {
               {
                 loader: "css-loader",
                 options: {
-                modules: true
+                  modules: true
                 }
               },
               {
@@ -108,8 +121,9 @@ const exportConfig = {
     stats: {
       colors: true
     },
+    plugins: plugins,
     devtool: 'source-map',
-};
+}};
 
 module.exports = [
 // Web config - for hiplot webserver and notebook
@@ -122,15 +136,7 @@ env => { return {
         path: distPath,
         filename: '[name].bundle.js',
     },
-    ...exportConfig,
-    plugins: [
-      new LicenseWebpackPlugin(),
-      new webpack.BannerPlugin(
-  " Copyright (c) Facebook, Inc. and its affiliates.\n\n\
-  This source code is licensed under the MIT license found in the\n\
-  LICENSE file in the root directory of this source tree."),
-      new WhenDoneCopyToHiplotStaticDir(env)
-    ]
+    ...exportConfig({web: true, test: env && env.test}),
 }},
 // Node config - for npm library
 {
@@ -143,13 +149,6 @@ env => { return {
         library: '',
         libraryTarget: 'commonjs'
     },
-    ...exportConfig,
-    plugins: [
-      new LicenseWebpackPlugin(),
-      new webpack.BannerPlugin(
-  " Copyright (c) Facebook, Inc. and its affiliates.\n\n\
-  This source code is licensed under the MIT license found in the\n\
-  LICENSE file in the root directory of this source tree."),
-    ]
+    ...exportConfig(),
 }
 ];
