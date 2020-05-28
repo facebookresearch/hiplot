@@ -30,7 +30,7 @@ dtButtonsBs4(window, $);
 
 
 import { Datapoint } from "./types";
-import style from "./hiplot.css";
+import style from "./hiplot.scss";
 import { HiPlotPluginData } from "./plugin";
 import _ from "underscore";
 import { FilterType } from "./filters";

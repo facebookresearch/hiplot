@@ -7,7 +7,7 @@
 
 import React from "react";
 import * as d3 from "d3";
-import style from "../hiplot.css";
+import style from "../hiplot.scss";
 import { create_d3_scale_without_outliers, ParamDef } from "../infertypes";
 import { foCreateAxisLabel, foDynamicSizeFitContent } from "../lib/svghelpers";
 import { ParamType, Datapoint } from "../types";

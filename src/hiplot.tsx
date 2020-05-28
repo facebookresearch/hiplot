@@ -8,7 +8,6 @@
 import $ from "jquery";
 import * as _ from 'underscore';
 import React from "react";
-import ReactDOM from "react-dom";
 //@ts-ignore
 import JSON5 from "json5";
 import './style/global';
@@ -28,7 +27,7 @@ import LogoSVG from "../hiplot/static/logo.svg";
 //@ts-ignore
 import LogoSVGW from "../hiplot/static/logo-w.svg";
 //@ts-ignore
-import style from "./hiplot.css";
+import style from "./hiplot.scss";
 import { ContextMenu } from "./contextmenu";
 import { HiPlotDistributionPlugin } from "./distribution/plugin";
 import { Filter, FilterType, apply_filters, apply_filter } from "./filters";
@@ -124,6 +123,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         is_webserver: false,
         comm: null,
         dark: null,
+        asserts: false,
     };
     static getDerivedStateFromError(error: Error) {
         // Update state so the next render will show the fallback UI.
@@ -287,6 +287,11 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         }
         if (prevState.colorby != this.state.colorby && this.state.colorby) {
             this.state.persistent_state.set(PSTATE_COLOR_BY, this.state.colorby);
+        }
+        if (this.props.experiment !== prevProps.experiment) {
+            this.loadWithPromise(new Promise(function(resolve, reject) {
+                resolve({experiment: this.props.experiment});
+            }.bind(this)));
         }
     }
     columnContextMenu(column: string, cm: HTMLDivElement) {
@@ -554,25 +559,3 @@ export const defaultPlugins: PluginsMap = {
     // @ts-ignore
     "TABLE": RowsDisplayTable,
 };
-
-export function hiplot_setup(element: HTMLElement, extra?: any) {
-    var props = {
-        experiment: null,
-        is_webserver: true,
-        persistent_state: new PersistentStateInURL("hip"),
-        plugins: defaultPlugins,
-        comm: null,
-        asserts: false,
-    };
-    if (extra !== undefined) {
-        Object.assign(props, extra);
-    }
-    if (extra.persistent_state_url_prefix !== undefined) {
-        props.persistent_state = new PersistentStateInURL(extra.persistent_state_url_prefix);
-    }
-    return ReactDOM.render(<HiPlot {...props} />, element);
-}
-
-Object.assign(window, {
-    'hiplot_setup': hiplot_setup,
-});

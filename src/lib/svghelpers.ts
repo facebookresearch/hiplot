@@ -8,7 +8,7 @@
 
 import * as d3 from "d3";
 import { ParamDef } from "../infertypes";
-import style from "../hiplot.css";
+import style from "../hiplot.scss";
 import { ContextMenu } from "../contextmenu";
 
 export function foDynamicSizeFitContent(fo: SVGForeignObjectElement) {
