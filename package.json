@@ -2,7 +2,7 @@
   "name": "hiplot",
   "version": "0.0.0",
   "description": "HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.",
-  "main": "dist/hiplot.js",
+  "main": "dist/hiplot.lib.js",
   "types": "dist/hiplot.d.ts",
   "dependencies": {
     "@babel/cli": "^7.7.4",
@@ -30,7 +30,6 @@
     "underscore": "^1.9.1"
   },
   "devDependencies": {
-    "@teamsupercell/typings-for-css-modules-loader": "^2.1.0",
     "assert": "^2.0.0",
     "css-loader": "^3.4.1",
     "datatables.net-buttons": "^1.6.1",
@@ -56,13 +55,12 @@
     "build": "npm-run-all tsm webpack",
     "build-dev": "npm-run-all tsm webpack-dev",
     "build-dev-watch": "npm-run-all tsm webpack-dev-watch",
-    "prepublish": "npm-run-all prepublish-ts prepublish-scss",
+    "prepublish": "npm-run-all prepublish-ts",
     "tsm": "tsm src -i node_modules/",
     "webpack": "webpack --display-error-details --progress",
     "webpack-dev": "webpack --display-error-details --progress -d",
     "webpack-dev-watch": "webpack --display-error-details --progress -d -w",
-    "prepublish-ts": "tsc",
-    "prepublish-scss": "npx node-sass src/ -o dist --include-path node_modules/"
+    "prepublish-ts": "tsc"
   },
   "repository": {
     "type": "git",
