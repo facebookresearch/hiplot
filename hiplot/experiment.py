@@ -379,6 +379,8 @@ class Experiment(_DictSerializable):
             ]
             if subxp.parameters_definition is not None:
                 xp.parameters_definition.update(subxp.parameters_definition)
+            for d, v in subxp._displays.items():
+                xp.display_data(d).update(v)
         return xp
 
 
