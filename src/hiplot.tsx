@@ -122,7 +122,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     static defaultProps = {
         is_webserver: false,
         comm: null,
-        dark: null,
+        dark: false,
         asserts: false,
     };
     static getDerivedStateFromError(error: Error) {
