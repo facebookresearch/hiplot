@@ -139,7 +139,7 @@
 </div>
 <dl class="py method">
 <dt id="hiplot.Experiment.display">
-<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">force_full_width</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">store_state_key</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ExperimentDisplayed<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">force_full_width</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">store_state_key</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.ExperimentDisplayed<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays an experiment in an ipython notebook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -244,7 +244,7 @@ Information about display_data, parameters definition will be lost.</p>
 
 <dl class="py method">
 <dt id="hiplot.Experiment.to_html">
-<code class="sig-name descname">to_html</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span><span class="p">:</span> <span class="n">Union[pathlib.Path, str, IO[str], None]</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_html</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span><span class="p">:</span> <span class="n">Union[pathlib.Path, str, IO[str], None]</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the content of a standalone .html file that displays this experiment
 without any dependency to HiPlot server or static files.</p>
 <dl class="field-list simple">
@@ -484,6 +484,7 @@ and values contain information about the current brush.</p>
 </script>
 <script type="text/javascript" src="_static/js/bootstrap.js"></script>
   <div class="footer">
+    <a href="https://opensource.facebook.com/legal/privacy/">Privacy</a> - <a href="https://opensource.facebook.com/legal/terms/">Terms</a><br />
     &copy; Copyright 2020, Facebook AI Research (FAIR). Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
   </div>
   </body>
