@@ -215,7 +215,7 @@ class Experiment(_DictSerializable):
         validate_colormap(self.colormap)
         return self
 
-    def display(self, force_full_width: bool = False, store_state_key: Optional[str] = None) -> "ExperimentDisplayed":
+    def display(self, force_full_width: bool = False, store_state_key: Optional[str] = None, **kwargs: Any) -> "ExperimentDisplayed":
         """
         Displays an experiment in an ipython notebook.
 
@@ -230,9 +230,9 @@ class Experiment(_DictSerializable):
         from .ipython import display_exp  # pylint: disable=cyclic-import
 
         self.validate()
-        return display_exp(self, force_full_width=force_full_width, store_state_url=store_state_key)
+        return display_exp(self, force_full_width=force_full_width, store_state_url=store_state_key, **kwargs)
 
-    def to_html(self, file: Optional[Union[Path, str, IO[str]]] = None) -> str:
+    def to_html(self, file: Optional[Union[Path, str, IO[str]]] = None, **kwargs: Any) -> str:
         """
         Returns the content of a standalone .html file that displays this experiment
         without any dependency to HiPlot server or static files.
@@ -242,6 +242,7 @@ class Experiment(_DictSerializable):
         """
         self.validate()
         html = make_experiment_standalone_page(options={
+            **kwargs,
             'experiment': self._asdict()
         })
         html = html_inlinize(html)

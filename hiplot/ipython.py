@@ -110,11 +110,13 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
 def display_exp(
         xp: exp.Experiment,
         force_full_width: bool = False,
-        store_state_url: t.Optional[str] = None
+        store_state_url: t.Optional[str] = None,
+        **kwargs: t.Any
 ) -> IPythonExperimentDisplayed:
     comm_id = f"comm_{uuid.uuid4().hex[:6]}"
     displayed_xp = IPythonExperimentDisplayed(xp, comm_id)
     options: t.Dict[str, t.Any] = {
+        **kwargs,
         'experiment': xp._asdict()
     }
     if store_state_url is not None:
