@@ -61,6 +61,7 @@ interface HiPlotState extends IDatasets {
     loadStatus: HiPlotLoadStatus;
     error: string;
     params_def: ParamDefMap;
+    params_def_unfiltered: ParamDefMap;
     dp_lookup: DatapointLookup;
     colorby: string;
     colormap: string;
@@ -109,6 +110,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             rows_selected_filter: null,
             rows_highlighted: [],
             params_def: {},
+            params_def_unfiltered: {},
             colorby: null,
             dark: this.props.dark === null ? detectIsDarkTheme() : this.props.dark,
             persistent_state: props.persistent_state !== undefined && props.persistent_state !== null ? props.persistent_state : new PersistentStateInMemory("", {}),
@@ -191,6 +193,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             initFilters = [];
         }
         const params_def = infertypes(this.state.persistent_state.children(PSTATE_PARAMS), datasets.rows_filtered, experiment.parameters_definition);
+        const params_def_unfiltered = infertypes(this.state.persistent_state.children(PSTATE_PARAMS), datasets.rows_all_unfiltered, experiment.parameters_definition);
 
         // Color handling
         function get_default_color() {
@@ -226,6 +229,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             dp_lookup: dp_lookup,
             colorby: colorby,
             params_def: params_def,
+            params_def_unfiltered: params_def_unfiltered,
             rows_filtered_filters: initFilters,
             ...datasets,
         }; });
@@ -460,6 +464,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
                 get_color_for_row: this.getColorForRow.bind(this),
                 experiment: this.state.experiment,
                 params_def: this.state.params_def,
+                params_def_unfiltered: this.state.params_def_unfiltered,
                 dp_lookup: this.state.dp_lookup,
                 colorby: this.state.colorby,
                 render_row_text: this.renderRowText.bind(this),
