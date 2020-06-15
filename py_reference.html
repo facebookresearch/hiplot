@@ -4,6 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
@@ -44,7 +45,8 @@
           <a href="tuto_notebook.html" title="Advanced uses: notebooks"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.11
- documentation</a> &#187;</li> 
+ documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Python classes reference</a></li> 
       </ul>
     </div>
     <div class="container-wrapper">
@@ -244,7 +246,7 @@ Information about display_data, parameters definition will be lost.</p>
 
 <dl class="py method">
 <dt id="hiplot.Experiment.to_html">
-<code class="sig-name descname">to_html</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span><span class="p">:</span> <span class="n">Union[pathlib.Path, str, IO[str], None]</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_html</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>pathlib.Path<span class="p">, </span>str<span class="p">, </span>IO<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_html"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_html" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the content of a standalone .html file that displays this experiment
 without any dependency to HiPlot server or static files.</p>
 <dl class="field-list simple">
@@ -360,7 +362,7 @@ and values contain information about the current brush.</p>
 <h2>Columns type/scales<a class="headerlink" href="#columns-type-scales" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="hiplot.ValueType">
-<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ValueType</code><a class="reference internal" href="_modules/hiplot/experiment.html#ValueType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ValueType" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">hiplot.</code><code class="sig-name descname">ValueType</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hiplot/experiment.html#ValueType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.ValueType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines how we render a column (scaling, and color scheme)</p>
 <dl class="py attribute">
 <dt id="hiplot.ValueType.CATEGORICAL">
@@ -474,7 +476,8 @@ and values contain information about the current brush.</p>
           <a href="tuto_notebook.html" title="Advanced uses: notebooks"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.11
- documentation</a> &#187;</li> 
+ documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Python classes reference</a></li> 
       </ul>
     </div>
 <script type="text/javascript">
