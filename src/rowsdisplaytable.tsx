@@ -222,7 +222,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
             return;
         }
         const ordered_cols = this.ordered_cols;
-        const ock = dt.colReorder.transpose([...Array(ordered_cols.length).keys()]);
+        const ock = dt.colReorder.transpose([...Array(ordered_cols.length).keys()], 'toOriginal');
 
         dt.clear();
         dt.rows.add(selected.map(function(row) {
