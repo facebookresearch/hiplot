@@ -9,6 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+var remToPx = require('postcss-rem-to-pixel');
 const webpack = require("webpack");
 
 const distPath = path.resolve(__dirname, 'dist');
@@ -87,6 +88,16 @@ LICENSE file in the root directory of this source tree."),
             loader: [
               'style-loader',
               "css-loader",
+              {
+                loader: 'postcss-loader',
+                options: {
+                  // We can be emded anywhere, with arbitrary `font-size` for `body` element
+                  // So we better don't use `rem` in CSS and set sizes in pixel instead.
+                  plugins: [remToPx({
+                    propList: ['font', 'font-size', 'line-height', 'letter-spacing', 'padding*', 'border*'],
+                  })]
+                }
+              },
               {
                 loader: 'sass-loader',
                 options: {

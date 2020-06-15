@@ -80,7 +80,7 @@ export class DistributionPlot extends React.Component<DistributionPlotData, {}> 
         if (this.isVertical()) {
             dataScale.range([0, this.figureWidth()]);
             d3.select(this.axisBottom.current).call(d3.axisBottom(dataScale).ticks(1 + this.props.width/50));
-            d3.select(this.axisBottomName.current).append(function() {
+            d3.select(this.axisBottomName.current).html(null).append(function() {
                     return foCreateAxisLabel(this.props.param_def, null, null);
                 }.bind(this))
                     .classed("distrplot_axislabel", true)
