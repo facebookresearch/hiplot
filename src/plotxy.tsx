@@ -142,7 +142,6 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     var div = d3.select(this.root_ref.current);
     me.svg = div.select("svg");
     var currently_displayed = [];
-    var rerender_all_points = [];
     var zoom_brush: d3.BrushBehavior<unknown>;
 
     // Lines
@@ -158,13 +157,11 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     var x_scale_orig: d3.AxisScale<d3.AxisDomain>, y_scale_orig: d3.AxisScale<d3.AxisDomain>;
 
     function redraw_axis_and_rerender() {
-      var rerender_all_points_before = rerender_all_points;
       redraw_axis();
       clear_canvas();
-      $.each(rerender_all_points_before, function(_, fn) {
-        fn();
-      });
-      rerender_all_points = rerender_all_points_before;
+      if (me.plot) {
+       me.plot.draw_selected_rows();
+      }
     }
     function create_scale(param: string, range) {
       var scale = create_d3_scale(me.props.params_def[param])
@@ -376,25 +373,22 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     };
 
     function draw_selected_rows() {
+      if (!me.isEnabled()) {
+        return;
+      }
       clear_canvas();
       var xp_config = me.props;
       var area = me.state.height * me.state.width / 400000;
       var lines_opacity = xp_config.lines_opacity !== null ? xp_config.lines_opacity : d3.min([3 * area / Math.pow(me.props.rows_selected.length, 0.3), 1]);
       var dots_opacity = xp_config.dots_opacity !== null ? xp_config.dots_opacity : d3.min([4 * area / Math.pow(me.props.rows_selected.length, 0.3), 1]);
       me.props.rows_selected.forEach(function(dp: Datapoint) {
-        var call_render = function() {
-          render_dp(dp, graph_lines, {
-            'lines_color': me.props.get_color_for_row(dp, lines_opacity),
-            'lines_width': xp_config.lines_thickness,
-            'dots_color': me.props.get_color_for_row(dp, dots_opacity),
-            'dots_thickness': xp_config.dots_thickness,
-            'remember': true,
-          });
-        };
-        rerender_all_points.push(call_render);
-        if (me.isEnabled()) {
-          call_render();
-        }
+        render_dp(dp, graph_lines, {
+          'lines_color': me.props.get_color_for_row(dp, lines_opacity),
+          'lines_width': xp_config.lines_thickness,
+          'dots_color': me.props.get_color_for_row(dp, dots_opacity),
+          'dots_thickness': xp_config.dots_thickness,
+          'remember': true,
+        });
       });
     }
 
@@ -402,7 +396,6 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       graph_lines.clearRect(0, 0, me.state.width, me.state.height);
       highlights.clearRect(0, 0, me.state.width, me.state.height);
       currently_displayed = [];
-      rerender_all_points = [];
     };
 
     // Draw highlights
@@ -439,13 +432,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
 
     // Change axis
     function update_axis() {
-      var rerender_all_points_before = rerender_all_points;
       recompute_scale(true);
       clear_canvas();
-      $.each(rerender_all_points_before, function(_, fn) {
-        fn();
-      });
-      rerender_all_points = rerender_all_points_before;
+      draw_selected_rows();
     };
     update_axis();
 
@@ -543,14 +532,17 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     // Check if data changed
     if (this.plot) {
       var scaleRecomputed = false;
-      if (this.props.params_def != prevProps.params_def || this.props.colorby != prevProps.colorby) {
+      if (this.props.params_def[this.state.axis_x] != prevProps.params_def[this.state.axis_x] ||
+        this.props.params_def[this.state.axis_y] != prevProps.params_def[this.state.axis_y] ||
+        this.props.params_def[this.props.colorby] != prevProps.params_def[this.props.colorby]
+      ) {
         this.plot.recompute_scale();
         scaleRecomputed = true;
       }
-      if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed) {
+      if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
         this.plot.draw_selected_rows();
       }
-      if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed) {
+      if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed || this.props.colorby != prevProps.colorby) {
         this.plot.draw_highlighted()
       }
     }
