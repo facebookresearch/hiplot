@@ -17,6 +17,16 @@ interface d3ScalePercentile {
     ticks: any,
 };
 
+function toPrecisionFloor(v: number, p: number): number {
+    if (v < 0) {
+        return -toPrecisionFloor(-v, p);
+    } else if (v == 0) {
+        return 0;
+    }
+    var pow = 10 ** (p - 1 - Math.floor(Math.log10(v)));
+    return Math.floor(v * pow) / pow;
+}
+
 export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
     /**
      * Creates a quantile scale for d3js.
@@ -106,15 +116,6 @@ export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
                 val = start;
             }
             else {
-                function toPrecisionFloor(v: number, p: number): number {
-                    if (v < 0) {
-                        return -toPrecisionFloor(-v, p);
-                    } else if (v == 0) {
-                        return 0;
-                    }
-                    var pow = 10 ** (p - 1 - Math.floor(Math.log10(v)));
-                    return Math.floor(v * pow) / pow;
-                }
                 var precision = 1;
                 var prev = i > 0 ? t[t.length - 1] : start;
                 while (precision < 20 && toPrecisionFloor(prev, precision) == toPrecisionFloor(end, precision)) {
