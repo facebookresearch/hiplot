@@ -157,8 +157,16 @@ env => { return {
     output: {
         path: distPath,
         filename: '[name].lib.js',
-        library: '',
-        libraryTarget: 'commonjs'
+        library: 'hiplot',
+        libraryTarget: 'umd'
+    },
+    externals: {
+      react: {
+        root: "React",
+        commonjs2: "react",
+        commonjs: "react",
+        amd: "react"
+      },
     },
     ...exportConfig(),
 }
