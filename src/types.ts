@@ -39,10 +39,10 @@ export interface HiPlotValueDef { // Mirror of python `hip.ValueDef`
 
 export interface HiPlotExperiment { // Mirror of python `hip.Experiment`
     datapoints: Array<Datapoint>,
-    parameters_definition: {[key: string]: HiPlotValueDef},
-    colormap: string;
-    colorby: string;
-    _displays: {[key: string]: {[key2: string]: any}},
+    parameters_definition?: {[key: string]: HiPlotValueDef},
+    colormap?: string;
+    colorby?: string;
+    _displays?: {[key: string]: {[key2: string]: any}},
 }
 
 export enum HiPlotLoadStatus {

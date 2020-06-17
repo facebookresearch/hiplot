@@ -9,11 +9,13 @@ import ReactDOM from "react-dom";
 import {HiPlot, defaultPlugins} from "./hiplot";
 import React from "react";
 import { PersistentStateInURL } from "./lib/savedstate";
+import { loadURIFromWebServer } from "./webserver";
+
 
  export function hiplot_setup(element: HTMLElement, extra?: any) {
     var props = {
         experiment: null,
-        is_webserver: true,
+        loadURI: loadURIFromWebServer,
         persistent_state: new PersistentStateInURL("hip"),
         plugins: defaultPlugins,
         comm: null,

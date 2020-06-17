@@ -8,8 +8,6 @@
 import $ from "jquery";
 import * as _ from 'underscore';
 import React from "react";
-//@ts-ignore
-import JSON5 from "json5";
 import './style/global';
 
 import { Datapoint, ParamType, HiPlotExperiment, HiPlotLoadStatus, PSTATE_COLOR_BY, PSTATE_LOAD_URI, PSTATE_PARAMS, DatapointLookup, IDatasets, PSTATE_FILTERS } from "./types";
@@ -45,14 +43,19 @@ type PluginComponentClass<P> = React.ComponentClass<P>;
 type PluginClass = React.ClassType<HiPlotPluginData, PluginComponent<HiPlotPluginData>, PluginComponentClass<HiPlotPluginData>>;
 interface PluginsMap {[k: string]: PluginClass; };
 
+export interface loadURIPromise {
+    experiment?: HiPlotExperiment;
+    error: string;
+}
+
 export interface HiPlotProps {
     experiment: HiPlotExperiment | null;
-    is_webserver: boolean;
     plugins: PluginsMap;
     persistent_state?: PersistentState;
     comm: any; // Communication object for Jupyter notebook
     dark: boolean;
     asserts: boolean;
+    loadURI?: (uri: string) => Promise<loadURIPromise>;
 };
 
 interface HiPlotState extends IDatasets {
@@ -134,7 +137,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         this.onSelectedChange_debounced = _.debounce(this.onSelectedChange.bind(this), 200);
     }
     static defaultProps = {
-        is_webserver: false,
+        loadURI: null,
         comm: null,
         dark: false,
         asserts: false,
@@ -364,26 +367,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         this.loadURI(this.state.persistent_state.get(PSTATE_LOAD_URI));
     }
     loadURI(uri: string) {
-        this.loadWithPromise(new Promise(function(resolve, reject) {
-            $.get( "/data?uri=" + encodeURIComponent(uri), resolve, "json").fail(function(data) {
-                //console.log("Data loading failed", data);
-                if (data.readyState == 4 && data.status == 200) {
-                    console.log('Unable to parse JSON with JS default decoder (Maybe it contains NaNs?). Trying custom decoder');
-                    var decoded = JSON5.parse(data.responseText);
-                    resolve(decoded);
-                }
-                else if (data.status == 0) {
-                    resolve({
-                        'experiment': undefined,
-                        'error': 'Network error'
-                    });
-                    return;
-                }
-                else {
-                    reject(data);
-                }
-            });
-        }));
+        this.loadWithPromise(this.props.loadURI(uri));
     }
     onRunsTextareaSubmitted(uri: string) {
         this.state.persistent_state.set(PSTATE_LOAD_URI, uri);
@@ -468,7 +452,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         const createPluginProps = function(this: HiPlot, idx: number, name: string): React.ClassAttributes<React.ComponentClass<HiPlotPluginData>> & HiPlotPluginData {
             return {
                 ref: this.plugins_ref[idx],
-                ...(this.state.experiment._displays[name] ? this.state.experiment._displays[name] : {}),
+                ...(this.state.experiment._displays && this.state.experiment._displays[name] ? this.state.experiment._displays[name] : {}),
                 ...datasets,
                 rows_selected_filter: this.state.rows_selected_filter,
                 name: name,
@@ -493,8 +477,8 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             <div className={`${style.hiplot} ${this.state.dark ? style.dark : ""}`}>
             <SelectedCountProgressBar {...controlProps} />
             <HeaderBar
-                onRequestLoadExperiment={this.props.is_webserver ? this.onRunsTextareaSubmitted.bind(this) : null}
-                onRequestRefreshExperiment={this.props.is_webserver ? this.onRefreshDataBtn.bind(this) : null}
+                onRequestLoadExperiment={this.props.loadURI ? this.onRunsTextareaSubmitted.bind(this) : null}
+                onRequestRefreshExperiment={this.props.loadURI ? this.onRefreshDataBtn.bind(this) : null}
                 loadStatus={this.state.loadStatus}
                 initialLoadUri={this.state.persistent_state.get(PSTATE_LOAD_URI, '')}
                 dark={this.state.dark}

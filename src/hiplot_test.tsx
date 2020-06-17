@@ -14,6 +14,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import assert from "assert";
 import { PlotXY } from "./plotxy";
+import { loadURIFromWebServer } from "./webserver";
 
 
 interface TesterState {
@@ -222,7 +223,7 @@ function test_plotxy(this: HiPlotTester): Array<Test> {
 export function hiplot_setup(element: HTMLElement, extra?: object) {
     var props: HiPlotProps = {
         experiment: null,
-        is_webserver: true,
+        loadURI: loadURIFromWebServer,
         persistent_state: new PersistentStateInURL("hip"),
         plugins: defaultPlugins,
         comm: null,
