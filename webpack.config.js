@@ -169,5 +169,8 @@ env => { return {
       },
     },
     ...exportConfig(),
+    optimization: {
+      minimize: false,
+    }
 }
 ];
