@@ -40,7 +40,7 @@
         tbody tr:nth-child(even) {
             background: unset;
         }
-        table {
+        table, td, label, select, input {
             color: unset;
             table-layout: auto;
             font-size: unset;
