@@ -16,8 +16,7 @@ import { HiPlotExperiment, Experiment } from "../types";
 export const PSTATE_LOAD_URI = 'load_uri';
 
 interface State {
-    uri?: string;
-    isTextareaFocused: boolean;
+    currentFileName: string | null;
 }
 
 function readFileIntoExperiment(content: string): {experiment?: HiPlotExperiment, error?: string} {
@@ -30,9 +29,12 @@ function readFileIntoExperiment(content: string): {experiment?: HiPlotExperiment
 export class UploadDataProvider extends React.Component<DataProviderProps, State> {
     constructor(props: DataProviderProps) {
         super(props);
+        this.state = {
+            currentFileName: null
+        };
     }
     componentDidMount() {
-        // Try to load last loaded file stored in clientDB
+        // Try to load last loaded file stored in clientDB?
     }
 
     onDropFiles(acceptedFiles: File[], fileRejections: FileRejection[], event: DropEvent): void {
@@ -47,16 +49,16 @@ export class UploadDataProvider extends React.Component<DataProviderProps, State
                 resolve({'error': `No file uploaded?`});
             }
             const file = acceptedFiles[0];
-            console.log(file);
             const reader = new FileReader()
 
             reader.onabort = () => resolve({'error': 'file reading aborted'})
             reader.onerror = () => resolve({'error': 'file reading has failed'})
             reader.onload = () => {
               resolve(readFileIntoExperiment(reader.result as string));
+              this.setState({currentFileName: file.name});
             }
             reader.readAsText(file);
-        }));
+        }.bind(this)));
     }
     render() {
         return <Dropzone accept={['text/csv', 'text/plain']} onDrop={this.onDropFiles.bind(this)}>
@@ -64,7 +66,7 @@ export class UploadDataProvider extends React.Component<DataProviderProps, State
           <section className={style.dropzoneContainer}>
             <div {...getRootProps()} className={style.dropzone}>
               <input {...getInputProps()} />
-              <p>Drag 'n' drop or click to load a CSV file</p>
+              {this.state.currentFileName === null ? <p>Drag 'n' drop or click to load a CSV file</p> : <p>Loaded: {this.state.currentFileName}<br />Click to load another CSV file, or drop it here</p>}
             </div>
           </section>
         )}
