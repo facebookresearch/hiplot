@@ -374,6 +374,12 @@ jobs:
             DATA_PATH="assets/data"
             EXPERIMENTS=`(cd $DATA_PATH && ls)`
             for p in $EXPERIMENTS; do echo $p; hiplot-render --format html $DATA_PATH/$p > docs/_static/demo/$p.html; done
+      - run:
+          name: Generate HiPlot-upload version
+          command: |
+            . ./venv/bin/activate
+            python -c "from pathlib import Path; import hiplot; Path('docs/_static/hiplot_upload.html').write_text(hiplot.render.make_experiment_standalone_page({'dataProviderName': 'upload'}))"
+            cp -r hiplot/static docs/_static/static
       - run: cp hiplot/static/built/hiplot.bundle.js docs/_static/hiplot.bundle.js
       - run:
           name: Build docs

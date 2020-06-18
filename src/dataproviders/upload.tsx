@@ -74,7 +74,7 @@ export class UploadDataProvider extends React.Component<DataProviderProps, State
           <section className={style.dropzoneContainer}>
             <div {...getRootProps()} className={style.dropzone}>
               <input {...getInputProps()} />
-              <p>Drag 'n' drop some files here, or click to select files</p>
+              <p>Drag 'n' drop or click to load a CSV file</p>
             </div>
           </section>
         )}
