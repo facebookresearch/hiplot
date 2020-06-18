@@ -109,7 +109,6 @@ export function loadURIFromWebServer(uri: string): Promise<loadURIPromise> {
 
 interface State {
     uri?: string;
-    isTextareaFocused: boolean;
 }
 
 export class WebserverDataProvider extends React.Component<DataProviderProps, State> {
@@ -117,7 +116,6 @@ export class WebserverDataProvider extends React.Component<DataProviderProps, St
         super(props);
         this.state = {
             uri: this.props.persistentState.get(PSTATE_LOAD_URI),
-            isTextareaFocused: false,
         };
     }
     refresh(): Promise<any> | null {
@@ -146,8 +144,8 @@ export class WebserverDataProvider extends React.Component<DataProviderProps, St
             enabled={this.props.loadStatus != HiPlotLoadStatus.Loading}
             minimizeWhenOutOfFocus={this.props.loadStatus == HiPlotLoadStatus.Loaded}
             onSubmit={this.loadExperiment.bind(this)}
-            onFocusChange={(hasFocus: boolean) => this.setState({isTextareaFocused: hasFocus})}
-            hasFocus={this.state.isTextareaFocused}
+            onFocusChange={this.props.onFocusChange}
+            hasFocus={this.props.hasFocus}
         />
     }
 }

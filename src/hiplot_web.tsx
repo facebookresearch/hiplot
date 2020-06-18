@@ -11,6 +11,7 @@ import React from "react";
 import { PersistentStateInURL } from "./lib/savedstate";
 import { WebserverDataProvider } from "./dataproviders/webserver";
 import { StaticDataProvider } from "./dataproviders/static";
+import { UploadDataProvider } from "./dataproviders/upload";
 
 
 export function build_props(extra?: any): HiPlotProps {
@@ -29,6 +30,7 @@ export function build_props(extra?: any): HiPlotProps {
     if (extra.dataProviderName !== undefined) {
         props.dataProvider = {
             'webserver': WebserverDataProvider,
+            'upload': UploadDataProvider,
             'none': StaticDataProvider,
         }[extra.dataProviderName];
     }

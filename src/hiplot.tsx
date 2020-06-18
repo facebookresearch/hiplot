@@ -13,11 +13,11 @@ import './style/global';
 import { Datapoint, ParamType, HiPlotExperiment, HiPlotLoadStatus, PSTATE_COLOR_BY, PSTATE_PARAMS, DatapointLookup, IDatasets, PSTATE_FILTERS } from "./types";
 import { RowsDisplayTable } from "./rowsdisplaytable";
 import { infertypes, colorScheme, ParamDefMap } from "./infertypes";
-import { PersistentState, PersistentStateInMemory, PersistentStateInURL } from "./lib/savedstate";
+import { PersistentState, PersistentStateInMemory } from "./lib/savedstate";
 import { ParallelPlot } from "./parallel/parallel";
 import { PlotXY } from "./plotxy";
 import { SelectedCountProgressBar, HiPlotDataControlProps } from "./controls";
-import { ErrorDisplay, HeaderBar } from "./elements";
+import { ErrorDisplay, HeaderBar } from "./header";
 import { HiPlotPluginData } from "./plugin";
 import { StaticDataProvider } from "./dataproviders/static";
 
