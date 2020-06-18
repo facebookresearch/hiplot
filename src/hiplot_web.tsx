@@ -6,28 +6,40 @@
  */
 
 import ReactDOM from "react-dom";
-import {HiPlot, defaultPlugins} from "./hiplot";
+import {HiPlot, defaultPlugins, HiPlotProps} from "./component";
 import React from "react";
 import { PersistentStateInURL } from "./lib/savedstate";
+import { WebserverDataProvider } from "./dataproviders/webserver";
+import { StaticDataProvider } from "./dataproviders/static";
+import { UploadDataProvider } from "./dataproviders/upload";
 
- export function hiplot_setup(element: HTMLElement, extra?: any) {
+
+export function build_props(extra?: any): HiPlotProps {
     var props = {
         experiment: null,
-        is_webserver: true,
-        persistent_state: new PersistentStateInURL("hip"),
+        persistentState: new PersistentStateInURL("hip"),
         plugins: defaultPlugins,
         comm: null,
         asserts: false,
+        dataProvider: WebserverDataProvider,
+        dark: false,
     };
     if (extra !== undefined) {
         Object.assign(props, extra);
     }
-    if (extra.persistent_state_url_prefix !== undefined) {
-        props.persistent_state = new PersistentStateInURL(extra.persistent_state_url_prefix);
+    if (extra.dataProviderName !== undefined) {
+        props.dataProvider = {
+            'webserver': WebserverDataProvider,
+            'upload': UploadDataProvider,
+            'none': StaticDataProvider,
+        }[extra.dataProviderName];
     }
-    return ReactDOM.render(<HiPlot {...props} />, element);
+    if (extra.persistentStateUrlPrefix !== undefined) {
+        props.persistentState = new PersistentStateInURL(extra.persistentStateUrlPrefix);
+    }
+    return props;
 }
 
-Object.assign(window, {
-    'hiplot_setup': hiplot_setup,
-});
+export function render(element: HTMLElement, extra?: any) {
+    return ReactDOM.render(<HiPlot {...build_props(extra)} />, element);
+}

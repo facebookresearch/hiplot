@@ -132,28 +132,58 @@ export function scale_pixels_range(scale: any, extents: [number, number]): Scale
     }
 }
 
+function compute_val2color(pd: ParamDef) {
+    if (pd.__val2color !== undefined) {
+        return;
+    }
+    pd.__val2color = pd.colors !== null ? pd.colors : {};
+    for (var i = 0; i < pd.distinct_values.length; ++i) {
+        if (pd.__val2color[pd.distinct_values[i]]) {
+            continue;
+        }
+        if (pd.distinct_values.length < 10) {
+            var c = toRgb(d3.schemeCategory10[i % 10]);
+            pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+            continue;
+        }
+        var valueHash = hashCode(JSON.stringify(pd.distinct_values[i]));
+        var c = toRgb((randomColor as any)({seed: Math.abs(valueHash)}));
+        pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+    }
+};
+
+
+function parseColorMap(name: string, description: string) {
+    if (!name) {
+        // @ts-ignore
+        return d3.interpolateTurbo;
+    }
+    var fn = d3[name];
+    if (!fn) {
+        throw new Error(`Invalid color map ${name} ${description}`);
+    }
+    if (name.startsWith("interpolate")) {
+        return fn; // This is a function
+    }
+    // Assume this is a scheme (eg array of colors)
+    if (typeof fn[0] != "string") {
+        fn = fn[fn.length - 1];
+    }
+    return function(colr: number) {
+        return fn[Math.max(0, Math.min(fn.length - 1, Math.floor(colr * fn.length)))];
+    };
+}
+
+function getColorMap(pd: ParamDef, defaultColorMap: string) {
+    if (pd.colormap) {
+        return parseColorMap(pd.colormap, `for column ${pd.name}`);
+    }
+    return parseColorMap(defaultColorMap, `(global default color map)`);
+}
+
 export function colorScheme(pd: ParamDef, value: any, alpha: number, defaultColorMap: string): string {
     if (pd.type == ParamType.CATEGORICAL) {
-        function compute_val2color() {
-            if (pd.__val2color !== undefined) {
-                return;
-            }
-            pd.__val2color = pd.colors !== null ? pd.colors : {};
-            for (var i = 0; i < pd.distinct_values.length; ++i) {
-                if (pd.__val2color[pd.distinct_values[i]]) {
-                    continue;
-                }
-                if (pd.distinct_values.length < 10) {
-                    var c = toRgb(d3.schemeCategory10[i % 10]);
-                    pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
-                    continue;
-                }
-                var valueHash = hashCode(JSON.stringify(pd.distinct_values[i]));
-                var c = toRgb((randomColor as any)({seed: Math.abs(valueHash)}));
-                pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
-            }
-        };
-        compute_val2color();
+        compute_val2color(pd);
         var c = pd.__val2color[value];
         if (c === undefined) {
             return `rgb(100,100,100,${alpha})`;
@@ -171,33 +201,7 @@ export function colorScheme(pd: ParamDef, value: any, alpha: number, defaultColo
             pd.__colorscale.__type = pd.type;
         }
         const colr = Math.max(0, Math.min(1, pd.__colorscale(value)));
-        function parseColorMap(name: string, description: string) {
-            if (!name) {
-                // @ts-ignore
-                return d3.interpolateTurbo;
-            }
-            var fn = d3[name];
-            if (!fn) {
-                throw new Error(`Invalid color map ${name} ${description}`);
-            }
-            if (name.startsWith("interpolate")) {
-                return fn; // This is a function
-            }
-            // Assume this is a scheme (eg array of colors)
-            if (typeof fn[0] != "string") {
-                fn = fn[fn.length - 1];
-            }
-            return function(colr: number) {
-                return fn[Math.max(0, Math.min(fn.length - 1, Math.floor(colr * fn.length)))];
-            };
-        }
-        function getColorMap() {
-            if (pd.colormap) {
-                return parseColorMap(pd.colormap, `for column ${pd.name}`);
-            }
-            return parseColorMap(defaultColorMap, `(global default color map)`);
-        }
-        const interpColFn = getColorMap();
+        const interpColFn = getColorMap(pd, defaultColorMap);
         try {
             const code = interpColFn(colr);
             const rgb = toRgb(code);

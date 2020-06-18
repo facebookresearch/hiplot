@@ -15,16 +15,14 @@
     <script src="static/built/hiplot.bundle.js" type="text/javascript" ></script>
     <script type="text/javascript">
     function _hiplot_setup() {
-      if (typeof hiplot_setup == "undefined") {
+      if (typeof hiplot == "undefined") {
         console.info("waiting for HiPlot bundle to be loaded...");
         setTimeout(_hiplot_setup, 1000);
         return;
       }
-      var options = {
-        is_webserver: true,
-      };
+      var options = {};
       /*ON_LOAD_SCRIPT_INJECT*/
-      var hiplot_instance = hiplot_setup(document.getElementById("hiplot_element_id"), options);
+      var hiplot_instance = hiplot.render(document.getElementById("hiplot_element_id"), options);
       Object.assign(window, {'hiplot_last_instance': hiplot_instance});  // For debugging
       /*AFTER_SETUP_SCRIPT_INJECT*/
     }

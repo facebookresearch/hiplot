@@ -74,7 +74,7 @@ def get_index_html_template() -> str:
 
 def make_experiment_standalone_page(options: Dict[str, Any]) -> str:
     hiplot_options = {
-        'is_webserver': False
+        'dataProviderName': 'none'
     }
     hiplot_options.update(options)
 

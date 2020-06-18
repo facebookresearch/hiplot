@@ -39,10 +39,30 @@ export interface HiPlotValueDef { // Mirror of python `hip.ValueDef`
 
 export interface HiPlotExperiment { // Mirror of python `hip.Experiment`
     datapoints: Array<Datapoint>,
-    parameters_definition: {[key: string]: HiPlotValueDef},
-    colormap: string;
-    colorby: string;
-    _displays: {[key: string]: {[key2: string]: any}},
+    parameters_definition?: {[key: string]: HiPlotValueDef},
+    colormap?: string;
+    colorby?: string;
+    _displays?: {[key: string]: {[key2: string]: any}},
+}
+
+
+export class Experiment {
+    static from_iterable(values: object[]): HiPlotExperiment {
+        return {
+            datapoints: values.map(function(raw_row: object, index: number): Datapoint {
+                const uid = raw_row['uid'] !== undefined ? raw_row['uid'] : `${index}`;
+                const from_uid = raw_row['from_uid'] !== undefined ? raw_row['from_uid'] : null;
+                const values = Object.assign({}, raw_row);
+                delete values['uid'];
+                delete values['from_uid'];
+                return {
+                    uid: uid,
+                    from_uid: from_uid,
+                    values: values,
+                };
+            })
+        }
+    }
 }
 
 export enum HiPlotLoadStatus {
@@ -52,7 +72,6 @@ export enum HiPlotLoadStatus {
     Error
 };
 
-export const PSTATE_LOAD_URI = 'load_uri';
 export const PSTATE_COLOR_BY = 'color_by';
 export const PSTATE_PARAMS = 'params';
 export const PSTATE_FILTERS = 'filters';

@@ -14,6 +14,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import assert from "assert";
 import { PlotXY } from "./plotxy";
+import { WebserverDataProvider } from "./dataproviders/webserver";
+import { build_props } from "./hiplot_web";
 
 
 interface TesterState {
@@ -219,22 +221,8 @@ function test_plotxy(this: HiPlotTester): Array<Test> {
 }
 
 
-export function hiplot_setup(element: HTMLElement, extra?: object) {
-    var props: HiPlotProps = {
-        experiment: null,
-        is_webserver: true,
-        persistent_state: new PersistentStateInURL("hip"),
-        plugins: defaultPlugins,
-        comm: null,
-        dark: false,
-        asserts: true,
-    };
-    if (extra !== undefined) {
-        Object.assign(props, extra);
-    }
+export function render(element: HTMLElement, extra?: object) {
+    var props: HiPlotProps = build_props(extra);
+    Object.assign(props, {asserts: true})
     return ReactDOM.render(<HiPlotTester hiplotProps={props} />, element);
 }
-
-Object.assign(window, {
-    'hiplot_setup': hiplot_setup,
-});

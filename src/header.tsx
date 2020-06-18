@@ -9,6 +9,7 @@ import style from "./hiplot.scss";
 import React from "react";
 import { HiPlotLoadStatus, IDatasets } from "./types";
 import { HiPlotDataControlProps, RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
+import { DataProviderClass, DataProviderComponentClass, DataProviderProps} from "./plugin";
 
 //@ts-ignore
 import IconSVG from "../hiplot/static/icon.svg";
@@ -16,84 +17,17 @@ import IconSVG from "../hiplot/static/icon.svg";
 import IconSVGW from "../hiplot/static/icon-w.svg";
 
 import { HiPlotTutorial } from "./tutorial/tutorial";
+import { PersistentState } from "./lib/savedstate";
 
-
-interface Props {
-    onSubmit: (content: string) => void;
-    enabled: boolean;
-    initialValue: string;
-    minimizeWhenOutOfFocus: boolean;
-
-    onFocusChange: (hasFocus: boolean) => void;
-    hasFocus: boolean;
-};
-
-interface State {
-    value: string;
-}
-
-export class RunsSelectionTextArea extends React.Component<Props, State> {
-    textarea = React.createRef<HTMLTextAreaElement>();
-
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            value: props.initialValue,
-        };
-    }
-    onInput() {
-        var elem = this.textarea.current;
-        if (this.props.hasFocus || !this.props.minimizeWhenOutOfFocus) {
-            elem.style.height = 'auto';
-            elem.style.height = elem.scrollHeight + 'px';
-            return;
-        }
-        elem.style.height = '55px';
-    }
-    onKeyDown(evt: React.KeyboardEvent<HTMLTextAreaElement>) {
-        if (evt.which === 13 && !evt.shiftKey) {
-            this.props.onSubmit(this.textarea.current.value);
-            this.props.onFocusChange(false);
-            evt.preventDefault();
-        }
-    }
-    onFocusChange(evt: React.FocusEvent<HTMLTextAreaElement>) {
-        if (evt.type == "focus") {
-            this.props.onFocusChange(true);
-        } else if (evt.type == "blur") {
-            this.props.onFocusChange(false);
-        }
-    }
-    componentDidMount() {
-        this.onInput();
-    }
-    componentDidUpdate() {
-        this.onInput();
-    }
-    render() {
-        return (
-        <textarea
-            style={{height: "55px", flex: 1, minWidth: "100px"}}
-            ref={this.textarea}
-            className={style.runsSelectionTextarea}
-            disabled={!this.props.enabled}
-            value={this.state.value}
-            onKeyDown={this.onKeyDown.bind(this)}
-            onInput={this.onInput.bind(this)}
-            onChange={(evt) => this.setState({value: evt.target.value})}
-            onFocus={this.onFocusChange.bind(this)}
-            onBlur={this.onFocusChange.bind(this)}
-            placeholder="Experiments to load"></textarea>);
-    }
-}
 
 
 interface HeaderBarProps extends IDatasets, HiPlotDataControlProps {
-    onRequestLoadExperiment?: (uri: string) => void;
-    onRequestRefreshExperiment?: () => void;
-    loadStatus: HiPlotLoadStatus;
-    initialLoadUri: string;
+    loadStatus: HiPlotLoadStatus; // Should not allow to load an xp when already loading another xp
+    persistentState: PersistentState;
+    onLoadExperiment: (load_promise: Promise<any>) => void;
+
     dark: boolean;
+    dataProvider: DataProviderClass;
 };
 
 interface HeaderBarState {
@@ -102,6 +36,7 @@ interface HeaderBarState {
 };
 
 export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
+    dataProviderRef = React.createRef<DataProviderClass>();
     selected_count_ref: React.RefObject<HTMLElement> = React.createRef();
     selected_pct_ref: React.RefObject<HTMLElement> = React.createRef();
     total_count_ref: React.RefObject<HTMLElement> = React.createRef();
@@ -137,20 +72,24 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
             };
         });
     }
+    onRefresh() {
+        const promise = this.dataProviderRef.current.refresh();
+        if (promise !== null) {
+            this.props.onLoadExperiment(promise);
+        }
+    }
     renderControls() {
-        const hasTextArea = this.props.onRequestLoadExperiment != null;
+        const dataProviderProps: React.ClassAttributes<DataProviderComponentClass> & DataProviderProps = {
+            ref: this.dataProviderRef,
+            persistentState: this.props.persistentState,
+            loadStatus: this.props.loadStatus,
+            hasFocus: this.state.isTextareaFocused,
+            onFocusChange: (hasFocus: boolean) => this.setState({isTextareaFocused: hasFocus}),
+            onLoadExperiment: this.props.onLoadExperiment,
+        };
         return (
         <React.Fragment>
-            {hasTextArea &&
-                <RunsSelectionTextArea
-                    initialValue={this.props.initialLoadUri}
-                    enabled={this.props.loadStatus != HiPlotLoadStatus.Loading}
-                    minimizeWhenOutOfFocus={this.props.loadStatus == HiPlotLoadStatus.Loaded}
-                    onSubmit={this.props.onRequestLoadExperiment}
-                    onFocusChange={(hasFocus: boolean) => this.setState({isTextareaFocused: hasFocus})}
-                    hasFocus={this.state.isTextareaFocused}
-                />
-            }
+            {React.createElement(this.props.dataProvider, dataProviderProps)}
 
             {this.props.loadStatus == HiPlotLoadStatus.Loaded && !this.state.isTextareaFocused &&
                 <React.Fragment>
@@ -158,8 +97,8 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                         <RestoreDataBtn {...this.props} />
                         <KeepDataBtn {...this.props} />
                         <ExcludeDataBtn {...this.props} />
-                        {this.props.onRequestRefreshExperiment != null &&
-                            <button title="Refresh + restore data removed" className="btn btn-sm btn-light" onClick={this.props.onRequestRefreshExperiment}>Refresh</button>
+                        {this.dataProviderRef.current && this.dataProviderRef.current.refresh != null &&
+                            <button title="Refresh" className="btn btn-sm btn-light" onClick={this.onRefresh.bind(this)}>Refresh</button>
                         }
                         <ExportDataCSVBtn {...this.props} />
                         <button title="Start HiPlot tutorial" className="btn btn-sm btn-light" onClick={this.onToggleTutorial.bind(this)}>Help</button>

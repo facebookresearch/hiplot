@@ -6,8 +6,9 @@
  */
 
 
+import React from "react";
 import { ParamDefMap } from "./infertypes";
-import { IDatasets, DatapointLookup, Datapoint, HiPlotExperiment } from "./types";
+import { IDatasets, DatapointLookup, Datapoint, HiPlotExperiment, HiPlotLoadStatus } from "./types";
 import { ContextMenu } from "./contextmenu";
 import { PersistentState } from "./lib/savedstate";
 import { Filter } from "./filters";
@@ -31,7 +32,7 @@ export interface HiPlotPluginDataWithoutDatasets {
     // Data that persists until we close the window
     window_state: any;
     // Data that persists upon page reload, sharing link etc...
-    persistent_state: PersistentState;
+    persistentState: PersistentState;
 
     sendMessage: (type: string, data: any) => void,
 
@@ -43,3 +44,19 @@ export interface HiPlotPluginDataWithoutDatasets {
 
 export interface HiPlotPluginData extends IDatasets, HiPlotPluginDataWithoutDatasets {
 };
+
+export interface DataProviderProps {
+    // Data that persists upon page reload, sharing link etc...
+    persistentState: PersistentState;
+
+    loadStatus: HiPlotLoadStatus; // Should not allow to load an xp when already loading another xp
+
+    hasFocus: boolean;
+    onFocusChange: (hasFocus: boolean) => void;
+
+    onLoadExperiment: (load_promise: Promise<any>) => void;
+};
+
+export type DataProviderComponent = React.Component<DataProviderProps, any>;
+export type DataProviderComponentClass = React.ComponentClass<DataProviderProps>;
+export type DataProviderClass = React.ClassType<DataProviderProps, DataProviderComponent, DataProviderComponentClass> & {refresh: any};
