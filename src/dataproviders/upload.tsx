@@ -10,7 +10,7 @@ import React from "react";
 import Dropzone, {FileRejection, DropEvent} from 'react-dropzone';
 import style from "./upload.scss";
 import * as d3 from "d3";
-import { HiPlotExperiment, Datapoint } from "../types";
+import { HiPlotExperiment, Experiment } from "../types";
 
 
 export const PSTATE_LOAD_URI = 'load_uri';
@@ -23,17 +23,7 @@ interface State {
 function readFileIntoExperiment(content: string): {experiment?: HiPlotExperiment, error?: string} {
     const csvContent = d3.csvParse(content);
     return {
-        experiment: {
-            datapoints: csvContent.map(function(raw_row: d3.DSVRowString<string>, index: number): Datapoint {
-                const uid = raw_row.uid !== undefined ? raw_row.uid : `${index}`;
-                const from_uid = raw_row.from_uid !== undefined ? raw_row.from_uid : null;
-                return {
-                    uid: uid,
-                    from_uid: from_uid,
-                    values: raw_row,
-                };
-            })
-        }
+        experiment: Experiment.from_iterable(csvContent)
     }
 }
 

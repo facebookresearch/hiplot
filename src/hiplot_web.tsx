@@ -6,7 +6,7 @@
  */
 
 import ReactDOM from "react-dom";
-import {HiPlot, defaultPlugins, HiPlotProps} from "./hiplot";
+import {HiPlot, defaultPlugins, HiPlotProps} from "./component";
 import React from "react";
 import { PersistentStateInURL } from "./lib/savedstate";
 import { WebserverDataProvider } from "./dataproviders/webserver";
