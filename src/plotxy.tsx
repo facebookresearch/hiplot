@@ -77,7 +77,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     // Load default X/Y axis
     const plotConfig = this.props as PlotXYDisplayData;
     function get_default_axis(axis_name: string) {
-      var value = props.persistent_state.get(axis_name, props[axis_name]);
+      var value = props.persistentState.get(axis_name, props[axis_name]);
       if (value === undefined) {
         value = null;
       }
@@ -493,7 +493,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     var anyAxisChanged = false;
     ['axis_x', 'axis_y'].forEach(function(this: PlotXY, d: string) {
       if (prevState[d] != this.state[d]) {
-        this.props.persistent_state.set(d, this.state[d]);
+        this.props.persistentState.set(d, this.state[d]);
         anyAxisChanged = true;
       }
     }.bind(this));

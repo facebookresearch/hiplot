@@ -120,9 +120,9 @@ def display_exp(
         'experiment': xp._asdict()
     }
     if store_state_url is not None:
-        options.update({"persistent_state_url_prefix": store_state_url})
+        options.update({"persistentStateUrlPrefix": store_state_url})
     else:
-        options.update({"persistent_state": None})
+        options.update({"persistentState": None})
     index_html = make_experiment_standalone_page(options=options)
     # Remove line that references the script bundle - prevents an HTTP error in the notebook
     index_html = index_html.replace('src="static/built/hiplot.bundle.js"', '')

@@ -52,7 +52,6 @@ export enum HiPlotLoadStatus {
     Error
 };
 
-export const PSTATE_LOAD_URI = 'load_uri';
 export const PSTATE_COLOR_BY = 'color_by';
 export const PSTATE_PARAMS = 'params';
 export const PSTATE_FILTERS = 'filters';

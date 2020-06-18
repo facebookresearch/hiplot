@@ -146,6 +146,8 @@ env => { return {
     output: {
         path: distPath,
         filename: '[name].bundle.js',
+        library: 'hiplot',
+        libraryTarget: 'var'
     },
     ...exportConfig({web: true, test: env && env.test}),
 }},

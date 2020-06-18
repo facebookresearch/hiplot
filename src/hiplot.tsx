@@ -10,7 +10,7 @@ import * as _ from 'underscore';
 import React from "react";
 import './style/global';
 
-import { Datapoint, ParamType, HiPlotExperiment, HiPlotLoadStatus, PSTATE_COLOR_BY, PSTATE_LOAD_URI, PSTATE_PARAMS, DatapointLookup, IDatasets, PSTATE_FILTERS } from "./types";
+import { Datapoint, ParamType, HiPlotExperiment, HiPlotLoadStatus, PSTATE_COLOR_BY, PSTATE_PARAMS, DatapointLookup, IDatasets, PSTATE_FILTERS } from "./types";
 import { RowsDisplayTable } from "./rowsdisplaytable";
 import { infertypes, colorScheme, ParamDefMap } from "./infertypes";
 import { PersistentState, PersistentStateInMemory, PersistentStateInURL } from "./lib/savedstate";
@@ -19,6 +19,7 @@ import { PlotXY } from "./plotxy";
 import { SelectedCountProgressBar, HiPlotDataControlProps } from "./controls";
 import { ErrorDisplay, HeaderBar } from "./elements";
 import { HiPlotPluginData } from "./plugin";
+import { StaticDataProvider } from "./dataproviders/static";
 
 //@ts-ignore
 import LogoSVG from "../hiplot/static/logo.svg";
@@ -51,11 +52,11 @@ export interface loadURIPromise {
 export interface HiPlotProps {
     experiment: HiPlotExperiment | null;
     plugins: PluginsMap;
-    persistent_state?: PersistentState;
+    persistentState?: PersistentState;
     comm: any; // Communication object for Jupyter notebook
     dark: boolean;
     asserts: boolean;
-    loadURI?: (uri: string) => Promise<loadURIPromise>;
+    dataProvider: any;
 };
 
 interface HiPlotState extends IDatasets {
@@ -73,8 +74,9 @@ interface HiPlotState extends IDatasets {
     rows_selected_filter: Filter; // `rows_filtered` -> `rows_selected`
 
     // Data that persists upon page reload, sharing link etc...
-    persistent_state: PersistentState;
+    persistentState: PersistentState;
     dark: boolean;
+    dataProvider: any;
 }
 
 function detectIsDarkTheme(): boolean {
@@ -128,7 +130,8 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             params_def_unfiltered: {},
             colorby: null,
             dark: this.props.dark === null ? detectIsDarkTheme() : this.props.dark,
-            persistent_state: props.persistent_state !== undefined && props.persistent_state !== null ? props.persistent_state : new PersistentStateInMemory("", {}),
+            persistentState: props.persistentState !== undefined && props.persistentState !== null ? props.persistentState : new PersistentStateInMemory("", {}),
+            dataProvider: this.props.dataProvider ? this.props.dataProvider : StaticDataProvider
         };
         Object.keys(props.plugins).forEach((name, index) => {
             this.plugins_window_state[name] = {};
@@ -143,6 +146,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         asserts: false,
         plugins: defaultPlugins,
         experiment: null,
+        dataProvider: null,
     };
     static getDerivedStateFromError(error: Error) {
         // Update state so the next render will show the fallback UI.
@@ -204,13 +208,13 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     _loadExperiment(experiment: HiPlotExperiment) {
         // Generate dataset for Parallel Plot
         var dp_lookup = {};
-        var initFilters = this.state.persistent_state.get(PSTATE_FILTERS, []);
+        var initFilters = this.state.persistentState.get(PSTATE_FILTERS, []);
         const datasets = this.makeDatasets(experiment, dp_lookup, initFilters);
         if (datasets.rows_all_unfiltered == datasets.rows_filtered) {
             initFilters = [];
         }
-        const params_def = infertypes(this.state.persistent_state.children(PSTATE_PARAMS), datasets.rows_filtered, experiment.parameters_definition);
-        const params_def_unfiltered = infertypes(this.state.persistent_state.children(PSTATE_PARAMS), datasets.rows_all_unfiltered, experiment.parameters_definition);
+        const params_def = infertypes(this.state.persistentState.children(PSTATE_PARAMS), datasets.rows_filtered, experiment.parameters_definition);
+        const params_def_unfiltered = infertypes(this.state.persistentState.children(PSTATE_PARAMS), datasets.rows_all_unfiltered, experiment.parameters_definition);
 
         // Color handling
         function get_default_color() {
@@ -234,7 +238,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             var possibles = Object.keys(params_def).sort((a, b) => select_as_coloring_score(b) - select_as_coloring_score(a));
             return possibles[0];
         }
-        var colorby = this.state.persistent_state.get(PSTATE_COLOR_BY, get_default_color());
+        var colorby = this.state.persistentState.get(PSTATE_COLOR_BY, get_default_color());
         if (params_def[colorby] === undefined) {
             colorby = get_default_color();
         }
@@ -292,22 +296,16 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
                 resolve({experiment: this.props.experiment});
             }.bind(this)));
         }
-        else {
-            var load_uri = this.state.persistent_state.get(PSTATE_LOAD_URI);
-            if (load_uri !== undefined) {
-                this.loadURI(load_uri);
-            }
-        }
     }
     componentDidUpdate(prevProps: HiPlotProps, prevState: HiPlotState): void {
         if (prevState.rows_selected != this.state.rows_selected) {
             this.onSelectedChange_debounced();
         }
         if (prevState.rows_filtered_filters != this.state.rows_filtered_filters) {
-            this.state.persistent_state.set(PSTATE_FILTERS, this.state.rows_filtered_filters);
+            this.state.persistentState.set(PSTATE_FILTERS, this.state.rows_filtered_filters);
         }
         if (prevState.colorby != this.state.colorby && this.state.colorby) {
-            this.state.persistent_state.set(PSTATE_COLOR_BY, this.state.colorby);
+            this.state.persistentState.set(PSTATE_COLOR_BY, this.state.colorby);
         }
         if (this.props.experiment !== prevProps.experiment) {
             this.loadWithPromise(new Promise(function(resolve, reject) {
@@ -343,7 +341,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
                     }
                 };
             });
-            this.state.persistent_state.children(PSTATE_PARAMS).children(column).set('type', possible_type);
+            this.state.persistentState.children(PSTATE_PARAMS).children(column).set('type', possible_type);
             event.preventDefault();
           }.bind(this));
           contextmenu.append(option);
@@ -363,19 +361,9 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         }
         contextmenu.append(link_colorize);
     }
-    onRefreshDataBtn() {
-        this.loadURI(this.state.persistent_state.get(PSTATE_LOAD_URI));
-    }
-    loadURI(uri: string) {
-        this.loadWithPromise(this.props.loadURI(uri));
-    }
-    onRunsTextareaSubmitted(uri: string) {
-        this.state.persistent_state.set(PSTATE_LOAD_URI, uri);
-        this.loadURI(uri);
-    }
     createNewParamsDef(rows_filtered: Array<Datapoint>): ParamDefMap {
         var new_pd = Object.assign({}, this.state.params_def);
-        Object.assign(new_pd, infertypes(this.state.persistent_state.children(PSTATE_PARAMS), rows_filtered, this.state.params_def))
+        Object.assign(new_pd, infertypes(this.state.persistentState.children(PSTATE_PARAMS), rows_filtered, this.state.params_def))
         return new_pd;
     }
     restoreAllRows(): void {
@@ -456,7 +444,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
                 ...datasets,
                 rows_selected_filter: this.state.rows_selected_filter,
                 name: name,
-                persistent_state: this.state.persistent_state.children(name),
+                persistentState: this.state.persistentState.children(name),
                 window_state: this.plugins_window_state[name],
                 sendMessage: this.sendMessage.bind(this),
                 get_color_for_row: this.getColorForRow.bind(this),
@@ -477,10 +465,10 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             <div className={`${style.hiplot} ${this.state.dark ? style.dark : ""}`}>
             <SelectedCountProgressBar {...controlProps} />
             <HeaderBar
-                onRequestLoadExperiment={this.props.loadURI ? this.onRunsTextareaSubmitted.bind(this) : null}
-                onRequestRefreshExperiment={this.props.loadURI ? this.onRefreshDataBtn.bind(this) : null}
+                onLoadExperiment={this.loadWithPromise.bind(this)}
+                persistentState={this.state.persistentState}
+                dataProvider={this.state.dataProvider}
                 loadStatus={this.state.loadStatus}
-                initialLoadUri={this.state.persistent_state.get(PSTATE_LOAD_URI, '')}
                 dark={this.state.dark}
                 {...controlProps}
             />

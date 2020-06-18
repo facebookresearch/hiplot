@@ -100,11 +100,11 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   constructor(props: ParallelPlotData) {
     super(props);
     this.state = {
-      height: props.persistent_state.get('height', props.window_state.height ? props.window_state.height : 600),
+      height: props.persistentState.get('height', props.window_state.height ? props.window_state.height : 600),
       width: 0, // Will be initiatialize to element width
-      order: props.persistent_state.get('order', props.order ? props.order : []),
-      hide: new Set(props.persistent_state.get('hide', props.hide ? props.hide : [])),
-      invert: new Set(props.persistent_state.get('invert', props.invert ? props.invert : [])),
+      order: props.persistentState.get('order', props.order ? props.order : []),
+      hide: new Set(props.persistentState.get('hide', props.hide ? props.hide : [])),
+      invert: new Set(props.persistentState.get('invert', props.invert ? props.invert : [])),
       dimensions: [],
       brush_count: 0,
       dragging: null,
@@ -132,13 +132,13 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         }
     }
     if (prevState.invert != this.state.invert) {
-      this.props.persistent_state.set('invert', Array.from(this.state.invert));
+      this.props.persistentState.set('invert', Array.from(this.state.invert));
     }
     if (prevState.hide != this.state.hide) {
-      this.props.persistent_state.set('hide', Array.from(this.state.hide));
+      this.props.persistentState.set('hide', Array.from(this.state.hide));
     }
     if (prevState.order != this.state.order) {
-      this.props.persistent_state.set('order', this.state.order);
+      this.props.persistentState.set('order', this.state.order);
     }
     if (prevState.dimensions != this.state.dimensions && this.xscale !== undefined) {
       var g: any = d3.select(this.svgg_ref.current).selectAll(".dimension");

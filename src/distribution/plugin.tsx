@@ -44,7 +44,7 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
     container_ref: React.RefObject<HTMLDivElement> = React.createRef();
     constructor(props: DistributionPluginProps) {
         super(props);
-        var axis = this.props.persistent_state.get('axis', null);
+        var axis = this.props.persistentState.get('axis', null);
         if (axis && this.props.params_def[axis] === undefined) {
             axis = null;
         }
@@ -88,8 +88,8 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
     }
     componentDidUpdate(prevProps: HiPlotPluginData, prevState: HiPlotDistributionPluginState) {
         if (prevState.axis != this.state.axis) {
-            if (this.props.persistent_state) {
-                this.props.persistent_state.set('axis', this.state.axis);
+            if (this.props.persistentState) {
+                this.props.persistentState.set('axis', this.state.axis);
             }
         }
         if (this.state.histData.all != this.props.rows_filtered) {
