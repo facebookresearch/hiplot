@@ -1,0 +1,91 @@
+import React from "react";
+import './style/global';
+import { Datapoint, HiPlotExperiment, HiPlotLoadStatus, DatapointLookup, IDatasets } from "./types";
+import { ParamDefMap } from "./infertypes";
+import { PersistentState } from "./lib/savedstate";
+import { HiPlotPluginData } from "./plugin";
+import { ContextMenu } from "./contextmenu";
+import { Filter } from "./filters";
+export { PlotXY } from "./plotxy";
+export { ParallelPlot } from "./parallel/parallel";
+export { RowsDisplayTable } from "./rowsdisplaytable";
+export { HiPlotPluginData } from "./plugin";
+export { Datapoint, HiPlotExperiment, IDatasets, HiPlotLoadStatus } from "./types";
+declare type PluginComponent<P> = React.Component<P, any>;
+declare type PluginComponentClass<P> = React.ComponentClass<P>;
+declare type PluginClass = React.ClassType<HiPlotPluginData, PluginComponent<HiPlotPluginData>, PluginComponentClass<HiPlotPluginData>>;
+interface PluginsMap {
+    [k: string]: PluginClass;
+}
+export interface loadURIPromise {
+    experiment?: HiPlotExperiment;
+    error: string;
+}
+export interface HiPlotProps {
+    experiment: HiPlotExperiment | null;
+    plugins: PluginsMap;
+    persistentState?: PersistentState;
+    comm: any;
+    dark: boolean;
+    asserts: boolean;
+    dataProvider: any;
+}
+interface HiPlotState extends IDatasets {
+    experiment: HiPlotExperiment | null;
+    version: number;
+    loadStatus: HiPlotLoadStatus;
+    error: string;
+    params_def: ParamDefMap;
+    params_def_unfiltered: ParamDefMap;
+    dp_lookup: DatapointLookup;
+    colorby: string;
+    colormap: string;
+    rows_filtered_filters: Array<Filter>;
+    rows_selected_filter: Filter;
+    persistentState: PersistentState;
+    dark: boolean;
+    dataProvider: any;
+}
+export declare const defaultPlugins: PluginsMap;
+export declare class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
+    contextMenuRef: React.RefObject<ContextMenu>;
+    comm_message_id: number;
+    plugins_window_state: {
+        [plugin: string]: any;
+    };
+    onSelectedChange_debounced: () => void;
+    plugins_ref: Array<React.RefObject<PluginClass>>;
+    constructor(props: HiPlotProps);
+    static defaultProps: {
+        loadURI: any;
+        comm: any;
+        dark: boolean;
+        asserts: boolean;
+        plugins: PluginsMap;
+        experiment: any;
+        dataProvider: any;
+    };
+    static getDerivedStateFromError(error: Error): {
+        experiment: any;
+        loadStatus: HiPlotLoadStatus;
+        error: string;
+    };
+    makeDatasets(experiment: HiPlotExperiment | null, dp_lookup: DatapointLookup, initial_filters: Array<Filter>): IDatasets;
+    sendMessage(type: string, data: any): void;
+    onSelectedChange(): void;
+    _loadExperiment(experiment: HiPlotExperiment): void;
+    getColorForRow(trial: Datapoint, alpha: number): string;
+    loadWithPromise(prom: Promise<any>): void;
+    componentWillUnmount(): void;
+    componentDidMount(): void;
+    componentDidUpdate(prevProps: HiPlotProps, prevState: HiPlotState): void;
+    columnContextMenu(column: string, cm: HTMLDivElement): void;
+    createNewParamsDef(rows_filtered: Array<Datapoint>): ParamDefMap;
+    restoreAllRows(): void;
+    filterRows(keep: boolean): void;
+    setSelected(rows: Array<Datapoint>, filter?: Filter | null): void;
+    setHighlighted(rows: Array<Datapoint>): void;
+    renderRowText(row: Datapoint): string;
+    render(): JSX.Element;
+    getPlugin<P extends HiPlotPluginData, T extends React.Component<P>>(cls: React.ClassType<P, T, React.ComponentClass<P>>): T;
+}

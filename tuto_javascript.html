@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>NPM library (javascript) &#8212; HiPlot 0.1.12
+ documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python classes reference" href="py_reference.html" />
+    <link rel="prev" title="Advanced uses: notebooks" href="tuto_notebook.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py_reference.html" title="Python classes reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tuto_notebook.html" title="Advanced uses: notebooks"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.12
+ documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">NPM library (javascript)</a></li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="
+    index.html" class="text-logo">HiPlot</a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_notebook.html">Advanced uses: notebooks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">NPM library (javascript)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-hiplot-component">Creating a HiPlot component</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="py_reference.html">Python classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins_reference.html">Displays reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+    
+  </div>
+</div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>NPM library (javascript)</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="npm-library-javascript">
+<span id="tutojavascript"></span><h1>NPM library (javascript)<a class="headerlink" href="#npm-library-javascript" title="Permalink to this headline">¶</a></h1>
+<p>HiPlot is released as a React component in an <a class="reference external" href="https://www.npmjs.com/package/hiplot">NPM package</a>, and can be embeded in any javascript/React codebase.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The Javascript library API is very recent, subject to changes, and less used compared to the python API. Please report any bug or suggestion by creating a <a class="reference external" href="https://github.com/facebookresearch/hiplot/issues/new">github issue</a></p>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>Download hiplot in your favorite package manager</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">npm</span> <span class="n">install</span> <span class="n">hiplot</span>  <span class="c1"># if using npm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">yarn</span> <span class="n">add</span> <span class="n">hiplot</span> <span class="c1"># for yarn users</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-a-hiplot-component">
+<h2>Creating a HiPlot component<a class="headerlink" href="#creating-a-hiplot-component" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="kr">import</span> <span class="p">{</span><span class="nx">HiPlot</span><span class="p">,</span> <span class="nx">Experiment</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;hiplot&#39;</span><span class="p">;</span>
+
+
+<span class="kd">function</span> <span class="nx">HiPlotWithData() {</span>
+    <span class="kr">const</span> <span class="nx">experiment</span> <span class="o">=</span> <span class="nx">Experiment</span><span class="p">.</span><span class="nx">from_iterable</span><span class="p">([</span>
+        <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;sgd&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.1</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.2</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mi">1</span><span class="p">.,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.3</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;sgd&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.4</span><span class="p">},</span>
+    <span class="p">]);</span>
+    <span class="k">return</span> <span class="o">&lt;</span><span class="nx">HiPlot</span> <span class="nx">experiment</span><span class="o">=</span><span class="p">{</span><span class="nx">experiment</span><span class="p">}</span> <span class="o">/&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="tuto_notebook.html" title="previous chapter (use the left arrow)">Advanced uses: notebooks</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="py_reference.html" title="next chapter (use the right arrow)">Python classes reference</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py_reference.html" title="Python classes reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tuto_notebook.html" title="Advanced uses: notebooks"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.12
+ documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">NPM library (javascript)</a></li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    <a href="https://opensource.facebook.com/legal/privacy/">Privacy</a> - <a href="https://opensource.facebook.com/legal/terms/">Terms</a><br />
+    &copy; Copyright 2020, Facebook AI Research (FAIR). Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>
