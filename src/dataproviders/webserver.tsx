@@ -6,7 +6,7 @@
  */
 
 import $ from "jquery";
-import JSON5 from "JSON5";
+import JSON5 from "json5";
 import {loadURIPromise} from "../hiplot";
 import {DataProviderProps} from "../plugin";
 import {HiPlotLoadStatus} from "../types";
