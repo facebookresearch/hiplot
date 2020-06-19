@@ -49,7 +49,7 @@ interface PlotXYInternal {
   recompute_scale: () => void;
   draw_selected_rows: () => void;
   draw_highlighted: () => void;
-  on_resize: () => void;
+  on_resize: (() => void) & _.Cancelable;
 };
 
 
@@ -159,9 +159,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     function redraw_axis_and_rerender() {
       redraw_axis();
       clear_canvas();
-      if (me.plot) {
-       me.plot.draw_selected_rows();
-      }
+      me.drawSelectedDebounced();
     }
     function create_scale(param: string, range) {
       var scale = create_d3_scale(me.props.params_def[param])
@@ -434,12 +432,12 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     function update_axis() {
       recompute_scale(true);
       clear_canvas();
-      draw_selected_rows();
+      me.drawSelectedDebounced();
     };
     update_axis();
 
     // Initial lines
-    draw_selected_rows();
+    me.drawSelectedDebounced();
 
     return {
       clear_canvas: clear_canvas,
@@ -455,11 +453,11 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       }.bind(this), 150)
     };
   }
-  onResize(height: number, width: number): void {
+  onResize = _.debounce(function(height: number, width: number): void {
     if (this.state.height != height || this.state.width != width) {
       this.setState({height: height, width: width});
     }
-  }
+  }.bind(this), 100);
   disable(): void {
     this.setState({axis_x: null, axis_y: null, height: this.state.initialHeight});
   }
@@ -468,7 +466,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       return [];
     }
     return (
-    <ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 100)} onRemove={this.disable.bind(this)}>
+    <ResizableH initialHeight={this.state.height} onResize={this.onResize} onRemove={this.disable.bind(this)}>
       {this.state.width > 0 && <div ref={this.root_ref} style={{"height": this.state.height}}>
           <canvas ref={this.canvas_lines_ref} className={style["plotxy-graph-lines"]} style={{position: 'absolute'}}></canvas>
           <canvas ref={this.canvas_highlighted_ref} className={style["plotxy-graph-highlights"]} style={{position: 'absolute'}}></canvas>
@@ -480,15 +478,23 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   componentWillUnmount() {
     if (this.plot) {
       this.plot.clear_canvas();
+      this.plot.on_resize.cancel();
       this.svg.selectAll("*").remove();
     }
     if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
       this.props.context_menu_ref.current.removeCallbacks(this);
     }
+    this.drawSelectedDebounced.cancel();
+    this.onResize.cancel();
   };
   isEnabled() {
     return this.state.axis_x !== null && this.state.axis_y !== null;
   }
+  drawSelectedDebounced = _.debounce(function() {
+    if (this.plot) {
+      this.plot.draw_selected_rows();
+    }
+  }.bind(this), 100);
   componentDidUpdate(prevProps: PlotXYProps, prevState) {
     var anyAxisChanged = false;
     ['axis_x', 'axis_y'].forEach(function(this: PlotXY, d: string) {
@@ -540,7 +546,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         scaleRecomputed = true;
       }
       if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
-        this.plot.draw_selected_rows();
+        this.drawSelectedDebounced();
       }
       if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed || this.props.colorby != prevProps.colorby) {
         this.plot.draw_highlighted()

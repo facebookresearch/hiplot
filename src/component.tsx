@@ -129,7 +129,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     comm_message_id: number = 0;
 
     plugins_window_state: {[plugin: string]: any} = {};
-    onSelectedChange_debounced: () => void;
 
     plugins_ref: Array<React.RefObject<PluginClass>> = []; // For debugging/tests
 
@@ -160,7 +159,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             this.plugins_window_state[name] = {};
             this.plugins_ref[index] = React.createRef<PluginClass>();
         });
-        this.onSelectedChange_debounced = _.debounce(this.onSelectedChange.bind(this), 200);
     }
     static defaultProps = {
         loadURI: null,
@@ -223,11 +221,11 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             this.comm_message_id += 1;
         }
     }
-    onSelectedChange(): void {
+    onSelectedChange = _.debounce(function(this: HiPlot): void {
         this.sendMessage("selection", {
             'selected': this.state.rows_selected.map(row => '' + row['uid'])
         })
-    }
+    }.bind(this), 200);
     _loadExperiment(experiment: HiPlotExperiment) {
         // Generate dataset for Parallel Plot
         var dp_lookup = {};
@@ -295,6 +293,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         if (this.state.loadPromise) {
             this.state.loadPromise.cancel();
         }
+        this.onSelectedChange.cancel();
     }
     componentDidMount() {
         // Setup contextmenu when we right-click a parameter
@@ -309,7 +308,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     }
     componentDidUpdate(prevProps: HiPlotProps, prevState: HiPlotState): void {
         if (prevState.rows_selected != this.state.rows_selected) {
-            this.onSelectedChange_debounced();
+            this.onSelectedChange();
         }
         if (prevState.rows_filtered_filters != this.state.rows_filtered_filters) {
             this.state.persistentState.set(PSTATE_FILTERS, this.state.rows_filtered_filters);
