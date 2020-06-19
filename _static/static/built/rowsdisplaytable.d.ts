@@ -1,6 +1,7 @@
 import React from "react";
 import { Datapoint } from "./types";
 import { HiPlotPluginData } from "./plugin";
+import _ from "underscore";
 interface RowsDisplayTableState {
 }
 export declare class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisplayTableState> {
@@ -9,7 +10,7 @@ export declare class RowsDisplayTable extends React.Component<HiPlotPluginData, 
     dt: any;
     ordered_cols: Array<string>;
     empty: boolean;
-    setSelected_debounced: (selected: Array<Datapoint>) => void;
+    setSelected_debounced: ((selected: Datapoint[]) => void) & _.Cancelable;
     constructor(props: HiPlotPluginData);
     componentDidMount(): void;
     mountDt(): void;

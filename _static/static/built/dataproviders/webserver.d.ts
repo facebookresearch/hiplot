@@ -1,4 +1,4 @@
-import { loadURIPromise } from "../component";
+import { LoadURIPromise } from "../component";
 import { DataProviderProps } from "../plugin";
 import React from "react";
 export declare const PSTATE_LOAD_URI = "load_uri";
@@ -23,7 +23,7 @@ export declare class RunsSelectionTextArea extends React.Component<TextAreaProps
     componentDidUpdate(): void;
     render(): JSX.Element;
 }
-export declare function loadURIFromWebServer(uri: string): Promise<loadURIPromise>;
+export declare function loadURIFromWebServer(uri: string): LoadURIPromise;
 interface State {
     uri?: string;
 }

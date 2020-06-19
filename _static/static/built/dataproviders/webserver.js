@@ -18,7 +18,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import $ from "jquery";
-import JSON5 from "json5";
 import { HiPlotLoadStatus } from "../types";
 import React from "react";
 import style from "../hiplot.scss";
@@ -75,8 +74,9 @@ export function loadURIFromWebServer(uri) {
     return new Promise(function (resolve, reject) {
         $.get("/data?uri=" + encodeURIComponent(uri), resolve, "json").fail(function (data) {
             if (data.readyState == 4 && data.status == 200) {
-                console.log('Unable to parse JSON with JS default decoder (Maybe it contains NaNs?). Trying custom decoder');
-                resolve(JSON5.parse(data.responseText));
+                console.log('Unable to parse JSON with JS default decoder (Maybe it contains NaNs?). Using eval');
+                resolve(eval('(' + data.responseText + ')')); // Less secure, but so much faster...
+                //                resolve(JSON5.parse(data.responseText));
             }
             else if (data.status == 0) {
                 resolve({

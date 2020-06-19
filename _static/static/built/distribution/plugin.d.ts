@@ -25,7 +25,7 @@ export declare class HiPlotDistributionPlugin extends React.Component<Distributi
     componentDidMount(): void;
     componentDidUpdate(prevProps: HiPlotPluginData, prevState: HiPlotDistributionPluginState): void;
     componentWillUnmount(): void;
-    onResize(height: number, width: number): void;
+    onResize: any;
     disable(): void;
     render(): any[] | JSX.Element;
 }

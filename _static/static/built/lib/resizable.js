@@ -52,18 +52,17 @@ var ResizableH = /** @class */ (function (_super) {
                 this.props.onRemove();
             }
         }.bind(_this);
-        _this.onWindowResize = function () {
+        _this.onWindowResize = _.debounce(function () {
             if (this.div_ref.current) {
                 this.setState({ width: this.div_ref.current.offsetWidth });
             }
-        }.bind(_this);
+        }.bind(_this), 100);
         _this.state = {
             width: 0,
             height: _this.props.initialHeight,
             internalHeight: _this.props.initialHeight,
             removing: false
         };
-        _this.onWindowResizeDebounced = _.debounce(_this.onWindowResize.bind(_this), 100);
         return _this;
     }
     ResizableH.prototype.componentDidMount = function () {
@@ -75,7 +74,7 @@ var ResizableH = /** @class */ (function (_super) {
             }
         }.bind(this));
         document.addEventListener("mouseup", this.onMouseUp);
-        $(window).on("resize", this.onWindowResizeDebounced);
+        $(window).on("resize", this.onWindowResize);
         this.setState({ width: this.div_ref.current.parentElement.offsetWidth });
     };
     ResizableH.prototype.componentDidUpdate = function (prevProps, prevState) {
@@ -86,7 +85,8 @@ var ResizableH = /** @class */ (function (_super) {
     ResizableH.prototype.componentWillUnmount = function () {
         document.removeEventListener("mousemove", this.onMouseMove, false);
         document.removeEventListener("mouseup", this.onMouseUp);
-        $(window).off("resize", this.onWindowResizeDebounced);
+        $(window).off("resize", this.onWindowResize);
+        this.onWindowResize.cancel();
     };
     ResizableH.prototype.render = function () {
         return (React.createElement("div", { ref: this.div_ref, style: { "height": this.state.height }, className: style.resizableH + " " + (this.state.removing ? style.pendingDelete : "") }, this.props.children));

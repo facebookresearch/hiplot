@@ -42,6 +42,11 @@ var HiPlotDistributionPlugin = /** @class */ (function (_super) {
     function HiPlotDistributionPlugin(props) {
         var _this = _super.call(this, props) || this;
         _this.container_ref = React.createRef();
+        _this.onResize = _.debounce(function (height, width) {
+            if (height != this.state.height || width != this.state.width) {
+                this.setState({ height: height, width: width });
+            }
+        }.bind(_this), 150);
         var axis = _this.props.persistentState.get('axis', null);
         if (axis && _this.props.params_def[axis] === undefined) {
             axis = null;
@@ -105,11 +110,7 @@ var HiPlotDistributionPlugin = /** @class */ (function (_super) {
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }
-    };
-    HiPlotDistributionPlugin.prototype.onResize = function (height, width) {
-        if (height != this.state.height || width != this.state.width) {
-            this.setState({ height: height, width: width });
-        }
+        this.onResize.cancel();
     };
     HiPlotDistributionPlugin.prototype.disable = function () {
         this.setState({ width: 0, axis: null, height: this.state.initialHeight });
@@ -120,7 +121,7 @@ var HiPlotDistributionPlugin = /** @class */ (function (_super) {
         }
         var param_def = this.props.params_def[this.state.axis];
         console.assert(param_def !== undefined, this.state.axis);
-        return (React.createElement(ResizableH, { initialHeight: this.state.height, onResize: _.debounce(this.onResize.bind(this), 150), onRemove: this.disable.bind(this) }, this.state.width > 0 && React.createElement(DistributionPlot, { axis: this.state.axis, height: this.state.height, width: this.state.width, histData: this.state.histData, param_def: param_def, nbins: this.props.nbins, animateMs: this.props.animateMs })));
+        return (React.createElement(ResizableH, { initialHeight: this.state.height, onResize: this.onResize, onRemove: this.disable.bind(this) }, this.state.width > 0 && React.createElement(DistributionPlot, { axis: this.state.axis, height: this.state.height, width: this.state.width, histData: this.state.histData, param_def: param_def, nbins: this.props.nbins, animateMs: this.props.animateMs })));
     };
     HiPlotDistributionPlugin.defaultProps = {
         nbins: 10,

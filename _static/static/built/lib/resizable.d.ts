@@ -15,7 +15,6 @@ interface ResizableHState {
 export declare class ResizableH extends React.Component<ResizableHProps, ResizableHState> {
     div_ref: React.RefObject<HTMLDivElement>;
     m_pos: number;
-    onWindowResizeDebounced: () => void;
     constructor(props: ResizableHProps);
     static defaultProps: {
         borderSize: number;

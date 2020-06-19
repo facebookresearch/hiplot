@@ -58,6 +58,22 @@ var ParallelPlot = /** @class */ (function (_super) {
         // Dimensions, scaling and axis
         _this.yscale = {}; // d3.scale
         _this.d3brush = d3.brushY();
+        _this.onBrushChange = _.throttle(function () {
+            this.sendBrushExtents();
+            this.pplot.brush();
+        }.bind(_this), 75);
+        _this.sendBrushExtents = _.debounce(function () {
+            var yscales = this.yscale;
+            var colToScale = {};
+            this.dimensions_dom.selectAll("." + style.brush).each(function (dim) {
+                var sel = d3.brushSelection(this);
+                if (sel === null) {
+                    return;
+                }
+                colToScale[dim] = scale_pixels_range(yscales[dim], sel);
+            });
+            this.props.sendMessage("brush_extents", colToScale);
+        }.bind(_this), 400);
         _this.forceHideColumn = function (pd) {
             return pd === undefined ||
                 pd.special_values.length + pd.distinct_values.length <= 1 ||
@@ -198,8 +214,6 @@ var ParallelPlot = /** @class */ (function (_super) {
             brush_count: 0,
             dragging: null
         };
-        _this.onBrushChange_debounced = _.throttle(_this.onBrushChange.bind(_this), 75);
-        _this.sendBrushExtents_debounced = _.debounce(_this.sendBrushExtents.bind(_this), 400);
         return _this;
     }
     ParallelPlot.prototype.componentWillUnmount = function () {
@@ -210,6 +224,8 @@ var ParallelPlot = /** @class */ (function (_super) {
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }
+        this.onBrushChange.cancel();
+        this.sendBrushExtents.cancel();
     };
     ;
     ParallelPlot.prototype.componentDidUpdate = function (prevProps, prevState) {
@@ -288,10 +304,6 @@ var ParallelPlot = /** @class */ (function (_super) {
         }
         this.props.window_state.height = this.state.height;
     };
-    ParallelPlot.prototype.onBrushChange = function () {
-        this.sendBrushExtents_debounced();
-        this.pplot.brush();
-    };
     ParallelPlot.prototype.onResize = function (height, width) {
         if (this.state.height != height || this.state.width != width) {
             this.setState({ height: height, width: width });
@@ -304,18 +316,6 @@ var ParallelPlot = /** @class */ (function (_super) {
                 React.createElement("canvas", { ref: this.highlighted_ref, className: style["highlight-canvas"] }),
                 React.createElement("svg", { ref: this.svg_ref, width: this.state.width, height: this.state.height },
                     React.createElement("g", { ref: this.svgg_ref, transform: "translate(" + this.m[3] + ", " + this.m[0] + ")" })))));
-    };
-    ParallelPlot.prototype.sendBrushExtents = function () {
-        var yscales = this.yscale;
-        var colToScale = {};
-        this.dimensions_dom.selectAll("." + style.brush).each(function (dim) {
-            var sel = d3.brushSelection(this);
-            if (sel === null) {
-                return;
-            }
-            colToScale[dim] = scale_pixels_range(yscales[dim], sel);
-        });
-        this.props.sendMessage("brush_extents", colToScale);
     };
     ParallelPlot.prototype.componentDidMount = function () {
         var dimensions = d3.keys(this.props.params_def).filter(function (k) {
@@ -661,7 +661,7 @@ var ParallelPlot = /** @class */ (function (_super) {
         this.h = this.state.height - this.m[0] - this.m[2];
         //@ts-ignore
         this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */).ticks(1 + this.state.height / 50);
-        this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.onBrushChange_debounced).on("end", this.onBrushChange_debounced);
+        this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.onBrushChange).on("end", this.onBrushChange);
         // Scale chart and canvas height
         this.div.style("height", (this.state.height) + "px");
         this.div.selectAll("canvas")
@@ -679,8 +679,8 @@ var ParallelPlot = /** @class */ (function (_super) {
         // Reset brushes - but only trigger call to "brush" once
         this.d3brush.on("brush", null).on("end", null);
         this.d3brush.move(this.dimensions_dom.selectAll("." + style.brush), null);
-        this.d3brush.on("brush", this.onBrushChange_debounced).on("end", this.onBrushChange_debounced);
-        this.onBrushChange_debounced();
+        this.d3brush.on("brush", this.onBrushChange).on("end", this.onBrushChange);
+        this.onBrushChange();
     };
     ParallelPlot.prototype.remove_axis = function (d) {
         var pd = this.props.params_def[d];

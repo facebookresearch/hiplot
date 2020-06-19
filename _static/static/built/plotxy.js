@@ -48,6 +48,16 @@ var PlotXY = /** @class */ (function (_super) {
         _this.container_ref = React.createRef();
         _this.canvas_lines_ref = React.createRef();
         _this.canvas_highlighted_ref = React.createRef();
+        _this.onResize = _.debounce(function (height, width) {
+            if (this.state.height != height || this.state.width != width) {
+                this.setState({ height: height, width: width });
+            }
+        }.bind(_this), 100);
+        _this.drawSelectedDebounced = _.debounce(function () {
+            if (this.plot) {
+                this.plot.draw_selected_rows();
+            }
+        }.bind(_this), 100);
         var height;
         if (props.window_state.height) {
             height = props.window_state.height;
@@ -119,9 +129,7 @@ var PlotXY = /** @class */ (function (_super) {
         function redraw_axis_and_rerender() {
             redraw_axis();
             clear_canvas();
-            if (me.plot) {
-                me.plot.draw_selected_rows();
-            }
+            me.drawSelectedDebounced();
         }
         function create_scale(param, range) {
             var scale = create_d3_scale(me.props.params_def[param]);
@@ -387,12 +395,12 @@ var PlotXY = /** @class */ (function (_super) {
         function update_axis() {
             recompute_scale(true);
             clear_canvas();
-            draw_selected_rows();
+            me.drawSelectedDebounced();
         }
         ;
         update_axis();
         // Initial lines
-        draw_selected_rows();
+        me.drawSelectedDebounced();
         return {
             clear_canvas: clear_canvas,
             update_axis: update_axis,
@@ -407,11 +415,6 @@ var PlotXY = /** @class */ (function (_super) {
             }.bind(this), 150)
         };
     };
-    PlotXY.prototype.onResize = function (height, width) {
-        if (this.state.height != height || this.state.width != width) {
-            this.setState({ height: height, width: width });
-        }
-    };
     PlotXY.prototype.disable = function () {
         this.setState({ axis_x: null, axis_y: null, height: this.state.initialHeight });
     };
@@ -419,7 +422,7 @@ var PlotXY = /** @class */ (function (_super) {
         if (!this.isEnabled()) {
             return [];
         }
-        return (React.createElement(ResizableH, { initialHeight: this.state.height, onResize: _.debounce(this.onResize.bind(this), 100), onRemove: this.disable.bind(this) }, this.state.width > 0 && React.createElement("div", { ref: this.root_ref, style: { "height": this.state.height } },
+        return (React.createElement(ResizableH, { initialHeight: this.state.height, onResize: this.onResize, onRemove: this.disable.bind(this) }, this.state.width > 0 && React.createElement("div", { ref: this.root_ref, style: { "height": this.state.height } },
             React.createElement("canvas", { ref: this.canvas_lines_ref, className: style["plotxy-graph-lines"], style: { position: 'absolute' } }),
             React.createElement("canvas", { ref: this.canvas_highlighted_ref, className: style["plotxy-graph-highlights"], style: { position: 'absolute' } }),
             React.createElement("svg", { className: style["plotxy-graph-svg"], style: { position: 'absolute' } }))));
@@ -427,11 +430,14 @@ var PlotXY = /** @class */ (function (_super) {
     PlotXY.prototype.componentWillUnmount = function () {
         if (this.plot) {
             this.plot.clear_canvas();
+            this.plot.on_resize.cancel();
             this.svg.selectAll("*").remove();
         }
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }
+        this.drawSelectedDebounced.cancel();
+        this.onResize.cancel();
     };
     ;
     PlotXY.prototype.isEnabled = function () {
@@ -487,7 +493,7 @@ var PlotXY = /** @class */ (function (_super) {
                 scaleRecomputed = true;
             }
             if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
-                this.plot.draw_selected_rows();
+                this.drawSelectedDebounced();
             }
             if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed || this.props.colorby != prevProps.colorby) {
                 this.plot.draw_highlighted();

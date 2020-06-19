@@ -251,6 +251,7 @@ var RowsDisplayTable = /** @class */ (function (_super) {
     };
     RowsDisplayTable.prototype.componentWillUnmount = function () {
         this.destroyDt();
+        this.setSelected_debounced.cancel();
     };
     return RowsDisplayTable;
 }(React.Component));

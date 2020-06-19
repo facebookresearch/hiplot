@@ -56,6 +56,18 @@ export { ParallelPlot } from "./parallel/parallel";
 export { RowsDisplayTable } from "./rowsdisplaytable";
 export { HiPlotLoadStatus } from "./types";
 ;
+var makeCancelable = function (promise) {
+    var hasCanceled_ = false;
+    var wrappedPromise = new Promise(function (resolve, reject) {
+        promise.then(function (val) { return hasCanceled_ ? reject({ isCanceled: true }) : resolve(val); }, function (error) { return hasCanceled_ ? reject({ isCanceled: true }) : reject(error); });
+    });
+    return {
+        promise: wrappedPromise,
+        cancel: function () {
+            hasCanceled_ = true;
+        }
+    };
+};
 ;
 function detectIsDarkTheme() {
     // Hack: detect dark/light theme in Jupyter Lab
@@ -85,11 +97,17 @@ var HiPlot = /** @class */ (function (_super) {
         _this.comm_message_id = 0;
         _this.plugins_window_state = {};
         _this.plugins_ref = []; // For debugging/tests
+        _this.onSelectedChange = _.debounce(function () {
+            this.sendMessage("selection", {
+                'selected': this.state.rows_selected.map(function (row) { return '' + row['uid']; })
+            });
+        }.bind(_this), 200);
         _this.state = {
             experiment: props.experiment,
             colormap: null,
             version: 0,
             loadStatus: HiPlotLoadStatus.None,
+            loadPromise: null,
             error: null,
             dp_lookup: {},
             rows_all_unfiltered: [],
@@ -109,7 +127,6 @@ var HiPlot = /** @class */ (function (_super) {
             _this.plugins_window_state[name] = {};
             _this.plugins_ref[index] = React.createRef();
         });
-        _this.onSelectedChange_debounced = _.debounce(_this.onSelectedChange.bind(_this), 200);
         return _this;
     }
     HiPlot.getDerivedStateFromError = function (error) {
@@ -165,11 +182,6 @@ var HiPlot = /** @class */ (function (_super) {
             this.comm_message_id += 1;
         }
     };
-    HiPlot.prototype.onSelectedChange = function () {
-        this.sendMessage("selection", {
-            'selected': this.state.rows_selected.map(function (row) { return '' + row['uid']; })
-        });
-    };
     HiPlot.prototype._loadExperiment = function (experiment) {
         // Generate dataset for Parallel Plot
         var dp_lookup = {};
@@ -217,28 +229,19 @@ var HiPlot = /** @class */ (function (_super) {
     ;
     HiPlot.prototype.loadWithPromise = function (prom) {
         var me = this;
-        me.setState({ loadStatus: HiPlotLoadStatus.Loading });
-        prom.then(function (data) {
-            if (data.experiment === undefined) {
-                console.log("Experiment loading failed", data);
-                me.setState({
-                    loadStatus: HiPlotLoadStatus.Error,
-                    experiment: null,
-                    error: data.error !== undefined ? data.error : 'Unable to load experiment'
-                });
-                return;
-            }
-            me._loadExperiment(data.experiment);
-        })["catch"](function (error) {
-            console.log('Error', error);
-            me.setState({ loadStatus: HiPlotLoadStatus.Error, experiment: null, error: 'HTTP error, check server logs / javascript console' });
-            throw error;
+        me.setState({
+            loadStatus: HiPlotLoadStatus.Loading,
+            loadPromise: makeCancelable(prom)
         });
     };
     HiPlot.prototype.componentWillUnmount = function () {
         if (this.contextMenuRef.current) {
             this.contextMenuRef.current.removeCallbacks(this);
         }
+        if (this.state.loadPromise) {
+            this.state.loadPromise.cancel();
+        }
+        this.onSelectedChange.cancel();
     };
     HiPlot.prototype.componentDidMount = function () {
         // Setup contextmenu when we right-click a parameter
@@ -252,7 +255,7 @@ var HiPlot = /** @class */ (function (_super) {
     };
     HiPlot.prototype.componentDidUpdate = function (prevProps, prevState) {
         if (prevState.rows_selected != this.state.rows_selected) {
-            this.onSelectedChange_debounced();
+            this.onSelectedChange();
         }
         if (prevState.rows_filtered_filters != this.state.rows_filtered_filters) {
             this.state.persistentState.set(PSTATE_FILTERS, this.state.rows_filtered_filters);
@@ -264,6 +267,30 @@ var HiPlot = /** @class */ (function (_super) {
             this.loadWithPromise(new Promise(function (resolve, reject) {
                 resolve({ experiment: this.props.experiment });
             }.bind(this)));
+        }
+        if (this.state.loadStatus == HiPlotLoadStatus.Loading &&
+            this.state.loadPromise != prevState.loadPromise) {
+            var prom = this.state.loadPromise.promise;
+            var me_1 = this;
+            prom.then(function (data) {
+                if (data.error !== undefined) {
+                    console.log("Experiment loading failed", data);
+                    me_1.setState({
+                        loadStatus: HiPlotLoadStatus.Error,
+                        experiment: null,
+                        error: data.error
+                    });
+                    return;
+                }
+                me_1._loadExperiment(data.experiment);
+            })["catch"](function (error) {
+                if (error.isCanceled) {
+                    return;
+                }
+                console.log('Error', error);
+                me_1.setState({ loadStatus: HiPlotLoadStatus.Error, experiment: null, error: 'HTTP error, check server logs / javascript console' });
+                throw error;
+            });
         }
     };
     HiPlot.prototype.columnContextMenu = function (column, cm) {

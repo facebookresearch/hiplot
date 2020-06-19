@@ -17,9 +17,15 @@ declare type PluginClass = React.ClassType<HiPlotPluginData, PluginComponent<HiP
 interface PluginsMap {
     [k: string]: PluginClass;
 }
-export interface loadURIPromise {
-    experiment?: HiPlotExperiment;
+declare type LoadURIPromiseResult = {
+    experiment: HiPlotExperiment;
+} | {
     error: string;
+};
+export declare type LoadURIPromise = Promise<LoadURIPromiseResult>;
+interface CancelablePromise {
+    promise: LoadURIPromise;
+    cancel: () => void;
 }
 export interface HiPlotProps {
     experiment: HiPlotExperiment | null;
@@ -34,6 +40,7 @@ interface HiPlotState extends IDatasets {
     experiment: HiPlotExperiment | null;
     version: number;
     loadStatus: HiPlotLoadStatus;
+    loadPromise: CancelablePromise | null;
     error: string;
     params_def: ParamDefMap;
     params_def_unfiltered: ParamDefMap;
@@ -53,7 +60,6 @@ export declare class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     plugins_window_state: {
         [plugin: string]: any;
     };
-    onSelectedChange_debounced: () => void;
     plugins_ref: Array<React.RefObject<PluginClass>>;
     constructor(props: HiPlotProps);
     static defaultProps: {
@@ -72,10 +78,10 @@ export declare class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     };
     makeDatasets(experiment: HiPlotExperiment | null, dp_lookup: DatapointLookup, initial_filters: Array<Filter>): IDatasets;
     sendMessage(type: string, data: any): void;
-    onSelectedChange(): void;
+    onSelectedChange: any;
     _loadExperiment(experiment: HiPlotExperiment): void;
     getColorForRow(trial: Datapoint, alpha: number): string;
-    loadWithPromise(prom: Promise<any>): void;
+    loadWithPromise(prom: LoadURIPromise): void;
     componentWillUnmount(): void;
     componentDidMount(): void;
     componentDidUpdate(prevProps: HiPlotProps, prevState: HiPlotState): void;

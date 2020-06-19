@@ -1,5 +1,6 @@
 import { HiPlotPluginData } from "./plugin";
 import React from "react";
+import _ from "underscore";
 export interface PlotXYDisplayData {
     axis_x: string | null;
     axis_y: string | null;
@@ -23,7 +24,7 @@ interface PlotXYInternal {
     recompute_scale: () => void;
     draw_selected_rows: () => void;
     draw_highlighted: () => void;
-    on_resize: () => void;
+    on_resize: (() => void) & _.Cancelable;
 }
 export declare class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     plot: PlotXYInternal;
@@ -44,11 +45,12 @@ export declare class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     };
     componentDidMount(): void;
     mountPlotXY(this: PlotXY): PlotXYInternal;
-    onResize(height: number, width: number): void;
+    onResize: any;
     disable(): void;
     render(): any[] | JSX.Element;
     componentWillUnmount(): void;
     isEnabled(): boolean;
+    drawSelectedDebounced: any;
     componentDidUpdate(prevProps: PlotXYProps, prevState: any): void;
 }
 export {};

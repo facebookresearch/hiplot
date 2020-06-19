@@ -43,13 +43,18 @@ function readFileIntoExperiment(content) {
 var UploadDataProvider = /** @class */ (function (_super) {
     __extends(UploadDataProvider, _super);
     function UploadDataProvider(props) {
-        return _super.call(this, props) || this;
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            currentFileName: null
+        };
+        return _this;
     }
     UploadDataProvider.prototype.componentDidMount = function () {
-        // Try to load last loaded file stored in clientDB
+        // Try to load last loaded file stored in clientDB?
     };
     UploadDataProvider.prototype.onDropFiles = function (acceptedFiles, fileRejections, event) {
         this.props.onLoadExperiment(new Promise(function (resolve, reject) {
+            var _this = this;
             if (fileRejections.length) {
                 resolve({ 'error': "Unexpected file (is it a CSV file?): " + fileRejections[0].file.name + " - " + fileRejections[0].errors[0].message });
             }
@@ -60,23 +65,28 @@ var UploadDataProvider = /** @class */ (function (_super) {
                 resolve({ 'error': "No file uploaded?" });
             }
             var file = acceptedFiles[0];
-            console.log(file);
             var reader = new FileReader();
             reader.onabort = function () { return resolve({ 'error': 'file reading aborted' }); };
             reader.onerror = function () { return resolve({ 'error': 'file reading has failed' }); };
             reader.onload = function () {
                 resolve(readFileIntoExperiment(reader.result));
+                _this.setState({ currentFileName: file.name });
             };
             reader.readAsText(file);
-        }));
+        }.bind(this)));
     };
     UploadDataProvider.prototype.render = function () {
+        var _this = this;
         return React.createElement(Dropzone, { accept: ['text/csv', 'text/plain'], onDrop: this.onDropFiles.bind(this) }, function (_a) {
             var getRootProps = _a.getRootProps, getInputProps = _a.getInputProps;
             return (React.createElement("section", { className: style.dropzoneContainer },
                 React.createElement("div", __assign({}, getRootProps(), { className: style.dropzone }),
                     React.createElement("input", __assign({}, getInputProps())),
-                    React.createElement("p", null, "Drag 'n' drop or click to load a CSV file"))));
+                    _this.state.currentFileName === null ? React.createElement("p", null, "Drag 'n' drop or click to load a CSV file") : React.createElement("p", null,
+                        "Loaded: ",
+                        _this.state.currentFileName,
+                        React.createElement("br", null),
+                        "Click to load another CSV file, or drop it here"))));
         });
     };
     return UploadDataProvider;

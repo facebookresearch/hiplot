@@ -65182,18 +65182,17 @@ var resizable_ResizableH = /** @class */ (function (_super) {
                 this.props.onRemove();
             }
         }.bind(_this);
-        _this.onWindowResize = function () {
+        _this.onWindowResize = underscore_default.a.debounce(function () {
             if (this.div_ref.current) {
                 this.setState({ width: this.div_ref.current.offsetWidth });
             }
-        }.bind(_this);
+        }.bind(_this), 100);
         _this.state = {
             width: 0,
             height: _this.props.initialHeight,
             internalHeight: _this.props.initialHeight,
             removing: false,
         };
-        _this.onWindowResizeDebounced = underscore_default.a.debounce(_this.onWindowResize.bind(_this), 100);
         return _this;
     }
     ResizableH.prototype.componentDidMount = function () {
@@ -65205,7 +65204,7 @@ var resizable_ResizableH = /** @class */ (function (_super) {
             }
         }.bind(this));
         document.addEventListener("mouseup", this.onMouseUp);
-        jquery_default()(window).on("resize", this.onWindowResizeDebounced);
+        jquery_default()(window).on("resize", this.onWindowResize);
         this.setState({ width: this.div_ref.current.parentElement.offsetWidth });
     };
     ResizableH.prototype.componentDidUpdate = function (prevProps, prevState) {
@@ -65216,7 +65215,8 @@ var resizable_ResizableH = /** @class */ (function (_super) {
     ResizableH.prototype.componentWillUnmount = function () {
         document.removeEventListener("mousemove", this.onMouseMove, false);
         document.removeEventListener("mouseup", this.onMouseUp);
-        jquery_default()(window).off("resize", this.onWindowResizeDebounced);
+        jquery_default()(window).off("resize", this.onWindowResize);
+        this.onWindowResize.cancel();
     };
     ResizableH.prototype.render = function () {
         return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { ref: this.div_ref, style: { "height": this.state.height }, className: resizable_default.a.resizableH + " " + (this.state.removing ? resizable_default.a.pendingDelete : "") }, this.props.children));
@@ -65331,6 +65331,16 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         _this.container_ref = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
         _this.canvas_lines_ref = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
         _this.canvas_highlighted_ref = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
+        _this.onResize = underscore_default.a.debounce(function (height, width) {
+            if (this.state.height != height || this.state.width != width) {
+                this.setState({ height: height, width: width });
+            }
+        }.bind(_this), 100);
+        _this.drawSelectedDebounced = underscore_default.a.debounce(function () {
+            if (this.plot) {
+                this.plot.draw_selected_rows();
+            }
+        }.bind(_this), 100);
         var height;
         if (props.window_state.height) {
             height = props.window_state.height;
@@ -65402,9 +65412,7 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         function redraw_axis_and_rerender() {
             redraw_axis();
             clear_canvas();
-            if (me.plot) {
-                me.plot.draw_selected_rows();
-            }
+            me.drawSelectedDebounced();
         }
         function create_scale(param, range) {
             var scale = create_d3_scale(me.props.params_def[param]);
@@ -65670,12 +65678,12 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         function update_axis() {
             recompute_scale(true);
             clear_canvas();
-            draw_selected_rows();
+            me.drawSelectedDebounced();
         }
         ;
         update_axis();
         // Initial lines
-        draw_selected_rows();
+        me.drawSelectedDebounced();
         return {
             clear_canvas: clear_canvas,
             update_axis: update_axis,
@@ -65690,11 +65698,6 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
             }.bind(this), 150)
         };
     };
-    PlotXY.prototype.onResize = function (height, width) {
-        if (this.state.height != height || this.state.width != width) {
-            this.setState({ height: height, width: width });
-        }
-    };
     PlotXY.prototype.disable = function () {
         this.setState({ axis_x: null, axis_y: null, height: this.state.initialHeight });
     };
@@ -65702,7 +65705,7 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         if (!this.isEnabled()) {
             return [];
         }
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(resizable_ResizableH, { initialHeight: this.state.height, onResize: underscore_default.a.debounce(this.onResize.bind(this), 100), onRemove: this.disable.bind(this) }, this.state.width > 0 && external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { ref: this.root_ref, style: { "height": this.state.height } },
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(resizable_ResizableH, { initialHeight: this.state.height, onResize: this.onResize, onRemove: this.disable.bind(this) }, this.state.width > 0 && external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { ref: this.root_ref, style: { "height": this.state.height } },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("canvas", { ref: this.canvas_lines_ref, className: hiplot_default.a["plotxy-graph-lines"], style: { position: 'absolute' } }),
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("canvas", { ref: this.canvas_highlighted_ref, className: hiplot_default.a["plotxy-graph-highlights"], style: { position: 'absolute' } }),
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("svg", { className: hiplot_default.a["plotxy-graph-svg"], style: { position: 'absolute' } }))));
@@ -65710,11 +65713,14 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
     PlotXY.prototype.componentWillUnmount = function () {
         if (this.plot) {
             this.plot.clear_canvas();
+            this.plot.on_resize.cancel();
             this.svg.selectAll("*").remove();
         }
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }
+        this.drawSelectedDebounced.cancel();
+        this.onResize.cancel();
     };
     ;
     PlotXY.prototype.isEnabled = function () {
@@ -65770,7 +65776,7 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
                 scaleRecomputed = true;
             }
             if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
-                this.plot.draw_selected_rows();
+                this.drawSelectedDebounced();
             }
             if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed || this.props.colorby != prevProps.colorby) {
                 this.plot.draw_highlighted();
@@ -65929,6 +65935,22 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
         // Dimensions, scaling and axis
         _this.yscale = {}; // d3.scale
         _this.d3brush = brushY();
+        _this.onBrushChange = underscore_default.a.throttle(function () {
+            this.sendBrushExtents();
+            this.pplot.brush();
+        }.bind(_this), 75);
+        _this.sendBrushExtents = underscore_default.a.debounce(function () {
+            var yscales = this.yscale;
+            var colToScale = {};
+            this.dimensions_dom.selectAll("." + hiplot_default.a.brush).each(function (dim) {
+                var sel = brushSelection(this);
+                if (sel === null) {
+                    return;
+                }
+                colToScale[dim] = scale_pixels_range(yscales[dim], sel);
+            });
+            this.props.sendMessage("brush_extents", colToScale);
+        }.bind(_this), 400);
         _this.forceHideColumn = function (pd) {
             return pd === undefined ||
                 pd.special_values.length + pd.distinct_values.length <= 1 ||
@@ -66069,8 +66091,6 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
             brush_count: 0,
             dragging: null,
         };
-        _this.onBrushChange_debounced = underscore_default.a.throttle(_this.onBrushChange.bind(_this), 75);
-        _this.sendBrushExtents_debounced = underscore_default.a.debounce(_this.sendBrushExtents.bind(_this), 400);
         return _this;
     }
     ParallelPlot.prototype.componentWillUnmount = function () {
@@ -66081,6 +66101,8 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }
+        this.onBrushChange.cancel();
+        this.sendBrushExtents.cancel();
     };
     ;
     ParallelPlot.prototype.componentDidUpdate = function (prevProps, prevState) {
@@ -66159,10 +66181,6 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
         }
         this.props.window_state.height = this.state.height;
     };
-    ParallelPlot.prototype.onBrushChange = function () {
-        this.sendBrushExtents_debounced();
-        this.pplot.brush();
-    };
     ParallelPlot.prototype.onResize = function (height, width) {
         if (this.state.height != height || this.state.width != width) {
             this.setState({ height: height, width: width });
@@ -66175,18 +66193,6 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
                 external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("canvas", { ref: this.highlighted_ref, className: hiplot_default.a["highlight-canvas"] }),
                 external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("svg", { ref: this.svg_ref, width: this.state.width, height: this.state.height },
                     external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("g", { ref: this.svgg_ref, transform: "translate(" + this.m[3] + ", " + this.m[0] + ")" })))));
-    };
-    ParallelPlot.prototype.sendBrushExtents = function () {
-        var yscales = this.yscale;
-        var colToScale = {};
-        this.dimensions_dom.selectAll("." + hiplot_default.a.brush).each(function (dim) {
-            var sel = brushSelection(this);
-            if (sel === null) {
-                return;
-            }
-            colToScale[dim] = scale_pixels_range(yscales[dim], sel);
-        });
-        this.props.sendMessage("brush_extents", colToScale);
     };
     ParallelPlot.prototype.componentDidMount = function () {
         var dimensions = src_keys(this.props.params_def).filter(function (k) {
@@ -66532,7 +66538,7 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
         this.h = this.state.height - this.m[0] - this.m[2];
         //@ts-ignore
         this.axis = axisLeft(src_linear_linear() /* placeholder */).ticks(1 + this.state.height / 50);
-        this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.onBrushChange_debounced).on("end", this.onBrushChange_debounced);
+        this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.onBrushChange).on("end", this.onBrushChange);
         // Scale chart and canvas height
         this.div.style("height", (this.state.height) + "px");
         this.div.selectAll("canvas")
@@ -66550,8 +66556,8 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
         // Reset brushes - but only trigger call to "brush" once
         this.d3brush.on("brush", null).on("end", null);
         this.d3brush.move(this.dimensions_dom.selectAll("." + hiplot_default.a.brush), null);
-        this.d3brush.on("brush", this.onBrushChange_debounced).on("end", this.onBrushChange_debounced);
-        this.onBrushChange_debounced();
+        this.d3brush.on("brush", this.onBrushChange).on("end", this.onBrushChange);
+        this.onBrushChange();
     };
     ParallelPlot.prototype.remove_axis = function (d) {
         var pd = this.props.params_def[d];
@@ -66874,6 +66880,7 @@ var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
     };
     RowsDisplayTable.prototype.componentWillUnmount = function () {
         this.destroyDt();
+        this.setSelected_debounced.cancel();
     };
     return RowsDisplayTable;
 }(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
@@ -67936,6 +67943,11 @@ var plugin_HiPlotDistributionPlugin = /** @class */ (function (_super) {
     function HiPlotDistributionPlugin(props) {
         var _this = _super.call(this, props) || this;
         _this.container_ref = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
+        _this.onResize = underscore_default.a.debounce(function (height, width) {
+            if (height != this.state.height || width != this.state.width) {
+                this.setState({ height: height, width: width });
+            }
+        }.bind(_this), 150);
         var axis = _this.props.persistentState.get('axis', null);
         if (axis && _this.props.params_def[axis] === undefined) {
             axis = null;
@@ -67999,11 +68011,7 @@ var plugin_HiPlotDistributionPlugin = /** @class */ (function (_super) {
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }
-    };
-    HiPlotDistributionPlugin.prototype.onResize = function (height, width) {
-        if (height != this.state.height || width != this.state.width) {
-            this.setState({ height: height, width: width });
-        }
+        this.onResize.cancel();
     };
     HiPlotDistributionPlugin.prototype.disable = function () {
         this.setState({ width: 0, axis: null, height: this.state.initialHeight });
@@ -68014,7 +68022,7 @@ var plugin_HiPlotDistributionPlugin = /** @class */ (function (_super) {
         }
         var param_def = this.props.params_def[this.state.axis];
         console.assert(param_def !== undefined, this.state.axis);
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(resizable_ResizableH, { initialHeight: this.state.height, onResize: underscore_default.a.debounce(this.onResize.bind(this), 150), onRemove: this.disable.bind(this) }, this.state.width > 0 && external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(plot_DistributionPlot, { axis: this.state.axis, height: this.state.height, width: this.state.width, histData: this.state.histData, param_def: param_def, nbins: this.props.nbins, animateMs: this.props.animateMs })));
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(resizable_ResizableH, { initialHeight: this.state.height, onResize: this.onResize, onRemove: this.disable.bind(this) }, this.state.width > 0 && external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(plot_DistributionPlot, { axis: this.state.axis, height: this.state.height, width: this.state.width, histData: this.state.histData, param_def: param_def, nbins: this.props.nbins, animateMs: this.props.animateMs })));
     };
     HiPlotDistributionPlugin.defaultProps = {
         nbins: 10,
@@ -68084,6 +68092,18 @@ var component_assign = (undefined && undefined.__assign) || function () {
 
 
 ;
+var makeCancelable = function (promise) {
+    var hasCanceled_ = false;
+    var wrappedPromise = new Promise(function (resolve, reject) {
+        promise.then(function (val) { return hasCanceled_ ? reject({ isCanceled: true }) : resolve(val); }, function (error) { return hasCanceled_ ? reject({ isCanceled: true }) : reject(error); });
+    });
+    return {
+        promise: wrappedPromise,
+        cancel: function () {
+            hasCanceled_ = true;
+        },
+    };
+};
 ;
 function detectIsDarkTheme() {
     // Hack: detect dark/light theme in Jupyter Lab
@@ -68113,11 +68133,17 @@ var component_HiPlot = /** @class */ (function (_super) {
         _this.comm_message_id = 0;
         _this.plugins_window_state = {};
         _this.plugins_ref = []; // For debugging/tests
+        _this.onSelectedChange = underscore["debounce"](function () {
+            this.sendMessage("selection", {
+                'selected': this.state.rows_selected.map(function (row) { return '' + row['uid']; })
+            });
+        }.bind(_this), 200);
         _this.state = {
             experiment: props.experiment,
             colormap: null,
             version: 0,
             loadStatus: HiPlotLoadStatus.None,
+            loadPromise: null,
             error: null,
             dp_lookup: {},
             rows_all_unfiltered: [],
@@ -68137,7 +68163,6 @@ var component_HiPlot = /** @class */ (function (_super) {
             _this.plugins_window_state[name] = {};
             _this.plugins_ref[index] = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
         });
-        _this.onSelectedChange_debounced = underscore["debounce"](_this.onSelectedChange.bind(_this), 200);
         return _this;
     }
     HiPlot.getDerivedStateFromError = function (error) {
@@ -68193,11 +68218,6 @@ var component_HiPlot = /** @class */ (function (_super) {
             this.comm_message_id += 1;
         }
     };
-    HiPlot.prototype.onSelectedChange = function () {
-        this.sendMessage("selection", {
-            'selected': this.state.rows_selected.map(function (row) { return '' + row['uid']; })
-        });
-    };
     HiPlot.prototype._loadExperiment = function (experiment) {
         // Generate dataset for Parallel Plot
         var dp_lookup = {};
@@ -68245,28 +68265,19 @@ var component_HiPlot = /** @class */ (function (_super) {
     ;
     HiPlot.prototype.loadWithPromise = function (prom) {
         var me = this;
-        me.setState({ loadStatus: HiPlotLoadStatus.Loading });
-        prom.then(function (data) {
-            if (data.experiment === undefined) {
-                console.log("Experiment loading failed", data);
-                me.setState({
-                    loadStatus: HiPlotLoadStatus.Error,
-                    experiment: null,
-                    error: data.error !== undefined ? data.error : 'Unable to load experiment',
-                });
-                return;
-            }
-            me._loadExperiment(data.experiment);
-        })["catch"](function (error) {
-            console.log('Error', error);
-            me.setState({ loadStatus: HiPlotLoadStatus.Error, experiment: null, error: 'HTTP error, check server logs / javascript console' });
-            throw error;
+        me.setState({
+            loadStatus: HiPlotLoadStatus.Loading,
+            loadPromise: makeCancelable(prom)
         });
     };
     HiPlot.prototype.componentWillUnmount = function () {
         if (this.contextMenuRef.current) {
             this.contextMenuRef.current.removeCallbacks(this);
         }
+        if (this.state.loadPromise) {
+            this.state.loadPromise.cancel();
+        }
+        this.onSelectedChange.cancel();
     };
     HiPlot.prototype.componentDidMount = function () {
         // Setup contextmenu when we right-click a parameter
@@ -68280,7 +68291,7 @@ var component_HiPlot = /** @class */ (function (_super) {
     };
     HiPlot.prototype.componentDidUpdate = function (prevProps, prevState) {
         if (prevState.rows_selected != this.state.rows_selected) {
-            this.onSelectedChange_debounced();
+            this.onSelectedChange();
         }
         if (prevState.rows_filtered_filters != this.state.rows_filtered_filters) {
             this.state.persistentState.set(PSTATE_FILTERS, this.state.rows_filtered_filters);
@@ -68292,6 +68303,30 @@ var component_HiPlot = /** @class */ (function (_super) {
             this.loadWithPromise(new Promise(function (resolve, reject) {
                 resolve({ experiment: this.props.experiment });
             }.bind(this)));
+        }
+        if (this.state.loadStatus == HiPlotLoadStatus.Loading &&
+            this.state.loadPromise != prevState.loadPromise) {
+            var prom = this.state.loadPromise.promise;
+            var me_1 = this;
+            prom.then(function (data) {
+                if (data.error !== undefined) {
+                    console.log("Experiment loading failed", data);
+                    me_1.setState({
+                        loadStatus: HiPlotLoadStatus.Error,
+                        experiment: null,
+                        error: data.error,
+                    });
+                    return;
+                }
+                me_1._loadExperiment(data.experiment);
+            })["catch"](function (error) {
+                if (error.isCanceled) {
+                    return;
+                }
+                console.log('Error', error);
+                me_1.setState({ loadStatus: HiPlotLoadStatus.Error, experiment: null, error: 'HTTP error, check server logs / javascript console' });
+                throw error;
+            });
         }
     };
     HiPlot.prototype.columnContextMenu = function (column, cm) {

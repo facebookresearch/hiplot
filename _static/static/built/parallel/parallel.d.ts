@@ -42,8 +42,6 @@ export declare class ParallelPlot extends React.Component<ParallelPlotData, Para
     animloop: d3.Timer;
     xscale: any;
     brush: any;
-    onBrushChange_debounced: any;
-    sendBrushExtents_debounced: any;
     root_ref: React.RefObject<HTMLDivElement>;
     foreground_ref: React.RefObject<HTMLCanvasElement>;
     foreground: CanvasRenderingContext2D;
@@ -62,10 +60,10 @@ export declare class ParallelPlot extends React.Component<ParallelPlotData, Para
     };
     componentWillUnmount(): void;
     componentDidUpdate(prevProps: ParallelPlotData, prevState: ParallelPlotState): void;
-    onBrushChange(): void;
+    onBrushChange: any;
     onResize(height: number, width: number): void;
     render(): JSX.Element;
-    sendBrushExtents(): void;
+    sendBrushExtents: any;
     forceHideColumn: any;
     componentDidMount(): void;
     columnContextMenu(column: string, cm: HTMLDivElement): void;
