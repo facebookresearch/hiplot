@@ -45,7 +45,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     ordered_cols: Array<string> = [];
     empty: boolean;
 
-    setSelected_debounced: (selected: Array<Datapoint>) => void = _.debounce(this.setSelected, 150);
+    setSelected_debounced = _.debounce(this.setSelected, 150);
 
     constructor(props: HiPlotPluginData) {
         super(props);
@@ -260,5 +260,6 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
     }
     componentWillUnmount() {
         this.destroyDt();
+        this.setSelected_debounced.cancel();
     }
 }

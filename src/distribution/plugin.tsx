@@ -118,12 +118,13 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }
+        this.onResize.cancel();
     }
-    onResize(height: number, width: number) {
+    onResize = _.debounce(function(height: number, width: number) {
         if (height != this.state.height || width != this.state.width) {
             this.setState({height: height, width: width});
         }
-    }
+    }.bind(this), 150);
     disable(): void {
       this.setState({width: 0, axis: null, height: this.state.initialHeight});
     }
@@ -133,7 +134,7 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
         }
         const param_def = this.props.params_def[this.state.axis];
         console.assert(param_def !== undefined, this.state.axis);
-        return (<ResizableH initialHeight={this.state.height} onResize={_.debounce(this.onResize.bind(this), 150)} onRemove={this.disable.bind(this)}>
+        return (<ResizableH initialHeight={this.state.height} onResize={this.onResize} onRemove={this.disable.bind(this)}>
             {this.state.width > 0 && <DistributionPlot
                 axis={this.state.axis}
                 height={this.state.height}

@@ -77,8 +77,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   xscale: any;
 
   brush: any;
-  onBrushChange_debounced: any;
-  sendBrushExtents_debounced: any;
 
   // Rendering
   root_ref: React.RefObject<HTMLDivElement> = React.createRef();
@@ -109,8 +107,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       brush_count: 0,
       dragging: null,
     };
-    this.onBrushChange_debounced = _.throttle(this.onBrushChange.bind(this), 75);
-    this.sendBrushExtents_debounced = _.debounce(this.sendBrushExtents.bind(this), 400);
   }
   static defaultProps = {
     categoricalMaximumValues: 80,
@@ -124,6 +120,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
         this.props.context_menu_ref.current.removeCallbacks(this);
     }
+    this.onBrushChange.cancel();
+    this.sendBrushExtents.cancel();
   };
   componentDidUpdate(prevProps: ParallelPlotData, prevState: ParallelPlotState) {
     if (prevState.height != this.state.height || prevState.width != this.state.width) {
@@ -202,10 +200,10 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     }
     this.props.window_state.height = this.state.height;
   }
-  onBrushChange(): void {
-    this.sendBrushExtents_debounced();
+  onBrushChange = _.throttle(function(this: ParallelPlot): void {
+    this.sendBrushExtents();
     this.pplot.brush();
-  }
+  }.bind(this), 75);
   onResize(height: number, width: number): void {
     if (this.state.height != height || this.state.width != width) {
       this.setState({height: height, width: width});
@@ -223,7 +221,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     </div>
     </ResizableH>);
   }
-  sendBrushExtents(): void {
+  sendBrushExtents = _.debounce(function(this: ParallelPlot): void {
     const yscales = this.yscale;
     var colToScale = {};
     this.dimensions_dom.selectAll("." + style.brush).each(function(this: SVGGElement, dim: string) {
@@ -234,7 +232,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       colToScale[dim] = scale_pixels_range(yscales[dim], sel as [number, number]);
     });
     this.props.sendMessage("brush_extents", colToScale);
-  }
+  }.bind(this), 400);
   forceHideColumn = function(pd: ParamDef) {
     return pd === undefined ||
       pd.special_values.length + pd.distinct_values.length <= 1 ||
@@ -617,7 +615,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     this.h = this.state.height - this.m[0] - this.m[2];
     //@ts-ignore
     this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */).ticks(1+this.state.height/50);
-    this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.onBrushChange_debounced).on("end", this.onBrushChange_debounced);
+    this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.onBrushChange).on("end", this.onBrushChange);
     // Scale chart and canvas height
     this.div.style("height", (this.state.height) + "px")
 
@@ -725,8 +723,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     // Reset brushes - but only trigger call to "brush" once
     this.d3brush.on("brush", null).on("end", null);
     this.d3brush.move(this.dimensions_dom.selectAll("." + style.brush), null);
-    this.d3brush.on("brush", this.onBrushChange_debounced).on("end", this.onBrushChange_debounced);
-    this.onBrushChange_debounced();
+    this.d3brush.on("brush", this.onBrushChange).on("end", this.onBrushChange);
+    this.onBrushChange();
   }
 
   remove_axis(d: string): void {

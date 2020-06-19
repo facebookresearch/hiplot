@@ -44,10 +44,31 @@ type PluginComponentClass<P> = React.ComponentClass<P>;
 type PluginClass = React.ClassType<HiPlotPluginData, PluginComponent<HiPlotPluginData>, PluginComponentClass<HiPlotPluginData>>;
 interface PluginsMap {[k: string]: PluginClass; };
 
-export interface loadURIPromise {
-    experiment?: HiPlotExperiment;
-    error: string;
+type LoadURIPromiseResult = {experiment: HiPlotExperiment} | {error: string};
+export type LoadURIPromise = Promise<LoadURIPromiseResult>;
+
+// Makes a Promise cancelable
+interface CancelablePromise {
+    promise: LoadURIPromise;
+    cancel: () => void;
 }
+const makeCancelable = (promise: LoadURIPromise): CancelablePromise => {
+    let hasCanceled_ = false;
+
+    const wrappedPromise = new Promise((resolve: (r: LoadURIPromiseResult) => void, reject) => {
+        promise.then(
+            val => hasCanceled_ ? reject({isCanceled: true}) : resolve(val),
+            error => hasCanceled_ ? reject({isCanceled: true}) : reject(error)
+        );
+    });
+
+    return {
+        promise: wrappedPromise,
+        cancel() {
+            hasCanceled_ = true;
+        },
+    };
+};
 
 export interface HiPlotProps {
     experiment: HiPlotExperiment | null;
@@ -63,6 +84,7 @@ interface HiPlotState extends IDatasets {
     experiment: HiPlotExperiment | null;
     version: number;
     loadStatus: HiPlotLoadStatus;
+    loadPromise: CancelablePromise | null;
     error: string;
     params_def: ParamDefMap;
     params_def_unfiltered: ParamDefMap;
@@ -107,7 +129,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     comm_message_id: number = 0;
 
     plugins_window_state: {[plugin: string]: any} = {};
-    onSelectedChange_debounced: () => void;
 
     plugins_ref: Array<React.RefObject<PluginClass>> = []; // For debugging/tests
 
@@ -118,6 +139,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             colormap: null,
             version: 0,
             loadStatus: HiPlotLoadStatus.None,
+            loadPromise: null,
             error: null,
             dp_lookup: {},
             rows_all_unfiltered: [],
@@ -137,7 +159,6 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             this.plugins_window_state[name] = {};
             this.plugins_ref[index] = React.createRef<PluginClass>();
         });
-        this.onSelectedChange_debounced = _.debounce(this.onSelectedChange.bind(this), 200);
     }
     static defaultProps = {
         loadURI: null,
@@ -200,11 +221,11 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             this.comm_message_id += 1;
         }
     }
-    onSelectedChange(): void {
+    onSelectedChange = _.debounce(function(this: HiPlot): void {
         this.sendMessage("selection", {
             'selected': this.state.rows_selected.map(row => '' + row['uid'])
         })
-    }
+    }.bind(this), 200);
     _loadExperiment(experiment: HiPlotExperiment) {
         // Generate dataset for Parallel Plot
         var dp_lookup = {};
@@ -258,33 +279,21 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     getColorForRow(trial: Datapoint, alpha: number): string {
         return colorScheme(this.state.params_def[this.state.colorby], trial[this.state.colorby], alpha, this.state.colormap);
     };
-    loadWithPromise(prom: Promise<any>) {
+    loadWithPromise(prom: LoadURIPromise) {
         var me = this;
-        me.setState({loadStatus: HiPlotLoadStatus.Loading});
-        prom.then(function(data) {
-            if (data.experiment === undefined) {
-                console.log("Experiment loading failed", data);
-                me.setState({
-                    loadStatus: HiPlotLoadStatus.Error,
-                    experiment: null,
-                    error: data.error !== undefined ? data.error : 'Unable to load experiment',
-                });
-                return;
-            }
-            me._loadExperiment(data.experiment);
-        })
-        .catch(
-            error => {
-                console.log('Error', error);
-                me.setState({loadStatus: HiPlotLoadStatus.Error, experiment: null, error: 'HTTP error, check server logs / javascript console'});
-                throw error;
-            }
-        );
+        me.setState({
+            loadStatus: HiPlotLoadStatus.Loading,
+            loadPromise: makeCancelable(prom)
+        });
     }
     componentWillUnmount() {
         if (this.contextMenuRef.current) {
             this.contextMenuRef.current.removeCallbacks(this);
         }
+        if (this.state.loadPromise) {
+            this.state.loadPromise.cancel();
+        }
+        this.onSelectedChange.cancel();
     }
     componentDidMount() {
         // Setup contextmenu when we right-click a parameter
@@ -299,7 +308,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     }
     componentDidUpdate(prevProps: HiPlotProps, prevState: HiPlotState): void {
         if (prevState.rows_selected != this.state.rows_selected) {
-            this.onSelectedChange_debounced();
+            this.onSelectedChange();
         }
         if (prevState.rows_filtered_filters != this.state.rows_filtered_filters) {
             this.state.persistentState.set(PSTATE_FILTERS, this.state.rows_filtered_filters);
@@ -311,6 +320,33 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             this.loadWithPromise(new Promise(function(resolve, reject) {
                 resolve({experiment: this.props.experiment});
             }.bind(this)));
+        }
+        if (this.state.loadStatus == HiPlotLoadStatus.Loading &&
+            this.state.loadPromise != prevState.loadPromise) {
+            const prom = this.state.loadPromise.promise;
+            const me = this;
+            prom.then(function(data: {error?: string, experiment?: HiPlotExperiment}) {
+                if (data.error !== undefined) {
+                    console.log("Experiment loading failed", data);
+                    me.setState({
+                        loadStatus: HiPlotLoadStatus.Error,
+                        experiment: null,
+                        error: data.error,
+                    });
+                    return;
+                }
+                me._loadExperiment(data.experiment);
+            })
+            .catch(
+                error => {
+                    if (error.isCanceled) {
+                        return;
+                    }
+                    console.log('Error', error);
+                    me.setState({loadStatus: HiPlotLoadStatus.Error, experiment: null, error: 'HTTP error, check server logs / javascript console'});
+                    throw error;
+                }
+            );
         }
     }
     columnContextMenu(column: string, cm: HTMLDivElement) {
