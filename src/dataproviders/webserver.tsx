@@ -7,7 +7,7 @@
 
 import $ from "jquery";
 import JSON5 from "json5";
-import {loadURIPromise} from "../component";
+import {LoadURIPromise} from "../component";
 import {DataProviderProps} from "../plugin";
 import {HiPlotLoadStatus} from "../types";
 import React from "react";
@@ -87,7 +87,7 @@ export class RunsSelectionTextArea extends React.Component<TextAreaProps, TextAr
 }
 
 
-export function loadURIFromWebServer(uri: string): Promise<loadURIPromise> {
+export function loadURIFromWebServer(uri: string): LoadURIPromise {
     return new Promise(function(resolve, reject) {
         $.get( "/data?uri=" + encodeURIComponent(uri), resolve, "json").fail(function(data) {
             if (data.readyState == 4 && data.status == 200) {
