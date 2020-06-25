@@ -239,6 +239,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     function brushended() {
       var s = d3.event.selection;
       if (!s) {
+        if (x_scale === x_scale_orig && y_scale === y_scale_orig) {
+          return;
+        }
         x_scale = x_scale_orig;
         y_scale = y_scale_orig;
       } else {
