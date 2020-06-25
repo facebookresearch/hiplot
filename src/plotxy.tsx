@@ -16,6 +16,7 @@ import { ResizableH } from "./lib/resizable";
 import _ from "underscore";
 import { Datapoint } from "./types";
 import { foCreateAxisLabel, foDynamicSizeFitContent } from "./lib/svghelpers";
+import { ContextMenu } from "./contextmenu";
 
 
 // DISPLAYS_DATA_DOC_BEGIN
@@ -41,7 +42,11 @@ interface PlotXYState extends PlotXYDisplayData {
   initialHeight: number,
   height: number,
   hover_uid: string | null,
+  highlightType: string;
 };
+
+const HIGHLIGHT_PARENT = 'parent';
+const HIGHLIGHT_CHILDREN = 'children';
 
 interface PlotXYInternal {
   clear_canvas: () => void;
@@ -62,6 +67,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   container_ref: React.RefObject<HTMLDivElement> = React.createRef();
   canvas_lines_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
   canvas_highlighted_ref: React.RefObject<HTMLCanvasElement> = React.createRef();
+  plotXYcontextMenuRef = React.createRef<ContextMenu>();
 
   constructor(props: PlotXYProps) {
     super(props);
@@ -98,6 +104,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     this.state = {
       ...state,
       hover_uid: null,
+      highlightType: this.props.persistentState.get("highlightType", HIGHLIGHT_PARENT),
     };
   }
   static defaultProps = {
@@ -139,6 +146,21 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   mountPlotXY(this: PlotXY): PlotXYInternal {
     var me = this;
 
+    me.plotXYcontextMenuRef.current.removeCallbacks(this);
+    me.plotXYcontextMenuRef.current.addCallback(function (column, cm) {
+      var contextmenu = $(cm);
+      [HIGHLIGHT_PARENT, HIGHLIGHT_CHILDREN].forEach(function(dat) {
+        var option = $('<a class="dropdown-item" href="#">').text(`Highlight: ${dat}`);
+        if (me.state.highlightType == dat) {
+          option.addClass('disabled').css('pointer-events', 'none');
+        }
+        option.click(function(event) {
+          me.setState({highlightType: dat});
+          event.preventDefault();
+        });
+        contextmenu.append(option);
+      });
+    }, me);
     var div = d3.select(this.root_ref.current);
     me.svg = div.select("svg");
     var currently_displayed = [];
@@ -399,6 +421,18 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       currently_displayed = [];
     };
 
+    function lookupParent(dp: Datapoint): Datapoint[] {
+      if (dp.from_uid === null) {
+        return [];
+      }
+      const nextDp = me.props.dp_lookup[dp.from_uid];
+      return nextDp === undefined ? [] : [nextDp];
+    };
+    var childrenLookup: { [parent_uid: string]: Datapoint[]} = {};
+    function lookupChildren(dp: Datapoint): Datapoint[] {
+      const next = childrenLookup[dp.uid];
+      return next ? next : [];
+    };
     // Draw highlights
     function draw_highlighted() {
       if (!me.isEnabled()) {
@@ -413,21 +447,46 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       }
       d3.select(me.canvas_highlighted_ref.current).style("opacity", "1.0");
       d3.select(me.canvas_lines_ref.current).style("opacity", "0.5");
-      // Find all runs + parents
-      highlighted.forEach(function(dp) {
-        while (dp !== undefined) {
-          var color = me.props.get_color_for_row(dp, 1.0).split(',');
-          render_dp(dp, highlights, {
-            'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
-            'lines_width': 4,
-            'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
-            'dots_thickness': 5,
-          });
-          if (dp.from_uid === null) {
-            break;
+      childrenLookup = {};
+      if (me.state.highlightType == HIGHLIGHT_CHILDREN) {
+        // Pre-compute graph of children - TODO: maybe we could cache that
+        me.props.rows_filtered.forEach(function(dp) {
+          if (dp.from_uid !== null) {
+            if (childrenLookup[dp.uid] === undefined) {
+              childrenLookup[dp.from_uid] = [dp];
+            } else {
+              childrenLookup[dp.from_uid].push(dp);
+            }
           }
-          dp = me.props.dp_lookup[dp.from_uid];
-        }
+        });
+      }
+      const lookupNextDp: (dp: Datapoint) => Datapoint[] = {
+        [HIGHLIGHT_CHILDREN]: lookupChildren,
+        [HIGHLIGHT_PARENT]: lookupParent,
+      }[me.state.highlightType];
+
+      // Find all runs + parents
+      var todo = new Set(highlighted);
+      var allHighlighted = new Set<Datapoint>();
+      while (todo.size) {
+        const oldTodo = todo;
+        todo = new Set();
+        oldTodo.forEach(function(dp) {
+          if (allHighlighted.has(dp)) {
+            return;
+          }
+          allHighlighted.add(dp);
+          lookupNextDp(dp).forEach(function(newDp) { todo.add(newDp); });
+        });
+      }
+      allHighlighted.forEach(function(dp) {
+        var color = me.props.get_color_for_row(dp, 1.0).split(',');
+        render_dp(dp, highlights, {
+          'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
+          'lines_width': 4,
+          'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
+          'dots_thickness': 5,
+        });
       });
     }
 
@@ -470,7 +529,8 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     }
     return (
     <ResizableH initialHeight={this.state.height} onResize={this.onResize} onRemove={this.disable.bind(this)}>
-      {this.state.width > 0 && <div ref={this.root_ref} style={{"height": this.state.height}}>
+      <ContextMenu ref={this.plotXYcontextMenuRef} />
+      {this.state.width > 0 && <div onContextMenu={this.plotXYcontextMenuRef.current.onContextMenu} ref={this.root_ref} style={{"height": this.state.height}}>
           <canvas ref={this.canvas_lines_ref} className={style["plotxy-graph-lines"]} style={{position: 'absolute'}}></canvas>
           <canvas ref={this.canvas_highlighted_ref} className={style["plotxy-graph-highlights"]} style={{position: 'absolute'}}></canvas>
           <svg className={style["plotxy-graph-svg"]} style={{position: 'absolute'}}></svg>
@@ -489,6 +549,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     }
     this.drawSelectedDebounced.cancel();
     this.onResize.cancel();
+    this.plotXYcontextMenuRef.current.removeCallbacks(this);
   };
   isEnabled() {
     return this.state.axis_x !== null && this.state.axis_y !== null;
@@ -506,6 +567,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         anyAxisChanged = true;
       }
     }.bind(this));
+    if (this.state.highlightType != prevState.highlightType) {
+      this.props.persistentState.set("highlightType", this.state.highlightType);
+    }
     if (this.state.width == 0) {
       return; // Loading...
     }
@@ -551,7 +615,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
         this.drawSelectedDebounced();
       }
-      if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed || this.props.colorby != prevProps.colorby) {
+      if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed ||
+          this.props.colorby != prevProps.colorby ||
+          this.state.highlightType != prevState.highlightType) {
         this.plot.draw_highlighted()
       }
     }
