@@ -22,6 +22,7 @@ interface State {
   filtered_uids: Array<string>;
   brush_extents: Array<any>;
   experiment: any;
+  experimentJson: string;
 };
 
 class ReactTemplate extends StreamlitComponentBase<State> {
@@ -31,26 +32,25 @@ class ReactTemplate extends StreamlitComponentBase<State> {
       selected_uids: null,
       filtered_uids: null,
       brush_extents: null,
-      experiment: props.args.experiment,
+      experiment: eval('(' + props.args.experiment + ')'),
+      experimentJson: props.args.experiment,
     };
   }
   public render = (): ReactNode => {
     // Arguments that are passed to the plugin in Python are accessible
     // via `this.props.args`. Here, we access the "name" arg.
-    var on_change_handlers = {
+    var onChangeHandlers = {
       'selected_uids': [this.onChange.bind(this)],
       'filtered_uids': [this.onChange.bind(this)],
       'brush_extents': [this.onChange.bind(this)],
     };
-    return (
-      <>
-        <HiPlot experiment={this.state.experiment} on_change={on_change_handlers} />;
-      </>
-    )
+    return <HiPlot experiment={this.state.experiment} onChange={onChangeHandlers} />;
   }
 
   public onChange = (type: string, data: any): void => {
+    // @ts-ignore
     this.setState({[type]: data});
+    Streamlit.setFrameHeight();
   }
 
   public componentDidUpdate(prevProps, prevState: State): void {
@@ -73,11 +73,11 @@ class ReactTemplate extends StreamlitComponentBase<State> {
     }
     const newExp = this.props.args['experiment'];
     const lastExp = prevProps.args['experiment'];
-    if (newExp != lastExp) {
-      // Hopefully this whole hack shouldn't be necessary
-      if (JSON.stringify(newExp) != JSON.stringify(lastExp)) {
-        this.setState({experiment: newExp});
-      }
+    if (newExp != this.state.experimentJson) {
+      this.setState({
+        experiment: eval('(' + newExp + ')'),
+        experimentJson: newExp
+      });
     }
     Streamlit.setFrameHeight();
   }

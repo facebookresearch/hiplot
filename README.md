@@ -6,15 +6,16 @@
 
 HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.
 
-### [Try a demo now](https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html)
+### [Try a demo now with sweep data](https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html) or [upload your CSV](https://facebookresearch.github.io/hiplot/_static/hiplot_upload.html)
 
-There are 2 modes to HiPlot:
+There are several modes to HiPlot:
 - As a web-server (if your data is a CSV for instance)
-- In a jupyter notebook (to visualize python data)
+- In a jupyter notebook (to visualize python data), or in [Streamlit apps](https://facebookresearch.github.io/hiplot/tuto_streamlit.html)
+- In CLI to render standalone HTML
 
 
 ```bash
-pip install hiplot  # Or for conda users: conda install -c conda-forge hiplot
+pip install -U hiplot  # Or for conda users: conda install -c conda-forge hiplot
 ```
 
 If you have a jupyter notebook, you can get started with something as simple as:

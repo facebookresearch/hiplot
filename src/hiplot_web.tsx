@@ -23,6 +23,7 @@ export function build_props(extra?: any): HiPlotProps {
         asserts: false,
         dataProvider: WebserverDataProvider,
         dark: false,
+        onChange: null,
     };
     if (extra !== undefined) {
         Object.assign(props, extra);

@@ -74,7 +74,7 @@ export interface HiPlotProps {
     experiment: HiPlotExperiment | null;
     plugins: PluginsMap;
     persistentState?: PersistentState;
-    on_change: {[k: string]: Array<(type: string, data: any) => void>}; // callbacks when selection changes, etc...
+    onChange: {[k: string]: Array<(type: string, data: any) => void>}; // callbacks when selection changes, etc...
     dark: boolean;
     asserts: boolean;
     dataProvider: any;
@@ -164,7 +164,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         plugins: defaultPlugins,
         experiment: null,
         dataProvider: null,
-        on_change: null,
+        onChange: null,
     };
     static getDerivedStateFromError(error: Error) {
         // Update state so the next render will show the fallback UI.
@@ -209,9 +209,9 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         };
     }
     sendMessage(type: string, get_data: () => any): void {
-        if (this.props.on_change !== null && this.props.on_change[type] && this.props.on_change[type].length) {
+        if (this.props.onChange !== null && this.props.onChange[type] && this.props.onChange[type].length) {
             const data = get_data();
-            this.props.on_change[type].forEach(function(callback) {
+            this.props.onChange[type].forEach(function(callback) {
                 callback(type, data);
             })
         }
