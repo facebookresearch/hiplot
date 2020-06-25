@@ -78,7 +78,7 @@ class _StreamlitHelpers:
             import streamlit as st
         except:  # pylint: disable=bare-except
             return False
-        return st._is_running_with_streamlit
+        return bool(st._is_running_with_streamlit)
 
     @classmethod
     def create_component(cls) -> None:
@@ -114,6 +114,7 @@ Please use `experiment.display_st(..., key=\"some_unique_key\")`""")
             ret_type_for_js = [ret]
         for r in ret_type_for_js:
             assert r in possible_returns, f"Unknown return type {r}. Possible values: {','.join(possible_returns)}"
+        assert cls.component is not None
         js_ret = cls.component(experiment=json.dumps(exp._asdict()), ret=ret_type_for_js, key=key)  # pylint: disable=not-callable
 
         if js_ret is None:
@@ -133,6 +134,14 @@ Please use `experiment.display_st(..., key=\"some_unique_key\")`""")
         if isinstance(ret, str):
             return js_ret[0]
         return js_ret
+
+
+def _is_running_ipython() -> bool:
+    try:
+        get_ipython()  # type: ignore
+        return True
+    except NameError:
+        return False
 
 
 class ValueDef(_DictSerializable):
@@ -295,9 +304,7 @@ class Experiment(_DictSerializable):
             - only implemented for Jupyter notebook.
             See :ref:`tutonotebookdisplayedexperiment`
         """
-        try:
-            get_ipython()
-        except NameError:
+        if not _is_running_ipython():
             if _StreamlitHelpers.is_running_within_streamlit():
                 raise RuntimeError(r"""`experiment.display` can only be called with ipython.
 It appears that you are trying to create a HiPlot visualization in Streamlit: you should use `display_st`""")
@@ -321,7 +328,7 @@ It appears that you are trying to create a HiPlot visualization in Streamlit: yo
     def display_st(self, *, key: tp.Optional[str] = None) -> None:
         pass
 
-    def display_st(self, *, ret: tp.Union[str, tp.List[str], None] = None, key: tp.Optional[str] = None):
+    def display_st(self, *, ret: tp.Union[str, tp.List[str], None] = None, key: tp.Optional[str] = None) -> tp.Any:
         """
         Displays an experiment in a Streamlit app - see :ref:`tutoStreamlit`
 
@@ -339,12 +346,9 @@ It appears that you are trying to create a HiPlot visualization in Streamlit: yo
 
         """
         if not _StreamlitHelpers.is_running_within_streamlit():
-            try:
-                get_ipython()
+            if _is_running_ipython():
                 raise RuntimeError(r"""`experiment.display_st` can only be called in a streamlit script.
 It appears that you are trying to create a HiPlot visualization in ipython: you should use `display` instead of `display_st`""")
-            except NameError:
-                pass
             raise RuntimeError(r"""`experiment.display_st` can only be called in a streamlit script.
 To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_page = experiment.to_html()`""")
         return _StreamlitHelpers.create_instance_wrapper(exp=self, ret=ret, key=key)
