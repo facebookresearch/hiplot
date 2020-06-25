@@ -24,8 +24,8 @@ def declare_component_dummy(name: str, path: str) -> tp.Any:
     return hiplot_component_dummy
 
 
-@unittest.mock.patch('streamlit._is_running_with_streamlit', new=True)
-@unittest.mock.patch('streamlit.declare_component', new=declare_component_dummy)
+@unittest.mock.patch('streamlit._is_running_with_streamlit', new=True, create=True)
+@unittest.mock.patch('streamlit.declare_component', new=declare_component_dummy, create=True)
 def test_demos_streamlit() -> None:
     for k, v in README_DEMOS.items():
         print(k)

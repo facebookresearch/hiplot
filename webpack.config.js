@@ -141,19 +141,16 @@ module.exports = [
 // Web config - for hiplot webserver, notebook and streamlit
 env => {
   const pyBuilt = path.resolve(__dirname, 'hiplot', 'static', 'built');
-  const webServerBundle = path.resolve(pyBuilt, 'hiplot.bundle.js');
 
-  const pyBuiltSt = path.resolve(pyBuilt, 'streamlit_component');
-  const streamlitBundle = path.resolve(pyBuiltSt, 'hiplot_streamlit.bundle.js');
-  const streamlitHTML = path.resolve(pyBuiltSt, 'index.html');
-  var installs = {
-    [webServerBundle]: 'hiplot.bundle.js',
-    [streamlitBundle]: 'hiplot_streamlit.bundle.js',
-    [streamlitHTML]: '../src/index_streamlit.html'
-  };
-  if (env && env.test) {
-    installs[webServerBundle] = 'hiplot_test.bundle.js';
-  }
+  var installs = {};
+  // Everything has to be installed both in `dist/` and `hiplot/static/built/` for CI testing
+  const installToFolders = [path.resolve(pyBuilt, ''), path.resolve(__dirname, 'dist', 'streamlit_component')];
+  installToFolders.forEach(function(sc) {
+    installs[path.resolve(sc, 'streamlit_component', 'hiplot_streamlit.bundle.js')] = 'hiplot_streamlit.bundle.js';
+    installs[path.resolve(sc, 'streamlit_component', 'index.html')] = '../src/index_streamlit.html';
+    installs[path.resolve(sc, 'hiplot.bundle.js')] = (env && env.test) ? 'hiplot_test.bundle.js' : 'hiplot.bundle.js';
+
+  });
   return {
     entry: {
       'hiplot': `./src/hiplot_web.tsx`,
