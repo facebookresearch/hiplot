@@ -507,7 +507,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         const createPluginProps = function(this: HiPlot, idx: number, name: string): React.ClassAttributes<React.ComponentClass<HiPlotPluginData>> & HiPlotPluginData {
             return {
                 ref: this.plugins_ref[idx],
-                ...(this.state.experiment._displays && this.state.experiment._displays[name] ? this.state.experiment._displays[name] : {}),
+                ...(this.state.experiment.display_data && this.state.experiment.display_data[name] ? this.state.experiment.display_data[name] : {}),
                 ...datasets,
                 rows_selected_filter: this.state.rows_selected_filter,
                 name: name,

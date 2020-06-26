@@ -41,11 +41,12 @@ function Custom() { // CI_BUILD
       {'opt': 'adam', 'lr': 1., 'dropout': 0.3},
       {'opt': 'sgd', 'lr': 0.001, 'dropout': 0.4},
   ]);
+  experiment.colorby = 'opt';
   // Remove data table
   let plugins = hip.createDefaultPlugins();
   delete plugins[hip.DefaultPlugins.TABLE];
   // Hide some columns in Parallel plot for this experiment
-  experiment._displays[hip.DefaultPlugins.PARALLEL_PLOT] = {
+  experiment.display_data[hip.DefaultPlugins.PARALLEL_PLOT] = {
     'hide': ['uid', 'from_uid']
   };
   // Display with dark mode
