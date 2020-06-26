@@ -30,11 +30,32 @@ Creating a HiPlot component
     :end-before: END_DOC_BASIC_EXAMPLE
 
 
-HiPlot component properties
+
+.. raw:: html
+
+    <iframe src="./_static/examples_javascript/Basic/index.html?hip.PARALLEL_PLOT.height=300" height="700px" width="100%"></iframe>
+
+
+Customizing HiPlot react component
 -----------------------------------
 
+React properties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../src/component.tsx
     :language: typescript
     :start-after: BEGIN_HIPLOT_PROPS
     :end-before: END_HIPLOT_PROPS
+
+An advanced example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ../examples/javascript/src/index.js
+    :language: typescript
+    :start-after: BEGIN_DOC_CUSTOM_EXAMPLE
+    :end-before: END_DOC_CUSTOM_EXAMPLE
+
+
+.. raw:: html
+
+    <iframe src="./_static/examples_javascript/Custom/index.html?hip.PARALLEL_PLOT.height=300" height="400px" width="100%"></iframe>

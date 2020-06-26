@@ -33,6 +33,7 @@ function Basic() { // CI_BUILD
   return <hip.HiPlot experiment={experiment} />;
 }
 
+// BEGIN_DOC_CUSTOM_EXAMPLE
 function Custom() { // CI_BUILD
   const experiment = hip.Experiment.from_iterable([
       {'opt': 'sgd', 'lr': 0.01, 'dropout': 0.1},
@@ -41,14 +42,16 @@ function Custom() { // CI_BUILD
       {'opt': 'sgd', 'lr': 0.001, 'dropout': 0.4},
   ]);
   // Remove data table
-  var plugins = hip.createDefaultPlugins();
+  let plugins = hip.createDefaultPlugins();
   delete plugins[hip.DefaultPlugins.TABLE];
-  // Hide some columns in Parallel plot
+  // Hide some columns in Parallel plot for this experiment
   experiment._displays[hip.DefaultPlugins.PARALLEL_PLOT] = {
     'hide': ['uid', 'from_uid']
   };
+  // Display with dark mode
   return <hip.HiPlot experiment={experiment} dark={true} plugins={plugins} />;
 }
+// END_DOC_CUSTOM_EXAMPLE
 
 ReactDOM.render(
   <React.StrictMode>
