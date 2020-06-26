@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>hiplot.experiment &#8212; HiPlot 0.1.12
+    <title>hiplot.experiment &#8212; HiPlot 0.1.13
  documentation</title>
     <link rel="stylesheet" href="../../_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -36,7 +36,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.12
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.13
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 
@@ -371,7 +371,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters_definition</span> <span class="o">=</span> <span class="n">parameters_definition</span> <span class="k">if</span> <span class="n">parameters_definition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">ValueDef</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">colormap</span> <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;interpolateTurbo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colorby</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_displays</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_data</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="Experiment.validate"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -515,7 +515,7 @@
             <span class="s2">&quot;parameters_definition&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters_definition</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
             <span class="s2">&quot;colormap&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span><span class="p">,</span>
             <span class="s2">&quot;colorby&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorby</span><span class="p">,</span>
-            <span class="s2">&quot;_displays&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_displays</span><span class="p">,</span>
+            <span class="s2">&quot;display_data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_data</span><span class="p">,</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="Experiment.remove_missing_parents"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.remove_missing_parents">[docs]</a>    <span class="k">def</span> <span class="nf">remove_missing_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
@@ -544,7 +544,7 @@
 <span class="sd">            })</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_displays</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="p">{})</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_data</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="p">{})</span></div>
 
 <div class="viewcode-block" id="Experiment.from_iterable"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.from_iterable">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_iterable</span><span class="p">(</span><span class="n">it</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
@@ -609,7 +609,7 @@
             <span class="p">]</span>
             <span class="k">if</span> <span class="n">subxp</span><span class="o">.</span><span class="n">parameters_definition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">xp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subxp</span><span class="o">.</span><span class="n">parameters_definition</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">subxp</span><span class="o">.</span><span class="n">_displays</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">subxp</span><span class="o">.</span><span class="n">_display_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">xp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">xp</span></div></div>
 
@@ -651,7 +651,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.12
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.13
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 

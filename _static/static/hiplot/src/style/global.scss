@@ -1,0 +1,49 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+.hip_thm--dark {
+    @import "bs-dark.scss";
+}
+.hip_thm--light {
+    @import "bootstrap/scss/bootstrap.scss";
+}
+
+@each $theme in "dark", "light" {
+    // This is needed to override styles when embeded in Jupyter notebook
+    .hip_thm--#{$theme} :link, .hip_thm--#{$theme} :visited {
+        text-decoration: none;
+    }
+    .hip_thm--#{$theme} {
+        font-size: 16px;
+        position:relative;
+
+        @import "../../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css";
+
+
+        // Datatables
+        .dt-buttons {
+            margin-left: 10px;
+        }
+        .table-hover tbody tr:hover {
+            color: #fff;
+            background-color: rgba(147, 138, 138, 0.26);
+        }
+        button:disabled {
+            cursor: unset;
+        }
+
+        // Unset some jupyterlab theme
+        tbody tr:nth-child(even) {
+            background: unset;
+        }
+        table, td, label, select, input {
+            color: unset;
+            table-layout: auto;
+            font-size: unset;
+        }
+    }
+}

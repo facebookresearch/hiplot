@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>Displays reference &#8212; HiPlot 0.1.12
+    <title>Displays reference &#8212; HiPlot 0.1.13
  documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="py_reference.html" title="Python classes reference"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.12
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.13
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Displays reference</a></li> 
       </ul>
@@ -118,8 +118,8 @@
 <p>HiPlot consists of multiple independant displays. Each of those can be configured using <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_data" title="hiplot.Experiment.display_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_data()</span></code></a> (see also <a class="reference internal" href="experiment_settings.html#frontendrenderingsettings"><span class="std std-ref">Frontend rendering settings</span></a> for an example).</p>
 <div class="section" id="parallel-plot">
 <h2>Parallel Plot<a class="headerlink" href="#parallel-plot" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp._displays[hip.Displays.PARALLEL_PLOT]`</span>
-<span class="kr">interface</span> <span class="nx">ParallelPlotDisplayData</span> <span class="p">{</span>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp.display_data(hip.Displays.PARALLEL_PLOT)`</span>
+<span class="kr">export</span> <span class="kr">interface</span> <span class="nx">ParallelPlotDisplayData</span> <span class="p">{</span>
   <span class="c1">// Ordering of the columns</span>
   <span class="nx">order?</span>: <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
 
@@ -137,7 +137,7 @@
 </div>
 <div class="section" id="plotxy">
 <h2>PlotXY<a class="headerlink" href="#plotxy" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp._displays[hip.Displays.XY]`</span>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp.display_data(hip.Displays.XY)`</span>
 <span class="kr">export</span> <span class="kr">interface</span> <span class="nx">PlotXYDisplayData</span> <span class="p">{</span>
   <span class="nx">axis_x</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">,</span>
   <span class="nx">axis_y</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">,</span>
@@ -154,8 +154,8 @@
 </div>
 <div class="section" id="distribution">
 <h2>Distribution<a class="headerlink" href="#distribution" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp._displays[hip.Displays.DISTRIBUTION]`</span>
-<span class="kr">interface</span> <span class="nx">DistributionDisplayData</span> <span class="p">{</span>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp.display_data(hip.Displays.DISTRIBUTION)`</span>
+<span class="kr">export</span> <span class="kr">interface</span> <span class="nx">DistributionDisplayData</span> <span class="p">{</span>
     <span class="c1">// Number of bins for distribution of numeric variables</span>
     <span class="nx">nbins</span>: <span class="kt">number</span><span class="p">;</span>
 
@@ -200,7 +200,7 @@
         <li class="right" >
           <a href="py_reference.html" title="Python classes reference"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.12
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.13
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Displays reference</a></li> 
       </ul>

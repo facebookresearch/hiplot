@@ -20,21 +20,53 @@ Download hiplot in your favorite package manager
 >>> yarn add hiplot # for yarn users
 
 
-Creating a HiPlot component
+Basic example
 -----------------------------------
 
-.. code-block:: typescript
+
+.. literalinclude:: ../examples/javascript/src/index.js
+    :language: typescript
+    :start-after: BEGIN_DOC_BASIC_EXAMPLE
+    :end-before: END_DOC_BASIC_EXAMPLE
 
 
-    import {HiPlot, Experiment} from 'hiplot';
+
+.. raw:: html
+
+    <iframe src="./_static/examples_javascript/Basic/index.html" height="700px" width="100%"></iframe>
 
 
-    function HiPlotWithData() {
-        const experiment = Experiment.from_iterable([
-            {'opt': 'sgd', 'lr': 0.01, 'dropout': 0.1},
-            {'opt': 'adam', 'lr': 0.1, 'dropout': 0.2},
-            {'opt': 'adam', 'lr': 1., 'dropout': 0.3},
-            {'opt': 'sgd', 'lr': 0.001, 'dropout': 0.4},
-        ]);
-        return <HiPlot experiment={experiment} />;
-    }
+Customizing HiPlot react component
+-----------------------------------
+
+There are two main ways to customize your HiPlot component:
+
+- Either by changing information in the ``experiment`` object itself
+    For instance, the color map, data types, order/hidden columns in Parallel Plot can be set this way (the related python tutorial can be a good start: :ref:`customizeXp`)
+- Or by setting HiPlot's component properties
+    For instance, it is possible to remove the table, or switch to dark mode (see :ref:`tutoJSAdvanced`)
+
+
+React properties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ../src/component.tsx
+    :language: typescript
+    :start-after: BEGIN_HIPLOT_PROPS
+    :end-before: END_HIPLOT_PROPS
+
+
+.. _tutoJSAdvanced:
+
+An advanced example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ../examples/javascript/src/index.js
+    :language: typescript
+    :start-after: BEGIN_DOC_CUSTOM_EXAMPLE
+    :end-before: END_DOC_CUSTOM_EXAMPLE
+
+
+.. raw:: html
+
+    <iframe src="./_static/examples_javascript/Custom/index.html?hip.PARALLEL_PLOT.height=250" height="350px" width="100%"></iframe>

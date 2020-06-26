@@ -39,7 +39,7 @@ Displaying an HiPlot experiment in Streamlit is very similar to how you would do
 
 
 
-.. literalinclude:: ../demo_streamlit.py
+.. literalinclude:: ../examples/demo_streamlit.py
     :start-after: DEMO_STREAMLIT_BEGIN
 
 .. figure:: ../assets/streamlit.png

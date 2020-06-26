@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+ .highlightElement {
+    animation-duration: 1s;
+    animation-name: highlightAnimation;
+    animation-iteration-count: infinite;
+}
+
+@keyframes highlightAnimation {
+    from {
+        fill: #00000000;
+        background-color: #00000000;
+    }
+
+    to {
+        fill: #e0e0e087;
+        background-color: #e0e0e087;
+    }
+}
+
+.highlightText {
+    animation-duration: 1s;
+    animation-name: highlightTextAnimation;
+    animation-iteration-count: infinite;
+    font-size: 18px !important;
+}
+
+@keyframes highlightTextAnimation {
+    from {
+        fill: black;
+    }
+    to {
+        fill: #00259e;
+    }
+}
+
+
+.tutoAlert {
+    font-size: 16px;
+}
