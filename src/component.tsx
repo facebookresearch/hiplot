@@ -18,7 +18,7 @@ import { ParallelPlot } from "./parallel/parallel";
 import { PlotXY } from "./plotxy";
 import { SelectedCountProgressBar, HiPlotDataControlProps } from "./controls";
 import { ErrorDisplay, HeaderBar } from "./header";
-import { HiPlotPluginData } from "./plugin";
+import { HiPlotPluginData, DataProviderClass } from "./plugin";
 import { StaticDataProvider } from "./dataproviders/static";
 
 //@ts-ignore
@@ -72,13 +72,25 @@ const makeCancelable = (promise: LoadURIPromise): CancelablePromise => {
 
 // BEGIN_HIPLOT_PROPS
 export interface HiPlotProps {
+    // Experiment to be displayed. Can be created with `hip.Experiment.from_iterable`
     experiment: HiPlotExperiment | null;
+    // Display plugins (by default parallel plot, plotxy, distribution and table)
     plugins: PluginsMap;
+    // An object where we can persist changes
+    // If not provided, will create a `PersistentStateInMemory` object
     persistentState?: PersistentState;
-    onChange: {[k: string]: Array<(type: string, data: any) => void>}; // callbacks when selection changes, etc...
+    // Callbacks when selection changes, filtering, or brush extents change
+    onChange: {[k: string]: Array<(type: string, data: any) => void>};
+    // Enable dark-mode
     dark: boolean;
+    // Adds extra assertions (disabled by default)
     asserts: boolean;
-    dataProvider: any;
+    /* A class that can be used to dynamically fetch experiments
+    Examples:
+    - WebserverDataProvider: textarea to input URI, fetches experiments from server
+    - UploadDataProvider: upload CSV files in your browser
+    */
+    dataProvider: DataProviderClass;
 };
 // END_HIPLOT_PROPS
 
@@ -100,7 +112,7 @@ interface HiPlotState extends IDatasets {
     // Data that persists upon page reload, sharing link etc...
     persistentState: PersistentState;
     dark: boolean;
-    dataProvider: any;
+    dataProvider: DataProviderClass;
 }
 
 function detectIsDarkTheme(): boolean {

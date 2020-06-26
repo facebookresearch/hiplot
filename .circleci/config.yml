@@ -406,7 +406,7 @@ jobs:
       - attach_built_js
       - attach_workspace:
           at: examples/javascript
-      - run: mv examples/javascript/build_all docs/_static/examples_javascript
+      - run: mkdir -p docs/_static/ && mv examples/javascript/build_all docs/_static/examples_javascript
       - run:
           name: install dependencies
           command: |

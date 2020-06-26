@@ -10,7 +10,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 // BEGIN_DOC_BASIC_EXAMPLE
-import hip from 'hiplot';
+import * as hip from 'hiplot';
 
 function HiPlotWithData() {
     const experiment = hip.Experiment.from_iterable([

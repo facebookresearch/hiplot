@@ -59,4 +59,4 @@ export interface DataProviderProps {
 
 export type DataProviderComponent = React.Component<DataProviderProps, any>;
 export type DataProviderComponentClass = React.ComponentClass<DataProviderProps>;
-export type DataProviderClass = React.ClassType<DataProviderProps, DataProviderComponent, DataProviderComponentClass> & {refresh: any};
+export type DataProviderClass = React.ClassType<DataProviderProps, DataProviderComponent, DataProviderComponentClass> & {refresh?: any};

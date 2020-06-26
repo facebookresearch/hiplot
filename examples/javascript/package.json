@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "homepage": "./",
   "dependencies": {
-    "hiplot": "file:../..",
+    "hiplot": "file:../../npm-package/hiplot",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"
