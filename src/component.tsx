@@ -70,6 +70,7 @@ const makeCancelable = (promise: LoadURIPromise): CancelablePromise => {
     };
 };
 
+// BEGIN_HIPLOT_PROPS
 export interface HiPlotProps {
     experiment: HiPlotExperiment | null;
     plugins: PluginsMap;
@@ -79,6 +80,8 @@ export interface HiPlotProps {
     asserts: boolean;
     dataProvider: any;
 };
+// END_HIPLOT_PROPS
+
 
 interface HiPlotState extends IDatasets {
     experiment: HiPlotExperiment | null;
@@ -109,16 +112,27 @@ function detectIsDarkTheme(): boolean {
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
+export enum DefaultPlugins {
+    // Names correspond to values of (python) hip.Displays
+    PARALLEL_PLOT = "PARALLEL_PLOT",
+    XY = "XY",
+    DISTRIBUTION = "DISTRIBUTION",
+    TABLE = "TABLE"
+}
+
 export const defaultPlugins: PluginsMap = {
-    // Names correspond to values of hip.Displays
     // @ts-ignore
-    "PARALLEL_PLOT": ParallelPlot,
+    [DefaultPlugins.PARALLEL_PLOT]: ParallelPlot,
     // @ts-ignore
-    "XY": PlotXY,
+    [DefaultPlugins.XY]: PlotXY,
     // @ts-ignore
-    "DISTRIBUTION": HiPlotDistributionPlugin,
+    [DefaultPlugins.DISTRIBUTION]: HiPlotDistributionPlugin,
     // @ts-ignore
-    "TABLE": RowsDisplayTable,
+    [DefaultPlugins.TABLE]: RowsDisplayTable,
+};
+
+export function createDefaultPlugins(): PluginsMap {
+    return Object.assign({}, defaultPlugins);
 };
 
 export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {

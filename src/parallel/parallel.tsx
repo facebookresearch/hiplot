@@ -43,7 +43,7 @@ interface PPlotInternal {
 
 // DISPLAYS_DATA_DOC_BEGIN
 // Corresponds to values in the dict of `exp._displays[hip.Displays.PARALLEL_PLOT]`
-interface ParallelPlotDisplayData {
+export interface ParallelPlotDisplayData {
   // Ordering of the columns
   order?: Array<string>;
 

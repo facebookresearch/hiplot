@@ -1,11 +1,7 @@
 {
   "name": "hiplot-demo",
   "version": "1.0.0",
-  "private": true,
-  "author": {
-    "name": "Kasper Kivimäki",
-    "email": "kasper.kivimaki@aalto.fi"
-  },
+  "homepage": "./",
   "dependencies": {
     "hiplot": "file:../..",
     "react": "^16.13.1",

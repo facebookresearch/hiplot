@@ -248,7 +248,15 @@ jobs:
       - image: node:lts-buster
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-npm-deps-{{ checksum "package-lock.json" }}
+            - v1-npm-deps-
       - run: npm install
+      - save_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
       - run: mkdir -p npm-build/dist npm-build/dist-dev dist
       - run: npm run build-dev
       - run: mv dist/* npm-build/dist-dev/
@@ -258,10 +266,10 @@ jobs:
       - run:
           name: Gather NPM package files
           command: |
-            mkdir pack
-            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"$CIRCLE_TAG\",/" package.json
-            cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src npm-build/dist pack/
-            rm -rf pack/dist/hiplot-*  # Leftover from setup.py
+            mkdir -p npm-package/hiplot
+            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"${CIRCLE_TAG:-0.0.0}\",/" package.json
+            cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src npm-build/dist npm-package/hiplot
+            rm -rf npm-package/hiplot/dist/hiplot-*  # Leftover from setup.py
       - store_artifacts:
           when: always
           path: npm-build
@@ -270,12 +278,16 @@ jobs:
           path: hiplot/static/built/
       - store_artifacts:
           when: always
-          path: pack
+          path: npm-package
       - persist_to_workspace:
           root: npm-build
           paths:
             - dist
             - dist-dev
+      - persist_to_workspace:
+          root: npm-package
+          paths:
+            - hiplot
       - persist_to_workspace:
           root: hiplot/static
           paths:
@@ -287,12 +299,34 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: pack
-      - run: (cd examples/javascript && npm install && npm install ../../pack/ && npm run build)
+          at: npm-package
+      - run:
+          name: NPM requirements
+          command: |
+            cd examples/javascript
+            # Remove hiplot requirement, use the one we just built in CI
+            sed -i.bak '/"hiplot":/d' ./package.json
+            npm install
+            npm install ../../npm-package/hiplot
+      - run:
+          name: Build demos
+          command: |
+            cd examples/javascript
+            mkdir -p build_all
+            FUNCTIONS=`cat src/index.js | grep CI_BUILD | cut -d' ' -f2 | cut -d'(' -f1`
+            for f in $FUNCTIONS; do
+              echo "---------------- BUILDING $f ----------------"
+              git show HEAD:./src/index.js | sed "s/HiPlotWithData \//$f \//" > src/index.js
+              npm run build
+              cp -r build build_all/$f
+            done
+      - store_artifacts:
+          when: always
+          path: examples/javascript/build_all
       - persist_to_workspace:
           root: examples/javascript
           paths:
-            - build
+            - build_all
 
   npm-deploy:
     docker:
@@ -300,16 +334,16 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: pack
+          at: npm-package
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: Publish
-          command: cd pack && npm publish
+          command: cd npm-package/hiplot && npm publish
       - store_artifacts:
           when: always
-          path: pack
+          path: npm-package
 
   browser-jupyter-chrome-dev:
     docker:
@@ -370,6 +404,9 @@ jobs:
     steps:
       - checkout
       - attach_built_js
+      - attach_workspace:
+          at: examples/javascript
+      - run: mv examples/javascript/build_all docs/_static/examples_javascript
       - run:
           name: install dependencies
           command: |
@@ -542,6 +579,7 @@ workflows:
       - docs-build:
           requires:
             - npm-build
+            - npm-test
           filters:
             tags:
               only: /.*/
@@ -586,6 +624,7 @@ workflows:
           requires:
             - pypi-build
             - npm-build
+            - npm-test
             - docs-build
             - browser-jupyter-chrome
             - browser-jupyter-chrome-dev

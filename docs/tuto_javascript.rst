@@ -23,18 +23,18 @@ Download hiplot in your favorite package manager
 Creating a HiPlot component
 -----------------------------------
 
-.. code-block:: typescript
+
+.. literalinclude:: ../examples/javascript/src/index.js
+    :language: typescript
+    :start-after: BEGIN_DOC_BASIC_EXAMPLE
+    :end-before: END_DOC_BASIC_EXAMPLE
 
 
-    import {HiPlot, Experiment} from 'hiplot';
+HiPlot component properties
+-----------------------------------
 
 
-    function HiPlotWithData() {
-        const experiment = Experiment.from_iterable([
-            {'opt': 'sgd', 'lr': 0.01, 'dropout': 0.1},
-            {'opt': 'adam', 'lr': 0.1, 'dropout': 0.2},
-            {'opt': 'adam', 'lr': 1., 'dropout': 0.3},
-            {'opt': 'sgd', 'lr': 0.001, 'dropout': 0.4},
-        ]);
-        return <HiPlot experiment={experiment} />;
-    }
+.. literalinclude:: ../src/component.tsx
+    :language: typescript
+    :start-after: BEGIN_HIPLOT_PROPS
+    :end-before: END_HIPLOT_PROPS

@@ -8,13 +8,11 @@
 import $ from "jquery";
 import * as d3 from "d3";
 import { ParallelPlot } from "./parallel/parallel";
-import { HiPlotProps, HiPlot, defaultPlugins } from "./hiplot";
-import { PersistentStateInURL } from "./lib/savedstate";
+import { HiPlotProps, HiPlot } from "./hiplot";
 import React from "react";
 import ReactDOM from "react-dom";
 import assert from "assert";
 import { PlotXY } from "./plotxy";
-import { WebserverDataProvider } from "./dataproviders/webserver";
 import { build_props } from "./hiplot_web";
 
 
