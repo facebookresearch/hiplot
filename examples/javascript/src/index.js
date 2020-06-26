@@ -45,12 +45,19 @@ function Custom() { // CI_BUILD
   // Remove data table
   let plugins = hip.createDefaultPlugins();
   delete plugins[hip.DefaultPlugins.TABLE];
-  // Hide some columns in Parallel plot for this experiment
+  // Let's customize the parallel plot
   experiment.display_data[hip.DefaultPlugins.PARALLEL_PLOT] = {
-    'hide': ['uid', 'from_uid']
+    'hide': ['uid', 'from_uid'],
+    'height': 200, // default initial height
   };
-  // Display with dark mode
-  return <hip.HiPlot experiment={experiment} dark={true} plugins={plugins} />;
+  return <hip.HiPlot
+    experiment={experiment}
+    plugins={plugins}
+    // Enable dark mode
+    dark={true}
+    // Remember state in the URL (so you can reload the page and get the same state)
+    persistentState={new hip.PersistentStateInURL("hip")}
+  />;
 }
 // END_DOC_CUSTOM_EXAMPLE
 

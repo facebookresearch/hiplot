@@ -20,7 +20,7 @@ Download hiplot in your favorite package manager
 >>> yarn add hiplot # for yarn users
 
 
-Creating a HiPlot component
+Basic example
 -----------------------------------
 
 
@@ -33,11 +33,19 @@ Creating a HiPlot component
 
 .. raw:: html
 
-    <iframe src="./_static/examples_javascript/Basic/index.html?hip.PARALLEL_PLOT.height=300" height="700px" width="100%"></iframe>
+    <iframe src="./_static/examples_javascript/Basic/index.html" height="700px" width="100%"></iframe>
 
 
 Customizing HiPlot react component
 -----------------------------------
+
+There are two main ways to customize your HiPlot component:
+
+- Either by changing information in the ``experiment`` object itself
+    For instance, the color map, data types, order/hidden columns in Parallel Plot can be set this way (the related python tutorial can be a good start: :ref:`customizeXp`)
+- Or by setting HiPlot's component properties
+    For instance, it is possible to remove the table, or switch to dark mode (see :ref:`tutoJSAdvanced`)
+
 
 React properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -46,6 +54,9 @@ React properties
     :language: typescript
     :start-after: BEGIN_HIPLOT_PROPS
     :end-before: END_HIPLOT_PROPS
+
+
+.. _tutoJSAdvanced:
 
 An advanced example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -58,4 +69,4 @@ An advanced example
 
 .. raw:: html
 
-    <iframe src="./_static/examples_javascript/Custom/index.html?hip.PARALLEL_PLOT.height=300" height="400px" width="100%"></iframe>
+    <iframe src="./_static/examples_javascript/Custom/index.html" height="400px" width="100%"></iframe>
