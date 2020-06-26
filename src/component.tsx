@@ -80,7 +80,7 @@ export interface HiPlotProps {
     // If not provided, will create a `PersistentStateInMemory` object
     persistentState?: PersistentState;
     // Callbacks when selection changes, filtering, or brush extents change
-    onChange: {[k: string]: Array<(type: string, data: any) => void>};
+    onChange: {[k: string]: (type: string, data: any) => void};
     // Enable dark-mode
     dark: boolean;
     // Adds extra assertions (disabled by default)
@@ -235,11 +235,9 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         };
     }
     sendMessage(type: string, get_data: () => any): void {
-        if (this.props.onChange !== null && this.props.onChange[type] && this.props.onChange[type].length) {
+        if (this.props.onChange !== null && this.props.onChange[type]) {
             const data = get_data();
-            this.props.onChange[type].forEach(function(callback) {
-                callback(type, data);
-            })
+            this.props.onChange[type](type, data);
         }
     }
     callSelectedUidsHooks = _.debounce(function(this: HiPlot): void {
