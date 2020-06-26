@@ -65884,7 +65884,9 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         }
         this.drawSelectedDebounced.cancel();
         this.onResize.cancel();
-        this.plotXYcontextMenuRef.current.removeCallbacks(this);
+        if (this.plotXYcontextMenuRef.current) {
+            this.plotXYcontextMenuRef.current.removeCallbacks(this);
+        }
     };
     ;
     PlotXY.prototype.isEnabled = function () {
@@ -68306,11 +68308,9 @@ var component_HiPlot = /** @class */ (function (_super) {
         };
     };
     HiPlot.prototype.sendMessage = function (type, get_data) {
-        if (this.props.onChange !== null && this.props.onChange[type] && this.props.onChange[type].length) {
-            var data_1 = get_data();
-            this.props.onChange[type].forEach(function (callback) {
-                callback(type, data_1);
-            });
+        if (this.props.onChange !== null && this.props.onChange[type]) {
+            var data = get_data();
+            this.props.onChange[type](type, data);
         }
     };
     HiPlot.prototype._loadExperiment = function (experiment) {

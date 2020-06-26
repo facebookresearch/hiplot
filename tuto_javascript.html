@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>NPM library (javascript) &#8212; HiPlot 0.1.13
+    <title>NPM library (javascript) &#8212; HiPlot 0.1.14
  documentation</title>
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="tuto_streamlit.html" title="HiPlot component for Streamlit"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.13
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.14
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">NPM library (javascript)</a></li> 
       </ul>
@@ -170,7 +170,7 @@
     <span class="c1">// If not provided, will create a `PersistentStateInMemory` object</span>
     <span class="nx">persistentState?</span>: <span class="kt">PersistentState</span><span class="p">;</span>
     <span class="c1">// Callbacks when selection changes, filtering, or brush extents change</span>
-    <span class="nx">onChange</span><span class="o">:</span> <span class="p">{[</span><span class="nx">k</span>: <span class="kt">string</span><span class="p">]</span><span class="o">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="p">(</span><span class="nx">type</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">data</span>: <span class="kt">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="o">&gt;</span><span class="p">};</span>
+    <span class="nx">onChange</span><span class="o">:</span> <span class="p">{[</span><span class="nx">k</span>: <span class="kt">string</span><span class="p">]</span><span class="o">:</span> <span class="p">(</span><span class="nx">type</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">data</span>: <span class="kt">any</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">};</span>
     <span class="c1">// Enable dark-mode</span>
     <span class="nx">dark</span>: <span class="kt">boolean</span><span class="p">;</span>
     <span class="c1">// Adds extra assertions (disabled by default)</span>
@@ -187,30 +187,52 @@
 </div>
 <div class="section" id="an-advanced-example">
 <span id="tutojsadvanced"></span><h3>An advanced example<a class="headerlink" href="#an-advanced-example" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">Custom() {</span> <span class="c1">// CI_BUILD</span>
-  <span class="kr">const</span> <span class="nx">experiment</span> <span class="o">=</span> <span class="nx">hip</span><span class="p">.</span><span class="nx">Experiment</span><span class="p">.</span><span class="nx">from_iterable</span><span class="p">([</span>
-      <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;sgd&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.1</span><span class="p">},</span>
-      <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.2</span><span class="p">},</span>
-      <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mi">1</span><span class="p">.,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.3</span><span class="p">},</span>
-      <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;sgd&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.4</span><span class="p">},</span>
-  <span class="p">]);</span>
-  <span class="nx">experiment</span><span class="p">.</span><span class="nx">colorby</span> <span class="o">=</span> <span class="s1">&#39;opt&#39;</span><span class="p">;</span>
-  <span class="c1">// Remove data table</span>
-  <span class="kd">let</span> <span class="nx">plugins</span> <span class="o">=</span> <span class="nx">hip</span><span class="p">.</span><span class="nx">createDefaultPlugins</span><span class="p">();</span>
-  <span class="k">delete</span> <span class="nx">plugins</span><span class="p">[</span><span class="nx">hip</span><span class="p">.</span><span class="nx">DefaultPlugins</span><span class="p">.</span><span class="nx">TABLE</span><span class="p">];</span>
-  <span class="c1">// Let&#39;s customize the parallel plot - hide some columns</span>
-  <span class="nx">experiment</span><span class="p">.</span><span class="nx">display_data</span><span class="p">[</span><span class="nx">hip</span><span class="p">.</span><span class="nx">DefaultPlugins</span><span class="p">.</span><span class="nx">PARALLEL_PLOT</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;hide&#39;</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">,</span> <span class="s1">&#39;from_uid&#39;</span><span class="p">],</span>
-  <span class="p">};</span>
-  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">hip</span><span class="p">.</span><span class="nx">HiPlot</span>
-    <span class="nx">experiment</span><span class="o">=</span><span class="p">{</span><span class="nx">experiment</span><span class="p">}</span>
-    <span class="nx">plugins</span><span class="o">=</span><span class="p">{</span><span class="nx">plugins</span><span class="p">}</span>
-    <span class="c1">// Enable dark mode</span>
-    <span class="nx">dark</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span>
-    <span class="c1">// Remember state in the URL (so you can reload the page and get the same state)</span>
-    <span class="nx">persistentState</span><span class="o">=</span><span class="p">{</span><span class="k">new</span> <span class="nx">hip</span><span class="p">.</span><span class="nx">PersistentStateInURL</span><span class="p">(</span><span class="s2">&quot;hip&quot;</span><span class="p">)}</span>
-  <span class="o">/&gt;</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span>function Custom() { // CI_BUILD
+  // Create an experiment, and store it in the state
+  // Otherwise, HiPlot detects that the experiment changed
+  // and re-renders everything
+  function createExperiment() {
+    const experiment = hip.Experiment.from_iterable([
+        {&#39;uid&#39;: &#39;a&#39;, &#39;opt&#39;: &#39;sgd&#39;, &#39;lr&#39;: 0.01, &#39;dropout&#39;: 0.1},
+        {&#39;uid&#39;: &#39;b&#39;, &#39;opt&#39;: &#39;adam&#39;, &#39;lr&#39;: 0.1, &#39;dropout&#39;: 0.2},
+        {&#39;uid&#39;: &#39;c&#39;, &#39;opt&#39;: &#39;adam&#39;, &#39;lr&#39;: 1., &#39;dropout&#39;: 0.3},
+        {&#39;uid&#39;: &#39;d&#39;, &#39;opt&#39;: &#39;sgd&#39;, &#39;lr&#39;: 0.001, &#39;dropout&#39;: 0.4},
+    ]);
+    experiment.colorby = &#39;opt&#39;;
+    // Let&#39;s customize the parallel plot - hide some columns
+    experiment.display_data[hip.DefaultPlugins.PARALLEL_PLOT] = {
+      &#39;hide&#39;: [&#39;uid&#39;, &#39;from_uid&#39;],
+    };
+    return experiment;
+  }
+  const [experiment, _s1] = React.useState(createExperiment());
+  const [persistentState, _s2] = React.useState(new hip.PersistentStateInURL(&quot;hip&quot;));
+
+  // Remove data table
+  let plugins = hip.createDefaultPlugins();
+  delete plugins[hip.DefaultPlugins.TABLE];
+
+  // And finally retrieve selected rows when they change
+  const [selectedUids, setSelectedUids] = React.useState([]);
+  function onSelectionChange(_event: string, selection: string[]) {
+    // Called every time we slice on the parallel plot
+    setSelectedUids(selection.join(&#39;, &#39;));
+  }
+  return &lt;React.Fragment&gt;
+      &lt;hip.HiPlot
+        experiment={experiment}
+        plugins={plugins}
+        // Enable dark mode
+        dark={true}
+        // Remember state in the URL (so you can reload the page and get the same state)
+        persistentState={persistentState}
+        onChange={{
+          &#39;selected_uids&#39;: onSelectionChange
+        }}
+      /&gt;
+      &lt;p&gt;Selected uids:&lt;span&gt;{selectedUids}&lt;/span&gt;&lt;/p&gt;
+      &lt;/React.Fragment&gt;
+}
 </pre></div>
 </div>
 <iframe src="./_static/examples_javascript/Custom/index.html?hip.PARALLEL_PLOT.height=250" height="350px" width="100%"></iframe></div>
@@ -247,7 +269,7 @@
         <li class="right" >
           <a href="tuto_streamlit.html" title="HiPlot component for Streamlit"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.13
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.14
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">NPM library (javascript)</a></li> 
       </ul>

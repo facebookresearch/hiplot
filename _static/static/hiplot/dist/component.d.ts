@@ -32,7 +32,7 @@ export interface HiPlotProps {
     plugins: PluginsMap;
     persistentState?: PersistentState;
     onChange: {
-        [k: string]: Array<(type: string, data: any) => void>;
+        [k: string]: (type: string, data: any) => void;
     };
     dark: boolean;
     asserts: boolean;

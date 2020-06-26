@@ -502,7 +502,9 @@ var PlotXY = /** @class */ (function (_super) {
         }
         this.drawSelectedDebounced.cancel();
         this.onResize.cancel();
-        this.plotXYcontextMenuRef.current.removeCallbacks(this);
+        if (this.plotXYcontextMenuRef.current) {
+            this.plotXYcontextMenuRef.current.removeCallbacks(this);
+        }
     };
     ;
     PlotXY.prototype.isEnabled = function () {

@@ -549,7 +549,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     }
     this.drawSelectedDebounced.cancel();
     this.onResize.cancel();
-    this.plotXYcontextMenuRef.current.removeCallbacks(this);
+    if (this.plotXYcontextMenuRef.current) {
+      this.plotXYcontextMenuRef.current.removeCallbacks(this);
+    }
   };
   isEnabled() {
     return this.state.axis_x !== null && this.state.axis_y !== null;

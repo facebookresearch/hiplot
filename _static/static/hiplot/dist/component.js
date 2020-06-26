@@ -184,11 +184,9 @@ var HiPlot = /** @class */ (function (_super) {
         };
     };
     HiPlot.prototype.sendMessage = function (type, get_data) {
-        if (this.props.onChange !== null && this.props.onChange[type] && this.props.onChange[type].length) {
-            var data_1 = get_data();
-            this.props.onChange[type].forEach(function (callback) {
-                callback(type, data_1);
-            });
+        if (this.props.onChange !== null && this.props.onChange[type]) {
+            var data = get_data();
+            this.props.onChange[type](type, data);
         }
     };
     HiPlot.prototype._loadExperiment = function (experiment) {

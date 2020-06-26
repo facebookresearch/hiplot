@@ -30,9 +30,9 @@ var ReactTemplate = /** @class */ (function (_super) {
             // Arguments that are passed to the plugin in Python are accessible
             // via `this.props.args`. Here, we access the "name" arg.
             var onChangeHandlers = {
-                'selected_uids': [_this.onChange.bind(_this)],
-                'filtered_uids': [_this.onChange.bind(_this)],
-                'brush_extents': [_this.onChange.bind(_this)]
+                'selected_uids': _this.onChange.bind(_this),
+                'filtered_uids': _this.onChange.bind(_this),
+                'brush_extents': _this.onChange.bind(_this)
             };
             return React.createElement(HiPlot, { experiment: _this.state.experiment, onChange: onChangeHandlers });
         };
