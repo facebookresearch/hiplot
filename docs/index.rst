@@ -33,6 +33,7 @@ HiPlot documentation
    experiment_settings
    tuto_webserver
    tuto_notebook
+   tuto_streamlit
    tuto_javascript
    py_reference
    plugins_reference

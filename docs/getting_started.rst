@@ -38,7 +38,7 @@ Within the activated environment, use the following command to install HiPlot:
 
 .. code-block:: bash
 
-    pip install hiplot
+    pip install -U hiplot  # Or for conda users: conda install -c conda-forge hiplot
 
 
 Congratulation, HiPlot is now ready to use! You can either:
@@ -92,3 +92,37 @@ HiPlot webserver can do way more:
 * you can share the URL to a colleague - it contains all the columns you have filtered, reordered during the session
 * you can :ref:`tutoWebserverCompareXp`
 * you can :ref:`tutoWebserverCustomFetcher`
+
+
+Option 3: Create data-apps using Streamlit |streamlit_logo|
+------------------------------------------------------------
+
+`Streamlit <https://www.streamlit.io/>`_ allows data scientists and machine learning engineers to create beautiful, performant apps in pure Python.
+
+This is the best way to create custom interfaces with HiPlot. For instance, you can perform dynamic actions
+based on selected rows inside HiPlot (like plotting or displaying further information), and still have a sharable/deployable interace.
+
+**Learn more** in the tutorial: :ref:`tutoStreamlit`
+
+
+.. figure:: ../assets/streamlit.png
+    :width: 400px
+    :figclass: align-center
+
+    *Here we let the user modify the dataset before displaying it*
+
+.. |streamlit_logo| image:: ../assets/streamlit_logo.png
+    :height: 30px
+
+
+Option 4: Render standalone HTML files
+-------------------------------------------------------
+We provide a CLI tool ``hiplot-render`` to render HiPlot experiments into standalone HTML files, containing all HiPlot files, and your data.
+To render a demo, or your own CSV file, use:
+
+
+>>> hiplot-render demo > hiplot_demo.html
+>>> hiplot-render /path/to/your/file.csv > hiplot.html
+
+
+If your data is not already in the CSV format, you can either convert it to CSV, or see how to :ref:`tutoWebserverCustomFetcher`.

@@ -9,7 +9,8 @@ commands:
     steps:
       - attach_workspace:
           at: npm-build
-      - run: cp -r npm-build/dist hiplot/static/built
+      - attach_workspace:
+          at: hiplot/static
   switch_to_dev_bundle:
     steps:
       - run:
@@ -244,7 +245,7 @@ jobs:
 
   npm-build:
     docker:
-      - image: node:8.10.0
+      - image: node:lts-buster
     steps:
       - checkout
       - run: npm install
@@ -257,6 +258,9 @@ jobs:
       - store_artifacts:
           when: always
           path: npm-build
+      - store_artifacts:
+          when: always
+          path: hiplot/static/built/
       - persist_to_workspace:
           root: npm-build
           paths:
@@ -269,7 +273,7 @@ jobs:
 
   npm-deploy:
     docker:
-      - image: node:8.10.0
+      - image: node:lts-buster
     steps:
       - checkout
       - attach_workspace:
@@ -395,7 +399,7 @@ jobs:
 
   docs-deploy:
     docker:
-      - image: node:8.10.0
+      - image: node:lts-buster
     steps:
       - checkout
       - add_ssh_keys:

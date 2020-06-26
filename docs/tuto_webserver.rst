@@ -113,6 +113,7 @@ Our fetcher is ready, let's simulate a dummy experiment that we can load later
 In the interface, you can load the string :code:`myxp://xp_folder`
 
 
+.. _tutoHiPlotRender:
 
 Dump your experiments to CSV or HTML with :code:`hiplot-render`
 ----------------------------------------------------------------
