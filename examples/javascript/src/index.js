@@ -45,10 +45,9 @@ function Custom() { // CI_BUILD
   // Remove data table
   let plugins = hip.createDefaultPlugins();
   delete plugins[hip.DefaultPlugins.TABLE];
-  // Let's customize the parallel plot
+  // Let's customize the parallel plot - hide some columns
   experiment.display_data[hip.DefaultPlugins.PARALLEL_PLOT] = {
     'hide': ['uid', 'from_uid'],
-    'height': 200, // default initial height
   };
   return <hip.HiPlot
     experiment={experiment}

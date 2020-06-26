@@ -69,4 +69,4 @@ An advanced example
 
 .. raw:: html
 
-    <iframe src="./_static/examples_javascript/Custom/index.html" height="400px" width="100%"></iframe>
+    <iframe src="./_static/examples_javascript/Custom/index.html?hip.PARALLEL_PLOT.height=250" height="350px" width="100%"></iframe>
