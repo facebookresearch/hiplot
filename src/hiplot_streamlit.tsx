@@ -40,9 +40,9 @@ class ReactTemplate extends StreamlitComponentBase<State> {
     // Arguments that are passed to the plugin in Python are accessible
     // via `this.props.args`. Here, we access the "name" arg.
     var onChangeHandlers = {
-      'selected_uids': [this.onChange.bind(this)],
-      'filtered_uids': [this.onChange.bind(this)],
-      'brush_extents': [this.onChange.bind(this)],
+      'selected_uids': this.onChange.bind(this),
+      'filtered_uids': this.onChange.bind(this),
+      'brush_extents': this.onChange.bind(this),
     };
     return <HiPlot experiment={this.state.experiment} onChange={onChangeHandlers} />;
   }
