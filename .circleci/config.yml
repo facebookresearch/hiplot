@@ -255,12 +255,22 @@ jobs:
       - run: npm run build
       - run: npm run prepublish
       - run: mv dist/* npm-build/dist/ && mkdir -p hiplot/static/built/ && cp npm-build/dist/hiplot.bundle.js hiplot/static/built/
+      - run:
+          name: Gather NPM package files
+          command: |
+            mkdir pack
+            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"$CIRCLE_TAG\",/" package.json
+            cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src npm-build/dist pack/
+            rm -rf pack/dist/hiplot-*  # Leftover from setup.py
       - store_artifacts:
           when: always
           path: npm-build
       - store_artifacts:
           when: always
           path: hiplot/static/built/
+      - store_artifacts:
+          when: always
+          path: pack
       - persist_to_workspace:
           root: npm-build
           paths:
@@ -271,21 +281,26 @@ jobs:
           paths:
             - built
 
+  npm-test:
+    docker:
+      - image: node:lts-buster
+    steps:
+      - checkout
+      - attach_workspace:
+          at: pack
+      - run: (cd examples/javascript && npm install && npm install ../../pack/ && npm run build)
+      - persist_to_workspace:
+          root: examples/javascript
+          paths:
+            - build
+
   npm-deploy:
     docker:
       - image: node:lts-buster
     steps:
       - checkout
       - attach_workspace:
-          at: npm-build
-      - run:
-          name: Gather package files
-          command: |
-            mkdir pack
-            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"$CIRCLE_TAG\",/" package.json
-            cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src pack/
-            mv npm-build/dist pack/
-            rm pack/dist/hiplot-*  # Leftover from setup.py
+          at: pack
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
@@ -476,6 +491,12 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - npm-test:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
       - mypy_pytest:
           requires:
             - npm-build
@@ -581,6 +602,7 @@ workflows:
           requires:
             - pypi-build
             - npm-build
+            - npm-test
             - docs-build
             - browser-jupyter-chrome
             - browser-jupyter-chrome-dev
