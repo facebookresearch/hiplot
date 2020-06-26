@@ -65280,6 +65280,99 @@ function foCreateAxisLabel(pd, cm, tooltip) {
     return fo;
 }
 
+// CONCATENATED MODULE: ./src/contextmenu.tsx
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var contextmenu_extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+;
+;
+var contextmenu_ContextMenu = /** @class */ (function (_super) {
+    contextmenu_extends(ContextMenu, _super);
+    function ContextMenu(props) {
+        var _this = _super.call(this, props) || this;
+        _this.context_menu_div = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
+        _this.trigger_callbacks = [];
+        _this.onContextMenu = function (event) {
+            console.log(event);
+            this.show(event.pageX, event.pageY, '');
+            event.preventDefault();
+            event.stopPropagation();
+        }.bind(_this);
+        _this.state = {
+            visible: false,
+            column: "",
+            top: 0,
+            left: 0,
+        };
+        _this.hide = function () {
+            if (this.state.visible) {
+                this.setState({ visible: false });
+            }
+        }.bind(_this);
+        jquery_default()(window).on("click", _this.hide);
+        return _this;
+    }
+    ContextMenu.prototype.addCallback = function (fn, obj) {
+        this.trigger_callbacks.push({ cb: fn, obj: obj });
+    };
+    ContextMenu.prototype.removeCallbacks = function (obj) {
+        this.trigger_callbacks = this.trigger_callbacks.filter(function (trigger) { return trigger.obj != obj; });
+    };
+    ContextMenu.prototype.show = function (pageX, pageY, column) {
+        // This assumes parent has `relative` positioning
+        var parent = jquery_default()(this.context_menu_div.current.parentElement).offset();
+        this.setState({
+            top: Math.max(0, pageY - 10 - parent.top),
+            left: Math.max(0, pageX - 90 - parent.left),
+            visible: true,
+            column: column
+        });
+    };
+    ContextMenu.prototype.componentWillUnmount = function () {
+        jquery_default()(window).off("click", this.hide);
+    };
+    ContextMenu.prototype.componentDidUpdate = function (prevProps, prevState) {
+        var cm = this.context_menu_div.current;
+        cm.style.display = this.state.visible ? 'block' : 'none';
+        cm.style.top = this.state.top + "px";
+        cm.style.left = this.state.left + "px";
+        cm.classList.toggle('show', this.state.visible);
+        var needsUpdate = (this.state.visible && !prevState.visible) ||
+            (this.state.column != prevState.column);
+        if (needsUpdate) {
+            cm.innerHTML = '';
+            var me = this;
+            this.trigger_callbacks.forEach(function (trigger) {
+                trigger.cb(me.state.column, cm);
+            });
+        }
+    };
+    ContextMenu.prototype.render = function () {
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { ref: this.context_menu_div, className: "dropdown-menu dropdown-menu-sm context-menu", style: { "fontSize": 16 } }));
+    };
+    return ContextMenu;
+}(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
+
+;
+
 // CONCATENATED MODULE: ./src/plotxy.tsx
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -65319,9 +65412,12 @@ var __assign = (undefined && undefined.__assign) || function () {
 
 
 
+
 ;
 ;
 ;
+var HIGHLIGHT_PARENT = 'parent';
+var HIGHLIGHT_CHILDREN = 'children';
 ;
 var plotxy_PlotXY = /** @class */ (function (_super) {
     plotxy_extends(PlotXY, _super);
@@ -65331,6 +65427,7 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         _this.container_ref = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
         _this.canvas_lines_ref = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
         _this.canvas_highlighted_ref = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
+        _this.plotXYcontextMenuRef = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
         _this.onResize = underscore_default.a.debounce(function (height, width) {
             if (this.state.height != height || this.state.width != width) {
                 this.setState({ height: height, width: width });
@@ -65364,7 +65461,7 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
             return value;
         }
         var state = __assign(__assign({}, plotConfig), { axis_x: get_default_axis('axis_x'), axis_y: get_default_axis('axis_y'), width: 0, height: height, initialHeight: height });
-        _this.state = __assign(__assign({}, state), { hover_uid: null });
+        _this.state = __assign(__assign({}, state), { hover_uid: null, highlightType: _this.props.persistentState.get("highlightType", HIGHLIGHT_PARENT) });
         return _this;
     }
     PlotXY.prototype.componentDidMount = function () {
@@ -65396,6 +65493,21 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
     };
     PlotXY.prototype.mountPlotXY = function () {
         var me = this;
+        me.plotXYcontextMenuRef.current.removeCallbacks(this);
+        me.plotXYcontextMenuRef.current.addCallback(function (column, cm) {
+            var contextmenu = jquery_default()(cm);
+            [HIGHLIGHT_PARENT, HIGHLIGHT_CHILDREN].forEach(function (dat) {
+                var option = jquery_default()('<a class="dropdown-item" href="#">').text("Highlight: " + dat);
+                if (me.state.highlightType == dat) {
+                    option.addClass('disabled').css('pointer-events', 'none');
+                }
+                option.click(function (event) {
+                    me.setState({ highlightType: dat });
+                    event.preventDefault();
+                });
+                contextmenu.append(option);
+            });
+        }, me);
         var div = src_select(this.root_ref.current);
         me.svg = div.select("svg");
         var currently_displayed = [];
@@ -65490,6 +65602,9 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         function brushended() {
             var s = on_event.selection;
             if (!s) {
+                if (x_scale === x_scale_orig && y_scale === y_scale_orig) {
+                    return;
+                }
                 x_scale = x_scale_orig;
                 y_scale = y_scale_orig;
             }
@@ -65643,8 +65758,23 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
             currently_displayed = [];
         }
         ;
+        function lookupParent(dp) {
+            if (dp.from_uid === null) {
+                return [];
+            }
+            var nextDp = me.props.dp_lookup[dp.from_uid];
+            return nextDp === undefined ? [] : [nextDp];
+        }
+        ;
+        var childrenLookup = {};
+        function lookupChildren(dp) {
+            var next = childrenLookup[dp.uid];
+            return next ? next : [];
+        }
+        ;
         // Draw highlights
         function draw_highlighted() {
+            var _a;
             if (!me.isEnabled()) {
                 return;
             }
@@ -65657,21 +65787,46 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
             }
             src_select(me.canvas_highlighted_ref.current).style("opacity", "1.0");
             src_select(me.canvas_lines_ref.current).style("opacity", "0.5");
-            // Find all runs + parents
-            highlighted.forEach(function (dp) {
-                while (dp !== undefined) {
-                    var color = me.props.get_color_for_row(dp, 1.0).split(',');
-                    render_dp(dp, highlights, {
-                        'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
-                        'lines_width': 4,
-                        'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
-                        'dots_thickness': 5,
-                    });
-                    if (dp.from_uid === null) {
-                        break;
+            childrenLookup = {};
+            if (me.state.highlightType == HIGHLIGHT_CHILDREN) {
+                // Pre-compute graph of children - TODO: maybe we could cache that
+                me.props.rows_filtered.forEach(function (dp) {
+                    if (dp.from_uid !== null) {
+                        if (childrenLookup[dp.uid] === undefined) {
+                            childrenLookup[dp.from_uid] = [dp];
+                        }
+                        else {
+                            childrenLookup[dp.from_uid].push(dp);
+                        }
                     }
-                    dp = me.props.dp_lookup[dp.from_uid];
-                }
+                });
+            }
+            var lookupNextDp = (_a = {},
+                _a[HIGHLIGHT_CHILDREN] = lookupChildren,
+                _a[HIGHLIGHT_PARENT] = lookupParent,
+                _a)[me.state.highlightType];
+            // Find all runs + parents
+            var todo = new Set(highlighted);
+            var allHighlighted = new Set();
+            while (todo.size) {
+                var oldTodo = todo;
+                todo = new Set();
+                oldTodo.forEach(function (dp) {
+                    if (allHighlighted.has(dp)) {
+                        return;
+                    }
+                    allHighlighted.add(dp);
+                    lookupNextDp(dp).forEach(function (newDp) { todo.add(newDp); });
+                });
+            }
+            allHighlighted.forEach(function (dp) {
+                var color = me.props.get_color_for_row(dp, 1.0).split(',');
+                render_dp(dp, highlights, {
+                    'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
+                    'lines_width': 4,
+                    'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
+                    'dots_thickness': 5,
+                });
             });
         }
         // Change axis
@@ -65705,10 +65860,12 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         if (!this.isEnabled()) {
             return [];
         }
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(resizable_ResizableH, { initialHeight: this.state.height, onResize: this.onResize, onRemove: this.disable.bind(this) }, this.state.width > 0 && external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { ref: this.root_ref, style: { "height": this.state.height } },
-            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("canvas", { ref: this.canvas_lines_ref, className: hiplot_default.a["plotxy-graph-lines"], style: { position: 'absolute' } }),
-            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("canvas", { ref: this.canvas_highlighted_ref, className: hiplot_default.a["plotxy-graph-highlights"], style: { position: 'absolute' } }),
-            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("svg", { className: hiplot_default.a["plotxy-graph-svg"], style: { position: 'absolute' } }))));
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(resizable_ResizableH, { initialHeight: this.state.height, onResize: this.onResize, onRemove: this.disable.bind(this) },
+            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(contextmenu_ContextMenu, { ref: this.plotXYcontextMenuRef }),
+            this.state.width > 0 && external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { onContextMenu: this.plotXYcontextMenuRef.current.onContextMenu, ref: this.root_ref, style: { "height": this.state.height } },
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("canvas", { ref: this.canvas_lines_ref, className: hiplot_default.a["plotxy-graph-lines"], style: { position: 'absolute' } }),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("canvas", { ref: this.canvas_highlighted_ref, className: hiplot_default.a["plotxy-graph-highlights"], style: { position: 'absolute' } }),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("svg", { className: hiplot_default.a["plotxy-graph-svg"], style: { position: 'absolute' } }))));
     };
     PlotXY.prototype.componentWillUnmount = function () {
         if (this.plot) {
@@ -65721,6 +65878,7 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         }
         this.drawSelectedDebounced.cancel();
         this.onResize.cancel();
+        this.plotXYcontextMenuRef.current.removeCallbacks(this);
     };
     ;
     PlotXY.prototype.isEnabled = function () {
@@ -65734,6 +65892,9 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
                 anyAxisChanged = true;
             }
         }.bind(this));
+        if (this.state.highlightType != prevState.highlightType) {
+            this.props.persistentState.set("highlightType", this.state.highlightType);
+        }
         if (this.state.width == 0) {
             return; // Loading...
         }
@@ -65778,7 +65939,9 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
             if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
                 this.drawSelectedDebounced();
             }
-            if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed || this.props.colorby != prevProps.colorby) {
+            if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed ||
+                this.props.colorby != prevProps.colorby ||
+                this.state.highlightType != prevState.highlightType) {
                 this.plot.draw_highlighted();
             }
         }
@@ -67525,93 +67688,6 @@ var StaticDataProvider = /** @class */ (function (_super) {
 /* harmony default export */ var logo = ("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4OTkuMzMgMzA2LjMzIj48ZGVmcz48c3R5bGU+LmNscy0xLC5jbHMtM3tmaWxsOiM0MjE4Nzc7fS5jbHMtMntmaWxsOiMwMGU1YjY7fS5jbHMtM3tvcGFjaXR5OjAuMzU7fS5jbHMtNHtmaWxsOiNmZmI4MDI7fS5jbHMtNXtmaWxsOiNmZjcwNjA7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5IaVBsb3QtTG9nbzwvdGl0bGU+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjYwLjI2LDEwNi4yNkgzMDFWMjY0Ljc5SDI2MC4yNloiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0zMzkuODMsNDIuMjNoNzguMzNhODMuNzMsODMuNzMsMCwwLDEsMzguNTUsOC44NkE2Ny41NCw2Ny41NCwwLDAsMSw0ODQuMDYsNzZRNDk0LDkyLDQ5NCwxMTIuNDh0LTkuOTUsMzYuNjdhNjcuMjQsNjcuMjQsMCwwLDEtMjcuMzUsMjVBODMuODYsODMuODYsMCwwLDEsNDE4LjE2LDE4M0gzODEuOHY4MS43NWgtNDJabTc5LjU4LDEwMXExNS41NCwwLDI0LjQtOWEyOS45NCwyOS45NCwwLDAsMCw4Ljg2LTIxLjc2LDI5LjQ0LDI5LjQ0LDAsMCwwLTguODYtMjEuNjFRNDM0Ljk0LDgyLDQxOS40MSw4MkgzODEuOHY2MS4yM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik01MTkuMTgsNDIuMjNINTU5LjlWMjY0Ljc5SDUxOS4xOFoiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik02MjcuMzUsMjU4LjcyYTc4LjM0LDc4LjM0LDAsMCwxLTMwLTMwLjE0cS0xMC43MS0xOS4xMi0xMC43Mi00My4wNmE4Ni44MSw4Ni44MSwwLDAsMSwxMC43Mi00Mi44OSw3OC4wOSw3OC4wOSwwLDAsMSwzMC0zMC4zMXExOS4yNy0xMSw0My44My0xMSwyNC4yNCwwLDQzLjUyLDExYTc4LjE0LDc4LjE0LDAsMCwxLDMwLDMwLjMxcTEwLjcyLDE5LjI3LDEwLjcyLDQyLjg5LDAsMjMuOTQtMTAuNzIsNDMuMDZhNzguMzgsNzguMzgsMCwwLDEtMzAsMzAuMTRxLTE5LjI5LDExLTQzLjUyLDExUTY0Ni42MSwyNjkuNzYsNjI3LjM1LDI1OC43MlptNjUuNTktMzIuMTdhNDEsNDEsMCwwLDAsMTUuODUtMTYuMTZxNS45LTEwLjU2LDUuOTEtMjQuODcsMC0xNC01LjkxLTI0LjU1YTQxLjE3LDQxLjE3LDAsMCwwLTE1Ljg1LTE2LjE3LDQ1LjE1LDQ1LjE1LDAsMCwwLTQzLjUyLDAsNDIuMTcsNDIuMTcsMCwwLDAtMTYsMTYuMTdxLTYuMDYsMTAuNTYtNi4wNiwyNC41NWE0OS4zOCw0OS4zOCwwLDAsMCw2LjA2LDI0LjcyLDQxLjgsNDEuOCwwLDAsMCwxNiwxNi4zMSw0NS4wOCw0NS4wOCwwLDAsMCw0My41MiwwWiIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI3NzUuMzIgMjY0Ljc5IDgxNi4xMyAyNjQuNzkgODE2LjEzIDE0MS4wOCA4NTggMTQxLjA4IDg1OCAxMDYuMjcgODE2LjEzIDEwNi4yNyA4MTYuMTMgNjEuNTEgODE2LjA0IDYxLjUxIDc3NS4zMiA2MS41MSA3NzUuMzIgMjY0Ljc5Ii8+PGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSIyODAuNjIiIGN5PSI2Mi41OSIgcj0iMjYuMjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMTc2LjMgMTY1LjE2IDE3Ni4zIDIwNS4xMiA4Mi4zNSAyMzAuMDkgODIuMzUgMTkwLjE0IDExMi42OCAxODIuMDggMTM4LjA1IDE3NS4zNCAxNzYuMyAxNjUuMTYiLz48cG9seWdvbiBjbGFzcz0iY2xzLTMiIHBvaW50cz0iMTc2LjMgMTU5LjA0IDE3Ni4zIDE5OC45OSAxMTIuNjggMTgyLjA4IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEzNC4wNiAxNzYuMyAxNTkuMDQiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNzYuMyw0MS4yOVYyNjQuNzhoNDIuMTVWNDEuMjlaTTQwLjIxLDI2NC43OEg4Mi4zNVY0MS4yOUg0MC4yMVoiLz48cG9seWdvbiBjbGFzcz0iY2xzLTQiIHBvaW50cz0iMTc2LjMgMTQ1LjU0IDE3Ni4zIDE4NS41IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEyMC41OCAxMjYuNzUgMTMyLjM4IDE1MS4xNyAxMzguODcgMTc2LjMgMTQ1LjU0Ii8+PHBvbHlnb24gY2xhc3M9ImNscy0zIiBwb2ludHM9IjE3Ni4zIDExOS4yIDEyNi43NSAxMzIuMzggMTUxLjE3IDEzOC44NyAxMjUuNzkgMTQ1LjYyIDgyLjM1IDE1Ny4xNiA4Mi4zNSAxMTcuMjEgMTc2LjMgOTIuMjQgMTc2LjMgMTE5LjIiLz48cG9seWdvbiBjbGFzcz0iY2xzLTUiIHBvaW50cz0iMTc2LjMgNzkuMjUgMTc2LjMgMTE5LjIgMTI2Ljc1IDEzMi4zOCAxMDEuMzggMTM5LjEyIDgyLjM1IDE0NC4xOCA4Mi4zNSAxMDQuMjMgMTc2LjMgNzkuMjUiLz48L3N2Zz4K");
 // CONCATENATED MODULE: ./hiplot/static/logo-w.svg
 /* harmony default export */ var logo_w = ("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4OTkuMzMgMzA2LjMzIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2ZmZjt9LmNscy0ye2ZpbGw6IzAwZTViNjt9LmNscy0ze2ZpbGw6IzQyMTg3NztvcGFjaXR5OjAuMzU7fS5jbHMtNHtmaWxsOiNmZmI4MDI7fS5jbHMtNXtmaWxsOiNmZjcwNjA7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5IaVBsb3QtTG9nby1XaGl0ZTwvdGl0bGU+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjYwLjI2LDEwNi4yNkgzMDFWMjY0Ljc5SDI2MC4yNloiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0zMzkuODMsNDIuMjNoNzguMzNhODMuNzMsODMuNzMsMCwwLDEsMzguNTUsOC44NkE2Ny41NCw2Ny41NCwwLDAsMSw0ODQuMDYsNzZRNDk0LDkyLDQ5NCwxMTIuNDh0LTkuOTUsMzYuNjdhNjcuMjQsNjcuMjQsMCwwLDEtMjcuMzUsMjVBODMuODYsODMuODYsMCwwLDEsNDE4LjE2LDE4M0gzODEuOHY4MS43NWgtNDJabTc5LjU4LDEwMXExNS41NCwwLDI0LjQtOWEyOS45NCwyOS45NCwwLDAsMCw4Ljg2LTIxLjc2LDI5LjQ0LDI5LjQ0LDAsMCwwLTguODYtMjEuNjFRNDM0Ljk0LDgyLDQxOS40MSw4MkgzODEuOHY2MS4yM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik01MTkuMTgsNDIuMjNINTU5LjlWMjY0Ljc5SDUxOS4xOFoiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik02MjcuMzUsMjU4LjcyYTc4LjM0LDc4LjM0LDAsMCwxLTMwLTMwLjE0cS0xMC43MS0xOS4xMi0xMC43Mi00My4wNmE4Ni44MSw4Ni44MSwwLDAsMSwxMC43Mi00Mi44OSw3OC4wOSw3OC4wOSwwLDAsMSwzMC0zMC4zMXExOS4yNy0xMSw0My44My0xMSwyNC4yNCwwLDQzLjUyLDExYTc4LjE0LDc4LjE0LDAsMCwxLDMwLDMwLjMxcTEwLjcyLDE5LjI3LDEwLjcyLDQyLjg5LDAsMjMuOTQtMTAuNzIsNDMuMDZhNzguMzgsNzguMzgsMCwwLDEtMzAsMzAuMTRxLTE5LjI5LDExLTQzLjUyLDExUTY0Ni42MSwyNjkuNzYsNjI3LjM1LDI1OC43MlptNjUuNTktMzIuMTdhNDEsNDEsMCwwLDAsMTUuODUtMTYuMTZxNS45LTEwLjU2LDUuOTEtMjQuODcsMC0xNC01LjkxLTI0LjU1YTQxLjE3LDQxLjE3LDAsMCwwLTE1Ljg1LTE2LjE3LDQ1LjE1LDQ1LjE1LDAsMCwwLTQzLjUyLDAsNDIuMTcsNDIuMTcsMCwwLDAtMTYsMTYuMTdxLTYuMDYsMTAuNTYtNi4wNiwyNC41NWE0OS4zOCw0OS4zOCwwLDAsMCw2LjA2LDI0LjcyLDQxLjgsNDEuOCwwLDAsMCwxNiwxNi4zMSw0NS4wOCw0NS4wOCwwLDAsMCw0My41MiwwWiIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI3NzUuMzIgMjY0Ljc5IDgxNi4xMyAyNjQuNzkgODE2LjEzIDE0MS4wOCA4NTggMTQxLjA4IDg1OCAxMDYuMjcgODE2LjEzIDEwNi4yNyA4MTYuMTMgNjEuNTEgODE2LjA0IDYxLjUxIDc3NS4zMiA2MS41MSA3NzUuMzIgMjY0Ljc5Ii8+PGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSIyODAuNjIiIGN5PSI2Mi41OSIgcj0iMjYuMjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMTc2LjMgMTY1LjE2IDE3Ni4zIDIwNS4xMiA4Mi4zNSAyMzAuMDkgODIuMzUgMTkwLjE0IDExMi42OCAxODIuMDggMTM4LjA1IDE3NS4zNCAxNzYuMyAxNjUuMTYiLz48cG9seWdvbiBjbGFzcz0iY2xzLTMiIHBvaW50cz0iMTc2LjMgMTU5LjA0IDE3Ni4zIDE5OC45OSAxMTIuNjggMTgyLjA4IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEzNC4wNiAxNzYuMyAxNTkuMDQiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNzYuMyw0MS4yOVYyNjQuNzhoNDIuMTVWNDEuMjlaTTQwLjIxLDI2NC43OEg4Mi4zNVY0MS4yOUg0MC4yMVoiLz48cG9seWdvbiBjbGFzcz0iY2xzLTQiIHBvaW50cz0iMTc2LjMgMTQ1LjU0IDE3Ni4zIDE4NS41IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEyMC41OCAxMjYuNzUgMTMyLjM4IDE1MS4xNyAxMzguODcgMTc2LjMgMTQ1LjU0Ii8+PHBvbHlnb24gY2xhc3M9ImNscy0zIiBwb2ludHM9IjE3Ni4zIDExOS4yIDEyNi43NSAxMzIuMzggMTUxLjE3IDEzOC44NyAxMjUuNzkgMTQ1LjYyIDgyLjM1IDE1Ny4xNiA4Mi4zNSAxMTcuMjEgMTc2LjMgOTIuMjQgMTc2LjMgMTE5LjIiLz48cG9seWdvbiBjbGFzcz0iY2xzLTUiIHBvaW50cz0iMTc2LjMgNzkuMjUgMTc2LjMgMTE5LjIgMTI2Ljc1IDEzMi4zOCAxMDEuMzggMTM5LjEyIDgyLjM1IDE0NC4xOCA4Mi4zNSAxMDQuMjMgMTc2LjMgNzkuMjUiLz48L3N2Zz4K");
-// CONCATENATED MODULE: ./src/contextmenu.tsx
-/*
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-var contextmenu_extends = (undefined && undefined.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-;
-;
-var contextmenu_ContextMenu = /** @class */ (function (_super) {
-    contextmenu_extends(ContextMenu, _super);
-    function ContextMenu(props) {
-        var _this = _super.call(this, props) || this;
-        _this.context_menu_div = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
-        _this.trigger_callbacks = [];
-        _this.state = {
-            visible: false,
-            column: "",
-            top: 0,
-            left: 0,
-        };
-        _this.hide = function () {
-            if (this.state.visible) {
-                this.setState({ visible: false });
-            }
-        }.bind(_this);
-        jquery_default()(window).on("click", _this.hide);
-        return _this;
-    }
-    ContextMenu.prototype.addCallback = function (fn, obj) {
-        this.trigger_callbacks.push({ cb: fn, obj: obj });
-    };
-    ContextMenu.prototype.removeCallbacks = function (obj) {
-        this.trigger_callbacks = this.trigger_callbacks.filter(function (trigger) { return trigger.obj != obj; });
-    };
-    ContextMenu.prototype.show = function (pageX, pageY, column) {
-        // This assumes parent has `relative` positioning
-        var parent = jquery_default()(this.context_menu_div.current.parentElement).offset();
-        this.setState({
-            top: Math.max(0, pageY - 10 - parent.top),
-            left: Math.max(0, pageX - 90 - parent.left),
-            visible: true,
-            column: column
-        });
-    };
-    ContextMenu.prototype.componentWillUnmount = function () {
-        jquery_default()(window).off("click", this.hide);
-    };
-    ContextMenu.prototype.componentDidUpdate = function (prevProps, prevState) {
-        var cm = this.context_menu_div.current;
-        cm.style.display = this.state.visible ? 'block' : 'none';
-        cm.style.top = this.state.top + "px";
-        cm.style.left = this.state.left + "px";
-        cm.classList.toggle('show', this.state.visible);
-        var needsUpdate = (this.state.visible && !prevState.visible) ||
-            (this.state.column != prevState.column);
-        if (needsUpdate) {
-            cm.innerHTML = '';
-            var me = this;
-            this.trigger_callbacks.forEach(function (trigger) {
-                trigger.cb(me.state.column, cm);
-            });
-        }
-    };
-    ContextMenu.prototype.render = function () {
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { ref: this.context_menu_div, className: "dropdown-menu dropdown-menu-sm context-menu", style: { "fontSize": 16 } }));
-    };
-    return ContextMenu;
-}(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
-
-;
-
 // CONCATENATED MODULE: ./src/distribution/plot.tsx
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.

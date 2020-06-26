@@ -1,6 +1,7 @@
 import { HiPlotPluginData } from "./plugin";
 import React from "react";
 import _ from "underscore";
+import { ContextMenu } from "./contextmenu";
 export interface PlotXYDisplayData {
     axis_x: string | null;
     axis_y: string | null;
@@ -17,6 +18,7 @@ interface PlotXYState extends PlotXYDisplayData {
     initialHeight: number;
     height: number;
     hover_uid: string | null;
+    highlightType: string;
 }
 interface PlotXYInternal {
     clear_canvas: () => void;
@@ -33,6 +35,7 @@ export declare class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     container_ref: React.RefObject<HTMLDivElement>;
     canvas_lines_ref: React.RefObject<HTMLCanvasElement>;
     canvas_highlighted_ref: React.RefObject<HTMLCanvasElement>;
+    plotXYcontextMenuRef: React.RefObject<ContextMenu>;
     constructor(props: PlotXYProps);
     static defaultProps: {
         axis_x: any;

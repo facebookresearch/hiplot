@@ -36,9 +36,12 @@ import React from "react";
 import { ResizableH } from "./lib/resizable";
 import _ from "underscore";
 import { foCreateAxisLabel, foDynamicSizeFitContent } from "./lib/svghelpers";
+import { ContextMenu } from "./contextmenu";
 ;
 ;
 ;
+var HIGHLIGHT_PARENT = 'parent';
+var HIGHLIGHT_CHILDREN = 'children';
 ;
 var PlotXY = /** @class */ (function (_super) {
     __extends(PlotXY, _super);
@@ -48,6 +51,7 @@ var PlotXY = /** @class */ (function (_super) {
         _this.container_ref = React.createRef();
         _this.canvas_lines_ref = React.createRef();
         _this.canvas_highlighted_ref = React.createRef();
+        _this.plotXYcontextMenuRef = React.createRef();
         _this.onResize = _.debounce(function (height, width) {
             if (this.state.height != height || this.state.width != width) {
                 this.setState({ height: height, width: width });
@@ -81,7 +85,7 @@ var PlotXY = /** @class */ (function (_super) {
             return value;
         }
         var state = __assign(__assign({}, plotConfig), { axis_x: get_default_axis('axis_x'), axis_y: get_default_axis('axis_y'), width: 0, height: height, initialHeight: height });
-        _this.state = __assign(__assign({}, state), { hover_uid: null });
+        _this.state = __assign(__assign({}, state), { hover_uid: null, highlightType: _this.props.persistentState.get("highlightType", HIGHLIGHT_PARENT) });
         return _this;
     }
     PlotXY.prototype.componentDidMount = function () {
@@ -113,6 +117,21 @@ var PlotXY = /** @class */ (function (_super) {
     };
     PlotXY.prototype.mountPlotXY = function () {
         var me = this;
+        me.plotXYcontextMenuRef.current.removeCallbacks(this);
+        me.plotXYcontextMenuRef.current.addCallback(function (column, cm) {
+            var contextmenu = $(cm);
+            [HIGHLIGHT_PARENT, HIGHLIGHT_CHILDREN].forEach(function (dat) {
+                var option = $('<a class="dropdown-item" href="#">').text("Highlight: " + dat);
+                if (me.state.highlightType == dat) {
+                    option.addClass('disabled').css('pointer-events', 'none');
+                }
+                option.click(function (event) {
+                    me.setState({ highlightType: dat });
+                    event.preventDefault();
+                });
+                contextmenu.append(option);
+            });
+        }, me);
         var div = d3.select(this.root_ref.current);
         me.svg = div.select("svg");
         var currently_displayed = [];
@@ -207,6 +226,9 @@ var PlotXY = /** @class */ (function (_super) {
         function brushended() {
             var s = d3.event.selection;
             if (!s) {
+                if (x_scale === x_scale_orig && y_scale === y_scale_orig) {
+                    return;
+                }
                 x_scale = x_scale_orig;
                 y_scale = y_scale_orig;
             }
@@ -360,8 +382,23 @@ var PlotXY = /** @class */ (function (_super) {
             currently_displayed = [];
         }
         ;
+        function lookupParent(dp) {
+            if (dp.from_uid === null) {
+                return [];
+            }
+            var nextDp = me.props.dp_lookup[dp.from_uid];
+            return nextDp === undefined ? [] : [nextDp];
+        }
+        ;
+        var childrenLookup = {};
+        function lookupChildren(dp) {
+            var next = childrenLookup[dp.uid];
+            return next ? next : [];
+        }
+        ;
         // Draw highlights
         function draw_highlighted() {
+            var _a;
             if (!me.isEnabled()) {
                 return;
             }
@@ -374,21 +411,46 @@ var PlotXY = /** @class */ (function (_super) {
             }
             d3.select(me.canvas_highlighted_ref.current).style("opacity", "1.0");
             d3.select(me.canvas_lines_ref.current).style("opacity", "0.5");
-            // Find all runs + parents
-            highlighted.forEach(function (dp) {
-                while (dp !== undefined) {
-                    var color = me.props.get_color_for_row(dp, 1.0).split(',');
-                    render_dp(dp, highlights, {
-                        'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
-                        'lines_width': 4,
-                        'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
-                        'dots_thickness': 5
-                    });
-                    if (dp.from_uid === null) {
-                        break;
+            childrenLookup = {};
+            if (me.state.highlightType == HIGHLIGHT_CHILDREN) {
+                // Pre-compute graph of children - TODO: maybe we could cache that
+                me.props.rows_filtered.forEach(function (dp) {
+                    if (dp.from_uid !== null) {
+                        if (childrenLookup[dp.uid] === undefined) {
+                            childrenLookup[dp.from_uid] = [dp];
+                        }
+                        else {
+                            childrenLookup[dp.from_uid].push(dp);
+                        }
                     }
-                    dp = me.props.dp_lookup[dp.from_uid];
-                }
+                });
+            }
+            var lookupNextDp = (_a = {},
+                _a[HIGHLIGHT_CHILDREN] = lookupChildren,
+                _a[HIGHLIGHT_PARENT] = lookupParent,
+                _a)[me.state.highlightType];
+            // Find all runs + parents
+            var todo = new Set(highlighted);
+            var allHighlighted = new Set();
+            while (todo.size) {
+                var oldTodo = todo;
+                todo = new Set();
+                oldTodo.forEach(function (dp) {
+                    if (allHighlighted.has(dp)) {
+                        return;
+                    }
+                    allHighlighted.add(dp);
+                    lookupNextDp(dp).forEach(function (newDp) { todo.add(newDp); });
+                });
+            }
+            allHighlighted.forEach(function (dp) {
+                var color = me.props.get_color_for_row(dp, 1.0).split(',');
+                render_dp(dp, highlights, {
+                    'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
+                    'lines_width': 4,
+                    'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
+                    'dots_thickness': 5
+                });
             });
         }
         // Change axis
@@ -422,10 +484,12 @@ var PlotXY = /** @class */ (function (_super) {
         if (!this.isEnabled()) {
             return [];
         }
-        return (React.createElement(ResizableH, { initialHeight: this.state.height, onResize: this.onResize, onRemove: this.disable.bind(this) }, this.state.width > 0 && React.createElement("div", { ref: this.root_ref, style: { "height": this.state.height } },
-            React.createElement("canvas", { ref: this.canvas_lines_ref, className: style["plotxy-graph-lines"], style: { position: 'absolute' } }),
-            React.createElement("canvas", { ref: this.canvas_highlighted_ref, className: style["plotxy-graph-highlights"], style: { position: 'absolute' } }),
-            React.createElement("svg", { className: style["plotxy-graph-svg"], style: { position: 'absolute' } }))));
+        return (React.createElement(ResizableH, { initialHeight: this.state.height, onResize: this.onResize, onRemove: this.disable.bind(this) },
+            React.createElement(ContextMenu, { ref: this.plotXYcontextMenuRef }),
+            this.state.width > 0 && React.createElement("div", { onContextMenu: this.plotXYcontextMenuRef.current.onContextMenu, ref: this.root_ref, style: { "height": this.state.height } },
+                React.createElement("canvas", { ref: this.canvas_lines_ref, className: style["plotxy-graph-lines"], style: { position: 'absolute' } }),
+                React.createElement("canvas", { ref: this.canvas_highlighted_ref, className: style["plotxy-graph-highlights"], style: { position: 'absolute' } }),
+                React.createElement("svg", { className: style["plotxy-graph-svg"], style: { position: 'absolute' } }))));
     };
     PlotXY.prototype.componentWillUnmount = function () {
         if (this.plot) {
@@ -438,6 +502,7 @@ var PlotXY = /** @class */ (function (_super) {
         }
         this.drawSelectedDebounced.cancel();
         this.onResize.cancel();
+        this.plotXYcontextMenuRef.current.removeCallbacks(this);
     };
     ;
     PlotXY.prototype.isEnabled = function () {
@@ -451,6 +516,9 @@ var PlotXY = /** @class */ (function (_super) {
                 anyAxisChanged = true;
             }
         }.bind(this));
+        if (this.state.highlightType != prevState.highlightType) {
+            this.props.persistentState.set("highlightType", this.state.highlightType);
+        }
         if (this.state.width == 0) {
             return; // Loading...
         }
@@ -495,7 +563,9 @@ var PlotXY = /** @class */ (function (_super) {
             if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
                 this.drawSelectedDebounced();
             }
-            if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed || this.props.colorby != prevProps.colorby) {
+            if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed ||
+                this.props.colorby != prevProps.colorby ||
+                this.state.highlightType != prevState.highlightType) {
                 this.plot.draw_highlighted();
             }
         }

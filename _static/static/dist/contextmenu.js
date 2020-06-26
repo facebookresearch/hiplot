@@ -27,6 +27,12 @@ var ContextMenu = /** @class */ (function (_super) {
         var _this = _super.call(this, props) || this;
         _this.context_menu_div = React.createRef();
         _this.trigger_callbacks = [];
+        _this.onContextMenu = function (event) {
+            console.log(event);
+            this.show(event.pageX, event.pageY, '');
+            event.preventDefault();
+            event.stopPropagation();
+        }.bind(_this);
         _this.state = {
             visible: false,
             column: "",
