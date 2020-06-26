@@ -83,6 +83,20 @@ commands:
     steps:
       - test_render_selenium_setup:
           browser: << parameters.browser >>
+      - attach_workspace:
+          at: examples/javascript
+      - run:
+          name: Test JS demo examples
+          when: always
+          command: |
+            . venv/bin/activate
+            mkdir -p artifacts
+            rm -rf .circleci/demo_pages && mv examples/javascript/build_all .circleci/demo_pages
+            WAIT_SECS=5 BROWSER=<< parameters.browser >> pytest -s .circleci/test_e2e.py
+      - run:
+          name: Collect artifacts...
+          when: always
+          command: mv .circleci/demo_pages artifacts/examples_javascript
       - run_test_e2e:
           browser: << parameters.browser >>
           bundle: provided
@@ -548,7 +562,7 @@ workflows:
               only: /.*/
       - browser-render-chrome:
           requires:
-            - npm-build
+            - npm-test
           filters:
             tags:
               only: /.*/
@@ -572,7 +586,7 @@ workflows:
               only: /.*/
       - browser-render-firefox:
           requires:
-            - npm-build
+            - npm-test
           filters:
             tags:
               only: /.*/
