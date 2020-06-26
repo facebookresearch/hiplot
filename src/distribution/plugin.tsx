@@ -24,8 +24,8 @@ export interface HiPlotDistributionPluginState {
 };
 
 // DISPLAYS_DATA_DOC_BEGIN
-// Corresponds to values in the dict of `exp._displays[hip.Displays.DISTRIBUTION]`
-interface DistributionDisplayData {
+// Corresponds to values in the dict of `exp.display_data(hip.Displays.DISTRIBUTION)`
+export interface DistributionDisplayData {
     // Number of bins for distribution of numeric variables
     nbins: number;
 

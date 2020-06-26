@@ -42,7 +42,7 @@ export interface HiPlotExperiment { // Mirror of python `hip.Experiment`
     parameters_definition?: {[key: string]: HiPlotValueDef},
     colormap?: string;
     colorby?: string;
-    _displays?: {[key: string]: {[key2: string]: any}},
+    display_data?: {[key: string]: {[key2: string]: any}},
 }
 
 
@@ -60,7 +60,9 @@ export class Experiment {
                     from_uid: from_uid,
                     values: values,
                 };
-            })
+            }),
+            parameters_definition: {},
+            display_data: {},
         }
     }
 }

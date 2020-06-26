@@ -20,7 +20,7 @@ import { ContextMenu } from "./contextmenu";
 
 
 // DISPLAYS_DATA_DOC_BEGIN
-// Corresponds to values in the dict of `exp._displays[hip.Displays.XY]`
+// Corresponds to values in the dict of `exp.display_data(hip.Displays.XY)`
 export interface PlotXYDisplayData {
   axis_x: string | null,
   axis_y: string | null,

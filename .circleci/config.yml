@@ -83,6 +83,20 @@ commands:
     steps:
       - test_render_selenium_setup:
           browser: << parameters.browser >>
+      - attach_workspace:
+          at: examples/javascript
+      - run:
+          name: Test JS demo examples
+          when: always
+          command: |
+            . venv/bin/activate
+            mkdir -p artifacts
+            rm -rf .circleci/demo_pages && mv examples/javascript/build_all .circleci/demo_pages
+            WAIT_SECS=5 BROWSER=<< parameters.browser >> pytest -s .circleci/test_e2e.py
+      - run:
+          name: Collect artifacts...
+          when: always
+          command: mv .circleci/demo_pages artifacts/examples_javascript
       - run_test_e2e:
           browser: << parameters.browser >>
           bundle: provided
@@ -248,28 +262,85 @@ jobs:
       - image: node:lts-buster
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-npm-deps-{{ checksum "package-lock.json" }}
+            - v1-npm-deps-
       - run: npm install
+      - save_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
       - run: mkdir -p npm-build/dist npm-build/dist-dev dist
       - run: npm run build-dev
       - run: mv dist/* npm-build/dist-dev/
       - run: npm run build
       - run: npm run prepublish
       - run: mv dist/* npm-build/dist/ && mkdir -p hiplot/static/built/ && cp npm-build/dist/hiplot.bundle.js hiplot/static/built/
+      - run:
+          name: Gather NPM package files
+          command: |
+            mkdir -p npm-package/hiplot
+            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"${CIRCLE_TAG:-0.0.0}\",/" package.json
+            cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src npm-build/dist npm-package/hiplot
+            rm -rf npm-package/hiplot/dist/hiplot-*  # Leftover from setup.py
       - store_artifacts:
           when: always
           path: npm-build
       - store_artifacts:
           when: always
           path: hiplot/static/built/
+      - store_artifacts:
+          when: always
+          path: npm-package
       - persist_to_workspace:
           root: npm-build
           paths:
             - dist
             - dist-dev
       - persist_to_workspace:
+          root: npm-package
+          paths:
+            - hiplot
+      - persist_to_workspace:
           root: hiplot/static
           paths:
             - built
+
+  npm-test:
+    docker:
+      - image: node:lts-buster
+    steps:
+      - checkout
+      - attach_workspace:
+          at: npm-package
+      - run:
+          name: NPM requirements
+          command: |
+            cd examples/javascript
+            # Remove hiplot requirement, use the one we just built in CI
+            sed -i.bak '/"hiplot":/d' ./package.json
+            npm install
+            npm install ../../npm-package/hiplot
+      - run:
+          name: Build demos
+          command: |
+            cd examples/javascript
+            mkdir -p build_all
+            FUNCTIONS=`cat src/index.js | grep CI_BUILD | cut -d' ' -f2 | cut -d'(' -f1`
+            for f in $FUNCTIONS; do
+              echo "---------------- BUILDING $f ----------------"
+              git show HEAD:./src/index.js | sed "s/HiPlotWithData \//$f \//" > src/index.js
+              npm run build
+              cp -r build build_all/$f
+            done
+      - store_artifacts:
+          when: always
+          path: examples/javascript/build_all
+      - persist_to_workspace:
+          root: examples/javascript
+          paths:
+            - build_all
 
   npm-deploy:
     docker:
@@ -277,24 +348,16 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: npm-build
-      - run:
-          name: Gather package files
-          command: |
-            mkdir pack
-            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"$CIRCLE_TAG\",/" package.json
-            cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src pack/
-            mv npm-build/dist pack/
-            rm pack/dist/hiplot-*  # Leftover from setup.py
+          at: npm-package
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: Publish
-          command: cd pack && npm publish
+          command: cd npm-package/hiplot && npm publish
       - store_artifacts:
           when: always
-          path: pack
+          path: npm-package
 
   browser-jupyter-chrome-dev:
     docker:
@@ -355,6 +418,9 @@ jobs:
     steps:
       - checkout
       - attach_built_js
+      - attach_workspace:
+          at: examples/javascript
+      - run: mkdir -p docs/_static/ && mv examples/javascript/build_all docs/_static/examples_javascript
       - run:
           name: install dependencies
           command: |
@@ -476,6 +542,12 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - npm-test:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
       - mypy_pytest:
           requires:
             - npm-build
@@ -490,7 +562,7 @@ workflows:
               only: /.*/
       - browser-render-chrome:
           requires:
-            - npm-build
+            - npm-test
           filters:
             tags:
               only: /.*/
@@ -514,13 +586,14 @@ workflows:
               only: /.*/
       - browser-render-firefox:
           requires:
-            - npm-build
+            - npm-test
           filters:
             tags:
               only: /.*/
       - docs-build:
           requires:
             - npm-build
+            - npm-test
           filters:
             tags:
               only: /.*/
@@ -565,6 +638,7 @@ workflows:
           requires:
             - pypi-build
             - npm-build
+            - npm-test
             - docs-build
             - browser-jupyter-chrome
             - browser-jupyter-chrome-dev
@@ -581,6 +655,7 @@ workflows:
           requires:
             - pypi-build
             - npm-build
+            - npm-test
             - docs-build
             - browser-jupyter-chrome
             - browser-jupyter-chrome-dev

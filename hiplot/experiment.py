@@ -265,7 +265,7 @@ class Experiment(_DictSerializable):
         self.parameters_definition = parameters_definition if parameters_definition is not None else defaultdict(ValueDef)
         self.colormap = colormap if colormap is not None else "interpolateTurbo"
         self.colorby: tp.Optional[str] = None
-        self._displays: tp.Dict[str, tp.Dict[str, tp.Any]] = {}
+        self._display_data: tp.Dict[str, tp.Dict[str, tp.Any]] = {}
 
     def validate(self) -> "Experiment":
         """
@@ -409,7 +409,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             "parameters_definition": {k: v._asdict() for k, v in self.parameters_definition.items()},
             "colormap": self.colormap,
             "colorby": self.colorby,
-            "_displays": self._displays,
+            "display_data": self._display_data,
         }
 
     def remove_missing_parents(self) -> "Experiment":
@@ -438,7 +438,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             })
 
         """
-        return self._displays.setdefault(plugin, {})
+        return self._display_data.setdefault(plugin, {})
 
     @staticmethod
     def from_iterable(it: tp.Iterable[tp.Dict[str, tp.Any]]) -> "Experiment":
@@ -503,7 +503,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             ]
             if subxp.parameters_definition is not None:
                 xp.parameters_definition.update(subxp.parameters_definition)
-            for d, v in subxp._displays.items():
+            for d, v in subxp._display_data.items():
                 xp.display_data(d).update(v)
         return xp
 

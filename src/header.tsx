@@ -97,7 +97,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                         <RestoreDataBtn {...this.props} />
                         <KeepDataBtn {...this.props} />
                         <ExcludeDataBtn {...this.props} />
-                        {this.dataProviderRef.current && this.dataProviderRef.current.refresh != null &&
+                        {this.dataProviderRef.current && this.dataProviderRef.current.refresh &&
                             <button title="Refresh" className="btn btn-sm btn-light" onClick={this.onRefresh.bind(this)}>Refresh</button>
                         }
                         <ExportDataCSVBtn {...this.props} />

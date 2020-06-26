@@ -52,7 +52,10 @@ print("World size:", world_size)
 @pytest.mark.parametrize(
     "file, timeout_secs, browser",
     [(Path(f), float(os.environ.get('WAIT_SECS', '2')), os.environ.get("BROWSER", "chrome"))
-     for i, f in enumerate(sorted(glob.glob(str(DEMO_PAGES_PATH / '*.html'))))
+     for i, f in enumerate(sorted([
+         *glob.glob(str(DEMO_PAGES_PATH / '*.html')),
+         *glob.glob(str(DEMO_PAGES_PATH / '*/*.html'))
+     ]))
      if (i % world_size) == rank
      ],
 )
