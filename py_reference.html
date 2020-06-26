@@ -70,6 +70,7 @@
 <li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_notebook.html">Advanced uses: notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_streamlit.html">HiPlot component for Streamlit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_javascript.html">NPM library (javascript)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python classes reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#hiplot-experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
@@ -149,8 +150,8 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>force_full_width</strong> – allows to force to have 100% width on Jupyter Notebooks only.</p></li>
 <li><p><strong>store_state_key</strong> – a string identifier for the HiPlot instance.
-If not <cite>None</cite>, HiPlot will store dynamic modifications (removing/reordering columns…)
-in the URL, and restore them when calling <cite>display</cite> with the same value for <cite>store_state_key</cite> - see <a class="reference internal" href="tuto_notebook.html#tutonotebookstate"><span class="std std-ref">Remembering state between runs</span></a></p></li>
+If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, HiPlot will store dynamic modifications (removing/reordering columns…)
+in the URL, and restore them when calling <code class="docutils literal notranslate"><span class="pre">display</span></code> with the same value for <code class="docutils literal notranslate"><span class="pre">store_state_key</span></code> - see <a class="reference internal" href="tuto_notebook.html#tutonotebookstate"><span class="std std-ref">Remembering state between runs</span></a></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -176,6 +177,34 @@ See <a class="reference internal" href="tuto_notebook.html#tutonotebookdisplayed
     <span class="s2">&quot;axis_x&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span>
     <span class="s2">&quot;axis_y&quot;</span><span class="p">:</span> <span class="s2">&quot;loss&quot;</span>
 <span class="p">})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hiplot.Experiment.display_st">
+<code class="sig-name descname">display_st</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ret</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">tp.Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'None'</span></em><span class="sig-paren">)</span> &#x2192; tp.Any<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.display_st"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.display_st" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="sig-name descname">display_st</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ret</span><span class="p">:</span> <span class="n">tp.List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">tp.Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'None'</span></em><span class="sig-paren">)</span> &#x2192; tp.List<span class="p">[</span>tp.Any<span class="p">]</span></dt>
+<dt>
+<code class="sig-name descname">display_st</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">tp.Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'None'</span></em><span class="sig-paren">)</span> &#x2192; None</dt>
+<dd><p>Displays an experiment in a Streamlit app - see <a class="reference internal" href="tuto_streamlit.html#tutostreamlit"><span class="std std-ref">HiPlot component for Streamlit</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – Unique key for the streamlit component. It is strongly recommended to give some unique string.</p></li>
+<li><p><strong>ret</strong> – Specify what HiPlot should return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Return value depends on <code class="docutils literal notranslate"><span class="pre">ret</span></code></p>
+</dd>
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">exp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hiplot1&quot;</span><span class="p">)</span>
+<span class="n">brush_extents</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hiplot2&quot;</span><span class="p">,</span> <span class="n">ret</span><span class="o">=</span><span class="s2">&quot;brush_extents&quot;</span><span class="p">)</span>
+<span class="n">brush_extents</span><span class="p">,</span> <span class="n">selected_uids</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hiplot3&quot;</span><span class="p">,</span> <span class="n">ret</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;brush_extents&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_uids&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -312,7 +341,7 @@ It can have a parent if it originates from another one (offspring).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>uid</strong> – A unique identifier for this datapoint</p></li>
 <li><p><strong>values</strong> – A dictionnary with arbitrary metrics/values</p></li>
-<li><p><strong>from_uid</strong> – The uid of the parent <a class="reference internal" href="#hiplot.Datapoint" title="hiplot.Datapoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Datapoint</span></code></a> (optional)</p></li>
+<li><p><strong>from_uid</strong> – The uid of the parent <a class="reference internal" href="#hiplot.Datapoint" title="hiplot.Datapoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Datapoint</span></code></a> (tp.Optional)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Example</dt>

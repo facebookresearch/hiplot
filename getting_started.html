@@ -70,11 +70,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#installing">Installing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#option-1-use-hiplot-in-an-ipython-notebook">Option 1: Use HiPlot in an ipython notebook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#option-2-use-hiplot-webserver">Option 2: Use HiPlot webserver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#option-3-create-data-apps-using-streamlit-streamlit-logo">Option 3: Create data-apps using Streamlit </a></li>
+<li class="toctree-l2"><a class="reference internal" href="#option-4-render-standalone-html-files">Option 4: Render standalone HTML files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_notebook.html">Advanced uses: notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_streamlit.html">HiPlot component for Streamlit</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_javascript.html">NPM library (javascript)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="py_reference.html">Python classes reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins_reference.html">Displays reference</a></li>
@@ -143,7 +146,7 @@ python3 -m venv venv_hiplot
 <div class="section" id="install-hiplot">
 <h3>Install HiPlot<a class="headerlink" href="#install-hiplot" title="Permalink to this headline">¶</a></h3>
 <p>Within the activated environment, use the following command to install HiPlot:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install hiplot
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -U hiplot  <span class="c1"># Or for conda users: conda install -c conda-forge hiplot</span>
 </pre></div>
 </div>
 <p>Congratulation, HiPlot is now ready to use! You can either:</p>
@@ -188,6 +191,27 @@ To allow anyone to connect, use</p>
 <li><p>you can <a class="reference internal" href="tuto_webserver.html#tutowebservercomparexp"><span class="std std-ref">Compare multiple experiments</span></a></p></li>
 <li><p>you can <a class="reference internal" href="tuto_webserver.html#tutowebservercustomfetcher"><span class="std std-ref">Make HiPlot server render your own experiments</span></a></p></li>
 </ul>
+</div>
+<div class="section" id="option-3-create-data-apps-using-streamlit-streamlit-logo">
+<h2>Option 3: Create data-apps using Streamlit <a class="reference internal" href="_images/streamlit_logo.png"><img alt="streamlit_logo" src="_images/streamlit_logo.png" style="height: 30px;" /></a><a class="headerlink" href="#option-3-create-data-apps-using-streamlit-streamlit-logo" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.streamlit.io/">Streamlit</a> allows data scientists and machine learning engineers to create beautiful, performant apps in pure Python.</p>
+<p>This is the best way to create custom interfaces with HiPlot. For instance, you can perform dynamic actions
+based on selected rows inside HiPlot (like plotting or displaying further information), and still have a sharable/deployable interace.</p>
+<p><strong>Learn more</strong> in the tutorial: <a class="reference internal" href="tuto_streamlit.html#tutostreamlit"><span class="std std-ref">HiPlot component for Streamlit</span></a></p>
+<div class="align-center figure align-default" id="id1">
+<a class="reference internal image-reference" href="_images/streamlit.png"><img alt="_images/streamlit.png" src="_images/streamlit.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><em>Here we let the user modify the dataset before displaying it</em></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="option-4-render-standalone-html-files">
+<h2>Option 4: Render standalone HTML files<a class="headerlink" href="#option-4-render-standalone-html-files" title="Permalink to this headline">¶</a></h2>
+<p>We provide a CLI tool <code class="docutils literal notranslate"><span class="pre">hiplot-render</span></code> to render HiPlot experiments into standalone HTML files, containing all HiPlot files, and your data.
+To render a demo, or your own CSV file, use:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span><span class="o">-</span><span class="n">render</span> <span class="n">demo</span> <span class="o">&gt;</span> <span class="n">hiplot_demo</span><span class="o">.</span><span class="n">html</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span><span class="o">-</span><span class="n">render</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">file</span><span class="o">.</span><span class="n">csv</span> <span class="o">&gt;</span> <span class="n">hiplot</span><span class="o">.</span><span class="n">html</span>
+</pre></div>
+</div>
+<p>If your data is not already in the CSV format, you can either convert it to CSV, or see how to <a class="reference internal" href="tuto_webserver.html#tutowebservercustomfetcher"><span class="std std-ref">Make HiPlot server render your own experiments</span></a>.</p>
 </div>
 </div>
 

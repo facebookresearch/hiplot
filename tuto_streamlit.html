@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Licensed under the Apache 2.0 License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
+  <!-- Licensed under the SIL Open Font License -->
+  <link rel="stylesheet" type="text/css" href="_static/fonts/source-serif-pro/source-serif-pro.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>HiPlot component for Streamlit &#8212; HiPlot 0.1.12
+ documentation</title>
+    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="shortcut icon" href="_static/icon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="NPM library (javascript)" href="tuto_javascript.html" />
+    <link rel="prev" title="Advanced uses: notebooks" href="tuto_notebook.html" />
+  
+   
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tuto_javascript.html" title="NPM library (javascript)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tuto_notebook.html" title="Advanced uses: notebooks"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.12
+ documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HiPlot component for Streamlit</a></li> 
+      </ul>
+    </div>
+    <div class="container-wrapper">
+
+      <div id="mobile-toggle">
+        <a href="#"><span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span></a>
+      </div>
+  <div id="left-column">
+    <div class="sphinxsidebar"><a href="
+    index.html" class="text-logo">HiPlot</a>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <h2>Table Of Contents</h2>
+  </div>
+  <div class="sidebar-toc">
+    
+    
+      <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment_settings.html">More about <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_webserver.html">Advanced uses: Webserver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_notebook.html">Advanced uses: notebooks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">HiPlot component for Streamlit</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#displaying-an-hiplot-experiment">Displaying an <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hiplot-component-return-values">HiPlot component return values</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tuto_javascript.html">NPM library (javascript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py_reference.html">Python classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins_reference.html">Displays reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+
+    
+  </div>
+</div>
+<div class="sidebar-block">
+  <div class="sidebar-wrapper">
+    <div id="main-search">
+      <form class="form-inline" action="search.html" method="GET" role="form">
+        <div class="input-group">
+          <input name="q" type="text" class="form-control" placeholder="Search...">
+        </div>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+        <div id="right-column">
+          
+          <div role="navigation" aria-label="breadcrumbs navigation">
+            <ol class="breadcrumb">
+              <li><a href="index.html">Docs</a></li>
+              
+              <li>HiPlot component for Streamlit</li>
+            </ol>
+          </div>
+          
+          <div class="document clearer body">
+            
+  <div class="section" id="hiplot-component-for-streamlit">
+<span id="tutostreamlit"></span><h1>HiPlot component for Streamlit<a class="headerlink" href="#hiplot-component-for-streamlit" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>BETA FEATURE</strong></p>
+<p>Streamlit components are in closed beta testing. If you’re interested in trying out HiPlot component,
+please <a class="reference external" href="https://discuss.streamlit.io/u/danthe3rd/">reach out to me on Streamlit forum via PM</a></p>
+</div>
+<p><a class="reference external" href="https://www.streamlit.io/">Streamlit</a> is an open-source app framework. It enables data scientists and machine learning engineers to create beautiful, performant apps in pure Python.</p>
+<div class="section" id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>You’ll need both Streamlit and HiPlot</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">streamlit</span> <span class="n">hiplot</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="displaying-an-hiplot-experiment">
+<h2>Displaying an <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a><a class="headerlink" href="#displaying-an-hiplot-experiment" title="Permalink to this headline">¶</a></h2>
+<p>Displaying an HiPlot experiment in Streamlit is very similar to how you would do it in a Jupyter notebook, except that you should call
+<a class="reference internal" href="py_reference.html#hiplot.Experiment.display_st" title="hiplot.Experiment.display_st"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_st()</span></code></a> instead of <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display()</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="py_reference.html#hiplot.Experiment.display_st" title="hiplot.Experiment.display_st"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_st()</span></code></a> has a <code class="docutils literal notranslate"><span class="pre">key</span></code> parameter, that can
+be used to assign your component a fixed identity if you want to change its
+arguments over time and not have it be re-created.</p>
+<p>If you remove the <code class="docutils literal notranslate"><span class="pre">key</span></code> argument in the example below, then the component will
+be re-created whenever any slider changes, and lose its current configuration/state.</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+
+<span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">),</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s1">&#39;x2&#39;</span><span class="p">),</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s1">&#39;x3&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create your experiment as usual</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;uid&#39;</span><span class="p">:</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;SGD&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x1</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;uid&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x2</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;uid&#39;</span><span class="p">:</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x3</span><span class="p">}]</span>
+<span class="n">xp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># Display with `display_st` instead of `display`</span>
+<span class="n">ret_val</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="s2">&quot;selected_uids&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip&quot;</span><span class="p">)</span>
+
+<span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;hiplot returned &quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ret_val</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="_images/streamlit.png" src="_images/streamlit.png" />
+</div>
+</div>
+<div class="section" id="hiplot-component-return-values">
+<span id="tutostreamlitretvalues"></span><h2>HiPlot component return values<a class="headerlink" href="#hiplot-component-return-values" title="Permalink to this headline">¶</a></h2>
+<p>HiPlot is highly interactive, and there are multiple values/information that can be returned, depending on what the user provides for the parameter <code class="docutils literal notranslate"><span class="pre">ret</span></code> in <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_st" title="hiplot.Experiment.display_st"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_st()</span></code></a></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ret=&quot;filtered_uids&quot;</span></code>: returns a list of uid for filtered datapoints. Filtered datapoints change when the user clicks on <em>Keep</em> or <em>Exclude</em> buttons.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ret=&quot;selected_uids&quot;</span></code>: returns a list of uid for selected datapoints. Selected datapoints correspond to currently visible points (for example when slicing in the parallel plot) - it’s a subset of filtered datapoints.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ret=&quot;brush_extents&quot;</span></code>: returns information about current brush extents in the parallel plot</p></li>
+<li><p>or a list containing several values above. In that case, HiPlot will return a list with the return values</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip1&quot;</span><span class="p">)</span>  <span class="c1"># Does not return anything</span>
+<span class="n">filtered_uids</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="s2">&quot;filtered_uids&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip2&quot;</span><span class="p">)</span>
+<span class="n">filtered_uids</span><span class="p">,</span> <span class="n">selected_uids</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;filtered_uids&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_uids&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip3&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+            
+  <div class="footer-relations">
+    
+      <div class="pull-left">
+        <a class="btn btn-default" href="tuto_notebook.html" title="previous chapter (use the left arrow)">Advanced uses: notebooks</a>
+      </div>
+    
+      <div class="pull-right">
+        <a class="btn btn-default" href="tuto_javascript.html" title="next chapter (use the right arrow)">NPM library (javascript)</a>
+      </div>
+    </div>
+    <div class="clearer"></div>
+  
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tuto_javascript.html" title="NPM library (javascript)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tuto_notebook.html" title="Advanced uses: notebooks"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.12
+ documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">HiPlot component for Streamlit</a></li> 
+      </ul>
+    </div>
+<script type="text/javascript">
+  $("#mobile-toggle a").click(function () {
+    $("#left-column").toggle();
+  });
+</script>
+<script type="text/javascript" src="_static/js/bootstrap.js"></script>
+  <div class="footer">
+    <a href="https://opensource.facebook.com/legal/privacy/">Privacy</a> - <a href="https://opensource.facebook.com/legal/terms/">Terms</a><br />
+    &copy; Copyright 2020, Facebook AI Research (FAIR). Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+  </div>
+  </body>
+</html>
