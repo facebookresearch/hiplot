@@ -28,7 +28,12 @@ class NotebookJSBundleInjector:
     @classmethod
     def ensure_injected(cls) -> None:
         bundle = Path(__file__).parent / "static" / "built" / "hiplot.bundle.js"
-        IPython.display.display(IPython.display.Javascript(bundle.read_text("utf-8")))
+        IPython.display.display(IPython.display.Javascript(f"""
+{bundle.read_text("utf-8")}
+// Local variables can't be accessed in other cells, so let's
+// manually create a global variable
+Object.assign(window, {{'hiplot': hiplot}});
+"""))
 
 
 def jupyter_make_full_width(content: str) -> str:
