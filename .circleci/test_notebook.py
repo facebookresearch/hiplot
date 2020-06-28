@@ -13,6 +13,7 @@ def test_jupyter_notebook() -> None:
 
     driver = create_browser_chrome()
     num_err = 0
+    num_waits = 0
     try:
         driver.get(f"http://localhost:8888/notebooks/test_notebook.ipynb?token={token}")
         time.sleep(2)
@@ -34,6 +35,9 @@ def test_jupyter_notebook() -> None:
             print(f'    {str(l)}')
             if l['level'] != 'INFO':
                 num_err += 1
+            if 'waiting for HiPlot' in l['message']:
+                num_waits += 1
     finally:
         driver.quit()
     assert num_err == 0
+    assert num_waits <= 1
