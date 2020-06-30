@@ -10,5 +10,6 @@ from . import fetchers
 __all__ = [
     'Experiment', 'ExperimentFetcherDoesntApply', 'ExperimentValidationError', 'ExperimentValidationCircularRef',
     'ExperimentValidationMissingParent', 'Datapoint', 'ExperimentDisplayed', 'ValueDef', 'ValueType', 'Displays',
+    'fetchers', 'run_server', 'run_server_main'
 ]
 __version__ = "0.0.0"  # Set by CI upon deploy
