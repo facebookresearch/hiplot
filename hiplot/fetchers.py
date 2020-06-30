@@ -264,18 +264,21 @@ def _get_module_by_name_in_cwd(name: str) -> tp.Any:
     return module
 
 
+def get_fetcher(fetcher_spec: str) -> hip.ExperimentFetcher:
+    parts = fetcher_spec.split(".")
+    try:
+        module = importlib.import_module(".".join(parts[:-1]))
+    except ModuleNotFoundError:
+        if len(parts) != 2:
+            raise
+        module = _get_module_by_name_in_cwd(parts[0])
+
+    return getattr(module, parts[-1])
+
+
 def get_fetchers(add_fetchers: tp.List[str]) -> tp.List[hip.ExperimentFetcher]:
     xp_fetchers: tp.List[hip.ExperimentFetcher] = [load_demo, load_csv, load_json, load_fairseq, load_wav2letter]
     for fetcher_spec in add_fetchers:
-        parts = fetcher_spec.split(".")
-        try:
-            module = importlib.import_module(".".join(parts[:-1]))
-        except ModuleNotFoundError:
-            if len(parts) != 2:
-                raise
-            module = _get_module_by_name_in_cwd(parts[0])
-
-        fetcher = getattr(module, parts[-1])
-        xp_fetchers.append(fetcher)
+        xp_fetchers.append(get_fetcher(fetcher_spec))
     xp_fetchers.append(MultipleFetcher(xp_fetchers))
     return xp_fetchers
