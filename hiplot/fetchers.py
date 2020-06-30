@@ -273,7 +273,7 @@ def get_fetcher(fetcher_spec: str) -> hip.ExperimentFetcher:
             raise
         module = _get_module_by_name_in_cwd(parts[0])
 
-    return getattr(module, parts[-1])
+    return getattr(module, parts[-1])  # type: ignore
 
 
 def get_fetchers(add_fetchers: tp.List[str]) -> tp.List[hip.ExperimentFetcher]:
