@@ -56,7 +56,6 @@ export class ContextMenu extends React.Component<ContextMenuProps, ContextMenuSt
         });
     }
     onContextMenu = function(this: ContextMenu, event: React.MouseEvent<HTMLDivElement>): void {
-        console.log(event);
         this.show(event.pageX, event.pageY, '');
         event.preventDefault();
         event.stopPropagation();
