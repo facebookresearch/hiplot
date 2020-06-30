@@ -122,6 +122,17 @@ export function scale_pixels_range(scale: any, extents: [number, number]): Scale
         case ParamType.NUMERICLOG:
         case ParamType.NUMERICPERCENTILE:
         case ParamType.TIMESTAMP:
+            const pxlRange: Array<number> = scale.range();
+            // Small hack to make sure we can always select the extrema
+            // (considering loss of precision in computations, especially for logscale)
+            for (var i = 0; i < 2; ++i) {
+                if (extents[i] == Math.min(...pxlRange)) {
+                    --extents[i];
+                }
+                if (extents[i] == Math.max(...pxlRange)) {
+                    ++extents[i];
+                }
+            }
             const range = [scale.invert(extents[0]), scale.invert(extents[1])] as [number, number];
             return {
                 "type": scale.hip_type,
