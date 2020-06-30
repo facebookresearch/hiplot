@@ -64908,6 +64908,17 @@ function scale_pixels_range(scale, extents) {
         case ParamType.NUMERICLOG:
         case ParamType.NUMERICPERCENTILE:
         case ParamType.TIMESTAMP:
+            var pxlRange = scale.range();
+            // Small hack to make sure we can always select the extrema
+            // (considering loss of precision in computations, especially for logscale)
+            for (var i = 0; i < 2; ++i) {
+                if (extents[i] == Math.min.apply(Math, pxlRange)) {
+                    --extents[i];
+                }
+                if (extents[i] == Math.max.apply(Math, pxlRange)) {
+                    ++extents[i];
+                }
+            }
             var range = [scale.invert(extents[0]), scale.invert(extents[1])];
             return {
                 "type": scale.hip_type,
@@ -65317,7 +65328,6 @@ var contextmenu_ContextMenu = /** @class */ (function (_super) {
         _this.context_menu_div = external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createRef();
         _this.trigger_callbacks = [];
         _this.onContextMenu = function (event) {
-            console.log(event);
             this.show(event.pageX, event.pageY, '');
             event.preventDefault();
             event.stopPropagation();

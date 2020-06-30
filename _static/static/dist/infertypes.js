@@ -94,6 +94,17 @@ export function scale_pixels_range(scale, extents) {
         case ParamType.NUMERICLOG:
         case ParamType.NUMERICPERCENTILE:
         case ParamType.TIMESTAMP:
+            var pxlRange = scale.range();
+            // Small hack to make sure we can always select the extrema
+            // (considering loss of precision in computations, especially for logscale)
+            for (var i = 0; i < 2; ++i) {
+                if (extents[i] == Math.min.apply(Math, pxlRange)) {
+                    --extents[i];
+                }
+                if (extents[i] == Math.max.apply(Math, pxlRange)) {
+                    ++extents[i];
+                }
+            }
             var range = [scale.invert(extents[0]), scale.invert(extents[1])];
             return {
                 "type": scale.hip_type,
