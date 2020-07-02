@@ -452,7 +452,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         // Pre-compute graph of children - TODO: maybe we could cache that
         me.props.rows_filtered.forEach(function(dp) {
           if (dp.from_uid !== null) {
-            if (childrenLookup[dp.uid] === undefined) {
+            if (childrenLookup[dp.from_uid] === undefined) {
               childrenLookup[dp.from_uid] = [dp];
             } else {
               childrenLookup[dp.from_uid].push(dp);
