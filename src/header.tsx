@@ -106,7 +106,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                         <div style={{clear:'both'}}></div>
                     </div>
                     <div className={style.controlGroup}>
-                        <div style={{"fontFamily": "monospace"}}>
+                        <div style={{"fontFamily": "monospace", "fontSize": "14px"}}>
             Selected: <strong ref={this.selected_count_ref} style={{"minWidth": "4em", "textAlign": "right", "display": "inline-block"}}>??</strong>
                     /<strong ref={this.total_count_ref} style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>??</strong> (
                         <span style={{"minWidth": "3em", "textAlign": "right", "display": "inline-block"}} ref={this.selected_pct_ref}>??</span>%)
