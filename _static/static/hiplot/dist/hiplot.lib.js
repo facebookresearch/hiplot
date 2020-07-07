@@ -65996,12 +65996,14 @@ var FilterType;
     FilterType["Range"] = "Range";
     FilterType["Not"] = "Not";
     FilterType["Search"] = "Search";
+    FilterType["None"] = "None";
 })(FilterType || (FilterType = {}));
 var FILTERS = (filters_a = {},
     filters_a[FilterType.All] = filter_all,
     filters_a[FilterType.Range] = filter_range,
     filters_a[FilterType.Not] = filter_not,
     filters_a[FilterType.Search] = filter_search,
+    filters_a[FilterType.None] = function () { return function (dp) { return false; }; },
     filters_a);
 ;
 function filter_range(data) {
@@ -66625,6 +66627,12 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
                 }
                 var min, max;
                 if (range.type == ParamType.CATEGORICAL) {
+                    if (range.values.length == 0) {
+                        return {
+                            type: FilterType.None,
+                            data: {}
+                        };
+                    }
                     min = "" + range.values[0];
                     max = "" + range.values[range.values.length - 1];
                 }

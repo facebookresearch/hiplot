@@ -22,6 +22,7 @@ export enum FilterType {
     Range = "Range",
     Not = "Not",
     Search = "Search",
+    None = "None",
 }
 
 const FILTERS = {
@@ -29,6 +30,7 @@ const FILTERS = {
     [FilterType.Range]: filter_range,
     [FilterType.Not]: filter_not,
     [FilterType.Search]: filter_search,
+    [FilterType.None]: function() {return dp => false;},
 };
 
 export interface FilterRange {

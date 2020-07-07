@@ -15,12 +15,14 @@ export var FilterType;
     FilterType["Range"] = "Range";
     FilterType["Not"] = "Not";
     FilterType["Search"] = "Search";
+    FilterType["None"] = "None";
 })(FilterType || (FilterType = {}));
 var FILTERS = (_a = {},
     _a[FilterType.All] = filter_all,
     _a[FilterType.Range] = filter_range,
     _a[FilterType.Not] = filter_not,
     _a[FilterType.Search] = filter_search,
+    _a[FilterType.None] = function () { return function (dp) { return false; }; },
     _a);
 ;
 function filter_range(data) {

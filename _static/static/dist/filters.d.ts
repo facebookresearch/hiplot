@@ -7,7 +7,8 @@ export declare enum FilterType {
     All = "All",
     Range = "Range",
     Not = "Not",
-    Search = "Search"
+    Search = "Search",
+    None = "None"
 }
 export interface FilterRange {
     col: string;
