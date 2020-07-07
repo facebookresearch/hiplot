@@ -191,9 +191,10 @@
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">component</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="s1">&#39;declare_component&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s1">&#39;Your streamlit version does not support components. Please update streamlit with `pip install -U streamlit`&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">streamlit.components.v1</span> <span class="k">as</span> <span class="nn">components</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Your streamlit version (</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s1">) is too old and does not support components. Please update streamlit with `pip install -U streamlit`&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">assert</span> <span class="n">st</span><span class="o">.</span><span class="n">_is_running_with_streamlit</span>
 
         <span class="n">built_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;static&quot;</span> <span class="o">/</span> <span class="s2">&quot;built&quot;</span> <span class="o">/</span> <span class="s2">&quot;streamlit_component&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
@@ -201,7 +202,7 @@
 <span class="s2">If you did not install hiplot using official channels (pip, conda...), maybe you forgot to build javascript files?</span>
 <span class="s2">See https://facebookresearch.github.io/hiplot/contributing.html#building-javascript-bundle</span>
 <span class="s2">&quot;&quot;&quot;</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">component</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">declare_component</span><span class="p">(</span><span class="s2">&quot;hiplot&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">built_path</span><span class="p">))</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">component</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">declare_component</span><span class="p">(</span><span class="s2">&quot;hiplot&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">built_path</span><span class="p">))</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">create_instance_wrapper</span><span class="p">(</span>

@@ -316,11 +316,11 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         })
         .on("drag", function(d: string) {
           const eventdx = d3.event.dx;
-          var brushEl = d3.select(this).select("." + style.brush);
+          const brushEl = d3.select(this).select("." + style.brush);
           me.setState(function(prevState, _) { return {
             dragging: {
               col: d,
-              pos: Math.min(me.w, Math.max(0, prevState.dragging.origin += eventdx)),
+              pos: Math.min(me.w, Math.max(0, prevState.dragging.pos + eventdx)),
               origin: prevState.dragging.origin,
               dragging: true
             }

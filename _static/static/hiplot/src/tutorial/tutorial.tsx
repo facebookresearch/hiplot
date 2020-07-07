@@ -9,9 +9,55 @@ import $ from "jquery";
 import React from "react";
 import style from "./style.scss";
 
+
+//@ts-ignore
+import LogoSVG from "../../hiplot/static/logo.svg";
+
 interface TutorialStepProps {
     rootRef: React.RefObject<HTMLElement>;
 };
+
+class StepHiPlotInfo extends React.Component<TutorialStepProps, {}> {
+    render() {
+        // @ts-ignore
+        let pkgInfo = HIPLOT_PACKAGE_NAME_FULL;
+        if (pkgInfo === undefined) {
+            pkgInfo = "hiplot (no version information)";
+        }
+        return (
+        <div className="alert alert-primary" role="alert">
+            <div className="row">
+                <div className="col-md-8">
+                    <h4 className="alert-heading">Welcome to HiPlot "getting started" tutorial</h4>
+                    Click the button "Next" to start
+                </div>
+                <div className="col-md-4">
+                    <img style={{height: '50px'}} src={LogoSVG} /><br />
+                    <span style={{"fontFamily": "monospace"}}>{pkgInfo}</span>
+                </div>
+            </div>
+
+            <hr />
+            <p>Learn more:</p>
+            <ul>
+                <li><a href="https://ai.facebook.com/blog/hiplot-high-dimensional-interactive-plots-made-easy/">HiPlot launch on Facebook AI blog</a></li>
+                <li><a href="https://github.com/facebookresearch/hiplot">https://github.com/facebookresearch/hiplot/</a>: star us on github or post issues</li>
+                <li><a href="https://facebookresearch.github.io/hiplot/">documentation</a></li>
+                <li>We provide both python (<a href="https://pypi.org/project/hiplot/">pip</a>, <a href="https://anaconda.org/conda-forge/hiplot">conda</a>) and javascript (<a href="https://www.npmjs.com/package/hiplot">hiplot on NPM</a>) packages</li>
+            </ul>
+            <hr />
+            <p>Did you know that HiPlot can be used:</p>
+            <ul>
+                <li>In an <a href="https://facebookresearch.github.io/hiplot/getting_started.html#option-1-use-hiplot-in-an-ipython-notebook">ipython notebook</a> or
+                        in <a href="https://facebookresearch.github.io/hiplot/tuto_streamlit.html#tutostreamlit">Streamlit apps</a></li>
+                <li>As a <a href="https://facebookresearch.github.io/hiplot/tuto_javascript.html">HiPlot react component</a></li>
+                <li>As a <a href="https://facebookresearch.github.io/hiplot/getting_started.html#option-2-use-hiplot-webserver">standalone web server</a></li>
+                <li>Or simply <a href="https://facebookresearch.github.io/hiplot/_static/hiplot_upload.html">without any setup if you have a CSV file with your data</a></li>
+            </ul>
+        </div>
+        )
+    }
+}
 
 class StepParallelPlot extends React.Component<TutorialStepProps, {}> {
     componentDidMount() {
@@ -22,7 +68,7 @@ class StepParallelPlot extends React.Component<TutorialStepProps, {}> {
     }
     render() {
         return (
-        <div className="alert alert-info" role="alert">
+        <div className="alert alert-primary" role="alert">
             <h4 className="alert-heading">Step 1/4: The parallel plot</h4>
             <p>The first plot you see above is a <strong>Parallel Plot</strong>.
                 Parallel plots are a convenient way to visualize and filter high-dimensional data.
@@ -47,7 +93,7 @@ class StepLearnToSlice extends React.Component<TutorialStepProps, {}> {
     }
     render() {
         return (
-        <div className="alert alert-info" role="alert">
+        <div className="alert alert-primary" role="alert">
             <h4 className="alert-heading">Step 2/4: Slicing data</h4>
             <p>Slicing along an axis allows to discover patterns in the data. <strong>Drag vertically along an axis</strong> to display only a subset of the data.
                 You also can do it on several axis at the same time.
@@ -70,7 +116,7 @@ class StepMoveAndRemoveColumns extends React.Component<TutorialStepProps, {}> {
     }
     render() {
         return (
-        <div className="alert alert-info" role="alert">
+        <div className="alert alert-primary" role="alert">
             <h4 className="alert-heading">Step 3/4: Move and remove axis</h4>
             <p>Move an axis by <strong>dragging its label above</strong>.
                 In parallel plots, we can very easily spot relationships between nearby axis.
@@ -90,7 +136,7 @@ class StepDataTypeAndScaling extends React.Component<TutorialStepProps, {}> {
     }
     render() {
         return (
-        <div className="alert alert-info" role="alert">
+        <div className="alert alert-primary" role="alert">
             <h4 className="alert-heading">Step 4/4: Data type and scaling</h4>
             <p><strong>Right click on an axis</strong> to see options.
                 You can chose how to color your datapoints, change the scaling and more!
@@ -104,24 +150,6 @@ class StepDataTypeAndScaling extends React.Component<TutorialStepProps, {}> {
     }
 }
 
-class StepTutorialDone extends React.Component<TutorialStepProps, {}> {
-    render() {
-        return (
-        <div className="alert alert-success" role="alert">
-            <h4 className="alert-heading">Well done!</h4>
-            <p>Aww yeah, you successfully finished the tutorial!
-                We hope you enjoy using HiPlot :)<br />
-                <a href="https://facebookresearch.github.io/hiplot/">Check the documentation</a> to learn more, or
-                click <strong>Done</strong> to finish the tutorial.
-            </p>
-            <hr/>
-            <p className="mb-0">
-                Did you know that you can use HiPlot in your ipython notebooks as well?
-            </p>
-        </div>
-        )
-    }
-}
 interface Props {
     onTutorialDone: () => void;
     navbarRoot: React.RefObject<HTMLDivElement>;
@@ -133,11 +161,11 @@ interface State {
 
 export class HiPlotTutorial extends React.Component<Props, State> {
     steps = [
+        (p: TutorialStepProps) => <StepHiPlotInfo {...p} />,
         (p: TutorialStepProps) => <StepParallelPlot {...p} />,
         (p: TutorialStepProps) => <StepLearnToSlice {...p} />,
         (p: TutorialStepProps) => <StepMoveAndRemoveColumns {...p} />,
         (p: TutorialStepProps) => <StepDataTypeAndScaling {...p} />,
-        (p: TutorialStepProps) => <StepTutorialDone {...p} />,
     ];
 
     constructor(props: Props) {
@@ -147,6 +175,10 @@ export class HiPlotTutorial extends React.Component<Props, State> {
         };
     }
     onClickNextTutorial() {
+        if (this.state.stepNum == this.steps.length - 1) {
+            this.props.onTutorialDone();
+            return;
+        }
         this.setState(function(prevState, prevProps) {
             return {
                 stepNum: Math.min(prevState.stepNum + 1, this.steps.length - 1)
@@ -154,6 +186,10 @@ export class HiPlotTutorial extends React.Component<Props, State> {
         });
     }
     onClickPreviousTutorial() {
+        if (this.state.stepNum == 0) {
+            this.props.onTutorialDone();
+            return;
+        }
         this.setState(function(prevState, prevProps) {
             return {
                 stepNum: Math.max(prevState.stepNum - 1, 0)
@@ -168,13 +204,8 @@ export class HiPlotTutorial extends React.Component<Props, State> {
                     rootRef: this.props.navbarRoot
                 })}</div>
                 <div className="col-md-3">
-                    {this.state.stepNum > 0 && <button className="btn btn-outline-primary" onClick={this.onClickPreviousTutorial.bind(this)}>Previous</button>}
-                    {this.state.stepNum + 1 < this.steps.length &&
-                        <button className="btn btn-outline-primary" onClick={this.onClickNextTutorial.bind(this)}>Next</button>
-                    }
-                    {this.state.stepNum + 1 == this.steps.length &&
-                        <button className="btn btn-outline-primary" onClick={() => this.props.onTutorialDone()}>Done</button>
-                    }
+                    <button className="btn btn-outline-secondary" style={{"width": "6em"}} onClick={this.onClickPreviousTutorial.bind(this)}>{this.state.stepNum > 0 ? "Previous" : "Close"}</button>
+                    <button className="btn btn-outline-primary" style={{"width": "6em"}} onClick={this.onClickNextTutorial.bind(this)}>{this.state.stepNum + 1 < this.steps.length ? "Next" : "Finish"}</button>
                 </div>
             </div>
         )

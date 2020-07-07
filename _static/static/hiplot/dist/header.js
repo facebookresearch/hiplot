@@ -107,7 +107,7 @@ var HeaderBar = /** @class */ (function (_super) {
                         React.createElement("button", { title: "Start HiPlot tutorial", className: "btn btn-sm btn-light", onClick: this.onToggleTutorial.bind(this) }, "Help"),
                         React.createElement("div", { style: { clear: 'both' } })),
                     React.createElement("div", { className: style.controlGroup },
-                        React.createElement("div", { style: { "fontFamily": "monospace" } },
+                        React.createElement("div", { style: { "fontFamily": "monospace", "fontSize": "14px" } },
                             "Selected: ",
                             React.createElement("strong", { ref: this.selected_count_ref, style: { "minWidth": "4em", "textAlign": "right", "display": "inline-block" } }, "??"),
                             "/",
@@ -118,14 +118,11 @@ var HeaderBar = /** @class */ (function (_super) {
     };
     HeaderBar.prototype.render = function () {
         var _this = this;
-        var controlsOrTutorial = this.state.hasTutorial ?
-            (React.createElement("div", null,
-                React.createElement(HiPlotTutorial, { navbarRoot: this.controls_root_ref, onTutorialDone: (function () { return _this.setState({ hasTutorial: false }); }).bind(this) }))) :
-            this.renderControls();
         return (React.createElement("div", { ref: this.controls_root_ref, className: "container-fluid " + style.header },
             React.createElement("div", { className: "d-flex flex-wrap" },
                 React.createElement("img", { style: { height: '55px' }, src: this.props.dark ? IconSVGW : IconSVG }),
-                controlsOrTutorial)));
+                this.renderControls()),
+            this.state.hasTutorial && React.createElement(HiPlotTutorial, { navbarRoot: this.controls_root_ref, onTutorialDone: (function () { return _this.setState({ hasTutorial: false }); }).bind(this) })));
     };
     return HeaderBar;
 }(React.Component));

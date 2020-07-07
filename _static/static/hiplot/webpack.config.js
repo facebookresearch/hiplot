@@ -33,14 +33,19 @@ class WhenDoneCopyToHiplotStaticDir {
   }
 }
 
-const exportConfig = function(config = {}) {
+const exportConfig = function(env, config = {}) {
+  const version = (process.env && process.env.HIPLOT_VERSION) ? process.env.HIPLOT_VERSION : '0.0.0';
+  const package = (config.web && process.env && process.env.HIPLOT_PACKAGE) ? process.env.HIPLOT_PACKAGE : 'hiplot';
+  const package_name_full = `${config.web ? "bundle" : "lib"}-${package}-${version}`;
   var plugins = [
     new LicenseWebpackPlugin(),
     new webpack.BannerPlugin(
 " Copyright (c) Facebook, Inc. and its affiliates.\n\n\
 This source code is licensed under the MIT license found in the\n\
 LICENSE file in the root directory of this source tree."),
-    //new BundleAnalyzerPlugin()
+    new webpack.DefinePlugin({
+      'HIPLOT_PACKAGE_NAME_FULL': JSON.stringify(package_name_full),
+    })
   ];
   if (config.installs) {
     plugins.push(new WhenDoneCopyToHiplotStaticDir(config.installs));
@@ -151,6 +156,7 @@ env => {
     installs[path.resolve(sc, 'hiplot.bundle.js')] = (env && env.test) ? 'hiplot_test.bundle.js' : 'hiplot.bundle.js';
 
   });
+
   return {
     entry: {
       'hiplot': `./src/hiplot_web.tsx`,
@@ -163,10 +169,13 @@ env => {
         library: 'hiplot',
         libraryTarget: 'var'
     },
-    ...exportConfig({web: true, installs: installs}),
+    ...exportConfig(env, {
+      web: true,
+      installs: installs,
+    }),
 }},
 // Node config - for npm library
-{
+env => { return {
     entry: {
       'hiplot': `./src/hiplot.tsx`,
     },
@@ -184,9 +193,9 @@ env => {
         amd: "react"
       },
     },
-    ...exportConfig(),
+    ...exportConfig(env),
     optimization: {
       minimize: false,
     }
-}
+};}
 ];

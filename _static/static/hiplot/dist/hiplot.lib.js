@@ -66447,7 +66447,7 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
                         return {
                             dragging: {
                                 col: d,
-                                pos: Math.min(me.w, Math.max(0, prevState.dragging.origin += eventdx)),
+                                pos: Math.min(me.w, Math.max(0, prevState.dragging.pos + eventdx)),
                                 origin: prevState.dragging.origin,
                                 dragging: true
                             }
@@ -67754,6 +67754,8 @@ var controls_SelectedCountProgressBar = /** @class */ (function (_super) {
 var tutorial_style = __webpack_require__(4);
 var style_default = /*#__PURE__*/__webpack_require__.n(tutorial_style);
 
+// CONCATENATED MODULE: ./hiplot/static/logo.svg
+/* harmony default export */ var logo = ("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4OTkuMzMgMzA2LjMzIj48ZGVmcz48c3R5bGU+LmNscy0xLC5jbHMtM3tmaWxsOiM0MjE4Nzc7fS5jbHMtMntmaWxsOiMwMGU1YjY7fS5jbHMtM3tvcGFjaXR5OjAuMzU7fS5jbHMtNHtmaWxsOiNmZmI4MDI7fS5jbHMtNXtmaWxsOiNmZjcwNjA7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5IaVBsb3QtTG9nbzwvdGl0bGU+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjYwLjI2LDEwNi4yNkgzMDFWMjY0Ljc5SDI2MC4yNloiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0zMzkuODMsNDIuMjNoNzguMzNhODMuNzMsODMuNzMsMCwwLDEsMzguNTUsOC44NkE2Ny41NCw2Ny41NCwwLDAsMSw0ODQuMDYsNzZRNDk0LDkyLDQ5NCwxMTIuNDh0LTkuOTUsMzYuNjdhNjcuMjQsNjcuMjQsMCwwLDEtMjcuMzUsMjVBODMuODYsODMuODYsMCwwLDEsNDE4LjE2LDE4M0gzODEuOHY4MS43NWgtNDJabTc5LjU4LDEwMXExNS41NCwwLDI0LjQtOWEyOS45NCwyOS45NCwwLDAsMCw4Ljg2LTIxLjc2LDI5LjQ0LDI5LjQ0LDAsMCwwLTguODYtMjEuNjFRNDM0Ljk0LDgyLDQxOS40MSw4MkgzODEuOHY2MS4yM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik01MTkuMTgsNDIuMjNINTU5LjlWMjY0Ljc5SDUxOS4xOFoiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik02MjcuMzUsMjU4LjcyYTc4LjM0LDc4LjM0LDAsMCwxLTMwLTMwLjE0cS0xMC43MS0xOS4xMi0xMC43Mi00My4wNmE4Ni44MSw4Ni44MSwwLDAsMSwxMC43Mi00Mi44OSw3OC4wOSw3OC4wOSwwLDAsMSwzMC0zMC4zMXExOS4yNy0xMSw0My44My0xMSwyNC4yNCwwLDQzLjUyLDExYTc4LjE0LDc4LjE0LDAsMCwxLDMwLDMwLjMxcTEwLjcyLDE5LjI3LDEwLjcyLDQyLjg5LDAsMjMuOTQtMTAuNzIsNDMuMDZhNzguMzgsNzguMzgsMCwwLDEtMzAsMzAuMTRxLTE5LjI5LDExLTQzLjUyLDExUTY0Ni42MSwyNjkuNzYsNjI3LjM1LDI1OC43MlptNjUuNTktMzIuMTdhNDEsNDEsMCwwLDAsMTUuODUtMTYuMTZxNS45LTEwLjU2LDUuOTEtMjQuODcsMC0xNC01LjkxLTI0LjU1YTQxLjE3LDQxLjE3LDAsMCwwLTE1Ljg1LTE2LjE3LDQ1LjE1LDQ1LjE1LDAsMCwwLTQzLjUyLDAsNDIuMTcsNDIuMTcsMCwwLDAtMTYsMTYuMTdxLTYuMDYsMTAuNTYtNi4wNiwyNC41NWE0OS4zOCw0OS4zOCwwLDAsMCw2LjA2LDI0LjcyLDQxLjgsNDEuOCwwLDAsMCwxNiwxNi4zMSw0NS4wOCw0NS4wOCwwLDAsMCw0My41MiwwWiIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI3NzUuMzIgMjY0Ljc5IDgxNi4xMyAyNjQuNzkgODE2LjEzIDE0MS4wOCA4NTggMTQxLjA4IDg1OCAxMDYuMjcgODE2LjEzIDEwNi4yNyA4MTYuMTMgNjEuNTEgODE2LjA0IDYxLjUxIDc3NS4zMiA2MS41MSA3NzUuMzIgMjY0Ljc5Ii8+PGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSIyODAuNjIiIGN5PSI2Mi41OSIgcj0iMjYuMjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMTc2LjMgMTY1LjE2IDE3Ni4zIDIwNS4xMiA4Mi4zNSAyMzAuMDkgODIuMzUgMTkwLjE0IDExMi42OCAxODIuMDggMTM4LjA1IDE3NS4zNCAxNzYuMyAxNjUuMTYiLz48cG9seWdvbiBjbGFzcz0iY2xzLTMiIHBvaW50cz0iMTc2LjMgMTU5LjA0IDE3Ni4zIDE5OC45OSAxMTIuNjggMTgyLjA4IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEzNC4wNiAxNzYuMyAxNTkuMDQiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNzYuMyw0MS4yOVYyNjQuNzhoNDIuMTVWNDEuMjlaTTQwLjIxLDI2NC43OEg4Mi4zNVY0MS4yOUg0MC4yMVoiLz48cG9seWdvbiBjbGFzcz0iY2xzLTQiIHBvaW50cz0iMTc2LjMgMTQ1LjU0IDE3Ni4zIDE4NS41IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEyMC41OCAxMjYuNzUgMTMyLjM4IDE1MS4xNyAxMzguODcgMTc2LjMgMTQ1LjU0Ii8+PHBvbHlnb24gY2xhc3M9ImNscy0zIiBwb2ludHM9IjE3Ni4zIDExOS4yIDEyNi43NSAxMzIuMzggMTUxLjE3IDEzOC44NyAxMjUuNzkgMTQ1LjYyIDgyLjM1IDE1Ny4xNiA4Mi4zNSAxMTcuMjEgMTc2LjMgOTIuMjQgMTc2LjMgMTE5LjIiLz48cG9seWdvbiBjbGFzcz0iY2xzLTUiIHBvaW50cz0iMTc2LjMgNzkuMjUgMTc2LjMgMTE5LjIgMTI2Ljc1IDEzMi4zOCAxMDEuMzggMTM5LjEyIDgyLjM1IDE0NC4xOCA4Mi4zNSAxMDQuMjMgMTc2LjMgNzkuMjUiLz48L3N2Zz4K");
 // CONCATENATED MODULE: ./src/tutorial/tutorial.tsx
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -67788,7 +67790,67 @@ var tutorial_assign = (undefined && undefined.__assign) || function () {
 
 
 
+//@ts-ignore
+
 ;
+var tutorial_StepHiPlotInfo = /** @class */ (function (_super) {
+    tutorial_extends(StepHiPlotInfo, _super);
+    function StepHiPlotInfo() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StepHiPlotInfo.prototype.render = function () {
+        // @ts-ignore
+        var pkgInfo = "lib-hiplot-0.1.16.dev80";
+        if (pkgInfo === undefined) {
+            pkgInfo = "hiplot (no version information)";
+        }
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-primary", role: "alert" },
+            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "row" },
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "col-md-8" },
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("h4", { className: "alert-heading" }, "Welcome to HiPlot \"getting started\" tutorial"),
+                    "Click the button \"Next\" to start"),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "col-md-4" },
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("img", { style: { height: '50px' }, src: logo }),
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("br", null),
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("span", { style: { "fontFamily": "monospace" } }, pkgInfo))),
+            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("hr", null),
+            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", null, "Learn more:"),
+            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("ul", null,
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("li", null,
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://ai.facebook.com/blog/hiplot-high-dimensional-interactive-plots-made-easy/" }, "HiPlot launch on Facebook AI blog")),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("li", null,
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://github.com/facebookresearch/hiplot" }, "https://github.com/facebookresearch/hiplot/"),
+                    ": star us on github or post issues"),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("li", null,
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://facebookresearch.github.io/hiplot/" }, "documentation")),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("li", null,
+                    "We provide both python (",
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://pypi.org/project/hiplot/" }, "pip"),
+                    ", ",
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://anaconda.org/conda-forge/hiplot" }, "conda"),
+                    ") and javascript (",
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://www.npmjs.com/package/hiplot" }, "hiplot on NPM"),
+                    ") packages")),
+            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("hr", null),
+            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", null, "Did you know that HiPlot can be used:"),
+            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("ul", null,
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("li", null,
+                    "In an ",
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://facebookresearch.github.io/hiplot/getting_started.html#option-1-use-hiplot-in-an-ipython-notebook" }, "ipython notebook"),
+                    " or in ",
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://facebookresearch.github.io/hiplot/tuto_streamlit.html#tutostreamlit" }, "Streamlit apps")),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("li", null,
+                    "As a ",
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://facebookresearch.github.io/hiplot/tuto_javascript.html" }, "HiPlot react component")),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("li", null,
+                    "As a ",
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://facebookresearch.github.io/hiplot/getting_started.html#option-2-use-hiplot-webserver" }, "standalone web server")),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("li", null,
+                    "Or simply ",
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://facebookresearch.github.io/hiplot/_static/hiplot_upload.html" }, "without any setup if you have a CSV file with your data")))));
+    };
+    return StepHiPlotInfo;
+}(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
 var tutorial_StepParallelPlot = /** @class */ (function (_super) {
     tutorial_extends(StepParallelPlot, _super);
     function StepParallelPlot() {
@@ -67801,7 +67863,7 @@ var tutorial_StepParallelPlot = /** @class */ (function (_super) {
         jquery_default()(this.props.rootRef.current.parentElement).find('.pplot-root').removeClass(style_default.a.highlightElement);
     };
     StepParallelPlot.prototype.render = function () {
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-info", role: "alert" },
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-primary", role: "alert" },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("h4", { className: "alert-heading" }, "Step 1/4: The parallel plot"),
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", null,
                 "The first plot you see above is a ",
@@ -67827,7 +67889,7 @@ var tutorial_StepLearnToSlice = /** @class */ (function (_super) {
         jquery_default()(this.props.rootRef.current.parentElement).find('.pplot-brush').removeClass(style_default.a.highlightElement);
     };
     StepLearnToSlice.prototype.render = function () {
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-info", role: "alert" },
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-primary", role: "alert" },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("h4", { className: "alert-heading" }, "Step 2/4: Slicing data"),
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", null,
                 "Slicing along an axis allows to discover patterns in the data. ",
@@ -67850,7 +67912,7 @@ var tutorial_StepMoveAndRemoveColumns = /** @class */ (function (_super) {
         jquery_default()(this.props.rootRef.current.parentElement).find('.pplot-label').removeClass(style_default.a.highlightText);
     };
     StepMoveAndRemoveColumns.prototype.render = function () {
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-info", role: "alert" },
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-primary", role: "alert" },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("h4", { className: "alert-heading" }, "Step 3/4: Move and remove axis"),
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", null,
                 "Move an axis by ",
@@ -67873,7 +67935,7 @@ var tutorial_StepDataTypeAndScaling = /** @class */ (function (_super) {
         jquery_default()(this.props.rootRef.current.parentElement).find('.pplot-label').removeClass(style_default.a.highlightText);
     };
     StepDataTypeAndScaling.prototype.render = function () {
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-info", role: "alert" },
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-primary", role: "alert" },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("h4", { className: "alert-heading" }, "Step 4/4: Data type and scaling"),
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", null,
                 external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("strong", null, "Right click on an axis"),
@@ -67886,26 +67948,6 @@ var tutorial_StepDataTypeAndScaling = /** @class */ (function (_super) {
     };
     return StepDataTypeAndScaling;
 }(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
-var tutorial_StepTutorialDone = /** @class */ (function (_super) {
-    tutorial_extends(StepTutorialDone, _super);
-    function StepTutorialDone() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    StepTutorialDone.prototype.render = function () {
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-success", role: "alert" },
-            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("h4", { className: "alert-heading" }, "Well done!"),
-            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", null,
-                "Aww yeah, you successfully finished the tutorial! We hope you enjoy using HiPlot :)",
-                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("br", null),
-                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("a", { href: "https://facebookresearch.github.io/hiplot/" }, "Check the documentation"),
-                " to learn more, or click ",
-                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("strong", null, "Done"),
-                " to finish the tutorial."),
-            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("hr", null),
-            external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", { className: "mb-0" }, "Did you know that you can use HiPlot in your ipython notebooks as well?")));
-    };
-    return StepTutorialDone;
-}(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
 ;
 ;
 var tutorial_HiPlotTutorial = /** @class */ (function (_super) {
@@ -67913,11 +67955,11 @@ var tutorial_HiPlotTutorial = /** @class */ (function (_super) {
     function HiPlotTutorial(props) {
         var _this = _super.call(this, props) || this;
         _this.steps = [
+            function (p) { return external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(tutorial_StepHiPlotInfo, tutorial_assign({}, p)); },
             function (p) { return external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(tutorial_StepParallelPlot, tutorial_assign({}, p)); },
             function (p) { return external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(tutorial_StepLearnToSlice, tutorial_assign({}, p)); },
             function (p) { return external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(tutorial_StepMoveAndRemoveColumns, tutorial_assign({}, p)); },
             function (p) { return external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(tutorial_StepDataTypeAndScaling, tutorial_assign({}, p)); },
-            function (p) { return external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(tutorial_StepTutorialDone, tutorial_assign({}, p)); },
         ];
         _this.state = {
             stepNum: 0
@@ -67925,6 +67967,10 @@ var tutorial_HiPlotTutorial = /** @class */ (function (_super) {
         return _this;
     }
     HiPlotTutorial.prototype.onClickNextTutorial = function () {
+        if (this.state.stepNum == this.steps.length - 1) {
+            this.props.onTutorialDone();
+            return;
+        }
         this.setState(function (prevState, prevProps) {
             return {
                 stepNum: Math.min(prevState.stepNum + 1, this.steps.length - 1)
@@ -67932,6 +67978,10 @@ var tutorial_HiPlotTutorial = /** @class */ (function (_super) {
         });
     };
     HiPlotTutorial.prototype.onClickPreviousTutorial = function () {
+        if (this.state.stepNum == 0) {
+            this.props.onTutorialDone();
+            return;
+        }
         this.setState(function (prevState, prevProps) {
             return {
                 stepNum: Math.max(prevState.stepNum - 1, 0)
@@ -67939,17 +67989,13 @@ var tutorial_HiPlotTutorial = /** @class */ (function (_super) {
         });
     };
     HiPlotTutorial.prototype.render = function () {
-        var _this = this;
         return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "row " + style_default.a.tutoAlert },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "col-md-9" }, this.steps[this.state.stepNum]({
                 rootRef: this.props.navbarRoot
             })),
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "col-md-3" },
-                this.state.stepNum > 0 && external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("button", { className: "btn btn-outline-primary", onClick: this.onClickPreviousTutorial.bind(this) }, "Previous"),
-                this.state.stepNum + 1 < this.steps.length &&
-                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("button", { className: "btn btn-outline-primary", onClick: this.onClickNextTutorial.bind(this) }, "Next"),
-                this.state.stepNum + 1 == this.steps.length &&
-                    external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("button", { className: "btn btn-outline-primary", onClick: function () { return _this.props.onTutorialDone(); } }, "Done"))));
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("button", { className: "btn btn-outline-secondary", style: { "width": "6em" }, onClick: this.onClickPreviousTutorial.bind(this) }, this.state.stepNum > 0 ? "Previous" : "Close"),
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("button", { className: "btn btn-outline-primary", style: { "width": "6em" }, onClick: this.onClickNextTutorial.bind(this) }, this.state.stepNum + 1 < this.steps.length ? "Next" : "Finish"))));
     };
     return HiPlotTutorial;
 }(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
@@ -68065,7 +68111,7 @@ var header_HeaderBar = /** @class */ (function (_super) {
                         external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("button", { title: "Start HiPlot tutorial", className: "btn btn-sm btn-light", onClick: this.onToggleTutorial.bind(this) }, "Help"),
                         external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { style: { clear: 'both' } })),
                     external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: hiplot_default.a.controlGroup },
-                        external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { style: { "fontFamily": "monospace" } },
+                        external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { style: { "fontFamily": "monospace", "fontSize": "14px" } },
                             "Selected: ",
                             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("strong", { ref: this.selected_count_ref, style: { "minWidth": "4em", "textAlign": "right", "display": "inline-block" } }, "??"),
                             "/",
@@ -68076,14 +68122,11 @@ var header_HeaderBar = /** @class */ (function (_super) {
     };
     HeaderBar.prototype.render = function () {
         var _this = this;
-        var controlsOrTutorial = this.state.hasTutorial ?
-            (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", null,
-                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(tutorial_HiPlotTutorial, { navbarRoot: this.controls_root_ref, onTutorialDone: (function () { return _this.setState({ hasTutorial: false }); }).bind(this) }))) :
-            this.renderControls();
         return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { ref: this.controls_root_ref, className: "container-fluid " + hiplot_default.a.header },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "d-flex flex-wrap" },
                 external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("img", { style: { height: '55px' }, src: this.props.dark ? icon_w : icon }),
-                controlsOrTutorial)));
+                this.renderControls()),
+            this.state.hasTutorial && external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement(tutorial_HiPlotTutorial, { navbarRoot: this.controls_root_ref, onTutorialDone: (function () { return _this.setState({ hasTutorial: false }); }).bind(this) })));
     };
     return HeaderBar;
 }(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
@@ -68137,8 +68180,6 @@ var StaticDataProvider = /** @class */ (function (_super) {
 }(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
 
 
-// CONCATENATED MODULE: ./hiplot/static/logo.svg
-/* harmony default export */ var logo = ("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4OTkuMzMgMzA2LjMzIj48ZGVmcz48c3R5bGU+LmNscy0xLC5jbHMtM3tmaWxsOiM0MjE4Nzc7fS5jbHMtMntmaWxsOiMwMGU1YjY7fS5jbHMtM3tvcGFjaXR5OjAuMzU7fS5jbHMtNHtmaWxsOiNmZmI4MDI7fS5jbHMtNXtmaWxsOiNmZjcwNjA7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5IaVBsb3QtTG9nbzwvdGl0bGU+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjYwLjI2LDEwNi4yNkgzMDFWMjY0Ljc5SDI2MC4yNloiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0zMzkuODMsNDIuMjNoNzguMzNhODMuNzMsODMuNzMsMCwwLDEsMzguNTUsOC44NkE2Ny41NCw2Ny41NCwwLDAsMSw0ODQuMDYsNzZRNDk0LDkyLDQ5NCwxMTIuNDh0LTkuOTUsMzYuNjdhNjcuMjQsNjcuMjQsMCwwLDEtMjcuMzUsMjVBODMuODYsODMuODYsMCwwLDEsNDE4LjE2LDE4M0gzODEuOHY4MS43NWgtNDJabTc5LjU4LDEwMXExNS41NCwwLDI0LjQtOWEyOS45NCwyOS45NCwwLDAsMCw4Ljg2LTIxLjc2LDI5LjQ0LDI5LjQ0LDAsMCwwLTguODYtMjEuNjFRNDM0Ljk0LDgyLDQxOS40MSw4MkgzODEuOHY2MS4yM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik01MTkuMTgsNDIuMjNINTU5LjlWMjY0Ljc5SDUxOS4xOFoiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik02MjcuMzUsMjU4LjcyYTc4LjM0LDc4LjM0LDAsMCwxLTMwLTMwLjE0cS0xMC43MS0xOS4xMi0xMC43Mi00My4wNmE4Ni44MSw4Ni44MSwwLDAsMSwxMC43Mi00Mi44OSw3OC4wOSw3OC4wOSwwLDAsMSwzMC0zMC4zMXExOS4yNy0xMSw0My44My0xMSwyNC4yNCwwLDQzLjUyLDExYTc4LjE0LDc4LjE0LDAsMCwxLDMwLDMwLjMxcTEwLjcyLDE5LjI3LDEwLjcyLDQyLjg5LDAsMjMuOTQtMTAuNzIsNDMuMDZhNzguMzgsNzguMzgsMCwwLDEtMzAsMzAuMTRxLTE5LjI5LDExLTQzLjUyLDExUTY0Ni42MSwyNjkuNzYsNjI3LjM1LDI1OC43MlptNjUuNTktMzIuMTdhNDEsNDEsMCwwLDAsMTUuODUtMTYuMTZxNS45LTEwLjU2LDUuOTEtMjQuODcsMC0xNC01LjkxLTI0LjU1YTQxLjE3LDQxLjE3LDAsMCwwLTE1Ljg1LTE2LjE3LDQ1LjE1LDQ1LjE1LDAsMCwwLTQzLjUyLDAsNDIuMTcsNDIuMTcsMCwwLDAtMTYsMTYuMTdxLTYuMDYsMTAuNTYtNi4wNiwyNC41NWE0OS4zOCw0OS4zOCwwLDAsMCw2LjA2LDI0LjcyLDQxLjgsNDEuOCwwLDAsMCwxNiwxNi4zMSw0NS4wOCw0NS4wOCwwLDAsMCw0My41MiwwWiIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI3NzUuMzIgMjY0Ljc5IDgxNi4xMyAyNjQuNzkgODE2LjEzIDE0MS4wOCA4NTggMTQxLjA4IDg1OCAxMDYuMjcgODE2LjEzIDEwNi4yNyA4MTYuMTMgNjEuNTEgODE2LjA0IDYxLjUxIDc3NS4zMiA2MS41MSA3NzUuMzIgMjY0Ljc5Ii8+PGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSIyODAuNjIiIGN5PSI2Mi41OSIgcj0iMjYuMjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMTc2LjMgMTY1LjE2IDE3Ni4zIDIwNS4xMiA4Mi4zNSAyMzAuMDkgODIuMzUgMTkwLjE0IDExMi42OCAxODIuMDggMTM4LjA1IDE3NS4zNCAxNzYuMyAxNjUuMTYiLz48cG9seWdvbiBjbGFzcz0iY2xzLTMiIHBvaW50cz0iMTc2LjMgMTU5LjA0IDE3Ni4zIDE5OC45OSAxMTIuNjggMTgyLjA4IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEzNC4wNiAxNzYuMyAxNTkuMDQiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNzYuMyw0MS4yOVYyNjQuNzhoNDIuMTVWNDEuMjlaTTQwLjIxLDI2NC43OEg4Mi4zNVY0MS4yOUg0MC4yMVoiLz48cG9seWdvbiBjbGFzcz0iY2xzLTQiIHBvaW50cz0iMTc2LjMgMTQ1LjU0IDE3Ni4zIDE4NS41IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEyMC41OCAxMjYuNzUgMTMyLjM4IDE1MS4xNyAxMzguODcgMTc2LjMgMTQ1LjU0Ii8+PHBvbHlnb24gY2xhc3M9ImNscy0zIiBwb2ludHM9IjE3Ni4zIDExOS4yIDEyNi43NSAxMzIuMzggMTUxLjE3IDEzOC44NyAxMjUuNzkgMTQ1LjYyIDgyLjM1IDE1Ny4xNiA4Mi4zNSAxMTcuMjEgMTc2LjMgOTIuMjQgMTc2LjMgMTE5LjIiLz48cG9seWdvbiBjbGFzcz0iY2xzLTUiIHBvaW50cz0iMTc2LjMgNzkuMjUgMTc2LjMgMTE5LjIgMTI2Ljc1IDEzMi4zOCAxMDEuMzggMTM5LjEyIDgyLjM1IDE0NC4xOCA4Mi4zNSAxMDQuMjMgMTc2LjMgNzkuMjUiLz48L3N2Zz4K");
 // CONCATENATED MODULE: ./hiplot/static/logo-w.svg
 /* harmony default export */ var logo_w = ("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4OTkuMzMgMzA2LjMzIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2ZmZjt9LmNscy0ye2ZpbGw6IzAwZTViNjt9LmNscy0ze2ZpbGw6IzQyMTg3NztvcGFjaXR5OjAuMzU7fS5jbHMtNHtmaWxsOiNmZmI4MDI7fS5jbHMtNXtmaWxsOiNmZjcwNjA7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5IaVBsb3QtTG9nby1XaGl0ZTwvdGl0bGU+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjYwLjI2LDEwNi4yNkgzMDFWMjY0Ljc5SDI2MC4yNloiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0zMzkuODMsNDIuMjNoNzguMzNhODMuNzMsODMuNzMsMCwwLDEsMzguNTUsOC44NkE2Ny41NCw2Ny41NCwwLDAsMSw0ODQuMDYsNzZRNDk0LDkyLDQ5NCwxMTIuNDh0LTkuOTUsMzYuNjdhNjcuMjQsNjcuMjQsMCwwLDEtMjcuMzUsMjVBODMuODYsODMuODYsMCwwLDEsNDE4LjE2LDE4M0gzODEuOHY4MS43NWgtNDJabTc5LjU4LDEwMXExNS41NCwwLDI0LjQtOWEyOS45NCwyOS45NCwwLDAsMCw4Ljg2LTIxLjc2LDI5LjQ0LDI5LjQ0LDAsMCwwLTguODYtMjEuNjFRNDM0Ljk0LDgyLDQxOS40MSw4MkgzODEuOHY2MS4yM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik01MTkuMTgsNDIuMjNINTU5LjlWMjY0Ljc5SDUxOS4xOFoiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik02MjcuMzUsMjU4LjcyYTc4LjM0LDc4LjM0LDAsMCwxLTMwLTMwLjE0cS0xMC43MS0xOS4xMi0xMC43Mi00My4wNmE4Ni44MSw4Ni44MSwwLDAsMSwxMC43Mi00Mi44OSw3OC4wOSw3OC4wOSwwLDAsMSwzMC0zMC4zMXExOS4yNy0xMSw0My44My0xMSwyNC4yNCwwLDQzLjUyLDExYTc4LjE0LDc4LjE0LDAsMCwxLDMwLDMwLjMxcTEwLjcyLDE5LjI3LDEwLjcyLDQyLjg5LDAsMjMuOTQtMTAuNzIsNDMuMDZhNzguMzgsNzguMzgsMCwwLDEtMzAsMzAuMTRxLTE5LjI5LDExLTQzLjUyLDExUTY0Ni42MSwyNjkuNzYsNjI3LjM1LDI1OC43MlptNjUuNTktMzIuMTdhNDEsNDEsMCwwLDAsMTUuODUtMTYuMTZxNS45LTEwLjU2LDUuOTEtMjQuODcsMC0xNC01LjkxLTI0LjU1YTQxLjE3LDQxLjE3LDAsMCwwLTE1Ljg1LTE2LjE3LDQ1LjE1LDQ1LjE1LDAsMCwwLTQzLjUyLDAsNDIuMTcsNDIuMTcsMCwwLDAtMTYsMTYuMTdxLTYuMDYsMTAuNTYtNi4wNiwyNC41NWE0OS4zOCw0OS4zOCwwLDAsMCw2LjA2LDI0LjcyLDQxLjgsNDEuOCwwLDAsMCwxNiwxNi4zMSw0NS4wOCw0NS4wOCwwLDAsMCw0My41MiwwWiIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI3NzUuMzIgMjY0Ljc5IDgxNi4xMyAyNjQuNzkgODE2LjEzIDE0MS4wOCA4NTggMTQxLjA4IDg1OCAxMDYuMjcgODE2LjEzIDEwNi4yNyA4MTYuMTMgNjEuNTEgODE2LjA0IDYxLjUxIDc3NS4zMiA2MS41MSA3NzUuMzIgMjY0Ljc5Ii8+PGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSIyODAuNjIiIGN5PSI2Mi41OSIgcj0iMjYuMjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMTc2LjMgMTY1LjE2IDE3Ni4zIDIwNS4xMiA4Mi4zNSAyMzAuMDkgODIuMzUgMTkwLjE0IDExMi42OCAxODIuMDggMTM4LjA1IDE3NS4zNCAxNzYuMyAxNjUuMTYiLz48cG9seWdvbiBjbGFzcz0iY2xzLTMiIHBvaW50cz0iMTc2LjMgMTU5LjA0IDE3Ni4zIDE5OC45OSAxMTIuNjggMTgyLjA4IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEzNC4wNiAxNzYuMyAxNTkuMDQiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNzYuMyw0MS4yOVYyNjQuNzhoNDIuMTVWNDEuMjlaTTQwLjIxLDI2NC43OEg4Mi4zNVY0MS4yOUg0MC4yMVoiLz48cG9seWdvbiBjbGFzcz0iY2xzLTQiIHBvaW50cz0iMTc2LjMgMTQ1LjU0IDE3Ni4zIDE4NS41IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEyMC41OCAxMjYuNzUgMTMyLjM4IDE1MS4xNyAxMzguODcgMTc2LjMgMTQ1LjU0Ii8+PHBvbHlnb24gY2xhc3M9ImNscy0zIiBwb2ludHM9IjE3Ni4zIDExOS4yIDEyNi43NSAxMzIuMzggMTUxLjE3IDEzOC44NyAxMjUuNzkgMTQ1LjYyIDgyLjM1IDE1Ny4xNiA4Mi4zNSAxMTcuMjEgMTc2LjMgOTIuMjQgMTc2LjMgMTE5LjIiLz48cG9seWdvbiBjbGFzcz0iY2xzLTUiIHBvaW50cz0iMTc2LjMgNzkuMjUgMTc2LjMgMTE5LjIgMTI2Ljc1IDEzMi4zOCAxMDEuMzggMTM5LjEyIDgyLjM1IDE0NC4xOCA4Mi4zNSAxMDQuMjMgMTc2LjMgNzkuMjUiLz48L3N2Zz4K");
 // CONCATENATED MODULE: ./src/component.tsx

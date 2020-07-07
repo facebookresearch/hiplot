@@ -385,7 +385,7 @@ var ParallelPlot = /** @class */ (function (_super) {
                         return {
                             dragging: {
                                 col: d,
-                                pos: Math.min(me.w, Math.max(0, prevState.dragging.origin += eventdx)),
+                                pos: Math.min(me.w, Math.max(0, prevState.dragging.pos + eventdx)),
                                 origin: prevState.dragging.origin,
                                 dragging: true
                             }

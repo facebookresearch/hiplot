@@ -106,7 +106,7 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                         <div style={{clear:'both'}}></div>
                     </div>
                     <div className={style.controlGroup}>
-                        <div style={{"fontFamily": "monospace"}}>
+                        <div style={{"fontFamily": "monospace", "fontSize": "14px"}}>
             Selected: <strong ref={this.selected_count_ref} style={{"minWidth": "4em", "textAlign": "right", "display": "inline-block"}}>??</strong>
                     /<strong ref={this.total_count_ref} style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>??</strong> (
                         <span style={{"minWidth": "3em", "textAlign": "right", "display": "inline-block"}} ref={this.selected_pct_ref}>??</span>%)
@@ -117,16 +117,13 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         </React.Fragment>);
     }
     render() {
-        var controlsOrTutorial = this.state.hasTutorial ?
-            (<div>
-                <HiPlotTutorial navbarRoot={this.controls_root_ref} onTutorialDone={(() => this.setState({hasTutorial: false})).bind(this)}/>
-            </div>) :
-            this.renderControls();
         return (<div ref={this.controls_root_ref} className={"container-fluid " + style.header}>
         <div className={"d-flex flex-wrap"}>
             <img style={{height: '55px'}} src={this.props.dark ? IconSVGW : IconSVG} />
-            {controlsOrTutorial}
-        </div></div>);
+            {this.renderControls()}
+        </div>
+        {this.state.hasTutorial && <HiPlotTutorial navbarRoot={this.controls_root_ref} onTutorialDone={(() => this.setState({hasTutorial: false})).bind(this)}/>}
+    </div>);
     }
 };
 

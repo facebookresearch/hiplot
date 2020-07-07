@@ -31,7 +31,67 @@ var __assign = (this && this.__assign) || function () {
 import $ from "jquery";
 import React from "react";
 import style from "./style.scss";
+//@ts-ignore
+import LogoSVG from "../../hiplot/static/logo.svg";
 ;
+var StepHiPlotInfo = /** @class */ (function (_super) {
+    __extends(StepHiPlotInfo, _super);
+    function StepHiPlotInfo() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StepHiPlotInfo.prototype.render = function () {
+        // @ts-ignore
+        var pkgInfo = HIPLOT_PACKAGE_NAME_FULL;
+        if (pkgInfo === undefined) {
+            pkgInfo = "hiplot (no version information)";
+        }
+        return (React.createElement("div", { className: "alert alert-primary", role: "alert" },
+            React.createElement("div", { className: "row" },
+                React.createElement("div", { className: "col-md-8" },
+                    React.createElement("h4", { className: "alert-heading" }, "Welcome to HiPlot \"getting started\" tutorial"),
+                    "Click the button \"Next\" to start"),
+                React.createElement("div", { className: "col-md-4" },
+                    React.createElement("img", { style: { height: '50px' }, src: LogoSVG }),
+                    React.createElement("br", null),
+                    React.createElement("span", { style: { "fontFamily": "monospace" } }, pkgInfo))),
+            React.createElement("hr", null),
+            React.createElement("p", null, "Learn more:"),
+            React.createElement("ul", null,
+                React.createElement("li", null,
+                    React.createElement("a", { href: "https://ai.facebook.com/blog/hiplot-high-dimensional-interactive-plots-made-easy/" }, "HiPlot launch on Facebook AI blog")),
+                React.createElement("li", null,
+                    React.createElement("a", { href: "https://github.com/facebookresearch/hiplot" }, "https://github.com/facebookresearch/hiplot/"),
+                    ": star us on github or post issues"),
+                React.createElement("li", null,
+                    React.createElement("a", { href: "https://facebookresearch.github.io/hiplot/" }, "documentation")),
+                React.createElement("li", null,
+                    "We provide both python (",
+                    React.createElement("a", { href: "https://pypi.org/project/hiplot/" }, "pip"),
+                    ", ",
+                    React.createElement("a", { href: "https://anaconda.org/conda-forge/hiplot" }, "conda"),
+                    ") and javascript (",
+                    React.createElement("a", { href: "https://www.npmjs.com/package/hiplot" }, "hiplot on NPM"),
+                    ") packages")),
+            React.createElement("hr", null),
+            React.createElement("p", null, "Did you know that HiPlot can be used:"),
+            React.createElement("ul", null,
+                React.createElement("li", null,
+                    "In an ",
+                    React.createElement("a", { href: "https://facebookresearch.github.io/hiplot/getting_started.html#option-1-use-hiplot-in-an-ipython-notebook" }, "ipython notebook"),
+                    " or in ",
+                    React.createElement("a", { href: "https://facebookresearch.github.io/hiplot/tuto_streamlit.html#tutostreamlit" }, "Streamlit apps")),
+                React.createElement("li", null,
+                    "As a ",
+                    React.createElement("a", { href: "https://facebookresearch.github.io/hiplot/tuto_javascript.html" }, "HiPlot react component")),
+                React.createElement("li", null,
+                    "As a ",
+                    React.createElement("a", { href: "https://facebookresearch.github.io/hiplot/getting_started.html#option-2-use-hiplot-webserver" }, "standalone web server")),
+                React.createElement("li", null,
+                    "Or simply ",
+                    React.createElement("a", { href: "https://facebookresearch.github.io/hiplot/_static/hiplot_upload.html" }, "without any setup if you have a CSV file with your data")))));
+    };
+    return StepHiPlotInfo;
+}(React.Component));
 var StepParallelPlot = /** @class */ (function (_super) {
     __extends(StepParallelPlot, _super);
     function StepParallelPlot() {
@@ -44,7 +104,7 @@ var StepParallelPlot = /** @class */ (function (_super) {
         $(this.props.rootRef.current.parentElement).find('.pplot-root').removeClass(style.highlightElement);
     };
     StepParallelPlot.prototype.render = function () {
-        return (React.createElement("div", { className: "alert alert-info", role: "alert" },
+        return (React.createElement("div", { className: "alert alert-primary", role: "alert" },
             React.createElement("h4", { className: "alert-heading" }, "Step 1/4: The parallel plot"),
             React.createElement("p", null,
                 "The first plot you see above is a ",
@@ -70,7 +130,7 @@ var StepLearnToSlice = /** @class */ (function (_super) {
         $(this.props.rootRef.current.parentElement).find('.pplot-brush').removeClass(style.highlightElement);
     };
     StepLearnToSlice.prototype.render = function () {
-        return (React.createElement("div", { className: "alert alert-info", role: "alert" },
+        return (React.createElement("div", { className: "alert alert-primary", role: "alert" },
             React.createElement("h4", { className: "alert-heading" }, "Step 2/4: Slicing data"),
             React.createElement("p", null,
                 "Slicing along an axis allows to discover patterns in the data. ",
@@ -93,7 +153,7 @@ var StepMoveAndRemoveColumns = /** @class */ (function (_super) {
         $(this.props.rootRef.current.parentElement).find('.pplot-label').removeClass(style.highlightText);
     };
     StepMoveAndRemoveColumns.prototype.render = function () {
-        return (React.createElement("div", { className: "alert alert-info", role: "alert" },
+        return (React.createElement("div", { className: "alert alert-primary", role: "alert" },
             React.createElement("h4", { className: "alert-heading" }, "Step 3/4: Move and remove axis"),
             React.createElement("p", null,
                 "Move an axis by ",
@@ -116,7 +176,7 @@ var StepDataTypeAndScaling = /** @class */ (function (_super) {
         $(this.props.rootRef.current.parentElement).find('.pplot-label').removeClass(style.highlightText);
     };
     StepDataTypeAndScaling.prototype.render = function () {
-        return (React.createElement("div", { className: "alert alert-info", role: "alert" },
+        return (React.createElement("div", { className: "alert alert-primary", role: "alert" },
             React.createElement("h4", { className: "alert-heading" }, "Step 4/4: Data type and scaling"),
             React.createElement("p", null,
                 React.createElement("strong", null, "Right click on an axis"),
@@ -129,26 +189,6 @@ var StepDataTypeAndScaling = /** @class */ (function (_super) {
     };
     return StepDataTypeAndScaling;
 }(React.Component));
-var StepTutorialDone = /** @class */ (function (_super) {
-    __extends(StepTutorialDone, _super);
-    function StepTutorialDone() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    StepTutorialDone.prototype.render = function () {
-        return (React.createElement("div", { className: "alert alert-success", role: "alert" },
-            React.createElement("h4", { className: "alert-heading" }, "Well done!"),
-            React.createElement("p", null,
-                "Aww yeah, you successfully finished the tutorial! We hope you enjoy using HiPlot :)",
-                React.createElement("br", null),
-                React.createElement("a", { href: "https://facebookresearch.github.io/hiplot/" }, "Check the documentation"),
-                " to learn more, or click ",
-                React.createElement("strong", null, "Done"),
-                " to finish the tutorial."),
-            React.createElement("hr", null),
-            React.createElement("p", { className: "mb-0" }, "Did you know that you can use HiPlot in your ipython notebooks as well?")));
-    };
-    return StepTutorialDone;
-}(React.Component));
 ;
 ;
 var HiPlotTutorial = /** @class */ (function (_super) {
@@ -156,11 +196,11 @@ var HiPlotTutorial = /** @class */ (function (_super) {
     function HiPlotTutorial(props) {
         var _this = _super.call(this, props) || this;
         _this.steps = [
+            function (p) { return React.createElement(StepHiPlotInfo, __assign({}, p)); },
             function (p) { return React.createElement(StepParallelPlot, __assign({}, p)); },
             function (p) { return React.createElement(StepLearnToSlice, __assign({}, p)); },
             function (p) { return React.createElement(StepMoveAndRemoveColumns, __assign({}, p)); },
             function (p) { return React.createElement(StepDataTypeAndScaling, __assign({}, p)); },
-            function (p) { return React.createElement(StepTutorialDone, __assign({}, p)); },
         ];
         _this.state = {
             stepNum: 0
@@ -168,6 +208,10 @@ var HiPlotTutorial = /** @class */ (function (_super) {
         return _this;
     }
     HiPlotTutorial.prototype.onClickNextTutorial = function () {
+        if (this.state.stepNum == this.steps.length - 1) {
+            this.props.onTutorialDone();
+            return;
+        }
         this.setState(function (prevState, prevProps) {
             return {
                 stepNum: Math.min(prevState.stepNum + 1, this.steps.length - 1)
@@ -175,6 +219,10 @@ var HiPlotTutorial = /** @class */ (function (_super) {
         });
     };
     HiPlotTutorial.prototype.onClickPreviousTutorial = function () {
+        if (this.state.stepNum == 0) {
+            this.props.onTutorialDone();
+            return;
+        }
         this.setState(function (prevState, prevProps) {
             return {
                 stepNum: Math.max(prevState.stepNum - 1, 0)
@@ -182,17 +230,13 @@ var HiPlotTutorial = /** @class */ (function (_super) {
         });
     };
     HiPlotTutorial.prototype.render = function () {
-        var _this = this;
         return (React.createElement("div", { className: "row " + style.tutoAlert },
             React.createElement("div", { className: "col-md-9" }, this.steps[this.state.stepNum]({
                 rootRef: this.props.navbarRoot
             })),
             React.createElement("div", { className: "col-md-3" },
-                this.state.stepNum > 0 && React.createElement("button", { className: "btn btn-outline-primary", onClick: this.onClickPreviousTutorial.bind(this) }, "Previous"),
-                this.state.stepNum + 1 < this.steps.length &&
-                    React.createElement("button", { className: "btn btn-outline-primary", onClick: this.onClickNextTutorial.bind(this) }, "Next"),
-                this.state.stepNum + 1 == this.steps.length &&
-                    React.createElement("button", { className: "btn btn-outline-primary", onClick: function () { return _this.props.onTutorialDone(); } }, "Done"))));
+                React.createElement("button", { className: "btn btn-outline-secondary", style: { "width": "6em" }, onClick: this.onClickPreviousTutorial.bind(this) }, this.state.stepNum > 0 ? "Previous" : "Close"),
+                React.createElement("button", { className: "btn btn-outline-primary", style: { "width": "6em" }, onClick: this.onClickNextTutorial.bind(this) }, this.state.stepNum + 1 < this.steps.length ? "Next" : "Finish"))));
     };
     return HiPlotTutorial;
 }(React.Component));
