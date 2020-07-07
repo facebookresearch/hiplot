@@ -79,6 +79,8 @@ def demo(n: int = 100) -> hip.Experiment:
             "r": r,
             "c": random.choice(["red", "green", "black"]),
         }
+        if r < 0.1:
+            del p['optimizer']
         if r > 0.3:
             p["optionA"] = random.uniform(1, 5)
         else:
