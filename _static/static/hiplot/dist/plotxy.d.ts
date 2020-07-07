@@ -53,7 +53,8 @@ export declare class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     render(): any[] | JSX.Element;
     componentWillUnmount(): void;
     isEnabled(): boolean;
-    drawSelectedDebounced: any;
+    drawSelected: any;
+    drawSelectedThrottled: any;
     componentDidUpdate(prevProps: PlotXYProps, prevState: any): void;
 }
 export {};

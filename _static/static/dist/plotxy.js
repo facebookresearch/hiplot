@@ -57,11 +57,12 @@ var PlotXY = /** @class */ (function (_super) {
                 this.setState({ height: height, width: width });
             }
         }.bind(_this), 100);
-        _this.drawSelectedDebounced = _.debounce(function () {
+        _this.drawSelected = function () {
             if (this.plot) {
                 this.plot.draw_selected_rows();
             }
-        }.bind(_this), 100);
+        }.bind(_this);
+        _this.drawSelectedThrottled = _.throttle(_this.drawSelected, 100);
         var height;
         if (props.window_state.height) {
             height = props.window_state.height;
@@ -148,7 +149,7 @@ var PlotXY = /** @class */ (function (_super) {
         function redraw_axis_and_rerender() {
             redraw_axis();
             clear_canvas();
-            me.drawSelectedDebounced();
+            me.drawSelectedThrottled();
         }
         function create_scale(param, range) {
             var scale = create_d3_scale(me.props.params_def[param]);
@@ -457,12 +458,13 @@ var PlotXY = /** @class */ (function (_super) {
         function update_axis() {
             recompute_scale(true);
             clear_canvas();
-            me.drawSelectedDebounced();
+            me.drawSelectedThrottled();
         }
         ;
         update_axis();
-        // Initial lines
-        me.drawSelectedDebounced();
+        // Initial lines right now
+        draw_selected_rows();
+        me.drawSelectedThrottled.cancel();
         return {
             clear_canvas: clear_canvas,
             update_axis: update_axis,
@@ -500,7 +502,7 @@ var PlotXY = /** @class */ (function (_super) {
         if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
             this.props.context_menu_ref.current.removeCallbacks(this);
         }
-        this.drawSelectedDebounced.cancel();
+        this.drawSelectedThrottled.cancel();
         this.onResize.cancel();
         if (this.plotXYcontextMenuRef.current) {
             this.plotXYcontextMenuRef.current.removeCallbacks(this);
@@ -556,17 +558,17 @@ var PlotXY = /** @class */ (function (_super) {
         // Check if data changed
         if (this.plot) {
             var scaleRecomputed = false;
+            var colorByChange = this.props.params_def[this.props.colorby] != prevProps.params_def[prevProps.colorby];
             if (this.props.params_def[this.state.axis_x] != prevProps.params_def[this.state.axis_x] ||
-                this.props.params_def[this.state.axis_y] != prevProps.params_def[this.state.axis_y] ||
-                this.props.params_def[this.props.colorby] != prevProps.params_def[this.props.colorby]) {
+                this.props.params_def[this.state.axis_y] != prevProps.params_def[this.state.axis_y]) {
                 this.plot.recompute_scale();
                 scaleRecomputed = true;
             }
-            if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
-                this.drawSelectedDebounced();
+            if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || colorByChange) {
+                this.drawSelectedThrottled();
             }
             if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed ||
-                this.props.colorby != prevProps.colorby ||
+                colorByChange ||
                 this.state.highlightType != prevState.highlightType) {
                 this.plot.draw_highlighted();
             }
