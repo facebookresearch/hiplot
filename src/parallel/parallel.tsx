@@ -508,6 +508,12 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         }
         var min, max;
         if (range.type == ParamType.CATEGORICAL) {
+          if (range.values.length == 0) {
+            return {
+              type: FilterType.None,
+              data: {}
+            };
+          }
           min = `${range.values[0]}`;
           max = `${range.values[range.values.length - 1]}`;
         }
