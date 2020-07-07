@@ -607,18 +607,18 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     // Check if data changed
     if (this.plot) {
       var scaleRecomputed = false;
+      const colorByChange = this.props.params_def[this.props.colorby] != prevProps.params_def[prevProps.colorby];
       if (this.props.params_def[this.state.axis_x] != prevProps.params_def[this.state.axis_x] ||
-        this.props.params_def[this.state.axis_y] != prevProps.params_def[this.state.axis_y] ||
-        this.props.params_def[this.props.colorby] != prevProps.params_def[this.props.colorby]
+        this.props.params_def[this.state.axis_y] != prevProps.params_def[this.state.axis_y]
       ) {
         this.plot.recompute_scale();
         scaleRecomputed = true;
       }
-      if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
+      if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || colorByChange) {
         this.drawSelectedDebounced();
       }
       if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed ||
-          this.props.colorby != prevProps.colorby ||
+          colorByChange ||
           this.state.highlightType != prevState.highlightType) {
         this.plot.draw_highlighted()
       }

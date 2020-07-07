@@ -36,7 +36,6 @@ export interface ParamDef extends HiPlotValueDef {
     __colorscale?: any;
 }
 
-
 const special_numerics = ['inf', '-inf', Infinity, -Infinity, null];
 export function is_special_numeric(x) {
     return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
