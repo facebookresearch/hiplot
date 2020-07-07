@@ -4,13 +4,6 @@ HiPlot component for Streamlit
 ===============================
 
 
-
-.. warning:: **BETA FEATURE**
-
-    Streamlit components are in closed beta testing. If you're interested in trying out HiPlot component,
-    please `reach out to me on Streamlit forum via PM <https://discuss.streamlit.io/u/danthe3rd/>`_
-
-
 `Streamlit <https://www.streamlit.io/>`_ is an open-source app framework. It enables data scientists and machine learning engineers to create beautiful, performant apps in pure Python.
 
 

@@ -68,6 +68,9 @@ Once we have created this object, we can display it with :class:`hiplot.Experime
     <iframe src="./_static/demo/demo_basic_usage.html?hip.PARALLEL_PLOT.height=300" height="700px" width="100%"></iframe>
 
 
+**Learn more** in the tutorial: :ref:`tutoNotebook`
+
+
 .. _getStartedWebserver:
 
 Option 2: Use HiPlot webserver

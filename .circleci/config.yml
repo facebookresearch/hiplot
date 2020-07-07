@@ -5,6 +5,22 @@
 version: 2.1
 
 commands:
+  set_package_name_and_version:
+    steps:
+      - run:
+          name: Set package name and version
+          command: |
+            echo 'export HIPLOT_PACKAGE="hiplot-master"' >> $BASH_ENV
+            if [ -z ${CIRCLE_TAG+x} ];
+            then
+              echo "export HIPLOT_PACKAGE=hiplot-master" >> $BASH_ENV
+              echo "export HIPLOT_VERSION=`git describe --tags --abbrev=0 master`.dev`git rev-list --count HEAD`" >> $BASH_ENV
+            else
+              echo "export HIPLOT_PACKAGE=hiplot" >> $BASH_ENV
+              echo "export HIPLOT_VERSION=$CIRCLE_TAG" >> $BASH_ENV
+            fi
+            source $BASH_ENV
+            echo "Building $HIPLOT_PACKAGE version $HIPLOT_VERSION"
   attach_built_js:
     steps:
       - attach_workspace:
@@ -145,8 +161,6 @@ commands:
       - run:
           name: Set version and package name
           command: |
-            HIPLOT_VERSION=`cat .hiplot_version`
-            HIPLOT_PACKAGE=`cat .hiplot_package`
             echo "Building $HIPLOT_PACKAGE $HIPLOT_VERSION"
 
             # Set version
@@ -262,6 +276,7 @@ jobs:
       - image: node:lts-buster
     steps:
       - checkout
+      - set_package_name_and_version
       - restore_cache:
           keys:
             - v1-npm-deps-{{ checksum "package-lock.json" }}
@@ -281,7 +296,7 @@ jobs:
           name: Gather NPM package files
           command: |
             mkdir -p npm-package/hiplot
-            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"${CIRCLE_TAG:-0.0.0}\",/" package.json
+            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"${HIPLOT_VERSION}\",/" package.json
             cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src npm-build/dist npm-package/hiplot
             rm -rf npm-package/hiplot/dist/hiplot-*  # Leftover from setup.py
       - store_artifacts:
@@ -488,9 +503,7 @@ jobs:
       - image: python:3.7
     steps:
       - checkout
-      - run:
-          name: Set package name and version
-          command: echo $CIRCLE_TAG > .hiplot_version && echo "hiplot" > .hiplot_package
+      - set_package_name_and_version
       - pip_build
 
   pypi-deploy:
@@ -504,9 +517,10 @@ jobs:
       - image: python:3.7
     steps:
       - checkout
+      - set_package_name_and_version
       - run:
           name: Set package name and version
-          command: echo "`git describe --tags --abbrev=0 master`.dev`git rev-list --count HEAD`" > .hiplot_version && echo "hiplot-master" > .hiplot_package
+          command: echo 'export HIPLOT_PACKAGE="hiplot-master"' >> $BASH_ENV
       - pip_build
 
   pypi-deploy-master:
@@ -628,7 +642,6 @@ workflows:
             - browser-render-chrome
             - browser-render-firefox
             - mypy_pytest
-            - pypi-deploy
           filters:
             branches:
               only: master

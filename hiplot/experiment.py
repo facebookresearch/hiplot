@@ -85,9 +85,10 @@ class _StreamlitHelpers:
         if cls.component is not None:
             return
         import streamlit as st
-        if not hasattr(st, 'declare_component'):
-            raise RuntimeError(
-                'Your streamlit version does not support components. Please update streamlit with `pip install -U streamlit`')
+        try:
+            import streamlit.components.v1 as components
+        except ModuleNotFoundError as e:
+            raise RuntimeError(f'Your streamlit version ({st.__version__}) is too old and does not support components. Please update streamlit with `pip install -U streamlit`') from e
         assert st._is_running_with_streamlit
 
         built_path = (Path(__file__).parent / "static" / "built" / "streamlit_component").resolve()
@@ -95,7 +96,7 @@ class _StreamlitHelpers:
 If you did not install hiplot using official channels (pip, conda...), maybe you forgot to build javascript files?
 See https://facebookresearch.github.io/hiplot/contributing.html#building-javascript-bundle
 """
-        cls.component = st.declare_component("hiplot", path=str(built_path))
+        cls.component = components.declare_component("hiplot", path=str(built_path))
 
     @classmethod
     def create_instance_wrapper(
