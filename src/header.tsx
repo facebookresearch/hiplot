@@ -117,16 +117,13 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         </React.Fragment>);
     }
     render() {
-        var controlsOrTutorial = this.state.hasTutorial ?
-            (<div>
-                <HiPlotTutorial navbarRoot={this.controls_root_ref} onTutorialDone={(() => this.setState({hasTutorial: false})).bind(this)}/>
-            </div>) :
-            this.renderControls();
         return (<div ref={this.controls_root_ref} className={"container-fluid " + style.header}>
         <div className={"d-flex flex-wrap"}>
             <img style={{height: '55px'}} src={this.props.dark ? IconSVGW : IconSVG} />
-            {controlsOrTutorial}
-        </div></div>);
+            {this.renderControls()}
+        </div>
+        {this.state.hasTutorial && <HiPlotTutorial navbarRoot={this.controls_root_ref} onTutorialDone={(() => this.setState({hasTutorial: false})).bind(this)}/>}
+    </div>);
     }
 };
 
