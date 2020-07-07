@@ -34,8 +34,9 @@ class WhenDoneCopyToHiplotStaticDir {
 }
 
 const exportConfig = function(env, config = {}) {
-  const version = (env && env.version) ? env.version : '0.0.0';
-  const package_name_full = `${config.web ? "bundle" : "lib"}-hiplot-${version}`;
+  const version = (process.env && process.env.HIPLOT_VERSION) ? process.env.HIPLOT_VERSION : '0.0.0';
+  const package = (config.web && process.env && process.env.HIPLOT_PACKAGE) ? process.env.HIPLOT_PACKAGE : 'hiplot';
+  const package_name_full = `${config.web ? "bundle" : "lib"}-${package}-${version}`;
   var plugins = [
     new LicenseWebpackPlugin(),
     new webpack.BannerPlugin(

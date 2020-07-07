@@ -27,8 +27,14 @@ class StepHiPlotInfo extends React.Component<TutorialStepProps, {}> {
         return (
         <div className="alert alert-primary" role="alert">
             <div className="row">
-                <div className="col-md-8"><h4 className="alert-heading">Welcome to HiPlot "getting started" tutorial</h4>Click the button "Next" to start</div>
-                <div className="col-md-4"><img style={{height: '55px'}} src={LogoSVG} /></div>
+                <div className="col-md-8">
+                    <h4 className="alert-heading">Welcome to HiPlot "getting started" tutorial</h4>
+                    Click the button "Next" to start
+                </div>
+                <div className="col-md-4">
+                    <img style={{height: '50px'}} src={LogoSVG} /><br />
+                    <span style={{"fontFamily": "monospace"}}>{pkgInfo}</span>
+                </div>
             </div>
 
             <hr />
@@ -48,10 +54,6 @@ class StepHiPlotInfo extends React.Component<TutorialStepProps, {}> {
                 <li>As a <a href="https://facebookresearch.github.io/hiplot/getting_started.html#option-2-use-hiplot-webserver">standalone web server</a></li>
                 <li>Or simply <a href="https://facebookresearch.github.io/hiplot/_static/hiplot_upload.html">without any setup if you have a CSV file with your data</a></li>
             </ul>
-            <hr/>
-            <p className="mb-0">
-                <span style={{"fontFamily": "monospace"}}>{pkgInfo}</span>
-            </p>
         </div>
         )
     }
