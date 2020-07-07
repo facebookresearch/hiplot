@@ -181,7 +181,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     function redraw_axis_and_rerender() {
       redraw_axis();
       clear_canvas();
-      me.drawSelectedDebounced();
+      me.drawSelectedThrottled();
     }
     function create_scale(param: string, range) {
       var scale = create_d3_scale(me.props.params_def[param])
@@ -494,12 +494,13 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     function update_axis() {
       recompute_scale(true);
       clear_canvas();
-      me.drawSelectedDebounced();
+      me.drawSelectedThrottled();
     };
     update_axis();
 
-    // Initial lines
-    me.drawSelectedDebounced();
+    // Initial lines right now
+    draw_selected_rows();
+    me.drawSelectedThrottled.cancel();
 
     return {
       clear_canvas: clear_canvas,
@@ -547,7 +548,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     if (this.props.context_menu_ref && this.props.context_menu_ref.current) {
       this.props.context_menu_ref.current.removeCallbacks(this);
     }
-    this.drawSelectedDebounced.cancel();
+    this.drawSelectedThrottled.cancel();
     this.onResize.cancel();
     if (this.plotXYcontextMenuRef.current) {
       this.plotXYcontextMenuRef.current.removeCallbacks(this);
@@ -556,11 +557,12 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
   isEnabled() {
     return this.state.axis_x !== null && this.state.axis_y !== null;
   }
-  drawSelectedDebounced = _.debounce(function() {
+  drawSelected = function(this: PlotXY) {
     if (this.plot) {
       this.plot.draw_selected_rows();
     }
-  }.bind(this), 100);
+  }.bind(this);
+  drawSelectedThrottled = _.throttle(this.drawSelected, 100);
   componentDidUpdate(prevProps: PlotXYProps, prevState) {
     var anyAxisChanged = false;
     ['axis_x', 'axis_y'].forEach(function(this: PlotXY, d: string) {
@@ -607,18 +609,18 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     // Check if data changed
     if (this.plot) {
       var scaleRecomputed = false;
+      const colorByChange = this.props.params_def[this.props.colorby] != prevProps.params_def[prevProps.colorby];
       if (this.props.params_def[this.state.axis_x] != prevProps.params_def[this.state.axis_x] ||
-        this.props.params_def[this.state.axis_y] != prevProps.params_def[this.state.axis_y] ||
-        this.props.params_def[this.props.colorby] != prevProps.params_def[this.props.colorby]
+        this.props.params_def[this.state.axis_y] != prevProps.params_def[this.state.axis_y]
       ) {
         this.plot.recompute_scale();
         scaleRecomputed = true;
       }
-      if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || this.props.colorby != prevProps.colorby) {
-        this.drawSelectedDebounced();
+      if (this.props.rows_selected != prevProps.rows_selected || scaleRecomputed || colorByChange) {
+        this.drawSelectedThrottled();
       }
       if (this.props.rows_highlighted != prevProps.rows_highlighted || scaleRecomputed ||
-          this.props.colorby != prevProps.colorby ||
+          colorByChange ||
           this.state.highlightType != prevState.highlightType) {
         this.plot.draw_highlighted()
       }
