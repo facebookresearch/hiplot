@@ -164,8 +164,9 @@ commands:
             echo "Building $HIPLOT_PACKAGE $HIPLOT_VERSION"
 
             # Set version
-            git show HEAD:hiplot/__init__.py | sed '/__version__/d' > hiplot/__init__.py
-            echo "__version__ = \"$HIPLOT_VERSION\"" >> hiplot/__init__.py
+            git show HEAD:hiplot/pkginfo.py | sed '/Set by CI/d' > hiplot/pkginfo.py
+            echo "version = \"$HIPLOT_VERSION\"" >> hiplot/pkginfo.py
+            echo "package_name = \"$HIPLOT_PACKAGE\"" >> hiplot/pkginfo.py
 
             # Set package name
             git show HEAD:setup.py | sed "s/name=\"hiplot\"/name=\"$HIPLOT_PACKAGE\"/" > setup.py
