@@ -7,6 +7,7 @@
 import re
 import os
 import sys
+import importlib.util
 from pathlib import Path
 from typing import Dict, List
 from setuptools import setup, find_packages
@@ -22,11 +23,11 @@ for extra in ["dev", "main"]:
                            ]
 
 
-# Find version number in __init__
-init_str = Path("hiplot/__init__.py").read_text()
-match = re.search(r"^__version__ = \"(?P<version>[\w\.]+?)\"", init_str, re.MULTILINE)
-assert match is not None, "Could not find version in hiplot/__init__.py"
-version = match.group("version")
+# Find version number
+spec = importlib.util.spec_from_file_location("hiplot.pkginfo", str(Path(__file__).parent / "hiplot" / "pkginfo.py"))
+pkginfo = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(pkginfo)
+version = pkginfo.version
 
 
 def readme() -> str:
