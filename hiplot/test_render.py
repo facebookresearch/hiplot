@@ -18,12 +18,9 @@ def test_demos_ipython() -> None:
 
 @unittest.mock.patch('streamlit._is_running_with_streamlit', new=True, create=True)
 def test_demos_streamlit() -> None:
-    try:
-        for k, v in README_DEMOS.items():
-            print(k)
-            v().display_st(ret='selected_uids', key=f'hiplot{k}')
-    except RuntimeError:
-        pass  # streamlit doesnt support components etc...
+    for k, v in README_DEMOS.items():
+        print(k)
+        v().display_st(ret='selected_uids', key=f'hiplot{k}')
 
 def test_index_html_valid() -> None:
     """

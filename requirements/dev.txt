@@ -9,4 +9,4 @@ twine
 guzzle_sphinx_theme
 pre-commit
 pandas
-streamlit
+streamlit>=0.63
