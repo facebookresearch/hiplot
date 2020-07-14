@@ -67800,7 +67800,7 @@ var tutorial_StepHiPlotInfo = /** @class */ (function (_super) {
     }
     StepHiPlotInfo.prototype.render = function () {
         // @ts-ignore
-        var pkgInfo = "lib-hiplot-0.1.17.dev81";
+        var pkgInfo = "lib-hiplot-0.1.17.dev82";
         if (pkgInfo === undefined) {
             pkgInfo = "hiplot (no version information)";
         }
