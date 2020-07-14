@@ -10,7 +10,7 @@ HiPlot component for Streamlit
 Getting started
 ----------------------------------
 
-You'll need both Streamlit and HiPlot
+You'll need both Streamlit (>=0.63) and HiPlot (>=0.18)
 
 >>> pip install -U streamlit hiplot
 
