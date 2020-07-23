@@ -10,11 +10,10 @@ commands:
       - run:
           name: Set package name and version
           command: |
-            echo 'export HIPLOT_PACKAGE="hiplot-master"' >> $BASH_ENV
             if [ -z ${CIRCLE_TAG+x} ];
             then
               echo "export HIPLOT_PACKAGE=hiplot-master" >> $BASH_ENV
-              echo "export HIPLOT_VERSION=`git describe --tags --abbrev=0 master`.dev`git rev-list --count HEAD`" >> $BASH_ENV
+              echo "export HIPLOT_VERSION=`git describe --tags --abbrev=0 master`.`git rev-list --count HEAD`" >> $BASH_ENV
             else
               echo "export HIPLOT_PACKAGE=hiplot" >> $BASH_ENV
               echo "export HIPLOT_VERSION=$CIRCLE_TAG" >> $BASH_ENV
