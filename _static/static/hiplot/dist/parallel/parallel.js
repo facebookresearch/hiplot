@@ -573,8 +573,9 @@ var ParallelPlot = /** @class */ (function (_super) {
                             data: {}
                         };
                     }
-                    min = "" + range.values[0];
-                    max = "" + range.values[range.values.length - 1];
+                    min = range.values[0];
+                    max = range.values[range.values.length - 1];
+                    console.assert(typeof min == typeof max, min, max);
                 }
                 else {
                     min = Math.min.apply(Math, range.range);
@@ -593,18 +594,42 @@ var ParallelPlot = /** @class */ (function (_super) {
             });
             var selected = apply_filters(me.props.rows_filtered, filters);
             if (me.props.asserts) {
-                var selected_pixels = [];
+                // Check that pixel-based selected rows
+                // match filters-based selected rows
+                // But relax the verification a bit - math errors can happen
+                // and we only require a 1 pixel precision
+                var selected_pixels_minset = [];
+                var selected_pixels_maxset = [];
                 me.props.rows_filtered
-                    .map(function (d) {
-                    return actives.every(function (dimension) {
+                    .forEach(function (d) {
+                    if (actives.every(function (dimension) {
                         var scale = me.yscale[dimension];
                         var extent = extents[dimension];
                         var value = d[dimension];
-                        return extent[0] <= scale(value) && scale(value) <= extent[1];
-                    }) ? selected_pixels.push(d) : null;
+                        return extent[0] + 1 <= scale(value) && scale(value) <= extent[1] - 1;
+                    })) {
+                        selected_pixels_minset.push(d);
+                    }
+                    if (actives.every(function (dimension) {
+                        var scale = me.yscale[dimension];
+                        var extent = extents[dimension];
+                        var value = d[dimension];
+                        return extent[0] - 1 <= scale(value) && scale(value) <= extent[1] + 1;
+                    })) {
+                        selected_pixels_maxset.push(d);
+                    }
                 });
-                if (selected_pixels.length != selected.length || _.difference(selected_pixels, selected).length) {
-                    console.error("Warning! Filter on " + actives.join(" ") + " (", filters, ") does not match actually selected rows", selected_pixels, " Computed rows with filter:", selected);
+                var missed = _.difference(selected_pixels_minset, selected);
+                var overselected = _.difference(selected, selected_pixels_maxset);
+                if (overselected.length || missed.length) {
+                    console.error("Warning! Filter on " + actives.join(" ") + " (", filters, ") does not match actually selected rows", " Computed rows with filter:", selected, " Missed:", missed, " Falsely selected:", overselected);
+                    console.error("filters", filters, JSON.stringify(filters));
+                    if (missed.length) {
+                        console.error("first missed", JSON.stringify(missed[0]));
+                    }
+                    if (overselected.length) {
+                        console.error("first falsely selected", JSON.stringify(overselected[0]));
+                    }
                 }
             }
             me.props.setSelected(selected, {

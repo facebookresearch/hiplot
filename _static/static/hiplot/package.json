@@ -1,6 +1,6 @@
 {
   "name": "hiplot",
-  "version": "0.1.18.dev84",
+  "version": "0.1.18.dev85",
   "description": "HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.",
   "main": "dist/hiplot.lib.js",
   "types": "dist/hiplot.d.ts",
@@ -23,6 +23,7 @@
     "@types/underscore": "^1.9.4",
     "assert": "^2.0.0",
     "bootstrap": "^4.4.1",
+    "colorsys": "^1.0.22",
     "css-loader": "^3.4.1",
     "d3": "^5.14.2",
     "datatables.net-bs4": "^1.10.20",
@@ -46,6 +47,7 @@
     "react-dom": "^16.12.0",
     "react-dropzone": "^11.0.1",
     "sass-loader": "^8.0.0",
+    "seedrandom": "^3.0.5",
     "source-map-loader": "^0.2.4",
     "style-loader": "^1.1.2",
     "ts-loader": "^6.2.1",

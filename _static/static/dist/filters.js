@@ -27,8 +27,9 @@ var FILTERS = (_a = {},
 ;
 function filter_range(data) {
     if (data.type == ParamType.CATEGORICAL) {
+        console.assert(typeof data.min == typeof data.max, data.min, data.max);
         return function (dp) {
-            var value = "" + dp[data.col];
+            var value = typeof data.min == 'string' ? "" + dp[data.col] : dp[data.col];
             return value !== undefined && data.min <= value && value <= data.max;
         };
     }

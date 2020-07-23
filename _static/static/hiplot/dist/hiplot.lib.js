@@ -97,7 +97,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 24);
+/******/ 	return __webpack_require__(__webpack_require__.s = 33);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -10988,8 +10988,8 @@ return jQuery;
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var api = __webpack_require__(7);
-            var content = __webpack_require__(17);
+var api = __webpack_require__(9);
+            var content = __webpack_require__(26);
 
             content = content.__esModule ? content.default : content;
 
@@ -12707,14 +12707,14 @@ module.exports = exported;
   }
 }());
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(19), __webpack_require__(12)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(28), __webpack_require__(5)(module)))
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var api = __webpack_require__(7);
-            var content = __webpack_require__(23);
+var api = __webpack_require__(9);
+            var content = __webpack_require__(32);
 
             content = content.__esModule ? content.default : content;
 
@@ -12737,6 +12737,519 @@ module.exports = exported;
 
 /***/ }),
 /* 5 */
+/***/ (function(module, exports) {
+
+module.exports = function(module) {
+	if (!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+
+const RGB_MAX = 255
+const HUE_MAX = 360
+const SV_MAX = 100
+
+var colorsys = module.exports = {}
+
+colorsys.rgb2Hsl = function (r, g, b) {
+  if (typeof r === 'object') {
+    const args = r
+    r = args.r; g = args.g; b = args.b;
+  }
+  // It converts [0,255] format, to [0,1]
+  r = (r === RGB_MAX) ? 1 : (r % RGB_MAX / parseFloat(RGB_MAX))
+  g = (g === RGB_MAX) ? 1 : (g % RGB_MAX / parseFloat(RGB_MAX))
+  b = (b === RGB_MAX) ? 1 : (b % RGB_MAX / parseFloat(RGB_MAX))
+
+  var max = Math.max(r, g, b)
+  var min = Math.min(r, g, b)
+  var h, s, l = (max + min) / 2
+
+  if (max === min) {
+    h = s = 0 // achromatic
+  } else {
+    var d = max - min
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0)
+        break
+      case g:
+        h = (b - r) / d + 2
+        break
+      case b:
+        h = (r - g) / d + 4
+        break
+    }
+    h /= 6
+  }
+
+  return {
+    h: Math.round(h * HUE_MAX),
+    s: Math.round(s * SV_MAX),
+    l: Math.round(l * SV_MAX)
+  }
+}
+
+colorsys.rgb_to_hsl = colorsys.rgbToHsl = colorsys.rgb2Hsl
+
+colorsys.rgb2Hsv = function (r, g, b) {
+  if (typeof r === 'object') {
+    const args = r
+    r = args.r; g = args.g; b = args.b;
+  }
+
+  // It converts [0,255] format, to [0,1]
+  r = (r === RGB_MAX) ? 1 : (r % RGB_MAX / parseFloat(RGB_MAX))
+  g = (g === RGB_MAX) ? 1 : (g % RGB_MAX / parseFloat(RGB_MAX))
+  b = (b === RGB_MAX) ? 1 : (b % RGB_MAX / parseFloat(RGB_MAX))
+
+  var max = Math.max(r, g, b)
+  var min = Math.min(r, g, b)
+  var h, s, v = max
+
+  var d = max - min
+
+  s = max === 0 ? 0 : d / max
+
+  if (max === min) {
+    h = 0 // achromatic
+  } else {
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0)
+        break
+      case g:
+        h = (b - r) / d + 2
+        break
+      case b:
+        h = (r - g) / d + 4
+        break
+    }
+    h /= 6
+  }
+
+  return {
+    h: Math.round(h * HUE_MAX),
+    s: Math.round(s * SV_MAX),
+    v: Math.round(v * SV_MAX)
+  }
+}
+
+colorsys.rgb_to_hsv = colorsys.rgbToHsv = colorsys.rgb2Hsv
+
+colorsys.hsl2Rgb = function (h, s, l) {
+  if (typeof h === 'object') {
+    const args = h
+    h = args.h; s = args.s; l = args.l;
+  }
+
+  var r, g, b
+
+  h = _normalizeAngle(h)
+  h = (h === HUE_MAX) ? 1 : (h % HUE_MAX / parseFloat(HUE_MAX))
+  s = (s === SV_MAX) ? 1 : (s % SV_MAX / parseFloat(SV_MAX))
+  l = (l === SV_MAX) ? 1 : (l % SV_MAX / parseFloat(SV_MAX))
+
+  if (s === 0) {
+    r = g = b = l // achromatic
+  } else {
+    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    var p = 2 * l - q;
+    r = _hue2Rgb(p, q, h + 1 / 3)
+    g = _hue2Rgb(p, q, h)
+    b = _hue2Rgb(p, q, h - 1 / 3)
+  }
+
+  return {
+    r: Math.round(r * RGB_MAX),
+    g: Math.round(g * RGB_MAX),
+    b: Math.round(b * RGB_MAX),
+  }
+}
+
+colorsys.hsl_to_rgb = colorsys.hslToRgb = colorsys.hsl2Rgb
+
+colorsys.hsv2Rgb = function (h, s, v) {
+  if (typeof h === 'object') {
+    const args = h
+    h = args.h; s = args.s; v = args.v;
+  }
+
+  h = _normalizeAngle(h)
+  h = (h === HUE_MAX) ? 1 : (h % HUE_MAX / parseFloat(HUE_MAX) * 6)
+  s = (s === SV_MAX) ? 1 : (s % SV_MAX / parseFloat(SV_MAX))
+  v = (v === SV_MAX) ? 1 : (v % SV_MAX / parseFloat(SV_MAX))
+
+  var i = Math.floor(h)
+  var f = h - i
+  var p = v * (1 - s)
+  var q = v * (1 - f * s)
+  var t = v * (1 - (1 - f) * s)
+  var mod = i % 6
+  var r = [v, q, p, p, t, v][mod]
+  var g = [t, v, v, q, p, p][mod]
+  var b = [p, p, t, v, v, q][mod]
+
+  return {
+    r: Math.floor(r * RGB_MAX),
+    g: Math.floor(g * RGB_MAX),
+    b: Math.floor(b * RGB_MAX),
+  }
+}
+
+colorsys.hsv_to_rgb = colorsys.hsv2Rgb
+colorsys.hsvToRgb = colorsys.hsv2Rgb
+
+colorsys.rgb2Hex = function (r, g, b) {
+  if (typeof r === 'object') {
+    const args = r
+    r = args.r; g = args.g; b = args.b;
+  }
+  r = Math.round(r).toString(16)
+  g = Math.round(g).toString(16)
+  b = Math.round(b).toString(16)
+
+  r = r.length === 1 ? '0' + r : r
+  g = g.length === 1 ? '0' + g : g
+  b = b.length === 1 ? '0' + b : b
+
+  return '#' + r + g + b
+}
+
+colorsys.rgb_to_hex = colorsys.rgbToHex = colorsys.rgb2Hex
+
+colorsys.hex2Rgb = function (hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null
+}
+
+colorsys.hex_to_rgb = colorsys.hexToRgb = colorsys.hex2Rgb
+
+colorsys.hsv2Hex = function (h, s, v) {
+  var rgb = colorsys.hsv2Rgb(h, s, v)
+  return colorsys.rgb2Hex(rgb.r, rgb.g, rgb.b)
+}
+
+colorsys.hsv_to_hex = colorsys.hsv2Hex
+colorsys.hsvToHex = colorsys.hsv2Hex
+
+colorsys.hex2Hsv = function (hex) {
+  var rgb = colorsys.hex2Rgb(hex)
+  return colorsys.rgb2Hsv(rgb.r, rgb.g, rgb.b)
+}
+
+colorsys.hex_to_hsv = colorsys.hexToHsv = colorsys.hex2Hsv
+
+colorsys.hsl2Hex = function (h, s, l) {
+  var rgb = colorsys.hsl2Rgb(h, s, l)
+  return colorsys.rgb2Hex(rgb.r, rgb.g, rgb.b)
+}
+
+colorsys.hsl_to_hex = colorsys.hslToHex = colorsys.hsl2Hex
+
+colorsys.hex2Hsl = function (hex) {
+  var rgb = colorsys.hex2Rgb(hex)
+  return colorsys.rgb2Hsl(rgb.r, rgb.g, rgb.b)
+}
+
+colorsys.hex_to_hsl = colorsys.hexToHsl = colorsys.hex2Hsl
+
+colorsys.rgb2Cmyk = function (r, g, b) {
+  if (typeof r === 'object') {
+    const args = r
+    r = args.r; g = args.g; b = args.b;
+  }
+
+  var rprim = r / 255
+  var gprim = g / 255
+  var bprim = b / 255
+
+  var k = 1 - Math.max(rprim, gprim, bprim)
+
+  var c = (1 - rprim - k) / (1 - k)
+  var m = (1 - gprim - k) / (1 - k)
+  var y = (1 - bprim - k) / (1 - k)
+
+  return {
+    c: c.toFixed(3),
+    m: m.toFixed(3),
+    y: y.toFixed(3),
+    k: k.toFixed(3)
+  }
+}
+
+colorsys.rgb_to_cmyk = colorsys.rgbToCmyk = colorsys.rgb2Cmyk
+
+colorsys.cmyk2Rgb = function (c, m, y, k) {
+  if (typeof c === 'object') {
+    const args = c
+    c = args.c; m = args.m; y = args.y; k = args.k;
+  }
+
+  var r = 255 * (1 - c) * (1 - k)
+  var g = 255 * (1 - m) * (1 - k)
+  var b = 255 * (1 - y) * (1 - k)
+
+  return {
+    r: Math.floor(r),
+    g: Math.floor(g),
+    b: Math.floor(b)
+  }
+}
+
+colorsys.cmyk_to_rgb = colorsys.cmykToRgb = colorsys.cmyk2Rgb
+
+colorsys.hsv2Hsl = function (h, s, v) {
+  if (typeof h === 'object') {
+    const args = h
+    h = args.h; s = args.s; v = args.v;
+  }
+
+  var l = (2 - s) * v / 2
+
+  if (l !== 0) {
+    if (l === SV_MAX) {
+      s = 0
+    } else if (l < SV_MAX / 2) {
+      s = s * v / (l * 2)
+    } else {
+      s = s * v / (2 - l * 2)
+    }
+  }
+
+  return { h: h, s: s, l: l }
+}
+
+colorsys.hsv_to_hsl = colorsys.hsvToHsl = colorsys.hsv2Hsl
+
+colorsys.hsl2Hsv = function (h, s, l) {
+  if (typeof h === 'object') {
+    const args = h
+    h = args.h; s = args.s; l = args.l;
+  }
+
+  s = s * (l < 50 ? l : (100 - l))
+
+  return {
+    h: h,
+    s: Math.floor(2 * s / (l + s)),
+    v: Math.floor(l + s),
+  }
+}
+
+colorsys.hsl_to_hsv = colorsys.hslToHsv = colorsys.hsl2Hsv
+
+/**
+* Parses values from a string into a javascript object
+* e.g: hsla(140, 30%, 40%, .5) => { h: 140, s: 30, l: 40, alpha: 0.5}
+*/
+colorsys.parseCss = function (cssString) {
+  if (cssString.indexOf('#') > -1) {
+    return colorsys.hex2Rgb(cssString)
+  }
+
+  const prefix = cssString.split('(')[0]
+  const args = cssString.split('(')[1].split(')')[0].split(',')
+
+  // Use the prefix as an array [r, g, b, a] to parse the colours
+  return prefix.split('').reduce(function (color, param, idx) {
+    const nextColor = color
+    nextColor[param] = parseFloat(args[idx])
+    return nextColor
+  }, {})
+}
+
+colorsys.parse_css = colorsys.parseCss
+
+colorsys.stringify = function (obj) {
+  const prefix = Object.keys(obj).join('')
+  const values = Object.keys(obj).map(function (key) {
+    var val = obj[key]
+    if (key === 's' || key === 'v' || key === 'l') {
+      val = val + '%'
+    }
+    return val
+  })
+  return prefix + '(' + values.join(', ') + ')'
+}
+
+// Google Assistant API uses this format in SmartHome Apps. Example => "spectrumRGB": 16711680
+colorsys.hex_to_decimal = colorsys.hexToDecimal = colorsys.hex2Decimal
+
+colorsys.hex2Decimal = function(hexColor) {
+  if (typeof hexColor === "string") {
+    return parseInt(hexColor.replace("#", ""), 16)
+  }
+}
+colorsys.decimal_to_hex = colorsys.decimalToHex = colorsys.decimal2Hex
+
+colorsys.decimal2Hex = function(decimalColor) {
+  if (typeof decimalColor === "string") {
+    return "#" + parseInt(decimalColor).toString(16)
+  }
+  return "#" + decimalColor.toString(16)
+}
+
+// Will return a random hex colour
+colorsys.random = function () {
+  const base = '000000'
+  const number = Math.floor(Math.random() * 16777215).toString(16)
+  return '#' + (base + number).substr(-6)
+}
+
+colorsys.rotateHue = function (hue, amount) {
+  if (amount === void 0) { amount = 0; }
+  const aux = typeof hue === 'object'
+      ? (hue.h + amount) % 360
+      : (hue + amount) % 360
+      
+  const nextHue = aux < 0 ? (360 + aux) : aux
+  return typeof hue === 'object'
+      ? Object.assign(hue, { h: nextHue })
+      : nextHue
+}
+
+
+colorsys.getColorEncoding = function (color) {
+  if (typeof color === 'string') {
+    try {
+      colorsys.hex2Rgb(color)
+      return 'hex'
+    } catch (err) { /* Silent catch */ }
+  }
+
+  if (typeof color !== 'object') {
+    return 'unknown'
+  }
+
+  // Now check that the sum of the components is still a number
+  // And different than NaN (for that the boolean check)
+  const c = color
+
+  if ((c.r + c.g + c.b) && typeof (c.r + c.g + c.b) === 'number') {
+    return 'rgb'
+  }
+
+  if ((c.h + c.s + c.v) && typeof (c.h + c.s + c.v) === 'number') {
+    return 'hsv'
+  }
+
+  if ((c.h + c.s + c.l) && typeof (c.h + c.s + c.l) === 'number') {
+    return 'hsl'
+  }
+
+  if ((c.c + c.m + c.y + c.k) && typeof (c.c + c.m + c.y + c.k) === 'number') {
+    return 'cmyk'
+  }
+
+  return 'unknown'
+}
+
+function _normalizeAngle (degrees) {
+  return (degrees % 360 + 360) % 360;
+}
+
+function _hue2Rgb (p, q, t) {
+  if (t < 0) t += 1
+  if (t > 1) t -= 1
+  if (t < 1 / 6) return p + (q - p) * 6 * t
+  if (t < 1 / 2) return q
+  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+  return p
+}
+
+// It's easier to change luminosity in HSL
+colorsys.any2Hsl = function (color) {
+  const colorEncoding = colorsys.getColorEncoding(color)
+
+  switch (colorEncoding) {
+    case 'hsl':
+      return color
+    case 'rgb':
+      return colorsys.rgb2Hsl(color)
+    case 'hex':
+      return colorsys.hex2Hsl(color)
+    case 'hsv':
+      return colorsys.hsv2Hsl(color)
+    case 'cmyk':
+      return colorsys.rgb2Hsl(colorsys.cmyk2Rgb(color))
+    default:
+      return 'unknown'
+  }
+}
+
+// Aliases
+colorsys.any_to_hsl = colorsys.anyToHsl = colorsys.any2Hsl
+
+// Will return the transforming to encode function
+// or undefined
+colorsys.getTransformEncodingFunction = function (color, desiredEncoding) {
+  const originalEncoding = colorsys.getColorEncoding(color)
+  return colorsys[originalEncoding + '_to_' + desiredEncoding]
+}
+
+// TODO:
+// Create darken / lighten methods with same input/output format
+colorsys.darken = function (color, percentage) {
+  const encoding = colorsys.getColorEncoding(color)
+
+  if (encoding === 'unknown') {
+    return color
+  }
+
+  // Missing transformation function between hsl and cmyk
+  // Also, this algo is simple and precise
+  if (encoding === 'cmyk') {
+    const nextCmyk = color
+    nextCmyk.k = Math.min(100, 100 * percentage + nextCmyk.k)
+    return nextCmyk
+  }
+
+  const hsl = colorsys.any2Hsl(color)
+  const nextHsl = {h: hsl.h, s: hsl.s, l: Math.round(hsl.l * (1 - percentage))}
+
+  const transformFn = encoding === 'hsl'
+    ? c => c // If HSL return as incame
+    : colorsys.getTransformEncodingFunction(nextHsl, encoding)
+
+  if (typeof transformFn !== 'function') {
+    return color
+  }
+
+  return transformFn(nextHsl)
+}
+
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12818,7 +13331,7 @@ function toComment(sourceMap) {
 }
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -12870,8 +13383,8 @@ var define = false;
 
 			if ( ! $ ) {
 				$ = typeof window !== 'undefined' ? // jQuery's factory checks for a global window
-					__webpack_require__(13) :
-					__webpack_require__(13)( root );
+					__webpack_require__(14) :
+					__webpack_require__(14)( root );
 			}
 
 			return factory( $, root, root.document );
@@ -28159,7 +28672,7 @@ var define = false;
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -28403,7 +28916,7 @@ module.exports = function (moduleId, list, options) {
 };
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -28439,7 +28952,7 @@ var define = false;
 				// Require DataTables, which attaches to jQuery, including
 				// jQuery if needed and have a $ property so we can access the
 				// jQuery object that is used
-				$ = __webpack_require__(6)(root, $).$;
+				$ = __webpack_require__(8)(root, $).$;
 			}
 
 			return factory( $, root, root.document );
@@ -28594,7 +29107,7 @@ return DataTable;
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -28637,7 +29150,7 @@ var define = false;
 			}
 
 			if ( ! $ || ! $.fn.dataTable ) {
-				$ = __webpack_require__(6)(root, $).$;
+				$ = __webpack_require__(8)(root, $).$;
 			}
 
 			return factory( $, root, root.document );
@@ -30092,7 +30605,7 @@ return ColReorder;
 
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -30117,7 +30630,7 @@ var define = false;
 			}
 
 			if ( ! $ || ! $.fn.dataTable ) {
-				$ = __webpack_require__(6)(root, $).$;
+				$ = __webpack_require__(8)(root, $).$;
 			}
 
 			return factory( $, root, root.document );
@@ -32114,11 +32627,11 @@ return Buttons;
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var api = __webpack_require__(7);
-            var content = __webpack_require__(18);
+var api = __webpack_require__(9);
+            var content = __webpack_require__(27);
 
             content = content.__esModule ? content.default : content;
 
@@ -32140,35 +32653,7 @@ var exported = content.locals ? content.locals : {};
 module.exports = exported;
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -43050,527 +43535,73 @@ return jQuery;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {// randomColor by David Merfield under the CC0 license
-// https://github.com/davidmerfield/randomColor/
+// A library of seedable RNGs implemented in Javascript.
+//
+// Usage:
+//
+// var seedrandom = require('seedrandom');
+// var random = seedrandom(1); // or any seed.
+// var x = random();       // 0 <= x < 1.  Every bit is random.
+// var x = random.quick(); // 0 <= x < 1.  32 bits of randomness.
+
+// alea, a 53-bit multiply-with-carry generator by Johannes Baagøe.
+// Period: ~2^116
+// Reported to pass all BigCrush tests.
+var alea = __webpack_require__(18);
+
+// xor128, a pure xor-shift generator by George Marsaglia.
+// Period: 2^128-1.
+// Reported to fail: MatrixRank and LinearComp.
+var xor128 = __webpack_require__(19);
+
+// xorwow, George Marsaglia's 160-bit xor-shift combined plus weyl.
+// Period: 2^192-2^32
+// Reported to fail: CollisionOver, SimpPoker, and LinearComp.
+var xorwow = __webpack_require__(20);
+
+// xorshift7, by François Panneton and Pierre L'ecuyer, takes
+// a different approach: it adds robustness by allowing more shifts
+// than Marsaglia's original three.  It is a 7-shift generator
+// with 256 bits, that passes BigCrush with no systmatic failures.
+// Period 2^256-1.
+// No systematic BigCrush failures reported.
+var xorshift7 = __webpack_require__(21);
+
+// xor4096, by Richard Brent, is a 4096-bit xor-shift with a
+// very long period that also adds a Weyl generator. It also passes
+// BigCrush with no systematic failures.  Its long period may
+// be useful if you have many generators and need to avoid
+// collisions.
+// Period: 2^4128-2^32.
+// No systematic BigCrush failures reported.
+var xor4096 = __webpack_require__(22);
+
+// Tyche-i, by Samuel Neves and Filipe Araujo, is a bit-shifting random
+// number generator derived from ChaCha, a modern stream cipher.
+// https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
+// Period: ~2^127
+// No systematic BigCrush failures reported.
+var tychei = __webpack_require__(23);
+
+// The original ARC4-based prng included in this library.
+// Period: ~2^1600
+var sr = __webpack_require__(24);
+
+sr.alea = alea;
+sr.xor128 = xor128;
+sr.xorwow = xorwow;
+sr.xorshift7 = xorshift7;
+sr.xor4096 = xor4096;
+sr.tychei = tychei;
+
+module.exports = sr;
 
-;(function(root, factory) {
-
-  // Support CommonJS
-  if (true) {
-    var randomColor = factory();
-
-    // Support NodeJS & Component, which allow module.exports to be a function
-    if ( true && module && module.exports) {
-      exports = module.exports = randomColor;
-    }
-
-    // Support CommonJS 1.1.1 spec
-    exports.randomColor = randomColor;
-
-  // Support AMD
-  } else {}
-
-}(this, function() {
-
-  // Seed to get repeatable colors
-  var seed = null;
-
-  // Shared color dictionary
-  var colorDictionary = {};
-
-  // Populate the color dictionary
-  loadColorBounds();
-
-  // check if a range is taken
-  var colorRanges = [];
-
-  var randomColor = function (options) {
-
-    options = options || {};
-
-    // Check if there is a seed and ensure it's an
-    // integer. Otherwise, reset the seed value.
-    if (options.seed !== undefined && options.seed !== null && options.seed === parseInt(options.seed, 10)) {
-      seed = options.seed;
-
-    // A string was passed as a seed
-    } else if (typeof options.seed === 'string') {
-      seed = stringToInteger(options.seed);
-
-    // Something was passed as a seed but it wasn't an integer or string
-    } else if (options.seed !== undefined && options.seed !== null) {
-      throw new TypeError('The seed value must be an integer or string');
-
-    // No seed, reset the value outside.
-    } else {
-      seed = null;
-    }
-
-    var H,S,B;
-
-    // Check if we need to generate multiple colors
-    if (options.count !== null && options.count !== undefined) {
-
-      var totalColors = options.count,
-          colors = [];
-      // Value false at index i means the range i is not taken yet.
-      for (var i = 0; i < options.count; i++) {
-        colorRanges.push(false)
-        }
-      options.count = null;
-
-      while (totalColors > colors.length) {
-
-        // Since we're generating multiple colors,
-        // incremement the seed. Otherwise we'd just
-        // generate the same color each time...
-        if (seed && options.seed) options.seed += 1;
-
-        colors.push(randomColor(options));
-      }
-
-      options.count = totalColors;
-
-      return colors;
-    }
-
-    // First we pick a hue (H)
-    H = pickHue(options);
-
-    // Then use H to determine saturation (S)
-    S = pickSaturation(H, options);
-
-    // Then use S and H to determine brightness (B).
-    B = pickBrightness(H, S, options);
-
-    // Then we return the HSB color in the desired format
-    return setFormat([H,S,B], options);
-  };
-
-  function pickHue(options) {
-    if (colorRanges.length > 0) {
-      var hueRange = getRealHueRange(options.hue)
-
-      var hue = randomWithin(hueRange)
-
-      //Each of colorRanges.length ranges has a length equal approximatelly one step
-      var step = (hueRange[1] - hueRange[0]) / colorRanges.length
-
-      var j = parseInt((hue - hueRange[0]) / step)
-
-      //Check if the range j is taken
-      if (colorRanges[j] === true) {
-        j = (j + 2) % colorRanges.length
-      }
-      else {
-        colorRanges[j] = true
-           }
-
-      var min = (hueRange[0] + j * step) % 359,
-          max = (hueRange[0] + (j + 1) * step) % 359;
-
-      hueRange = [min, max]
-
-      hue = randomWithin(hueRange)
-
-      if (hue < 0) {hue = 360 + hue;}
-      return hue
-    }
-    else {
-      var hueRange = getHueRange(options.hue)
-
-      hue = randomWithin(hueRange);
-      // Instead of storing red as two seperate ranges,
-      // we group them, using negative numbers
-      if (hue < 0) {
-        hue = 360 + hue;
-      }
-
-      return hue;
-    }
-  }
-
-  function pickSaturation (hue, options) {
-
-    if (options.hue === 'monochrome') {
-      return 0;
-    }
-
-    if (options.luminosity === 'random') {
-      return randomWithin([0,100]);
-    }
-
-    var saturationRange = getSaturationRange(hue);
-
-    var sMin = saturationRange[0],
-        sMax = saturationRange[1];
-
-    switch (options.luminosity) {
-
-      case 'bright':
-        sMin = 55;
-        break;
-
-      case 'dark':
-        sMin = sMax - 10;
-        break;
-
-      case 'light':
-        sMax = 55;
-        break;
-   }
-
-    return randomWithin([sMin, sMax]);
-
-  }
-
-  function pickBrightness (H, S, options) {
-
-    var bMin = getMinimumBrightness(H, S),
-        bMax = 100;
-
-    switch (options.luminosity) {
-
-      case 'dark':
-        bMax = bMin + 20;
-        break;
-
-      case 'light':
-        bMin = (bMax + bMin)/2;
-        break;
-
-      case 'random':
-        bMin = 0;
-        bMax = 100;
-        break;
-    }
-
-    return randomWithin([bMin, bMax]);
-  }
-
-  function setFormat (hsv, options) {
-
-    switch (options.format) {
-
-      case 'hsvArray':
-        return hsv;
-
-      case 'hslArray':
-        return HSVtoHSL(hsv);
-
-      case 'hsl':
-        var hsl = HSVtoHSL(hsv);
-        return 'hsl('+hsl[0]+', '+hsl[1]+'%, '+hsl[2]+'%)';
-
-      case 'hsla':
-        var hslColor = HSVtoHSL(hsv);
-        var alpha = options.alpha || Math.random();
-        return 'hsla('+hslColor[0]+', '+hslColor[1]+'%, '+hslColor[2]+'%, ' + alpha + ')';
-
-      case 'rgbArray':
-        return HSVtoRGB(hsv);
-
-      case 'rgb':
-        var rgb = HSVtoRGB(hsv);
-        return 'rgb(' + rgb.join(', ') + ')';
-
-      case 'rgba':
-        var rgbColor = HSVtoRGB(hsv);
-        var alpha = options.alpha || Math.random();
-        return 'rgba(' + rgbColor.join(', ') + ', ' + alpha + ')';
-
-      default:
-        return HSVtoHex(hsv);
-    }
-
-  }
-
-  function getMinimumBrightness(H, S) {
-
-    var lowerBounds = getColorInfo(H).lowerBounds;
-
-    for (var i = 0; i < lowerBounds.length - 1; i++) {
-
-      var s1 = lowerBounds[i][0],
-          v1 = lowerBounds[i][1];
-
-      var s2 = lowerBounds[i+1][0],
-          v2 = lowerBounds[i+1][1];
-
-      if (S >= s1 && S <= s2) {
-
-         var m = (v2 - v1)/(s2 - s1),
-             b = v1 - m*s1;
-
-         return m*S + b;
-      }
-
-    }
-
-    return 0;
-  }
-
-  function getHueRange (colorInput) {
-
-    if (typeof parseInt(colorInput) === 'number') {
-
-      var number = parseInt(colorInput);
-
-      if (number < 360 && number > 0) {
-        return [number, number];
-      }
-
-    }
-
-    if (typeof colorInput === 'string') {
-
-      if (colorDictionary[colorInput]) {
-        var color = colorDictionary[colorInput];
-        if (color.hueRange) {return color.hueRange;}
-      } else if (colorInput.match(/^#?([0-9A-F]{3}|[0-9A-F]{6})$/i)) {
-        var hue = HexToHSB(colorInput)[0];
-        return [ hue, hue ];
-      }
-    }
-
-    return [0,360];
-
-  }
-
-  function getSaturationRange (hue) {
-    return getColorInfo(hue).saturationRange;
-  }
-
-  function getColorInfo (hue) {
-
-    // Maps red colors to make picking hue easier
-    if (hue >= 334 && hue <= 360) {
-      hue-= 360;
-    }
-
-    for (var colorName in colorDictionary) {
-       var color = colorDictionary[colorName];
-       if (color.hueRange &&
-           hue >= color.hueRange[0] &&
-           hue <= color.hueRange[1]) {
-          return colorDictionary[colorName];
-       }
-    } return 'Color not found';
-  }
-
-  function randomWithin (range) {
-    if (seed === null) {
-      //generate random evenly destinct number from : https://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
-      var golden_ratio = 0.618033988749895
-      var r=Math.random()
-      r += golden_ratio
-      r %= 1
-      return Math.floor(range[0] + r*(range[1] + 1 - range[0]));
-    } else {
-      //Seeded random algorithm from http://indiegamr.com/generate-repeatable-random-numbers-in-js/
-      var max = range[1] || 1;
-      var min = range[0] || 0;
-      seed = (seed * 9301 + 49297) % 233280;
-      var rnd = seed / 233280.0;
-      return Math.floor(min + rnd * (max - min));
-}
-  }
-
-  function HSVtoHex (hsv){
-
-    var rgb = HSVtoRGB(hsv);
-
-    function componentToHex(c) {
-        var hex = c.toString(16);
-        return hex.length == 1 ? '0' + hex : hex;
-    }
-
-    var hex = '#' + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
-
-    return hex;
-
-  }
-
-  function defineColor (name, hueRange, lowerBounds) {
-
-    var sMin = lowerBounds[0][0],
-        sMax = lowerBounds[lowerBounds.length - 1][0],
-
-        bMin = lowerBounds[lowerBounds.length - 1][1],
-        bMax = lowerBounds[0][1];
-
-    colorDictionary[name] = {
-      hueRange: hueRange,
-      lowerBounds: lowerBounds,
-      saturationRange: [sMin, sMax],
-      brightnessRange: [bMin, bMax]
-    };
-
-  }
-
-  function loadColorBounds () {
-
-    defineColor(
-      'monochrome',
-      null,
-      [[0,0],[100,0]]
-    );
-
-    defineColor(
-      'red',
-      [-26,18],
-      [[20,100],[30,92],[40,89],[50,85],[60,78],[70,70],[80,60],[90,55],[100,50]]
-    );
-
-    defineColor(
-      'orange',
-      [19,46],
-      [[20,100],[30,93],[40,88],[50,86],[60,85],[70,70],[100,70]]
-    );
-
-    defineColor(
-      'yellow',
-      [47,62],
-      [[25,100],[40,94],[50,89],[60,86],[70,84],[80,82],[90,80],[100,75]]
-    );
-
-    defineColor(
-      'green',
-      [63,178],
-      [[30,100],[40,90],[50,85],[60,81],[70,74],[80,64],[90,50],[100,40]]
-    );
-
-    defineColor(
-      'blue',
-      [179, 257],
-      [[20,100],[30,86],[40,80],[50,74],[60,60],[70,52],[80,44],[90,39],[100,35]]
-    );
-
-    defineColor(
-      'purple',
-      [258, 282],
-      [[20,100],[30,87],[40,79],[50,70],[60,65],[70,59],[80,52],[90,45],[100,42]]
-    );
-
-    defineColor(
-      'pink',
-      [283, 334],
-      [[20,100],[30,90],[40,86],[60,84],[80,80],[90,75],[100,73]]
-    );
-
-  }
-
-  function HSVtoRGB (hsv) {
-
-    // this doesn't work for the values of 0 and 360
-    // here's the hacky fix
-    var h = hsv[0];
-    if (h === 0) {h = 1;}
-    if (h === 360) {h = 359;}
-
-    // Rebase the h,s,v values
-    h = h/360;
-    var s = hsv[1]/100,
-        v = hsv[2]/100;
-
-    var h_i = Math.floor(h*6),
-      f = h * 6 - h_i,
-      p = v * (1 - s),
-      q = v * (1 - f*s),
-      t = v * (1 - (1 - f)*s),
-      r = 256,
-      g = 256,
-      b = 256;
-
-    switch(h_i) {
-      case 0: r = v; g = t; b = p;  break;
-      case 1: r = q; g = v; b = p;  break;
-      case 2: r = p; g = v; b = t;  break;
-      case 3: r = p; g = q; b = v;  break;
-      case 4: r = t; g = p; b = v;  break;
-      case 5: r = v; g = p; b = q;  break;
-    }
-
-    var result = [Math.floor(r*255), Math.floor(g*255), Math.floor(b*255)];
-    return result;
-  }
-
-  function HexToHSB (hex) {
-    hex = hex.replace(/^#/, '');
-    hex = hex.length === 3 ? hex.replace(/(.)/g, '$1$1') : hex;
-
-    var red = parseInt(hex.substr(0, 2), 16) / 255,
-          green = parseInt(hex.substr(2, 2), 16) / 255,
-          blue = parseInt(hex.substr(4, 2), 16) / 255;
-
-    var cMax = Math.max(red, green, blue),
-          delta = cMax - Math.min(red, green, blue),
-          saturation = cMax ? (delta / cMax) : 0;
-
-    switch (cMax) {
-      case red: return [ 60 * (((green - blue) / delta) % 6) || 0, saturation, cMax ];
-      case green: return [ 60 * (((blue - red) / delta) + 2) || 0, saturation, cMax ];
-      case blue: return [ 60 * (((red - green) / delta) + 4) || 0, saturation, cMax ];
-    }
-  }
-
-  function HSVtoHSL (hsv) {
-    var h = hsv[0],
-      s = hsv[1]/100,
-      v = hsv[2]/100,
-      k = (2-s)*v;
-
-    return [
-      h,
-      Math.round(s*v / (k<1 ? k : 2-k) * 10000) / 100,
-      k/2 * 100
-    ];
-  }
-
-  function stringToInteger (string) {
-    var total = 0
-    for (var i = 0; i !== string.length; i++) {
-      if (total >= Number.MAX_SAFE_INTEGER) break;
-      total += string.charCodeAt(i)
-    }
-    return total
-  }
-
-  // get The range of given hue when options.count!=0
-  function getRealHueRange(colorHue)
-  { if (!isNaN(colorHue)) {
-    var number = parseInt(colorHue);
-
-    if (number < 360 && number > 0) {
-      return getColorInfo(colorHue).hueRange
-    }
-  }
-    else if (typeof colorHue === 'string') {
-
-      if (colorDictionary[colorHue]) {
-        var color = colorDictionary[colorHue];
-
-        if (color.hueRange) {
-          return color.hueRange
-       }
-    } else if (colorHue.match(/^#?([0-9A-F]{3}|[0-9A-F]{6})$/i)) {
-        var hue = HexToHSB(colorHue)[0]
-        return getColorInfo(hue).hueRange
-    }
-  }
-
-    return [0,360]
-}
-  return randomColor;
-}));
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(12)(module)))
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -43595,11 +43626,11 @@ var define = false;
 			}
 
 			if ( ! $ || ! $.fn.dataTable ) {
-				$ = __webpack_require__(8)(root, $).$;
+				$ = __webpack_require__(10)(root, $).$;
 			}
 
 			if ( ! $.fn.dataTable.ColReorder ) {
-				__webpack_require__(9)(root, $);
+				__webpack_require__(11)(root, $);
 			}
 
 			return factory( $, root, root.document );
@@ -43614,7 +43645,7 @@ return $.fn.dataTable;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -43639,11 +43670,11 @@ var define = false;
 			}
 
 			if ( ! $ || ! $.fn.dataTable ) {
-				$ = __webpack_require__(8)(root, $).$;
+				$ = __webpack_require__(10)(root, $).$;
 			}
 
 			if ( ! $.fn.dataTable.Buttons ) {
-				__webpack_require__(10)(root, $);
+				__webpack_require__(12)(root, $);
 			}
 
 			return factory( $, root, root.document );
@@ -43689,11 +43720,945 @@ return DataTable.Buttons;
 
 
 /***/ }),
-/* 17 */
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {// A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
+// http://baagoe.com/en/RandomMusings/javascript/
+// https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
+// Original work is under MIT license -
+
+// Copyright (C) 2010 by Johannes Baagøe <baagoe@baagoe.org>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+
+
+(function(global, module, define) {
+
+function Alea(seed) {
+  var me = this, mash = Mash();
+
+  me.next = function() {
+    var t = 2091639 * me.s0 + me.c * 2.3283064365386963e-10; // 2^-32
+    me.s0 = me.s1;
+    me.s1 = me.s2;
+    return me.s2 = t - (me.c = t | 0);
+  };
+
+  // Apply the seeding algorithm from Baagoe.
+  me.c = 1;
+  me.s0 = mash(' ');
+  me.s1 = mash(' ');
+  me.s2 = mash(' ');
+  me.s0 -= mash(seed);
+  if (me.s0 < 0) { me.s0 += 1; }
+  me.s1 -= mash(seed);
+  if (me.s1 < 0) { me.s1 += 1; }
+  me.s2 -= mash(seed);
+  if (me.s2 < 0) { me.s2 += 1; }
+  mash = null;
+}
+
+function copy(f, t) {
+  t.c = f.c;
+  t.s0 = f.s0;
+  t.s1 = f.s1;
+  t.s2 = f.s2;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new Alea(seed),
+      state = opts && opts.state,
+      prng = xg.next;
+  prng.int32 = function() { return (xg.next() * 0x100000000) | 0; }
+  prng.double = function() {
+    return prng() + (prng() * 0x200000 | 0) * 1.1102230246251565e-16; // 2^-53
+  };
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+function Mash() {
+  var n = 0xefc8249d;
+
+  var mash = function(data) {
+    data = String(data);
+    for (var i = 0; i < data.length; i++) {
+      n += data.charCodeAt(i);
+      var h = 0.02519603282416938 * n;
+      n = h >>> 0;
+      h -= n;
+      h *= n;
+      n = h >>> 0;
+      h -= n;
+      n += h * 0x100000000; // 2^32
+    }
+    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
+  };
+
+  return mash;
+}
+
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.alea = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)(module)))
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of the "xor128" prng algorithm by
+// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  me.x = 0;
+  me.y = 0;
+  me.z = 0;
+  me.w = 0;
+
+  // Set up generator function.
+  me.next = function() {
+    var t = me.x ^ (me.x << 11);
+    me.x = me.y;
+    me.y = me.z;
+    me.z = me.w;
+    return me.w ^= (me.w >>> 19) ^ t ^ (t >>> 8);
+  };
+
+  if (seed === (seed | 0)) {
+    // Integer seed.
+    me.x = seed;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 64; k++) {
+    me.x ^= strseed.charCodeAt(k) | 0;
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.x = f.x;
+  t.y = f.y;
+  t.z = f.z;
+  t.w = f.w;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.xor128 = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)(module)))
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of the "xorwow" prng algorithm by
+// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  // Set up generator function.
+  me.next = function() {
+    var t = (me.x ^ (me.x >>> 2));
+    me.x = me.y; me.y = me.z; me.z = me.w; me.w = me.v;
+    return (me.d = (me.d + 362437 | 0)) +
+       (me.v = (me.v ^ (me.v << 4)) ^ (t ^ (t << 1))) | 0;
+  };
+
+  me.x = 0;
+  me.y = 0;
+  me.z = 0;
+  me.w = 0;
+  me.v = 0;
+
+  if (seed === (seed | 0)) {
+    // Integer seed.
+    me.x = seed;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 64; k++) {
+    me.x ^= strseed.charCodeAt(k) | 0;
+    if (k == strseed.length) {
+      me.d = me.x << 10 ^ me.x >>> 4;
+    }
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.x = f.x;
+  t.y = f.y;
+  t.z = f.z;
+  t.w = f.w;
+  t.v = f.v;
+  t.d = f.d;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.xorwow = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)(module)))
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of the "xorshift7" algorithm by
+// François Panneton and Pierre L'ecuyer:
+// "On the Xorgshift Random Number Generators"
+// http://saluc.engr.uconn.edu/refs/crypto/rng/panneton05onthexorshift.pdf
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this;
+
+  // Set up generator function.
+  me.next = function() {
+    // Update xor generator.
+    var X = me.x, i = me.i, t, v, w;
+    t = X[i]; t ^= (t >>> 7); v = t ^ (t << 24);
+    t = X[(i + 1) & 7]; v ^= t ^ (t >>> 10);
+    t = X[(i + 3) & 7]; v ^= t ^ (t >>> 3);
+    t = X[(i + 4) & 7]; v ^= t ^ (t << 7);
+    t = X[(i + 7) & 7]; t = t ^ (t << 13); v ^= t ^ (t << 9);
+    X[i] = v;
+    me.i = (i + 1) & 7;
+    return v;
+  };
+
+  function init(me, seed) {
+    var j, w, X = [];
+
+    if (seed === (seed | 0)) {
+      // Seed state array using a 32-bit integer.
+      w = X[0] = seed;
+    } else {
+      // Seed state using a string.
+      seed = '' + seed;
+      for (j = 0; j < seed.length; ++j) {
+        X[j & 7] = (X[j & 7] << 15) ^
+            (seed.charCodeAt(j) + X[(j + 1) & 7] << 13);
+      }
+    }
+    // Enforce an array length of 8, not all zeroes.
+    while (X.length < 8) X.push(0);
+    for (j = 0; j < 8 && X[j] === 0; ++j);
+    if (j == 8) w = X[7] = -1; else w = X[j];
+
+    me.x = X;
+    me.i = 0;
+
+    // Discard an initial 256 values.
+    for (j = 256; j > 0; --j) {
+      me.next();
+    }
+  }
+
+  init(me, seed);
+}
+
+function copy(f, t) {
+  t.x = f.x.slice();
+  t.i = f.i;
+  return t;
+}
+
+function impl(seed, opts) {
+  if (seed == null) seed = +(new Date);
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (state.x) copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.xorshift7 = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)(module)))
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
+//
+// This fast non-cryptographic random number generator is designed for
+// use in Monte-Carlo algorithms. It combines a long-period xorshift
+// generator with a Weyl generator, and it passes all common batteries
+// of stasticial tests for randomness while consuming only a few nanoseconds
+// for each prng generated.  For background on the generator, see Brent's
+// paper: "Some long-period random number generators using shifts and xors."
+// http://arxiv.org/pdf/1004.3115v1.pdf
+//
+// Usage:
+//
+// var xor4096 = require('xor4096');
+// random = xor4096(1);                        // Seed with int32 or string.
+// assert.equal(random(), 0.1520436450538547); // (0, 1) range, 53 bits.
+// assert.equal(random.int32(), 1806534897);   // signed int32, 32 bits.
+//
+// For nonzero numeric keys, this impelementation provides a sequence
+// identical to that by Brent's xorgens 3 implementaion in C.  This
+// implementation also provides for initalizing the generator with
+// string seeds, or for saving and restoring the state of the generator.
+//
+// On Chrome, this prng benchmarks about 2.1 times slower than
+// Javascript's built-in Math.random().
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this;
+
+  // Set up generator function.
+  me.next = function() {
+    var w = me.w,
+        X = me.X, i = me.i, t, v;
+    // Update Weyl generator.
+    me.w = w = (w + 0x61c88647) | 0;
+    // Update xor generator.
+    v = X[(i + 34) & 127];
+    t = X[i = ((i + 1) & 127)];
+    v ^= v << 13;
+    t ^= t << 17;
+    v ^= v >>> 15;
+    t ^= t >>> 12;
+    // Update Xor generator array state.
+    v = X[i] = v ^ t;
+    me.i = i;
+    // Result is the combination.
+    return (v + (w ^ (w >>> 16))) | 0;
+  };
+
+  function init(me, seed) {
+    var t, v, i, j, w, X = [], limit = 128;
+    if (seed === (seed | 0)) {
+      // Numeric seeds initialize v, which is used to generates X.
+      v = seed;
+      seed = null;
+    } else {
+      // String seeds are mixed into v and X one character at a time.
+      seed = seed + '\0';
+      v = 0;
+      limit = Math.max(limit, seed.length);
+    }
+    // Initialize circular array and weyl value.
+    for (i = 0, j = -32; j < limit; ++j) {
+      // Put the unicode characters into the array, and shuffle them.
+      if (seed) v ^= seed.charCodeAt((j + 32) % seed.length);
+      // After 32 shuffles, take v as the starting w value.
+      if (j === 0) w = v;
+      v ^= v << 10;
+      v ^= v >>> 15;
+      v ^= v << 4;
+      v ^= v >>> 13;
+      if (j >= 0) {
+        w = (w + 0x61c88647) | 0;     // Weyl.
+        t = (X[j & 127] ^= (v + w));  // Combine xor and weyl to init array.
+        i = (0 == t) ? i + 1 : 0;     // Count zeroes.
+      }
+    }
+    // We have detected all zeroes; make the key nonzero.
+    if (i >= 128) {
+      X[(seed && seed.length || 0) & 127] = -1;
+    }
+    // Run the generator 512 times to further mix the state before using it.
+    // Factoring this as a function slows the main generator, so it is just
+    // unrolled here.  The weyl generator is not advanced while warming up.
+    i = 127;
+    for (j = 4 * 128; j > 0; --j) {
+      v = X[(i + 34) & 127];
+      t = X[i = ((i + 1) & 127)];
+      v ^= v << 13;
+      t ^= t << 17;
+      v ^= v >>> 15;
+      t ^= t >>> 12;
+      X[i] = v ^ t;
+    }
+    // Storing state as object members is faster than using closure variables.
+    me.w = w;
+    me.X = X;
+    me.i = i;
+  }
+
+  init(me, seed);
+}
+
+function copy(f, t) {
+  t.i = f.i;
+  t.w = f.w;
+  t.X = f.X.slice();
+  return t;
+};
+
+function impl(seed, opts) {
+  if (seed == null) seed = +(new Date);
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (state.X) copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.xor4096 = impl;
+}
+
+})(
+  this,                                     // window object or global
+   true && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)(module)))
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of the "Tyche-i" prng algorithm by
+// Samuel Neves and Filipe Araujo.
+// See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  // Set up generator function.
+  me.next = function() {
+    var b = me.b, c = me.c, d = me.d, a = me.a;
+    b = (b << 25) ^ (b >>> 7) ^ c;
+    c = (c - d) | 0;
+    d = (d << 24) ^ (d >>> 8) ^ a;
+    a = (a - b) | 0;
+    me.b = b = (b << 20) ^ (b >>> 12) ^ c;
+    me.c = c = (c - d) | 0;
+    me.d = (d << 16) ^ (c >>> 16) ^ a;
+    return me.a = (a - b) | 0;
+  };
+
+  /* The following is non-inverted tyche, which has better internal
+   * bit diffusion, but which is about 25% slower than tyche-i in JS.
+  me.next = function() {
+    var a = me.a, b = me.b, c = me.c, d = me.d;
+    a = (me.a + me.b | 0) >>> 0;
+    d = me.d ^ a; d = d << 16 ^ d >>> 16;
+    c = me.c + d | 0;
+    b = me.b ^ c; b = b << 12 ^ d >>> 20;
+    me.a = a = a + b | 0;
+    d = d ^ a; me.d = d = d << 8 ^ d >>> 24;
+    me.c = c = c + d | 0;
+    b = b ^ c;
+    return me.b = (b << 7 ^ b >>> 25);
+  }
+  */
+
+  me.a = 0;
+  me.b = 0;
+  me.c = 2654435769 | 0;
+  me.d = 1367130551;
+
+  if (seed === Math.floor(seed)) {
+    // Integer seed.
+    me.a = (seed / 0x100000000) | 0;
+    me.b = seed | 0;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 20; k++) {
+    me.b ^= strseed.charCodeAt(k) | 0;
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.a = f.a;
+  t.b = f.b;
+  t.c = f.c;
+  t.d = f.d;
+  return t;
+};
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (define && define.amd) {
+  define(function() { return impl; });
+} else {
+  this.tychei = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  (typeof define) == 'function' && define   // present with an AMD loader
+);
+
+
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)(module)))
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+Copyright 2019 David Bau.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+
+(function (global, pool, math) {
+//
+// The following constants are related to IEEE 754 limits.
+//
+
+var width = 256,        // each RC4 output is 0 <= x < 256
+    chunks = 6,         // at least six RC4 outputs for each double
+    digits = 52,        // there are 52 significant digits in a double
+    rngname = 'random', // rngname: name for Math.random and Math.seedrandom
+    startdenom = math.pow(width, chunks),
+    significance = math.pow(2, digits),
+    overflow = significance * 2,
+    mask = width - 1,
+    nodecrypto;         // node.js crypto module, initialized at the bottom.
+
+//
+// seedrandom()
+// This is the seedrandom function described above.
+//
+function seedrandom(seed, options, callback) {
+  var key = [];
+  options = (options == true) ? { entropy: true } : (options || {});
+
+  // Flatten the seed string or build one from local entropy if needed.
+  var shortseed = mixkey(flatten(
+    options.entropy ? [seed, tostring(pool)] :
+    (seed == null) ? autoseed() : seed, 3), key);
+
+  // Use the seed to initialize an ARC4 generator.
+  var arc4 = new ARC4(key);
+
+  // This function returns a random double in [0, 1) that contains
+  // randomness in every bit of the mantissa of the IEEE 754 value.
+  var prng = function() {
+    var n = arc4.g(chunks),             // Start with a numerator n < 2 ^ 48
+        d = startdenom,                 //   and denominator d = 2 ^ 48.
+        x = 0;                          //   and no 'extra last byte'.
+    while (n < significance) {          // Fill up all significant digits by
+      n = (n + x) * width;              //   shifting numerator and
+      d *= width;                       //   denominator and generating a
+      x = arc4.g(1);                    //   new least-significant-byte.
+    }
+    while (n >= overflow) {             // To avoid rounding up, before adding
+      n /= 2;                           //   last byte, shift everything
+      d /= 2;                           //   right using integer math until
+      x >>>= 1;                         //   we have exactly the desired bits.
+    }
+    return (n + x) / d;                 // Form the number within [0, 1).
+  };
+
+  prng.int32 = function() { return arc4.g(4) | 0; }
+  prng.quick = function() { return arc4.g(4) / 0x100000000; }
+  prng.double = prng;
+
+  // Mix the randomness into accumulated entropy.
+  mixkey(tostring(arc4.S), pool);
+
+  // Calling convention: what to return as a function of prng, seed, is_math.
+  return (options.pass || callback ||
+      function(prng, seed, is_math_call, state) {
+        if (state) {
+          // Load the arc4 state from the given state if it has an S array.
+          if (state.S) { copy(state, arc4); }
+          // Only provide the .state method if requested via options.state.
+          prng.state = function() { return copy(arc4, {}); }
+        }
+
+        // If called as a method of Math (Math.seedrandom()), mutate
+        // Math.random because that is how seedrandom.js has worked since v1.0.
+        if (is_math_call) { math[rngname] = prng; return seed; }
+
+        // Otherwise, it is a newer calling convention, so return the
+        // prng directly.
+        else return prng;
+      })(
+  prng,
+  shortseed,
+  'global' in options ? options.global : (this == math),
+  options.state);
+}
+
+//
+// ARC4
+//
+// An ARC4 implementation.  The constructor takes a key in the form of
+// an array of at most (width) integers that should be 0 <= x < (width).
+//
+// The g(count) method returns a pseudorandom integer that concatenates
+// the next (count) outputs from ARC4.  Its return value is a number x
+// that is in the range 0 <= x < (width ^ count).
+//
+function ARC4(key) {
+  var t, keylen = key.length,
+      me = this, i = 0, j = me.i = me.j = 0, s = me.S = [];
+
+  // The empty key [] is treated as [0].
+  if (!keylen) { key = [keylen++]; }
+
+  // Set up S using the standard key scheduling algorithm.
+  while (i < width) {
+    s[i] = i++;
+  }
+  for (i = 0; i < width; i++) {
+    s[i] = s[j = mask & (j + key[i % keylen] + (t = s[i]))];
+    s[j] = t;
+  }
+
+  // The "g" method returns the next (count) outputs as one number.
+  (me.g = function(count) {
+    // Using instance members instead of closure state nearly doubles speed.
+    var t, r = 0,
+        i = me.i, j = me.j, s = me.S;
+    while (count--) {
+      t = s[i = mask & (i + 1)];
+      r = r * width + s[mask & ((s[i] = s[j = mask & (j + t)]) + (s[j] = t))];
+    }
+    me.i = i; me.j = j;
+    return r;
+    // For robust unpredictability, the function call below automatically
+    // discards an initial batch of values.  This is called RC4-drop[256].
+    // See http://google.com/search?q=rsa+fluhrer+response&btnI
+  })(width);
+}
+
+//
+// copy()
+// Copies internal state of ARC4 to or from a plain object.
+//
+function copy(f, t) {
+  t.i = f.i;
+  t.j = f.j;
+  t.S = f.S.slice();
+  return t;
+};
+
+//
+// flatten()
+// Converts an object tree to nested arrays of strings.
+//
+function flatten(obj, depth) {
+  var result = [], typ = (typeof obj), prop;
+  if (depth && typ == 'object') {
+    for (prop in obj) {
+      try { result.push(flatten(obj[prop], depth - 1)); } catch (e) {}
+    }
+  }
+  return (result.length ? result : typ == 'string' ? obj : obj + '\0');
+}
+
+//
+// mixkey()
+// Mixes a string seed into a key that is an array of integers, and
+// returns a shortened string seed that is equivalent to the result key.
+//
+function mixkey(seed, key) {
+  var stringseed = seed + '', smear, j = 0;
+  while (j < stringseed.length) {
+    key[mask & j] =
+      mask & ((smear ^= key[mask & j] * 19) + stringseed.charCodeAt(j++));
+  }
+  return tostring(key);
+}
+
+//
+// autoseed()
+// Returns an object for autoseeding, using window.crypto and Node crypto
+// module if available.
+//
+function autoseed() {
+  try {
+    var out;
+    if (nodecrypto && (out = nodecrypto.randomBytes)) {
+      // The use of 'out' to remember randomBytes makes tight minified code.
+      out = out(width);
+    } else {
+      out = new Uint8Array(width);
+      (global.crypto || global.msCrypto).getRandomValues(out);
+    }
+    return tostring(out);
+  } catch (e) {
+    var browser = global.navigator,
+        plugins = browser && browser.plugins;
+    return [+new Date, global, plugins, global.screen, tostring(pool)];
+  }
+}
+
+//
+// tostring()
+// Converts an array of charcodes to a string
+//
+function tostring(a) {
+  return String.fromCharCode.apply(0, a);
+}
+
+//
+// When seedrandom.js is loaded, we immediately mix a few bits
+// from the built-in RNG into the entropy pool.  Because we do
+// not want to interfere with deterministic PRNG state later,
+// seedrandom will not call math.random on its own again after
+// initialization.
+//
+mixkey(math.random(), pool);
+
+//
+// Nodejs and AMD support: export the implementation as a module using
+// either convention.
+//
+if ( true && module.exports) {
+  module.exports = seedrandom;
+  // When in node.js, try using crypto package for autoseeding.
+  try {
+    nodecrypto = __webpack_require__(25);
+  } catch (ex) {}
+} else if ((typeof define) == 'function' && define.amd) {
+  define(function() { return seedrandom; });
+} else {
+  // When included as a plain script, set up Math.seedrandom global.
+  math['seed' + rngname] = seedrandom;
+}
+
+
+// End anonymous scope, and pass initial values.
+})(
+  // global: `self` in browsers (including strict mode and web workers),
+  // otherwise `this` in Node and other environments
+  (typeof self !== 'undefined') ? self : this,
+  [],     // pool: entropy pool starts empty
+  Math    // math: package containing random, pow, and seedrandom
+);
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports) {
+
+/* (ignored) */
+
+/***/ }),
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(5);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, "._2W3KtG_6I_OuzyVUJMPi81{margin:0;width:100%;height:100%;padding:0}._2W3KtG_6I_OuzyVUJMPi81{font-family:Ubuntu, Tahoma, Helvetica, sans-serif;background:#f7f7f7;color:#404040}._2W3KtG_6I_OuzyVUJMPi81 a{text-decoration:none}._3ETnyEh6iVhTKwQ5avdSIQ{padding:0 3.5%}.nVv4hJybQaDA7qDZ0d89L svg{font-family:Ubuntu, Tahoma, Helvetica, sans-serif}.nVv4hJybQaDA7qDZ0d89L canvas,.nVv4hJybQaDA7qDZ0d89L svg{position:absolute;top:0;left:0}.nVv4hJybQaDA7qDZ0d89L{position:relative}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#fff}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no:hover rect._2Zz5pTQNp59anJPVmfQ7Pn{stroke:#222;stroke-dasharray:5,5}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn:hover{stroke-dasharray:none}._3d1BI6G1YJrz7ognHL90dk rect{fill:none}._3k-obCxVEG5WXNW4d5ysbp{fill:none}._2OwlyBCCKpHyOTpExsmWa7 line,._2OwlyBCCKpHyOTpExsmWa7 path{fill:none;stroke:#777;stroke-width:1}._2OwlyBCCKpHyOTpExsmWa7 .tick{width:200px}._2OwlyBCCKpHyOTpExsmWa7 text{fill:#111;text-anchor:right;font-size:13px;text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff}._2OwlyBCCKpHyOTpExsmWa7 ._2f_wT5YLtZ6XP_X3T5YAKb{font-size:16px;font-weight:bold}._2OwlyBCCKpHyOTpExsmWa7 ._3KQQfVUpxeziY64StJ35Fw{cursor:move;font-size:13px}._1Zmx8UhusT7xyDE75TpK_5,._21zhEGEWznDeWrj2qPLRmw,.klDqoJS3S1dYTy3PfPeZn{float:left}._1Zmx8UhusT7xyDE75TpK_5{width:23%;margin:0 1%}._21zhEGEWznDeWrj2qPLRmw{width:31.3%;margin:0 1%}.klDqoJS3S1dYTy3PfPeZn{width:48%;margin:0 1%}._2W3KtG_6I_OuzyVUJMPi81 h3{margin:12px 0 9px}._2W3KtG_6I_OuzyVUJMPi81 h3 small{color:#888;font-weight:normal}._2W3KtG_6I_OuzyVUJMPi81 p{margin:0.6em 0}._2W3KtG_6I_OuzyVUJMPi81 small{line-height:1.2em}._3a_XdyKvkwbYxcE3DWu9oW,.uGWuXzrPGfnvdsbqa5Ozw{width:0%;font-weight:bold;height:100%}._3a_XdyKvkwbYxcE3DWu9oW{background:#3d9aff;border-right:1px solid #666}.uGWuXzrPGfnvdsbqa5Ozw{background:rgba(171,171,171,0.5);border-right:1px solid #999}._2bj65Pw-e8FDdtwrNXnsDD{height:2px;line-height:2px;width:100%}._1GtR-FSnLAvd2uVvFnp_TB{width:268px;float:left}._2kXcOokz6ELFIV8Re6xqxw{float:right;height:24px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG button{border-color:black !important}.xYHuW-PpkjmIpftcoyoOG button:disabled{border:solid 1px transparent !important}::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#ddd;border-radius:12px}::-webkit-scrollbar-thumb{background:#b5b5b5;border-radius:12px}._2Z5awevvX1Eotn593aPCzD .tick line{color:#9a9a9a26}._1Wd9RbKBI8JBIuJpeAvkzi .tick line{color:#9a9a9a26}._2mrrk9sZFxGCNK9p270dDd{min-height:100vh}._2qDks0boww6RDTDKGQKlj7{overflow-x:auto}._3DxTCLGwAXAiDwCJL0c0R8{height:10px;width:10px;display:inline-block}.hteVRerkiKxsxbEyODBKw{position:relative;display:inline-block}._1E48hl4d23A67CvipC3l-P{top:100%;left:0%}.hteVRerkiKxsxbEyODBKw ._1CxmH_x7erHeDuie1yPEyk{visibility:hidden;background-color:black;color:#fff;text-align:center;padding:5px;border-radius:6px;min-width:80px;position:absolute;z-index:1}.hteVRerkiKxsxbEyODBKw:hover ._1CxmH_x7erHeDuie1yPEyk{visibility:visible}._6CCNqRiHbh07PQTZ0g6ex line{stroke:black;stroke-width:2}._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#9467bd}._3dDY87etqydXN96YyV8mWr{width:100%;height:50px;font-family:monospace;font-size:12pt;resize:none;overflow:hidden}._1mdDHKoCTyWnW-M8s-UgxZ{height:25px !important}.xYHuW-PpkjmIpftcoyoOG{border-bottom:1px solid rgba(100,100,100,0.35);background:#e2e2e2;padding:6px 24px 4px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG h1{display:inline-block;margin:0px 14px 0 0}.xYHuW-PpkjmIpftcoyoOG button{vertical-align:top}._3jhIG6HC-WGEZsZuQ_FPM{margin-left:5px;margin-right:5px}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG{background:#040404;color:#f3f3f3}.Qsb0T1aFcWnUuy7YjeX49{background:#131313;color:#e3e3e3}.Qsb0T1aFcWnUuy7YjeX49 a{color:#5ae}.Qsb0T1aFcWnUuy7YjeX49 ._3k-obCxVEG5WXNW4d5ysbp{fill:none}.Qsb0T1aFcWnUuy7YjeX49 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-track{background:#222}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-thumb{background:#444}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text{fill:#f2f2f2;text-shadow:0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text._3KQQfVUpxeziY64StJ35Fw{fill:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 line,.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 path{stroke:#777}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG button:enabled{border-color:white !important}.Qsb0T1aFcWnUuy7YjeX49 ._6CCNqRiHbh07PQTZ0g6ex line{stroke:white;stroke-width:2}.Qsb0T1aFcWnUuy7YjeX49 ._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#635075}\n", ""]);
@@ -43737,11 +44702,11 @@ module.exports = exports;
 
 
 /***/ }),
-/* 18 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(5);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".tHG56FAVLgJTZ7aGH0lye{padding-bottom:4px;position:relative}.tHG56FAVLgJTZ7aGH0lye:after{content:\" \";background-color:#ccc;position:absolute;bottom:0;left:0;width:100%;height:4px;cursor:row-resize}.lT_iCtI0fMxwxY9fyY00i{background-color:red}\n", ""]);
@@ -43754,7 +44719,7 @@ module.exports = exports;
 
 
 /***/ }),
-/* 19 */
+/* 28 */
 /***/ (function(module, exports) {
 
 var g;
@@ -43780,11 +44745,11 @@ module.exports = g;
 
 
 /***/ }),
-/* 20 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var api = __webpack_require__(7);
-            var content = __webpack_require__(21);
+var api = __webpack_require__(9);
+            var content = __webpack_require__(30);
 
             content = content.__esModule ? content.default : content;
 
@@ -43806,12 +44771,12 @@ var exported = content.locals ? content.locals : {};
 module.exports = exported;
 
 /***/ }),
-/* 21 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(5);
-var ___CSS_LOADER_AT_RULE_IMPORT_0___ = __webpack_require__(22);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
+var ___CSS_LOADER_AT_RULE_IMPORT_0___ = __webpack_require__(31);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic&display=swap);"]);
 exports.i(___CSS_LOADER_AT_RULE_IMPORT_0___);
@@ -43823,11 +44788,11 @@ module.exports = exports;
 
 
 /***/ }),
-/* 22 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(5);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, "table.dataTable {\n  clear: both;\n  margin-top: 6px !important;\n  margin-bottom: 6px !important;\n  max-width: none !important;\n  border-collapse: separate !important;\n  border-spacing: 0;\n}\ntable.dataTable td,\ntable.dataTable th {\n  -webkit-box-sizing: content-box;\n  box-sizing: content-box;\n}\ntable.dataTable td.dataTables_empty,\ntable.dataTable th.dataTables_empty {\n  text-align: center;\n}\ntable.dataTable.nowrap th,\ntable.dataTable.nowrap td {\n  white-space: nowrap;\n}\n\ndiv.dataTables_wrapper div.dataTables_length label {\n  font-weight: normal;\n  text-align: left;\n  white-space: nowrap;\n}\ndiv.dataTables_wrapper div.dataTables_length select {\n  width: auto;\n  display: inline-block;\n}\ndiv.dataTables_wrapper div.dataTables_filter {\n  text-align: right;\n}\ndiv.dataTables_wrapper div.dataTables_filter label {\n  font-weight: normal;\n  white-space: nowrap;\n  text-align: left;\n}\ndiv.dataTables_wrapper div.dataTables_filter input {\n  margin-left: 0.5em;\n  display: inline-block;\n  width: auto;\n}\ndiv.dataTables_wrapper div.dataTables_info {\n  padding-top: 0.85em;\n  white-space: nowrap;\n}\ndiv.dataTables_wrapper div.dataTables_paginate {\n  margin: 0;\n  white-space: nowrap;\n  text-align: right;\n}\ndiv.dataTables_wrapper div.dataTables_paginate ul.pagination {\n  margin: 2px 0;\n  white-space: nowrap;\n  justify-content: flex-end;\n}\ndiv.dataTables_wrapper div.dataTables_processing {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  width: 200px;\n  margin-left: -100px;\n  margin-top: -26px;\n  text-align: center;\n  padding: 1em 0;\n}\n\ntable.dataTable thead > tr > th.sorting_asc, table.dataTable thead > tr > th.sorting_desc, table.dataTable thead > tr > th.sorting,\ntable.dataTable thead > tr > td.sorting_asc,\ntable.dataTable thead > tr > td.sorting_desc,\ntable.dataTable thead > tr > td.sorting {\n  padding-right: 30px;\n}\ntable.dataTable thead > tr > th:active,\ntable.dataTable thead > tr > td:active {\n  outline: none;\n}\ntable.dataTable thead .sorting,\ntable.dataTable thead .sorting_asc,\ntable.dataTable thead .sorting_desc,\ntable.dataTable thead .sorting_asc_disabled,\ntable.dataTable thead .sorting_desc_disabled {\n  cursor: pointer;\n  position: relative;\n}\ntable.dataTable thead .sorting:before, table.dataTable thead .sorting:after,\ntable.dataTable thead .sorting_asc:before,\ntable.dataTable thead .sorting_asc:after,\ntable.dataTable thead .sorting_desc:before,\ntable.dataTable thead .sorting_desc:after,\ntable.dataTable thead .sorting_asc_disabled:before,\ntable.dataTable thead .sorting_asc_disabled:after,\ntable.dataTable thead .sorting_desc_disabled:before,\ntable.dataTable thead .sorting_desc_disabled:after {\n  position: absolute;\n  bottom: 0.9em;\n  display: block;\n  opacity: 0.3;\n}\ntable.dataTable thead .sorting:before,\ntable.dataTable thead .sorting_asc:before,\ntable.dataTable thead .sorting_desc:before,\ntable.dataTable thead .sorting_asc_disabled:before,\ntable.dataTable thead .sorting_desc_disabled:before {\n  right: 1em;\n  content: \"\\2191\";\n}\ntable.dataTable thead .sorting:after,\ntable.dataTable thead .sorting_asc:after,\ntable.dataTable thead .sorting_desc:after,\ntable.dataTable thead .sorting_asc_disabled:after,\ntable.dataTable thead .sorting_desc_disabled:after {\n  right: 0.5em;\n  content: \"\\2193\";\n}\ntable.dataTable thead .sorting_asc:before,\ntable.dataTable thead .sorting_desc:after {\n  opacity: 1;\n}\ntable.dataTable thead .sorting_asc_disabled:before,\ntable.dataTable thead .sorting_desc_disabled:after {\n  opacity: 0;\n}\n\ndiv.dataTables_scrollHead table.dataTable {\n  margin-bottom: 0 !important;\n}\n\ndiv.dataTables_scrollBody table {\n  border-top: none;\n  margin-top: 0 !important;\n  margin-bottom: 0 !important;\n}\ndiv.dataTables_scrollBody table thead .sorting:before,\ndiv.dataTables_scrollBody table thead .sorting_asc:before,\ndiv.dataTables_scrollBody table thead .sorting_desc:before,\ndiv.dataTables_scrollBody table thead .sorting:after,\ndiv.dataTables_scrollBody table thead .sorting_asc:after,\ndiv.dataTables_scrollBody table thead .sorting_desc:after {\n  display: none;\n}\ndiv.dataTables_scrollBody table tbody tr:first-child th,\ndiv.dataTables_scrollBody table tbody tr:first-child td {\n  border-top: none;\n}\n\ndiv.dataTables_scrollFoot > .dataTables_scrollFootInner {\n  box-sizing: content-box;\n}\ndiv.dataTables_scrollFoot > .dataTables_scrollFootInner > table {\n  margin-top: 0 !important;\n  border-top: none;\n}\n\n@media screen and (max-width: 767px) {\n  div.dataTables_wrapper div.dataTables_length,\n  div.dataTables_wrapper div.dataTables_filter,\n  div.dataTables_wrapper div.dataTables_info,\n  div.dataTables_wrapper div.dataTables_paginate {\n    text-align: center;\n  }\n}\ntable.dataTable.table-sm > thead > tr > th {\n  padding-right: 20px;\n}\ntable.dataTable.table-sm .sorting:before,\ntable.dataTable.table-sm .sorting_asc:before,\ntable.dataTable.table-sm .sorting_desc:before {\n  top: 5px;\n  right: 0.85em;\n}\ntable.dataTable.table-sm .sorting:after,\ntable.dataTable.table-sm .sorting_asc:after,\ntable.dataTable.table-sm .sorting_desc:after {\n  top: 5px;\n}\n\ntable.table-bordered.dataTable th,\ntable.table-bordered.dataTable td {\n  border-left-width: 0;\n}\ntable.table-bordered.dataTable th:last-child, table.table-bordered.dataTable th:last-child,\ntable.table-bordered.dataTable td:last-child,\ntable.table-bordered.dataTable td:last-child {\n  border-right-width: 0;\n}\ntable.table-bordered.dataTable tbody th,\ntable.table-bordered.dataTable tbody td {\n  border-bottom-width: 0;\n}\n\ndiv.dataTables_scrollHead table.table-bordered {\n  border-bottom-width: 0;\n}\n\ndiv.table-responsive > div.dataTables_wrapper > div.row {\n  margin: 0;\n}\ndiv.table-responsive > div.dataTables_wrapper > div.row > div[class^=\"col-\"]:first-child {\n  padding-left: 0;\n}\ndiv.table-responsive > div.dataTables_wrapper > div.row > div[class^=\"col-\"]:last-child {\n  padding-right: 0;\n}\n", ""]);
@@ -43836,11 +44801,11 @@ module.exports = exports;
 
 
 /***/ }),
-/* 23 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(5);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".xZRD7cJ3eqExhoIvsDdTz{animation-duration:1s;animation-name:_1L8M0t7r7UmE24Bzg7PH5z;animation-iteration-count:infinite}@keyframes _1L8M0t7r7UmE24Bzg7PH5z{from{fill:#00000000;background-color:#00000000}to{fill:#e0e0e087;background-color:#e0e0e087}}.DZrPvkroZUXbY1UhPo2EM{animation-duration:1s;animation-name:_1UZozth3eXf0kHvLU8EuFR;animation-iteration-count:infinite;font-size:18px !important}@keyframes _1UZozth3eXf0kHvLU8EuFR{from{fill:black}to{fill:#00259e}}._3hdXyByJMArJa0irik6ELY{font-size:16px}\n", ""]);
@@ -43856,7 +44821,7 @@ module.exports = exports;
 
 
 /***/ }),
-/* 24 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -44000,7 +44965,7 @@ __webpack_require__.d(d3_namespaceObject, "dsv", function() { return dsv_dsv; })
 __webpack_require__.d(d3_namespaceObject, "csv", function() { return dsv_csv; });
 __webpack_require__.d(d3_namespaceObject, "tsv", function() { return dsv_tsv; });
 __webpack_require__.d(d3_namespaceObject, "image", function() { return src_image; });
-__webpack_require__.d(d3_namespaceObject, "json", function() { return json; });
+__webpack_require__.d(d3_namespaceObject, "json", function() { return src_json; });
 __webpack_require__.d(d3_namespaceObject, "text", function() { return src_text; });
 __webpack_require__.d(d3_namespaceObject, "xml", function() { return xml; });
 __webpack_require__.d(d3_namespaceObject, "html", function() { return xml_html; });
@@ -50910,7 +51875,7 @@ function responseJson(response) {
   return response.json();
 }
 
-/* harmony default export */ var json = (function(input, init) {
+/* harmony default export */ var src_json = (function(input, init) {
   return fetch(input, init).then(responseJson);
 });
 
@@ -64436,9 +65401,56 @@ function defaultConstrain(transform, extent, translateExtent) {
 
 
 
-// EXTERNAL MODULE: ./node_modules/randomcolor/randomColor.js
-var randomColor = __webpack_require__(14);
-var randomColor_default = /*#__PURE__*/__webpack_require__.n(randomColor);
+// EXTERNAL MODULE: ./node_modules/colorsys/colorsys.js
+var colorsys = __webpack_require__(6);
+var colorsys_default = /*#__PURE__*/__webpack_require__.n(colorsys);
+
+// EXTERNAL MODULE: ./node_modules/seedrandom/index.js
+var seedrandom = __webpack_require__(15);
+var seedrandom_default = /*#__PURE__*/__webpack_require__.n(seedrandom);
+
+// CONCATENATED MODULE: ./src/lib/categoricalcolors.ts
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
+
+function hashCode(str) {
+    var hash = 0, i, chr;
+    if (str.length === 0)
+        return hash;
+    for (i = 0; i < str.length; i++) {
+        chr = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+}
+;
+function categoricalColorScheme(value) {
+    var json = JSON.stringify(value);
+    var h = hashCode(json);
+    var uniform01 = seedrandom_default()(json)();
+    // @ts-ignore
+    var c_turbo = colorsys_default.a.parseCss(turbo(uniform01));
+    var c_hsv = colorsys_default.a.rgb_to_hsv(c_turbo);
+    if ((h % 3) == 1) {
+        c_hsv.v -= 20;
+    }
+    if ((h % 3) == 2) {
+        c_hsv.s -= 20;
+    }
+    var c = colorsys_default.a.hsv_to_rgb({
+        h: c_hsv.h,
+        s: c_hsv.s,
+        v: c_hsv.v
+    });
+    return 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+}
 
 // CONCATENATED MODULE: ./src/lib/d3_scales.ts
 /*
@@ -64822,39 +65834,12 @@ var PSTATE_FILTERS = 'filters';
 
 
 
-function hashCode(str) {
-    var hash = 0, i, chr;
-    if (str.length === 0)
-        return hash;
-    for (i = 0; i < str.length; i++) {
-        chr = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + chr;
-        hash |= 0; // Convert to 32bit integer
-    }
-    return hash;
-}
-;
+
 var special_numerics = ['inf', '-inf', Infinity, -Infinity, null];
 function is_special_numeric(x) {
     return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
 }
 ;
-function toRgb(colr) {
-    if (colr.startsWith("rgb")) {
-        var rgb = colr.slice(0, -1).split('(')[1].split(',');
-        return {
-            r: parseInt(rgb[0]),
-            g: parseInt(rgb[1]),
-            b: parseInt(rgb[2]),
-        };
-    }
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colr);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
 function create_d3_scale_without_outliers(pd) {
     var dv = pd.distinct_values;
     if (pd.type == ParamType.CATEGORICAL) {
@@ -64937,14 +65922,13 @@ function compute_val2color(pd) {
         if (pd.__val2color[pd.distinct_values[i]]) {
             continue;
         }
-        if (pd.distinct_values.length < 10) {
-            var c = toRgb(category10[i % 10]);
+        if (pd.distinct_values.length <= 20) {
+            var scheme = ["#1f77b4", "#ff7f0e", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#1f77b4", "#aec7e8", "#ffbb78", "#ff9896", "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5", "#2ca02c"];
+            var c = colorsys_default.a.parseCss(scheme[i]);
             pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
             continue;
         }
-        var valueHash = hashCode(JSON.stringify(pd.distinct_values[i]));
-        var c = toRgb(randomColor_default()({ seed: Math.abs(valueHash) }));
-        pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+        pd.__val2color[pd.distinct_values[i]] = categoricalColorScheme(pd.distinct_values[i]);
     }
 }
 ;
@@ -64997,7 +65981,7 @@ function colorScheme(pd, value, alpha, defaultColorMap) {
         var interpColFn = getColorMap(pd, defaultColorMap);
         try {
             var code = interpColFn(colr);
-            var rgb = toRgb(code);
+            var rgb = colorsys_default.a.parseCss(code);
             return "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", " + alpha + ")";
         }
         catch (err) {
@@ -65137,7 +66121,7 @@ var external_root_React_commonjs2_react_commonjs_react_amd_react_ = __webpack_re
 var external_root_React_commonjs2_react_commonjs_react_amd_react_default = /*#__PURE__*/__webpack_require__.n(external_root_React_commonjs2_react_commonjs_react_amd_react_);
 
 // EXTERNAL MODULE: ./src/lib/resizable.scss
-var resizable = __webpack_require__(11);
+var resizable = __webpack_require__(13);
 var resizable_default = /*#__PURE__*/__webpack_require__.n(resizable);
 
 // EXTERNAL MODULE: ./node_modules/underscore/underscore.js
@@ -66010,8 +66994,9 @@ var FILTERS = (filters_a = {},
 ;
 function filter_range(data) {
     if (data.type == ParamType.CATEGORICAL) {
+        console.assert(typeof data.min == typeof data.max, data.min, data.max);
         return function (dp) {
-            var value = "" + dp[data.col];
+            var value = typeof data.min == 'string' ? "" + dp[data.col] : dp[data.col];
             return value !== undefined && data.min <= value && value <= data.max;
         };
     }
@@ -66635,8 +67620,9 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
                             data: {}
                         };
                     }
-                    min = "" + range.values[0];
-                    max = "" + range.values[range.values.length - 1];
+                    min = range.values[0];
+                    max = range.values[range.values.length - 1];
+                    console.assert(typeof min == typeof max, min, max);
                 }
                 else {
                     min = Math.min.apply(Math, range.range);
@@ -66655,18 +67641,42 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
             });
             var selected = apply_filters(me.props.rows_filtered, filters);
             if (me.props.asserts) {
-                var selected_pixels = [];
+                // Check that pixel-based selected rows
+                // match filters-based selected rows
+                // But relax the verification a bit - math errors can happen
+                // and we only require a 1 pixel precision
+                var selected_pixels_minset = [];
+                var selected_pixels_maxset = [];
                 me.props.rows_filtered
-                    .map(function (d) {
-                    return actives.every(function (dimension) {
+                    .forEach(function (d) {
+                    if (actives.every(function (dimension) {
                         var scale = me.yscale[dimension];
                         var extent = extents[dimension];
                         var value = d[dimension];
-                        return extent[0] <= scale(value) && scale(value) <= extent[1];
-                    }) ? selected_pixels.push(d) : null;
+                        return extent[0] + 1 <= scale(value) && scale(value) <= extent[1] - 1;
+                    })) {
+                        selected_pixels_minset.push(d);
+                    }
+                    if (actives.every(function (dimension) {
+                        var scale = me.yscale[dimension];
+                        var extent = extents[dimension];
+                        var value = d[dimension];
+                        return extent[0] - 1 <= scale(value) && scale(value) <= extent[1] + 1;
+                    })) {
+                        selected_pixels_maxset.push(d);
+                    }
                 });
-                if (selected_pixels.length != selected.length || underscore_default.a.difference(selected_pixels, selected).length) {
-                    console.error("Warning! Filter on " + actives.join(" ") + " (", filters, ") does not match actually selected rows", selected_pixels, " Computed rows with filter:", selected);
+                var missed = underscore_default.a.difference(selected_pixels_minset, selected);
+                var overselected = underscore_default.a.difference(selected, selected_pixels_maxset);
+                if (overselected.length || missed.length) {
+                    console.error("Warning! Filter on " + actives.join(" ") + " (", filters, ") does not match actually selected rows", " Computed rows with filter:", selected, " Missed:", missed, " Falsely selected:", overselected);
+                    console.error("filters", filters, JSON.stringify(filters));
+                    if (missed.length) {
+                        console.error("first missed", JSON.stringify(missed[0]));
+                    }
+                    if (overselected.length) {
+                        console.error("first falsely selected", JSON.stringify(overselected[0]));
+                    }
                 }
             }
             me.props.setSelected(selected, {
@@ -66796,27 +67806,27 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
 
 
 // EXTERNAL MODULE: ./node_modules/datatables.net/js/jquery.dataTables.js
-var jquery_dataTables = __webpack_require__(6);
+var jquery_dataTables = __webpack_require__(8);
 var jquery_dataTables_default = /*#__PURE__*/__webpack_require__.n(jquery_dataTables);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js
-var dataTables_bootstrap4 = __webpack_require__(8);
+var dataTables_bootstrap4 = __webpack_require__(10);
 var dataTables_bootstrap4_default = /*#__PURE__*/__webpack_require__.n(dataTables_bootstrap4);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-colreorder/js/dataTables.colReorder.js
-var dataTables_colReorder = __webpack_require__(9);
+var dataTables_colReorder = __webpack_require__(11);
 var dataTables_colReorder_default = /*#__PURE__*/__webpack_require__.n(dataTables_colReorder);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-colreorder-bs4/js/colReorder.bootstrap4.js
-var colReorder_bootstrap4 = __webpack_require__(15);
+var colReorder_bootstrap4 = __webpack_require__(16);
 var colReorder_bootstrap4_default = /*#__PURE__*/__webpack_require__.n(colReorder_bootstrap4);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-buttons/js/dataTables.buttons.js
-var dataTables_buttons = __webpack_require__(10);
+var dataTables_buttons = __webpack_require__(12);
 var dataTables_buttons_default = /*#__PURE__*/__webpack_require__.n(dataTables_buttons);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-buttons-bs4/js/buttons.bootstrap4.js
-var buttons_bootstrap4 = __webpack_require__(16);
+var buttons_bootstrap4 = __webpack_require__(17);
 var buttons_bootstrap4_default = /*#__PURE__*/__webpack_require__.n(buttons_bootstrap4);
 
 // CONCATENATED MODULE: ./src/rowsdisplaytable.tsx
@@ -67579,7 +68589,7 @@ var PersistentStateInMemory = /** @class */ (function () {
 ;
 
 // EXTERNAL MODULE: ./src/style/global.scss
-var global = __webpack_require__(20);
+var global = __webpack_require__(29);
 
 // CONCATENATED MODULE: ./src/controls.tsx
 /*
@@ -67800,7 +68810,7 @@ var tutorial_StepHiPlotInfo = /** @class */ (function (_super) {
     }
     StepHiPlotInfo.prototype.render = function () {
         // @ts-ignore
-        var pkgInfo = "lib-hiplot-0.1.18.dev84";
+        var pkgInfo = "lib-hiplot-0.1.18.dev85";
         if (pkgInfo === undefined) {
             pkgInfo = "hiplot (no version information)";
         }

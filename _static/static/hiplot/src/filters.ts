@@ -43,8 +43,9 @@ export interface FilterRange {
 
 function filter_range(data: FilterRange): (dp: Datapoint) => boolean {
     if (data.type == ParamType.CATEGORICAL) {
+        console.assert(typeof data.min == typeof data.max, data.min, data.max);
         return function(dp: Datapoint) {
-            const value = `${dp[data.col]}`;
+            const value = typeof data.min == 'string' ? `${dp[data.col]}` : dp[data.col];
             return value !== undefined && data.min <= value && value <= data.max;
         }
     }
