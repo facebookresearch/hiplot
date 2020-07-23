@@ -546,8 +546,19 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
                 return extent[0] <= scale(value) && scale(value) <= extent[1];
               }) ? selected_pixels.push(d) : null;
             });
-          if (selected_pixels.length != selected.length || _.difference(selected_pixels, selected).length) {
-              console.error(`Warning! Filter on ${actives.join(" ")} (`, filters, ") does not match actually selected rows", selected_pixels, " Computed rows with filter:", selected);
+          const missed = _.difference(selected_pixels, selected);
+          const overselected = _.difference(selected, selected_pixels);
+          if (overselected.length || missed.length) {
+              console.error(`Warning! Filter on ${actives.join(" ")} (`, filters, ") does not match actually selected rows", selected_pixels,
+                " Computed rows with filter:", selected,
+                " Missed:", missed, " Overselected:", overselected);
+              console.error("filters", filters, JSON.stringify(filters));
+              if (missed.length) {
+                console.error("first missed", JSON.stringify(missed[0]));
+              }
+              if (overselected.length) {
+                console.error("first falsely selected", JSON.stringify(overselected[0]));
+              }
           }
       }
       me.props.setSelected(selected, {
