@@ -75,6 +75,7 @@ commands:
       browser:
         type: string
     steps:
+      - run: sudo apt-get update -y && sudo apt-get install openssh-client git
       - checkout
       - attach_built_js
       - restore_cache:
