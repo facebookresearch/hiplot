@@ -35,7 +35,6 @@ export function categoricalColorScheme(value: string): string {
     if ((h % 3) == 2) {
         c_hsv.s -= 20;
     }
-    console.log(c_hsv, uniform01, value);
     const c = colorsys.hsv_to_rgb({
         h: c_hsv.h,
         s: c_hsv.s,

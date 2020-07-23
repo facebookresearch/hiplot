@@ -200,6 +200,23 @@ def demo_axis_style() -> hip.Experiment:
     xp.parameters_definition["metric"].label_css = "badge badge-pill badge-info"
     return xp
 
+def demo_categorical() -> hip.Experiment:
+    data: t.List[t.Dict[str, t.Any]] = []
+    for _ in range(100):
+        data.append({
+            'cat_num_05': random.randint(0, 5),
+            'cat_num_15': random.randint(0, 10),
+            'cat_num_25': random.randint(0, 25),
+            'cat_str_05': f's{random.randint(0, 5)}',
+            'cat_str_15': f's{random.randint(0, 15)}',
+            'cat_str_25': f's{random.randint(0, 25)}',
+        })
+    xp = hip.Experiment.from_iterable(data)
+    for param in ["cat_num_05", "cat_num_15", "cat_num_25"]:
+        xp.parameters_definition[param].type = hip.ValueType.CATEGORICAL
+    xp.colorby = 'cat_num_25'
+    return xp
+
 
 README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo": demo,
@@ -217,4 +234,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_color_scheme_ylrd": demo_color_scheme_ylrd,
     "demo_color_scheme_accent": demo_color_scheme_accent,
     "demo_axis_style": demo_axis_style,
+    "demo_categorical": demo_categorical,
 }
