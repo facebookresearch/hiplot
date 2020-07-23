@@ -514,8 +514,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
               data: {}
             };
           }
-          min = `${range.values[0]}`;
-          max = `${range.values[range.values.length - 1]}`;
+          min = range.values[0];
+          max = range.values[range.values.length - 1];
+          console.assert(typeof min == typeof max, min, max);
         }
         else {
           min = Math.min(...range.range);
