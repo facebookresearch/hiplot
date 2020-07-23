@@ -7,23 +7,13 @@
 
 import * as d3 from "d3";
 
-import randomColor from "../node_modules/randomcolor/randomColor.js";
+import colorsys from "colorsys";
 
 import { PersistentState } from "./lib/savedstate";
+import { categoricalColorScheme } from "./lib/categoricalcolors";
 import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers } from "./lib/d3_scales";
 import { Datapoint, ParamType, HiPlotValueDef } from "./types";
 
-
-function hashCode(str: string): number {
-    var hash = 0, i, chr;
-    if (str.length === 0) return hash;
-    for (i = 0; i < str.length; i++) {
-      chr   = str.charCodeAt(i);
-      hash  = ((hash << 5) - hash) + chr;
-      hash |= 0; // Convert to 32bit integer
-    }
-    return hash;
-};
 
 export interface ParamDef extends HiPlotValueDef {
     name: string,
@@ -40,23 +30,6 @@ const special_numerics = ['inf', '-inf', Infinity, -Infinity, null];
 export function is_special_numeric(x) {
     return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
 };
-
-function toRgb(colr: string) {
-    if (colr.startsWith("rgb")) {
-        var rgb = colr.slice(0, -1).split('(')[1].split(',');
-        return {
-            r: parseInt(rgb[0]),
-            g: parseInt(rgb[1]),
-            b: parseInt(rgb[2]),
-        };
-    }
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colr);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : null;
-}
 
 
 export function create_d3_scale_without_outliers(pd: ParamDef): any {
@@ -142,6 +115,7 @@ export function scale_pixels_range(scale: any, extents: [number, number]): Scale
     }
 }
 
+
 function compute_val2color(pd: ParamDef) {
     if (pd.__val2color !== undefined) {
         return;
@@ -151,14 +125,13 @@ function compute_val2color(pd: ParamDef) {
         if (pd.__val2color[pd.distinct_values[i]]) {
             continue;
         }
-        if (pd.distinct_values.length < 10) {
-            var c = toRgb(d3.schemeCategory10[i % 10]);
+        if (pd.distinct_values.length <= 20) {
+            const scheme = ["#1f77b4", "#ff7f0e", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#1f77b4", "#aec7e8", "#ffbb78", "#ff9896", "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5", "#2ca02c"];
+            const c = colorsys.parseCss(scheme[i]);
             pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
             continue;
         }
-        var valueHash = hashCode(JSON.stringify(pd.distinct_values[i]));
-        var c = toRgb((randomColor as any)({seed: Math.abs(valueHash)}));
-        pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+        pd.__val2color[pd.distinct_values[i]] = categoricalColorScheme(pd.distinct_values[i]);
     }
 };
 
@@ -214,7 +187,7 @@ export function colorScheme(pd: ParamDef, value: any, alpha: number, defaultColo
         const interpColFn = getColorMap(pd, defaultColorMap);
         try {
             const code = interpColFn(colr);
-            const rgb = toRgb(code);
+            const rgb = colorsys.parseCss(code);
             return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
         } catch (err) {
             throw new Error(`Error below happened while computing color using color map "${pd.colormap}" for column ${pd.name}: is the colormap valid? (${err.toString()})`);

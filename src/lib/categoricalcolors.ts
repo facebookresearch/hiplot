@@ -26,6 +26,20 @@ export function categoricalColorScheme(value: string): string {
     const json = JSON.stringify(value);
     const h = hashCode(json);
     const uniform01 = seedrandom(json)();
+    // @ts-ignore
     const c_turbo = colorsys.parseCss(d3.interpolateTurbo(uniform01));
+    const c_hsv = colorsys.rgb_to_hsv(c_turbo);
+    if ((h % 3) == 1) {
+        c_hsv.v -= 20;
+    }
+    if ((h % 3) == 2) {
+        c_hsv.s -= 20;
+    }
+    console.log(c_hsv, uniform01, value);
+    const c = colorsys.hsv_to_rgb({
+        h: c_hsv.h,
+        s: c_hsv.s,
+        v: c_hsv.v
+    });
     return 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
 }
