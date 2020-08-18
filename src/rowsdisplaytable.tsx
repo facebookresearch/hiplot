@@ -42,7 +42,11 @@ interface RowsDisplayTableState {
 // Corresponds to values in the dict of `exp.display_data(hip.Displays.TABLE)`
 export interface TableDisplayData {
     // Hidden columns, that won't appear in the table
-    hide?: Array<string>;
+    hide: Array<string>;
+
+    // Default ordering of the rows in the table.
+    // To order by `loss` for instance, set it to [['loss', 'desc']]
+    order_by: Array<[string /* column name */, string /* "asc" or "desc" */]>;
 };
 // DISPLAYS_DATA_DOC_END
 
@@ -58,7 +62,12 @@ export class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisp
 
     setSelected_debounced = _.debounce(this.setSelected, 150);
 
-    constructor(props: HiPlotPluginData) {
+    static defaultProps = {
+        hide: [],
+        order_by: [['uid', 'asc']],
+    };
+
+    constructor(props: TablePluginProps) {
         super(props);
         this.state = {};
     }
@@ -85,8 +94,17 @@ export class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisp
                 'title': x == '' ? '' : $("<span />").attr("class", pd.label_css).text(x)[0].outerHTML,
                 'defaultContent': 'null',
                 'type': x == '' ? 'html' : (pd.numeric ? "num" : "string"),
-                'visible': !me.props.hide || !me.props.hide.includes(x)
+                'visible': !me.props.hide || !me.props.hide.includes(x),
+                'orderable': x != '', // Don't allow to sort by color
             };
+        });
+        const order_by = this.props.order_by.map(function(col_otype: [string, string]): [number, string] {
+            const col_idx = me.ordered_cols.indexOf(col_otype[0]);
+            console.assert(
+                col_idx >= 0,
+                `TABLE: Column for ordering ${col_otype[0]} does not exist. Available columns: ${me.ordered_cols.join(",")}`
+            );
+            return [col_idx, col_otype[1]];
         });
         columns[0]['render'] = function(data, type, row, meta) {
             if (!me.dt) {
@@ -99,6 +117,7 @@ export class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisp
         this.dt = dom.DataTable({
             columns: columns,
             data: [],
+            order: order_by,
             deferRender: true, // Create HTML elements only when displayed
             headerCallback: function headerCallback(thead: HTMLTableRowElement, data: Array<Array<any>>, start: number, end: number, display) {
                 Array.from(thead.cells).forEach(function(th: HTMLElement, i) {

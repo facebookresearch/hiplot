@@ -40,7 +40,7 @@ It is possible to customize how the data is rendered:
 
 * Or for invididual components with :meth:`hiplot.Experiment.display_data` (see :ref:`displaysReference` for all possible values)
 
-.. literalinclude:: ../hiplot/test_experiment.py
+.. literalinclude:: ../hiplot/fetchers_demo.py
     :start-after: EXPERIMENT_SETTINGS_SNIPPET2_BEGIN
     :end-before: EXPERIMENT_SETTINGS_SNIPPET2_END
 
