@@ -23,6 +23,15 @@ PlotXY
     :end-before: DISPLAYS_DATA_DOC_END
 
 
+Table
+-------------------
+
+.. literalinclude:: ../src/rowsdisplaytable.tsx
+    :language: typescript
+    :start-after: DISPLAYS_DATA_DOC_BEGIN
+    :end-before: DISPLAYS_DATA_DOC_END
+
+
 Distribution
 -------------------
 

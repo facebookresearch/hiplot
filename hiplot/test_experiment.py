@@ -106,10 +106,16 @@ def test_doc() -> None:
     # EXPERIMENT_SETTINGS_SNIPPET2_BEGIN
     # Provide configuration for the parallel plot
     exp.display_data(hip.Displays.PARALLEL_PLOT).update({
-        # Hide some columns
+        # Hide some columns in the parallel plot
         'hide': ['optionB'],
         # Specify the order for others
         'order': ['time'],  # Put column time first on the left
+    })
+
+    # Provide configuration for the table with all the rows
+    exp.display_data(hip.Displays.PARALLEL_PLOT).update({
+        # Don't display `uid` and `from_uid` columns to the user
+        'hide': ['uid', 'from_uid'],
     })
 
     # Provide configuration for the XY graph

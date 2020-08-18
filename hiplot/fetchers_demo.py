@@ -31,6 +31,14 @@ def demo_basic_usage() -> hip.Experiment:
             {'dropout': 0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
     return hip.Experiment.from_iterable(data)
 
+def demo_hide_uids() -> hip.Experiment:
+    data = [{'dropout': 0.1, 'lr': 0.001, 'loss': 10.0, 'optimizer': 'SGD'},
+            {'dropout': 0.15, 'lr': 0.01, 'loss': 3.5, 'optimizer': 'Adam'},
+            {'dropout': 0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
+    experiment = hip.Experiment.from_iterable(data)
+    experiment.display_data(hip.Displays.TABLE)['hide'] = ['uid', 'from_uid']
+    experiment.display_data(hip.Displays.PARALLEL_PLOT)['hide'] = ['uid', 'from_uid']
+    return experiment
 
 def demo_line_xy() -> hip.Experiment:
     # DEMO_LINE_XY_BEGIN
@@ -235,4 +243,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_color_scheme_accent": demo_color_scheme_accent,
     "demo_axis_style": demo_axis_style,
     "demo_categorical": demo_categorical,
+    "demo_hide_uids": demo_hide_uids,
 }
