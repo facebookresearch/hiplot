@@ -27,10 +27,12 @@ export function foDynamicSizeFitContent(fo: SVGForeignObjectElement) {
     const anchor_x = leftPos(anchor, w);
     fo.setAttribute("x", `${anchor_x}`);
     // Set tooltip
-    const tooltip_anchor_x = leftPos(anchor, TOOLTIP_WIDTH_PX) - anchor_x;
-    const tooltip_width = Math.min(TOOLTIP_WIDTH_PX, TOOLTIP_WIDTH_PX - tooltip_anchor_x);
-    tooltip.style.marginLeft = `${tooltip_anchor_x}px`;
-    tooltip.style.width = `${tooltip_width}px`;
+    if (tooltip) {
+        const tooltip_anchor_x = leftPos(anchor, TOOLTIP_WIDTH_PX) - anchor_x;
+        const tooltip_width = Math.min(TOOLTIP_WIDTH_PX, TOOLTIP_WIDTH_PX - tooltip_anchor_x);
+        tooltip.style.marginLeft = `${tooltip_anchor_x}px`;
+        tooltip.style.width = `${tooltip_width}px`;
+    }
     fo.style.width = `${w}px`;
     fo.style.height = `${h}px`;
     fo.style.overflow = "visible";
