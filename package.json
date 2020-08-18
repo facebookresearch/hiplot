@@ -67,8 +67,8 @@
     "prepublish": "npm-run-all prepublish-ts",
     "tsm": "tsm src -i node_modules/",
     "webpack": "webpack --display-error-details --progress",
-    "webpack-dev": "webpack --display-error-details --progress -d",
-    "webpack-dev-watch": "webpack --display-error-details --progress -d -w",
+    "webpack-dev": "webpack --display-error-details --progress -d --env.debug",
+    "webpack-dev-watch": "webpack --display-error-details --progress -d --env.debug -w",
     "prepublish-ts": "tsc"
   },
   "repository": {
