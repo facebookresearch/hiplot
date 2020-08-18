@@ -76,6 +76,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Displays reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#parallel-plot">Parallel Plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plotxy">PlotXY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#table">Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#distribution">Distribution</a></li>
 </ul>
 </li>
@@ -148,6 +149,16 @@
 
   <span class="c1">// Default height in pixels</span>
   <span class="nx">height?</span>: <span class="kt">number</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="table">
+<h2>Table<a class="headerlink" href="#table" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp.display_data(hip.Displays.TABLE)`</span>
+<span class="kr">export</span> <span class="kr">interface</span> <span class="nx">TableDisplayData</span> <span class="p">{</span>
+    <span class="c1">// Hidden columns, that won&#39;t appear in the table</span>
+    <span class="nx">hide?</span>: <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>

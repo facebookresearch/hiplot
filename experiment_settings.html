@@ -164,10 +164,16 @@ When a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" t
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># Provide configuration for the parallel plot</span>
     <span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-        <span class="c1"># Hide some columns</span>
+        <span class="c1"># Hide some columns in the parallel plot</span>
         <span class="s1">&#39;hide&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;optionB&#39;</span><span class="p">],</span>
         <span class="c1"># Specify the order for others</span>
         <span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">],</span>  <span class="c1"># Put column time first on the left</span>
+    <span class="p">})</span>
+
+    <span class="c1"># Provide configuration for the table with all the rows</span>
+    <span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="c1"># Don&#39;t display `uid` and `from_uid` columns to the user</span>
+        <span class="s1">&#39;hide&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">,</span> <span class="s1">&#39;from_uid&#39;</span><span class="p">],</span>
     <span class="p">})</span>
 
     <span class="c1"># Provide configuration for the XY graph</span>

@@ -67873,6 +67873,8 @@ buttons_bootstrap4_default()(window, jquery_default.a);
 
 
 ;
+;
+;
 var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
     rowsdisplaytable_extends(RowsDisplayTable, _super);
     function RowsDisplayTable(props) {
@@ -67908,6 +67910,7 @@ var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
                 'title': x == '' ? '' : jquery_default()("<span />").attr("class", pd.label_css).text(x)[0].outerHTML,
                 'defaultContent': 'null',
                 'type': x == '' ? 'html' : (pd.numeric ? "num" : "string"),
+                'visible': !me.props.hide || !me.props.hide.includes(x)
             };
         });
         columns[0]['render'] = function (data, type, row, meta) {
@@ -68810,7 +68813,7 @@ var tutorial_StepHiPlotInfo = /** @class */ (function (_super) {
     }
     StepHiPlotInfo.prototype.render = function () {
         // @ts-ignore
-        var pkgInfo = "lib-hiplot-0.1.18.88";
+        var pkgInfo = "lib-hiplot-0.1.18.89";
         if (pkgInfo === undefined) {
             pkgInfo = "hiplot (no version information)";
         }

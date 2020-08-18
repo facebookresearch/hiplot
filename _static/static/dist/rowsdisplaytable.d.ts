@@ -4,7 +4,12 @@ import { HiPlotPluginData } from "./plugin";
 import _ from "underscore";
 interface RowsDisplayTableState {
 }
-export declare class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisplayTableState> {
+export interface TableDisplayData {
+    hide?: Array<string>;
+}
+interface TablePluginProps extends HiPlotPluginData, TableDisplayData {
+}
+export declare class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisplayTableState> {
     table_ref: React.RefObject<HTMLTableElement>;
     table_container: React.RefObject<HTMLDivElement>;
     dt: any;

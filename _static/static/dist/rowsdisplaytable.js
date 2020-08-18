@@ -41,6 +41,8 @@ import style from "./hiplot.scss";
 import _ from "underscore";
 import { FilterType } from "./filters";
 ;
+;
+;
 var RowsDisplayTable = /** @class */ (function (_super) {
     __extends(RowsDisplayTable, _super);
     function RowsDisplayTable(props) {
@@ -75,7 +77,8 @@ var RowsDisplayTable = /** @class */ (function (_super) {
             return {
                 'title': x == '' ? '' : $("<span />").attr("class", pd.label_css).text(x)[0].outerHTML,
                 'defaultContent': 'null',
-                'type': x == '' ? 'html' : (pd.numeric ? "num" : "string")
+                'type': x == '' ? 'html' : (pd.numeric ? "num" : "string"),
+                'visible': !me.props.hide || !me.props.hide.includes(x)
             };
         });
         columns[0]['render'] = function (data, type, row, meta) {
