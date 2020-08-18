@@ -38,7 +38,18 @@ import { FilterType } from "./filters";
 interface RowsDisplayTableState {
 };
 
-export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisplayTableState> {
+// DISPLAYS_DATA_DOC_BEGIN
+// Corresponds to values in the dict of `exp.display_data(hip.Displays.TABLE)`
+export interface TableDisplayData {
+    // Hidden columns, that won't appear in the table
+    hide?: Array<string>;
+};
+// DISPLAYS_DATA_DOC_END
+
+interface TablePluginProps extends HiPlotPluginData, TableDisplayData {
+};
+
+export class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisplayTableState> {
     table_ref: React.RefObject<HTMLTableElement> = React.createRef();
     table_container: React.RefObject<HTMLDivElement> = React.createRef();
     dt = null;
@@ -74,6 +85,7 @@ export class RowsDisplayTable extends React.Component<HiPlotPluginData, RowsDisp
                 'title': x == '' ? '' : $("<span />").attr("class", pd.label_css).text(x)[0].outerHTML,
                 'defaultContent': 'null',
                 'type': x == '' ? 'html' : (pd.numeric ? "num" : "string"),
+                'visible': !me.props.hide || !me.props.hide.includes(x)
             };
         });
         columns[0]['render'] = function(data, type, row, meta) {
