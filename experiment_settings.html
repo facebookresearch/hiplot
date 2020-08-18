@@ -171,9 +171,11 @@ When a <a class="reference internal" href="py_reference.html#hiplot.Datapoint" t
     <span class="p">})</span>
 
     <span class="c1"># Provide configuration for the table with all the rows</span>
-    <span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="n">exp</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">hip</span><span class="o">.</span><span class="n">Displays</span><span class="o">.</span><span class="n">TABLE</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
         <span class="c1"># Don&#39;t display `uid` and `from_uid` columns to the user</span>
         <span class="s1">&#39;hide&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">,</span> <span class="s1">&#39;from_uid&#39;</span><span class="p">],</span>
+        <span class="c1"># In the table, order rows by default</span>
+        <span class="s1">&#39;order_by&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="s1">&#39;pct_success&#39;</span><span class="p">,</span> <span class="s1">&#39;desc&#39;</span><span class="p">]]</span>
     <span class="p">})</span>
 
     <span class="c1"># Provide configuration for the XY graph</span>

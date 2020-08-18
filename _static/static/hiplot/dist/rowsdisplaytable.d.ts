@@ -5,7 +5,8 @@ import _ from "underscore";
 interface RowsDisplayTableState {
 }
 export interface TableDisplayData {
-    hide?: Array<string>;
+    hide: Array<string>;
+    order_by: Array<[string, string]>;
 }
 interface TablePluginProps extends HiPlotPluginData, TableDisplayData {
 }
@@ -16,7 +17,11 @@ export declare class RowsDisplayTable extends React.Component<TablePluginProps, 
     ordered_cols: Array<string>;
     empty: boolean;
     setSelected_debounced: ((selected: Datapoint[]) => void) & _.Cancelable;
-    constructor(props: HiPlotPluginData);
+    static defaultProps: {
+        hide: any[];
+        order_by: string[][];
+    };
+    constructor(props: TablePluginProps);
     componentDidMount(): void;
     mountDt(): void;
     componentDidUpdate(prevProps: HiPlotPluginData): void;

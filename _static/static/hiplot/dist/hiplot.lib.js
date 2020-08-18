@@ -67920,8 +67920,14 @@ var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
                 'title': x == '' ? '' : jquery_default()("<span />").attr("class", pd.label_css).text(x)[0].outerHTML,
                 'defaultContent': 'null',
                 'type': x == '' ? 'html' : (pd.numeric ? "num" : "string"),
-                'visible': !me.props.hide || !me.props.hide.includes(x)
+                'visible': !me.props.hide || !me.props.hide.includes(x),
+                'orderable': x != '',
             };
+        });
+        var order_by = this.props.order_by.map(function (col_otype) {
+            var col_idx = me.ordered_cols.indexOf(col_otype[0]);
+            console.assert(col_idx >= 0, "TABLE: Column for ordering " + col_otype[0] + " does not exist. Available columns: " + me.ordered_cols.join(","));
+            return [col_idx, col_otype[1]];
         });
         columns[0]['render'] = function (data, type, row, meta) {
             if (!me.dt) {
@@ -67934,6 +67940,7 @@ var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
         this.dt = dom.DataTable({
             columns: columns,
             data: [],
+            order: order_by,
             deferRender: true,
             headerCallback: function headerCallback(thead, data, start, end, display) {
                 Array.from(thead.cells).forEach(function (th, i) {
@@ -68097,6 +68104,10 @@ var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
     RowsDisplayTable.prototype.componentWillUnmount = function () {
         this.destroyDt();
         this.setSelected_debounced.cancel();
+    };
+    RowsDisplayTable.defaultProps = {
+        hide: [],
+        order_by: [['uid', 'asc']],
     };
     return RowsDisplayTable;
 }(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
@@ -68823,7 +68834,7 @@ var tutorial_StepHiPlotInfo = /** @class */ (function (_super) {
     }
     StepHiPlotInfo.prototype.render = function () {
         // @ts-ignore
-        var pkgInfo = "lib-hiplot-0.1.18.90";
+        var pkgInfo = "lib-hiplot-0.1.18.91";
         if (pkgInfo === undefined) {
             pkgInfo = "hiplot (no version information)";
         }
