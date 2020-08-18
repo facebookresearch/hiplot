@@ -18,13 +18,14 @@ def test_jupyter_notebook() -> None:
         driver.get(f"http://localhost:8888/notebooks/test_notebook.ipynb?token={token}")
         time.sleep(2)
         driver.save_screenshot(str(artifacts_path / "step1.png"))
+        (artifacts_path / "step1.html").write_text(driver.execute_script("return document.documentElement.innerHTML;"))
 
         print('Logs before execution:')
         for l in driver.get_log('browser'):
             print(f'    {str(l)}')
 
         # Find the "Run" button
-        run_btn = driver.find_element_by_css_selector("#run_int > button[title='Run']")
+        run_btn = driver.find_element_by_css_selector("#run_int > button[aria-label='Run']")
         run_btn.click()
         driver.save_screenshot(str(artifacts_path / "step2.png"))
 
