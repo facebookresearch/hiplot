@@ -44661,7 +44661,7 @@ if ( true && module.exports) {
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "._2W3KtG_6I_OuzyVUJMPi81{margin:0;width:100%;height:100%;padding:0}._2W3KtG_6I_OuzyVUJMPi81{font-family:Ubuntu, Tahoma, Helvetica, sans-serif;background:#f7f7f7;color:#404040}._2W3KtG_6I_OuzyVUJMPi81 a{text-decoration:none}._3ETnyEh6iVhTKwQ5avdSIQ{padding:0 3.5%}.nVv4hJybQaDA7qDZ0d89L svg{font-family:Ubuntu, Tahoma, Helvetica, sans-serif}.nVv4hJybQaDA7qDZ0d89L canvas,.nVv4hJybQaDA7qDZ0d89L svg{position:absolute;top:0;left:0}.nVv4hJybQaDA7qDZ0d89L{position:relative}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#fff}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no:hover rect._2Zz5pTQNp59anJPVmfQ7Pn{stroke:#222;stroke-dasharray:5,5}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn:hover{stroke-dasharray:none}._3d1BI6G1YJrz7ognHL90dk rect{fill:none}._3k-obCxVEG5WXNW4d5ysbp{fill:none}._2OwlyBCCKpHyOTpExsmWa7 line,._2OwlyBCCKpHyOTpExsmWa7 path{fill:none;stroke:#777;stroke-width:1}._2OwlyBCCKpHyOTpExsmWa7 .tick{width:200px}._2OwlyBCCKpHyOTpExsmWa7 text{fill:#111;text-anchor:right;font-size:13px;text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff}._2OwlyBCCKpHyOTpExsmWa7 ._2f_wT5YLtZ6XP_X3T5YAKb{font-size:16px;font-weight:bold}._2OwlyBCCKpHyOTpExsmWa7 ._3KQQfVUpxeziY64StJ35Fw{cursor:move;font-size:13px}._1Zmx8UhusT7xyDE75TpK_5,._21zhEGEWznDeWrj2qPLRmw,.klDqoJS3S1dYTy3PfPeZn{float:left}._1Zmx8UhusT7xyDE75TpK_5{width:23%;margin:0 1%}._21zhEGEWznDeWrj2qPLRmw{width:31.3%;margin:0 1%}.klDqoJS3S1dYTy3PfPeZn{width:48%;margin:0 1%}._2W3KtG_6I_OuzyVUJMPi81 h3{margin:12px 0 9px}._2W3KtG_6I_OuzyVUJMPi81 h3 small{color:#888;font-weight:normal}._2W3KtG_6I_OuzyVUJMPi81 p{margin:0.6em 0}._2W3KtG_6I_OuzyVUJMPi81 small{line-height:1.2em}._3a_XdyKvkwbYxcE3DWu9oW,.uGWuXzrPGfnvdsbqa5Ozw{width:0%;font-weight:bold;height:100%}._3a_XdyKvkwbYxcE3DWu9oW{background:#3d9aff;border-right:1px solid #666}.uGWuXzrPGfnvdsbqa5Ozw{background:rgba(171,171,171,0.5);border-right:1px solid #999}._2bj65Pw-e8FDdtwrNXnsDD{height:2px;line-height:2px;width:100%}._1GtR-FSnLAvd2uVvFnp_TB{width:268px;float:left}._2kXcOokz6ELFIV8Re6xqxw{float:right;height:24px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG button{border-color:black !important}.xYHuW-PpkjmIpftcoyoOG button:disabled{border:solid 1px transparent !important}::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#ddd;border-radius:12px}::-webkit-scrollbar-thumb{background:#b5b5b5;border-radius:12px}._2Z5awevvX1Eotn593aPCzD .tick line{color:#9a9a9a26}._1Wd9RbKBI8JBIuJpeAvkzi .tick line{color:#9a9a9a26}._2mrrk9sZFxGCNK9p270dDd{min-height:100vh}._2qDks0boww6RDTDKGQKlj7{overflow-x:auto}._3DxTCLGwAXAiDwCJL0c0R8{height:10px;width:10px;display:inline-block}.hteVRerkiKxsxbEyODBKw{position:relative;display:inline-block}._1E48hl4d23A67CvipC3l-P{top:100%;left:0%}.hteVRerkiKxsxbEyODBKw ._1CxmH_x7erHeDuie1yPEyk{visibility:hidden;background-color:black;color:#fff;text-align:center;padding:5px;border-radius:6px;min-width:80px;position:absolute;z-index:1}.hteVRerkiKxsxbEyODBKw:hover ._1CxmH_x7erHeDuie1yPEyk{visibility:visible}._6CCNqRiHbh07PQTZ0g6ex line{stroke:black;stroke-width:2}._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#9467bd}._3dDY87etqydXN96YyV8mWr{width:100%;height:50px;font-family:monospace;font-size:12pt;resize:none;overflow:hidden}._1mdDHKoCTyWnW-M8s-UgxZ{height:25px !important}.xYHuW-PpkjmIpftcoyoOG{border-bottom:1px solid rgba(100,100,100,0.35);background:#e2e2e2;padding:6px 24px 4px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG h1{display:inline-block;margin:0px 14px 0 0}.xYHuW-PpkjmIpftcoyoOG button{vertical-align:top}._3jhIG6HC-WGEZsZuQ_FPM{margin-left:5px;margin-right:5px}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG{background:#040404;color:#f3f3f3}.Qsb0T1aFcWnUuy7YjeX49{background:#131313;color:#e3e3e3}.Qsb0T1aFcWnUuy7YjeX49 a{color:#5ae}.Qsb0T1aFcWnUuy7YjeX49 ._3k-obCxVEG5WXNW4d5ysbp{fill:none}.Qsb0T1aFcWnUuy7YjeX49 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-track{background:#222}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-thumb{background:#444}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text{fill:#f2f2f2;text-shadow:0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text._3KQQfVUpxeziY64StJ35Fw{fill:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 line,.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 path{stroke:#777}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG button:enabled{border-color:white !important}.Qsb0T1aFcWnUuy7YjeX49 ._6CCNqRiHbh07PQTZ0g6ex line{stroke:white;stroke-width:2}.Qsb0T1aFcWnUuy7YjeX49 ._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#635075}\n", ""]);
+exports.push([module.i, "._2W3KtG_6I_OuzyVUJMPi81{margin:0;width:100%;height:100%;padding:0}._2W3KtG_6I_OuzyVUJMPi81{font-family:Ubuntu, Tahoma, Helvetica, sans-serif;background:#f7f7f7;color:#404040}._2W3KtG_6I_OuzyVUJMPi81 a{text-decoration:none}._3ETnyEh6iVhTKwQ5avdSIQ{padding:0 3.5%}.nVv4hJybQaDA7qDZ0d89L svg{font-family:Ubuntu, Tahoma, Helvetica, sans-serif}.nVv4hJybQaDA7qDZ0d89L canvas,.nVv4hJybQaDA7qDZ0d89L svg{position:absolute;top:0;left:0}.nVv4hJybQaDA7qDZ0d89L{position:relative}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#fff}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no:hover rect._2Zz5pTQNp59anJPVmfQ7Pn{stroke:#222;stroke-dasharray:5,5}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn:hover{stroke-dasharray:none}._3d1BI6G1YJrz7ognHL90dk rect{fill:none}._3k-obCxVEG5WXNW4d5ysbp{fill:none}._2OwlyBCCKpHyOTpExsmWa7 line,._2OwlyBCCKpHyOTpExsmWa7 path{fill:none;stroke:#777;stroke-width:1}._2OwlyBCCKpHyOTpExsmWa7 .tick{width:200px}._2OwlyBCCKpHyOTpExsmWa7 text{fill:#111;text-anchor:right;font-size:13px;text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff}._2OwlyBCCKpHyOTpExsmWa7 ._2f_wT5YLtZ6XP_X3T5YAKb{font-size:16px;font-weight:bold}._2OwlyBCCKpHyOTpExsmWa7 ._3KQQfVUpxeziY64StJ35Fw{cursor:move;font-size:13px}._1Zmx8UhusT7xyDE75TpK_5,._21zhEGEWznDeWrj2qPLRmw,.klDqoJS3S1dYTy3PfPeZn{float:left}._1Zmx8UhusT7xyDE75TpK_5{width:23%;margin:0 1%}._21zhEGEWznDeWrj2qPLRmw{width:31.3%;margin:0 1%}.klDqoJS3S1dYTy3PfPeZn{width:48%;margin:0 1%}._2W3KtG_6I_OuzyVUJMPi81 h3{margin:12px 0 9px}._2W3KtG_6I_OuzyVUJMPi81 h3 small{color:#888;font-weight:normal}._2W3KtG_6I_OuzyVUJMPi81 p{margin:0.6em 0}._2W3KtG_6I_OuzyVUJMPi81 small{line-height:1.2em}._3a_XdyKvkwbYxcE3DWu9oW,.uGWuXzrPGfnvdsbqa5Ozw{width:0%;font-weight:bold;height:100%}._3a_XdyKvkwbYxcE3DWu9oW{background:#3d9aff;border-right:1px solid #666}.uGWuXzrPGfnvdsbqa5Ozw{background:rgba(171,171,171,0.5);border-right:1px solid #999}._2bj65Pw-e8FDdtwrNXnsDD{height:2px;line-height:2px;width:100%}._1GtR-FSnLAvd2uVvFnp_TB{width:268px;float:left}._2kXcOokz6ELFIV8Re6xqxw{float:right;height:24px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG button{border-color:black !important}.xYHuW-PpkjmIpftcoyoOG button:disabled{border:solid 1px transparent !important}::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#ddd;border-radius:12px}::-webkit-scrollbar-thumb{background:#b5b5b5;border-radius:12px}._2Z5awevvX1Eotn593aPCzD .tick line{color:#9a9a9a26}._1Wd9RbKBI8JBIuJpeAvkzi .tick line{color:#9a9a9a26}._2mrrk9sZFxGCNK9p270dDd{min-height:100vh}._2qDks0boww6RDTDKGQKlj7{overflow-x:auto}._3DxTCLGwAXAiDwCJL0c0R8{height:10px;width:10px;display:inline-block}.hteVRerkiKxsxbEyODBKw{display:inline-block}._1E48hl4d23A67CvipC3l-P{top:100%;left:0%}.hteVRerkiKxsxbEyODBKw ._1CxmH_x7erHeDuie1yPEyk{visibility:hidden;background-color:black;color:#fff;text-align:center;padding:5px;border-radius:6px}.hteVRerkiKxsxbEyODBKw:hover ._1CxmH_x7erHeDuie1yPEyk{visibility:visible}._6CCNqRiHbh07PQTZ0g6ex line{stroke:black;stroke-width:2}._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#9467bd}._3dDY87etqydXN96YyV8mWr{width:100%;height:50px;font-family:monospace;font-size:12pt;resize:none;overflow:hidden}._1mdDHKoCTyWnW-M8s-UgxZ{height:25px !important}.xYHuW-PpkjmIpftcoyoOG{border-bottom:1px solid rgba(100,100,100,0.35);background:#e2e2e2;padding:6px 24px 4px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG h1{display:inline-block;margin:0px 14px 0 0}.xYHuW-PpkjmIpftcoyoOG button{vertical-align:top}._3jhIG6HC-WGEZsZuQ_FPM{margin-left:5px;margin-right:5px}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG{background:#040404;color:#f3f3f3}.Qsb0T1aFcWnUuy7YjeX49{background:#131313;color:#e3e3e3}.Qsb0T1aFcWnUuy7YjeX49 a{color:#5ae}.Qsb0T1aFcWnUuy7YjeX49 ._3k-obCxVEG5WXNW4d5ysbp{fill:none}.Qsb0T1aFcWnUuy7YjeX49 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-track{background:#222}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-thumb{background:#444}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text{fill:#f2f2f2;text-shadow:0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text._3KQQfVUpxeziY64StJ35Fw{fill:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 line,.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 path{stroke:#777}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG button:enabled{border-color:white !important}.Qsb0T1aFcWnUuy7YjeX49 ._6CCNqRiHbh07PQTZ0g6ex line{stroke:white;stroke-width:2}.Qsb0T1aFcWnUuy7YjeX49 ._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#635075}\n", ""]);
 // Exports
 exports.locals = {
 	"hiplot": "_2W3KtG_6I_OuzyVUJMPi81",
@@ -66239,18 +66239,27 @@ var resizable_ResizableH = /** @class */ (function (_super) {
  */
 
 
+function leftPos(anchor, w) {
+    return {
+        end: -w,
+        start: 0,
+        middle: -w / 2,
+    }[anchor];
+}
 function foDynamicSizeFitContent(fo) {
-    var w = Math.floor(fo.children[0].clientWidth + 2); // borders 2 px
-    var h = Math.floor(fo.children[0].clientHeight + 2);
+    var TOOLTIP_WIDTH_PX = 80;
+    var w = Math.floor(fo.children[0].children[0].clientWidth + 2); // borders 2 px
+    var h = Math.floor(fo.children[0].children[0].clientHeight + 2);
     var anchor = fo.getAttribute("text-anchor");
-    if (anchor == "end") {
-        fo.setAttribute("x", "" + -w);
-    }
-    else if (anchor == "start") {
-        fo.setAttribute("x", "0");
-    }
-    else if (anchor == "middle") {
-        fo.setAttribute("x", "" + -w / 2);
+    var tooltip = fo.children[0].children[1];
+    var anchor_x = leftPos(anchor, w);
+    fo.setAttribute("x", "" + anchor_x);
+    // Set tooltip
+    if (tooltip) {
+        var tooltip_anchor_x = leftPos(anchor, TOOLTIP_WIDTH_PX) - anchor_x;
+        var tooltip_width = Math.min(TOOLTIP_WIDTH_PX, TOOLTIP_WIDTH_PX - tooltip_anchor_x);
+        tooltip.style.marginLeft = tooltip_anchor_x + "px";
+        tooltip.style.width = tooltip_width + "px";
     }
     fo.style.width = w + "px";
     fo.style.height = h + "px";
@@ -66259,11 +66268,11 @@ function foDynamicSizeFitContent(fo) {
 function foCreateAxisLabel(pd, cm, tooltip) {
     if (tooltip === void 0) { tooltip = "Right click for options"; }
     var fo = document.createElementNS('http://www.w3.org/2000/svg', "foreignObject");
-    var sel = src_select(fo).append("xhtml:span")
-        .attr("class", pd.label_css)
+    var span = src_select(fo).append("xhtml:div")
         .classed(hiplot_default.a.tooltipContainer, true)
+        .classed(hiplot_default.a.label, true);
+    span.append("xhtml:span").attr("class", pd.label_css)
         .classed("d-inline-block", true)
-        .classed(hiplot_default.a.label, true)
         .html(pd.name)
         .on("contextmenu", function () {
         if (cm) {
@@ -66273,9 +66282,10 @@ function foCreateAxisLabel(pd, cm, tooltip) {
         }
     });
     if (tooltip) {
-        sel.append("span")
+        span.append("span")
             .classed(hiplot_default.a.tooltiptext, true)
             .classed(hiplot_default.a.tooltipBot, true)
+            .classed("d-inline-block", true)
             .text(tooltip);
     }
     return fo;
@@ -68813,7 +68823,7 @@ var tutorial_StepHiPlotInfo = /** @class */ (function (_super) {
     }
     StepHiPlotInfo.prototype.render = function () {
         // @ts-ignore
-        var pkgInfo = "lib-hiplot-0.1.18.89";
+        var pkgInfo = "lib-hiplot-0.1.18.90";
         if (pkgInfo === undefined) {
             pkgInfo = "hiplot (no version information)";
         }

@@ -36,7 +36,8 @@ class WhenDoneCopyToHiplotStaticDir {
 const exportConfig = function(env, config = {}) {
   const version = (process.env && process.env.HIPLOT_VERSION) ? process.env.HIPLOT_VERSION : '0.0.0';
   const package = (config.web && process.env && process.env.HIPLOT_PACKAGE) ? process.env.HIPLOT_PACKAGE : 'hiplot';
-  const package_name_full = `${config.web ? "bundle" : "lib"}-${package}-${version}`;
+  const is_debug = (env && env.debug);
+  const package_name_full = `${config.web ? "bundle" : "lib"}-${package}-${version}${is_debug ? "-dbg" : ""}`;
   var plugins = [
     new LicenseWebpackPlugin(),
     new webpack.BannerPlugin(
@@ -78,7 +79,7 @@ LICENSE file in the root directory of this source tree."),
               {
                 loader: "css-loader",
                 options: {
-                  modules: true
+                  modules: is_debug ? {localIdentName: '[local]_[hash:base64:5]'} : true
                 }
               },
               {
@@ -154,7 +155,6 @@ env => {
     installs[path.resolve(sc, 'streamlit_component', 'hiplot_streamlit.bundle.js')] = 'hiplot_streamlit.bundle.js';
     installs[path.resolve(sc, 'streamlit_component', 'index.html')] = '../src/index_streamlit.html';
     installs[path.resolve(sc, 'hiplot.bundle.js')] = (env && env.test) ? 'hiplot_test.bundle.js' : 'hiplot.bundle.js';
-
   });
 
   return {
