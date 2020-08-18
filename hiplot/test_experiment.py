@@ -103,33 +103,4 @@ def test_doc() -> None:
     # Change d3 colormap (https://github.com/d3/d3-scale-chromatic) for non-categorical columns
     exp.parameters_definition["exp_metric"].colormap = "interpolateSinebow"
     # EXPERIMENT_SETTINGS_SNIPPET1_END
-    # EXPERIMENT_SETTINGS_SNIPPET2_BEGIN
-    # Provide configuration for the parallel plot
-    exp.display_data(hip.Displays.PARALLEL_PLOT).update({
-        # Hide some columns in the parallel plot
-        'hide': ['optionB'],
-        # Specify the order for others
-        'order': ['time'],  # Put column time first on the left
-    })
-
-    # Provide configuration for the table with all the rows
-    exp.display_data(hip.Displays.PARALLEL_PLOT).update({
-        # Don't display `uid` and `from_uid` columns to the user
-        'hide': ['uid', 'from_uid'],
-    })
-
-    # Provide configuration for the XY graph
-    exp.display_data(hip.Displays.XY).update({
-        # Default X axis for the XY plot
-        'axis_x': 'time',
-        # Default Y axis
-        'axis_y': 'lr',
-        # Configure lines
-        'lines_thickness': 1.0,
-        'lines_opacity': 0.1,
-        # Configure dots
-        'dots_thickness': 2.0,
-        'dots_opacity': 0.3,
-    })
-    # EXPERIMENT_SETTINGS_SNIPPET2_END
     exp.validate()

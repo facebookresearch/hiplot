@@ -31,15 +31,6 @@ def demo_basic_usage() -> hip.Experiment:
             {'dropout': 0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
     return hip.Experiment.from_iterable(data)
 
-def demo_hide_uids() -> hip.Experiment:
-    data = [{'dropout': 0.1, 'lr': 0.001, 'loss': 10.0, 'optimizer': 'SGD'},
-            {'dropout': 0.15, 'lr': 0.01, 'loss': 3.5, 'optimizer': 'Adam'},
-            {'dropout': 0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
-    experiment = hip.Experiment.from_iterable(data)
-    experiment.display_data(hip.Displays.TABLE)['hide'] = ['uid', 'from_uid']
-    experiment.display_data(hip.Displays.PARALLEL_PLOT)['hide'] = ['uid', 'from_uid']
-    return experiment
-
 def demo_line_xy() -> hip.Experiment:
     # DEMO_LINE_XY_BEGIN
     exp = hip.Experiment()
@@ -143,6 +134,41 @@ def demo(n: int = 100) -> hip.Experiment:
     return xp
 
 
+def demo_customize() -> hip.Experiment:
+    exp = demo()
+    # EXPERIMENT_SETTINGS_SNIPPET2_BEGIN
+    # Provide configuration for the parallel plot
+    exp.display_data(hip.Displays.PARALLEL_PLOT).update({
+        # Hide some columns in the parallel plot
+        'hide': ['optionB'],
+        # Specify the order for others
+        'order': ['time'],  # Put column time first on the left
+    })
+
+    # Provide configuration for the table with all the rows
+    exp.display_data(hip.Displays.TABLE).update({
+        # Don't display `uid` and `from_uid` columns to the user
+        'hide': ['uid', 'from_uid'],
+        # In the table, order rows by default
+        'order_by': [['pct_success', 'desc']]
+    })
+
+    # Provide configuration for the XY graph
+    exp.display_data(hip.Displays.XY).update({
+        # Default X axis for the XY plot
+        'axis_x': 'time',
+        # Default Y axis
+        'axis_y': 'lr',
+        # Configure lines
+        'lines_thickness': 1.0,
+        'lines_opacity': 0.1,
+        # Configure dots
+        'dots_thickness': 2.0,
+        'dots_opacity': 0.3,
+    })
+    # EXPERIMENT_SETTINGS_SNIPPET2_END
+    return exp
+
 def demo_force_scale() -> hip.Experiment:
     xp = hip.Experiment()
     for _ in range(100):
@@ -243,5 +269,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_color_scheme_accent": demo_color_scheme_accent,
     "demo_axis_style": demo_axis_style,
     "demo_categorical": demo_categorical,
-    "demo_hide_uids": demo_hide_uids,
+    "demo_customize": demo_customize,
 }
