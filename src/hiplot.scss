@@ -178,7 +178,6 @@
 
 /* Tooltips when hovering column labels */
 .tooltipContainer {
-  position: relative;
   display: inline-block;
 }
 
@@ -194,10 +193,6 @@
   text-align: center;
   padding: 5px;
   border-radius: 6px;
-  min-width: 80px;
-
-  position: absolute;
-  z-index: 1;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
