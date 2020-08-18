@@ -25,7 +25,7 @@ def test_jupyter_notebook() -> None:
             print(f'    {str(l)}')
 
         # Find the "Run" button
-        run_btn = driver.find_element_by_css_selector("#run_int > button[title='Run']")
+        run_btn = driver.find_element_by_css_selector("#run_int > button[aria-label='Run']")
         run_btn.click()
         driver.save_screenshot(str(artifacts_path / "step2.png"))
 
