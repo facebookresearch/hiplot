@@ -128,6 +128,28 @@ def load_json(uri: str) -> hip.Experiment:
     return hip.Experiment.from_iterable(dat)
 
 
+def _load_fairseq_metrics_inline(l: str) -> tp.Dict[str, tp.Any]:
+    l = l.lstrip('| epoch ')
+    epoch = int(l[:3])
+    values: tp.Dict[str, tp.Any] = {"epoch": epoch}
+    # | epoch 002 | loss 8.413 | ...
+    # | epoch 002 | valid on 'valid' subset | loss 7.599 | nll_loss 7.599 | ...
+    parts = l.split('|')[1:]
+    prefix = ''
+    for p in parts:
+        p = p.strip()
+        match_ds = re.match(r"valid on '([a-zA-Z0-9]*)' subset", p)
+        if match_ds is not None:
+            prefix = match_ds.group(1) + '_'
+            continue
+        key = prefix + p[::-1].split(' ', 1)[1][::-1].strip()
+        value = p[::-1].split(' ', 1)[0][::-1].strip()
+        try:
+            values[key] = float(value)
+        except ValueError:
+            values[key] = value
+    return values
+
 def load_fairseq(uri: str) -> hip.Experiment:
     # pylint:disable=too-many-locals
     # pylint:disable=too-many-branches
@@ -178,27 +200,12 @@ def load_fairseq(uri: str) -> hip.Experiment:
             valid_metrics = json.loads(json_string)
             datapoints.append(valid_metrics)
         # For older version of fairseq
-        if l.startswith('| epoch'):
-            l = l.lstrip('| epoch')
-            epoch = int(l[:3])
-            values: tp.Dict[str, tp.Any] = {"epoch": epoch}
-            # | epoch 002 | loss 8.413 | ...
-            # | epoch 002 | valid on 'valid' subset | loss 7.599 | nll_loss 7.599 | ...
-            parts = l.split('|')[1:]
-            prefix = ''
-            for p in parts:
-                p = p.strip()
-                match_ds = re.match(r"valid on '([a-zA-Z0-9]*)' subset", p)
-                if match_ds is not None:
-                    prefix = match_ds.group(1) + '_'
-                    continue
-                key = prefix + p[::-1].split(' ', 1)[1][::-1].strip()
-                value = p[::-1].split(' ', 1)[0][::-1].strip()
-                try:
-                    values[key] = float(value)
-                except ValueError:
-                    values[key] = value
-            datapoints.append(values)
+        if l.startswith('| epoch '):
+            values = _load_fairseq_metrics_inline(l)
+            if datapoints and datapoints[-1]['epoch'] == values['epoch']:
+                datapoints[-1].update(values)
+            else:
+                datapoints.append(values)
     datapoints = [{
         **values,
         **params
