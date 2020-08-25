@@ -150,6 +150,7 @@ def _load_fairseq_metrics_inline(l: str) -> tp.Dict[str, tp.Any]:
             values[key] = value
     return values
 
+
 def load_fairseq(uri: str) -> hip.Experiment:
     # pylint:disable=too-many-locals
     # pylint:disable=too-many-branches
@@ -207,8 +208,8 @@ def load_fairseq(uri: str) -> hip.Experiment:
             else:
                 datapoints.append(values)
     datapoints = [{
-        **values,
-        **params
+        **params,
+        **values,  # overrides 'learning rate' for instance
     } for values in datapoints]
     datapoints.sort(key=lambda d: d["epoch"])
     xp = hip.Experiment.from_iterable(datapoints)
