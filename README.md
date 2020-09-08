@@ -44,7 +44,7 @@ hip.Experiment.from_iterable(data).display()
 ```bibtex
 @misc{hiplot,
     author = {Haziza, D. and Rapin, J. and Synnaeve, G.},
-    title = {{HiPlot makes understanding high dimensional data easy}},
+    title = {{Hiplot, interative high-dimensionality plots}},
     year = {2020},
     publisher = {GitHub},
     journal = {GitHub repository},
