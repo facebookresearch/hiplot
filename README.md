@@ -39,6 +39,19 @@ hip.Experiment.from_iterable(data).display()
 * Conda package: https://anaconda.org/conda-forge/hiplot
 * NPM package: https://www.npmjs.com/package/hiplot
 
+## Citing
+
+```bibtex
+@misc{hiplot,
+    author = {Haziza, D. and Rapin, J. and Synnaeve, G.},
+    title = {{Hiplot, interative high-dimensionality plots}},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/facebookresearch/hiplot}},
+}
+```
+
 ## Credits
 Inspired by and based on code from [Kai Chang](http://bl.ocks.org/syntagmatic/3150059), [Mike Bostock](http://bl.ocks.org/1341021) and [Jason Davies](http://bl.ocks.org/1341281).
 
