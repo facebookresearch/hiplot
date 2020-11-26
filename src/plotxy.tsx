@@ -26,7 +26,8 @@ export interface PlotXYDisplayData {
   axis_y: string | null,
   lines_thickness: number;
   lines_opacity: number;
-  dots_thickness: number;
+  dots_thickness: number; // Circle radius in pixel
+  dots_highlighed_thickness: number;  // Circle radius in pixel
   dots_opacity: number;
 
   // Default height in pixels
@@ -112,6 +113,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       axis_y: null,
       lines_thickness: 1.2,
       lines_opacity: null,
+      dots_highlighed_thickness: 5.0,
       dots_thickness: 1.4,
       dots_opacity: null,
 
@@ -200,8 +202,9 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       if (!force && !me.isEnabled()) {
         return;
       }
-      x_scale_orig = x_scale = create_scale(me.state.axis_x, [margin.left, me.state.width - margin.right]);
-      y_scale_orig = y_scale = create_scale(me.state.axis_y, [me.state.height - margin.bottom, margin.top]);
+      const insideGraphMargin = Math.max(me.props.dots_thickness, me.props.dots_highlighed_thickness, 0);
+      x_scale_orig = x_scale = create_scale(me.state.axis_x, [margin.left + insideGraphMargin, me.state.width - margin.right - insideGraphMargin]);
+      y_scale_orig = y_scale = create_scale(me.state.axis_y, [me.state.height - margin.bottom - insideGraphMargin, margin.top + insideGraphMargin]);
       zoom_brush = d3.brush().extent([[margin.left, margin.top], [me.state.width - margin.right, me.state.height - margin.bottom]]).on("end", brushended);
 
       yAxis = g => g
@@ -485,7 +488,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
           'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
           'lines_width': 4,
           'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
-          'dots_thickness': 5,
+          'dots_thickness': me.props.dots_highlighed_thickness,
         });
       });
     }
