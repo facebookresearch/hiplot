@@ -211,7 +211,7 @@ def load_fairseq(uri: str) -> hip.Experiment:
         **params,
         **values,  # overrides 'learning rate' for instance
     } for values in datapoints]
-    datapoints.sort(key=lambda d: d["epoch"])
+    datapoints.sort(key=lambda d: float(d["epoch"]))
     xp = hip.Experiment.from_iterable(datapoints)
     for dp, next_dp in zip(xp.datapoints, xp.datapoints[1:]):
         next_dp.from_uid = dp.uid
