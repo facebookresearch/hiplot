@@ -176,7 +176,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     var highlights = this.canvas_highlighted_ref.current.getContext('2d');
     highlights.globalCompositeOperation = "destination-over";
 
-    const margin = {top: 20, right: 20, bottom: 50, left: 60};
+    const margin = {top: 40, right: 20, bottom: 70, left: 60};
     var x_scale, y_scale, yAxis, xAxis;
     var x_scale_orig: d3.AxisScale<d3.AxisDomain>, y_scale_orig: d3.AxisScale<d3.AxisDomain>;
 
@@ -211,19 +211,24 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         .attr("transform", `translate(${margin.left - 10},0)`)
         .call(d3.axisLeft(y_scale).ticks(1+me.state.height / 40).tickSizeInner(margin.left + margin.right - me.state.width))
         .call(g => g.select(".domain").remove())
-        .call(g => g.select(".tick:last-of-type").append(function() { return foCreateAxisLabel(me.props.params_def[me.state.axis_y], me.props.context_menu_ref); })
+        .call(g => g.select(".tick:last-of-type").append(function(this: SVGGElement) {
+          const label = foCreateAxisLabel(me.props.params_def[me.state.axis_y], me.props.context_menu_ref);
+          d3.select(label).attr("y", `${-this.transform.baseVal[0].matrix.f + 10}`);
+          return label;
+        })
             .attr("x", 3)
             .attr("text-anchor", "start")
+            .attr("font-weight", "bold")
             .classed("plotxy-label", true))
-        .call(g => g.selectAll(".plotxy-label").each(function() { foDynamicSizeFitContent(this); }))
-        .attr("font-size", null);
+        .attr("font-size", null)
+        .call(g => g.selectAll(".plotxy-label").each(function() { foDynamicSizeFitContent(this); }));
       xAxis = g => g
         .attr("transform", `translate(0,${me.state.height - margin.bottom})`)
         .call(d3.axisBottom(x_scale).ticks(1+me.state.width / 80).tickSizeInner(margin.bottom + margin.top - me.state.height))
         .call(g => g.select(".tick:last-of-type").each(function(this: SVGGElement) {
-          const fo = foCreateAxisLabel(me.props.params_def[me.state.axis_x], me.props.context_menu_ref);
+          const fo = foCreateAxisLabel(me.props.params_def[me.state.axis_x], me.props.context_menu_ref, /* label */ null);
           d3.select(fo)
-            .attr("y", 22)
+            .attr("y", 40)
             .attr("text-anchor", "end")
             .attr("font-weight", "bold")
             .classed("plotxy-label", true);
@@ -242,8 +247,8 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
             }
           })
         )
-        .call(g => g.selectAll(".plotxy-label").each(function() { foDynamicSizeFitContent(this); }))
-        .attr("font-size", null);
+        .attr("font-size", null)
+        .call(g => g.selectAll(".plotxy-label").each(function() { foDynamicSizeFitContent(this); }));
       div.selectAll("canvas")
         .attr("width", me.state.width - margin.left - margin.right)
         .attr("height", me.state.height - margin.top - margin.bottom);

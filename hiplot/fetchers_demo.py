@@ -31,6 +31,7 @@ def demo_basic_usage() -> hip.Experiment:
             {'dropout': 0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam'}]
     return hip.Experiment.from_iterable(data)
 
+
 def demo_line_xy() -> hip.Experiment:
     # DEMO_LINE_XY_BEGIN
     exp = hip.Experiment()
@@ -169,6 +170,7 @@ def demo_customize() -> hip.Experiment:
     # EXPERIMENT_SETTINGS_SNIPPET2_END
     return exp
 
+
 def demo_force_scale() -> hip.Experiment:
     xp = hip.Experiment()
     for _ in range(100):
@@ -234,6 +236,7 @@ def demo_axis_style() -> hip.Experiment:
     xp.parameters_definition["metric"].label_css = "badge badge-pill badge-info"
     return xp
 
+
 def demo_categorical() -> hip.Experiment:
     data: t.List[t.Dict[str, t.Any]] = []
     for _ in range(100):
@@ -250,6 +253,17 @@ def demo_categorical() -> hip.Experiment:
         xp.parameters_definition[param].type = hip.ValueType.CATEGORICAL
     xp.colorby = 'cat_num_25'
     return xp
+
+
+def demo_long_names() -> hip.Experiment:
+    return hip.Experiment.from_iterable([
+        {
+            'some very very long name for a field': random.randint(0, 5),
+            'this one is also very long': random.randint(0, 10),
+            'another.long.one.but.with.dots': random.randint(0, 25),
+        }
+        for _ in range(100)
+    ])
 
 
 README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
@@ -270,4 +284,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_axis_style": demo_axis_style,
     "demo_categorical": demo_categorical,
     "demo_customize": demo_customize,
+    "demo_long_names": demo_long_names,
 }
