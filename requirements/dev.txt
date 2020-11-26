@@ -4,7 +4,7 @@ ipykernel
 wheel
 selenium
 sphinx
-m2r @ git+https://github.com/crossnox/m2r@dev#egg=m2r
+m2r @ git+https://github.com/miyakogi/m2r@dev#egg=m2r
 twine
 guzzle_sphinx_theme
 pre-commit
