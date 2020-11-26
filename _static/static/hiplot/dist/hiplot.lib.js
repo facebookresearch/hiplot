@@ -44661,7 +44661,7 @@ if ( true && module.exports) {
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
-exports.push([module.i, "._2W3KtG_6I_OuzyVUJMPi81{margin:0;width:100%;height:100%;padding:0}._2W3KtG_6I_OuzyVUJMPi81{font-family:Ubuntu, Tahoma, Helvetica, sans-serif;background:#f7f7f7;color:#404040}._2W3KtG_6I_OuzyVUJMPi81 a{text-decoration:none}._3ETnyEh6iVhTKwQ5avdSIQ{padding:0 3.5%}.nVv4hJybQaDA7qDZ0d89L svg{font-family:Ubuntu, Tahoma, Helvetica, sans-serif}.nVv4hJybQaDA7qDZ0d89L canvas,.nVv4hJybQaDA7qDZ0d89L svg{position:absolute;top:0;left:0}.nVv4hJybQaDA7qDZ0d89L{position:relative}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#fff}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no:hover rect._2Zz5pTQNp59anJPVmfQ7Pn{stroke:#222;stroke-dasharray:5,5}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn:hover{stroke-dasharray:none}._3d1BI6G1YJrz7ognHL90dk rect{fill:none}._3k-obCxVEG5WXNW4d5ysbp{fill:none}._2OwlyBCCKpHyOTpExsmWa7 line,._2OwlyBCCKpHyOTpExsmWa7 path{fill:none;stroke:#777;stroke-width:1}._2OwlyBCCKpHyOTpExsmWa7 .tick{width:200px}._2OwlyBCCKpHyOTpExsmWa7 text{fill:#111;text-anchor:right;font-size:13px;text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff}._2OwlyBCCKpHyOTpExsmWa7 ._2f_wT5YLtZ6XP_X3T5YAKb{font-size:16px;font-weight:bold}._2OwlyBCCKpHyOTpExsmWa7 ._3KQQfVUpxeziY64StJ35Fw{cursor:move;font-size:16px}._1Zmx8UhusT7xyDE75TpK_5,._21zhEGEWznDeWrj2qPLRmw,.klDqoJS3S1dYTy3PfPeZn{float:left}._1Zmx8UhusT7xyDE75TpK_5{width:23%;margin:0 1%}._21zhEGEWznDeWrj2qPLRmw{width:31.3%;margin:0 1%}.klDqoJS3S1dYTy3PfPeZn{width:48%;margin:0 1%}._2W3KtG_6I_OuzyVUJMPi81 h3{margin:12px 0 9px}._2W3KtG_6I_OuzyVUJMPi81 h3 small{color:#888;font-weight:normal}._2W3KtG_6I_OuzyVUJMPi81 p{margin:0.6em 0}._2W3KtG_6I_OuzyVUJMPi81 small{line-height:1.2em}._3a_XdyKvkwbYxcE3DWu9oW,.uGWuXzrPGfnvdsbqa5Ozw{width:0%;font-weight:bold;height:100%}._3a_XdyKvkwbYxcE3DWu9oW{background:#3d9aff;border-right:1px solid #666}.uGWuXzrPGfnvdsbqa5Ozw{background:rgba(171,171,171,0.5);border-right:1px solid #999}._2bj65Pw-e8FDdtwrNXnsDD{height:2px;line-height:2px;width:100%}._1GtR-FSnLAvd2uVvFnp_TB{width:268px;float:left}._2kXcOokz6ELFIV8Re6xqxw{float:right;height:24px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG button{border-color:black !important}.xYHuW-PpkjmIpftcoyoOG button:disabled{border:solid 1px transparent !important}::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#ddd;border-radius:12px}::-webkit-scrollbar-thumb{background:#b5b5b5;border-radius:12px}._2Z5awevvX1Eotn593aPCzD .tick line{color:#9a9a9a26}._1Wd9RbKBI8JBIuJpeAvkzi .tick line{color:#9a9a9a26}._2mrrk9sZFxGCNK9p270dDd{min-height:100vh}._2qDks0boww6RDTDKGQKlj7{overflow-x:auto}._3DxTCLGwAXAiDwCJL0c0R8{height:10px;width:10px;display:inline-block}.hteVRerkiKxsxbEyODBKw{display:inline-block}._1E48hl4d23A67CvipC3l-P{top:100%;left:0%}.hteVRerkiKxsxbEyODBKw ._1CxmH_x7erHeDuie1yPEyk{visibility:hidden;background-color:black;color:#fff;text-align:center;padding:5px;border-radius:6px}.hteVRerkiKxsxbEyODBKw:hover ._1CxmH_x7erHeDuie1yPEyk{visibility:visible}._6CCNqRiHbh07PQTZ0g6ex line{stroke:black;stroke-width:2}._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#9467bd}._3dDY87etqydXN96YyV8mWr{width:100%;height:50px;font-family:monospace;font-size:12pt;resize:none;overflow:hidden}._1mdDHKoCTyWnW-M8s-UgxZ{height:25px !important}.xYHuW-PpkjmIpftcoyoOG{border-bottom:1px solid rgba(100,100,100,0.35);background:#e2e2e2;padding:6px 24px 4px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG h1{display:inline-block;margin:0px 14px 0 0}.xYHuW-PpkjmIpftcoyoOG button{vertical-align:top}._3jhIG6HC-WGEZsZuQ_FPM{margin-left:5px;margin-right:5px}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG{background:#040404;color:#f3f3f3}.Qsb0T1aFcWnUuy7YjeX49{background:#131313;color:#e3e3e3}.Qsb0T1aFcWnUuy7YjeX49 a{color:#5ae}.Qsb0T1aFcWnUuy7YjeX49 ._3k-obCxVEG5WXNW4d5ysbp{fill:none}.Qsb0T1aFcWnUuy7YjeX49 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-track{background:#222}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-thumb{background:#444}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text{fill:#f2f2f2;text-shadow:0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text._3KQQfVUpxeziY64StJ35Fw{fill:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 line,.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 path{stroke:#777}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG button:enabled{border-color:white !important}.Qsb0T1aFcWnUuy7YjeX49 ._6CCNqRiHbh07PQTZ0g6ex line{stroke:white;stroke-width:2}.Qsb0T1aFcWnUuy7YjeX49 ._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#635075}\n", ""]);
+exports.push([module.i, "._2W3KtG_6I_OuzyVUJMPi81{margin:0;width:100%;height:100%;padding:0}._2W3KtG_6I_OuzyVUJMPi81{font-family:Ubuntu, Tahoma, Helvetica, sans-serif;background:#f7f7f7;color:#404040}._2W3KtG_6I_OuzyVUJMPi81 a{text-decoration:none}._3ETnyEh6iVhTKwQ5avdSIQ{padding:0 3.5%}.nVv4hJybQaDA7qDZ0d89L svg{font-family:Ubuntu, Tahoma, Helvetica, sans-serif}.nVv4hJybQaDA7qDZ0d89L canvas,.nVv4hJybQaDA7qDZ0d89L svg{position:absolute;top:0;left:0}.nVv4hJybQaDA7qDZ0d89L{position:relative}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#fff}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no:hover rect._2Zz5pTQNp59anJPVmfQ7Pn{stroke:#222;stroke-dasharray:5,5}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn:hover{stroke-dasharray:none}._3d1BI6G1YJrz7ognHL90dk rect{fill:none}._3k-obCxVEG5WXNW4d5ysbp{fill:none}._2OwlyBCCKpHyOTpExsmWa7 line,._2OwlyBCCKpHyOTpExsmWa7 path{fill:none;stroke:#777;stroke-width:1}._2OwlyBCCKpHyOTpExsmWa7 .tick{width:200px}._2OwlyBCCKpHyOTpExsmWa7 text{fill:#111;text-anchor:right;font-size:13px;text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff}._2OwlyBCCKpHyOTpExsmWa7 ._2f_wT5YLtZ6XP_X3T5YAKb{font-size:16px;font-weight:bold}._3wGVyHwQCxI-z9sJfc5tAj{white-space:nowrap}._2OwlyBCCKpHyOTpExsmWa7 ._3KQQfVUpxeziY64StJ35Fw{cursor:move;font-size:16px}._1Zmx8UhusT7xyDE75TpK_5,._21zhEGEWznDeWrj2qPLRmw,.klDqoJS3S1dYTy3PfPeZn{float:left}._1Zmx8UhusT7xyDE75TpK_5{width:23%;margin:0 1%}._21zhEGEWznDeWrj2qPLRmw{width:31.3%;margin:0 1%}.klDqoJS3S1dYTy3PfPeZn{width:48%;margin:0 1%}._2W3KtG_6I_OuzyVUJMPi81 h3{margin:12px 0 9px}._2W3KtG_6I_OuzyVUJMPi81 h3 small{color:#888;font-weight:normal}._2W3KtG_6I_OuzyVUJMPi81 p{margin:0.6em 0}._2W3KtG_6I_OuzyVUJMPi81 small{line-height:1.2em}._3a_XdyKvkwbYxcE3DWu9oW,.uGWuXzrPGfnvdsbqa5Ozw{width:0%;font-weight:bold;height:100%}._3a_XdyKvkwbYxcE3DWu9oW{background:#3d9aff;border-right:1px solid #666}.uGWuXzrPGfnvdsbqa5Ozw{background:rgba(171,171,171,0.5);border-right:1px solid #999}._2bj65Pw-e8FDdtwrNXnsDD{height:2px;line-height:2px;width:100%}._1GtR-FSnLAvd2uVvFnp_TB{width:268px;float:left}._2kXcOokz6ELFIV8Re6xqxw{float:right;height:24px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG button{border-color:black !important}.xYHuW-PpkjmIpftcoyoOG button:disabled{border:solid 1px transparent !important}::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#ddd;border-radius:12px}::-webkit-scrollbar-thumb{background:#b5b5b5;border-radius:12px}._2Z5awevvX1Eotn593aPCzD .tick line{color:#9a9a9a26}._1Wd9RbKBI8JBIuJpeAvkzi .tick line{color:#9a9a9a26}._2mrrk9sZFxGCNK9p270dDd{min-height:100vh}._2qDks0boww6RDTDKGQKlj7{overflow-x:auto}._3DxTCLGwAXAiDwCJL0c0R8{height:10px;width:10px;display:inline-block}.hteVRerkiKxsxbEyODBKw{display:inline-block}._1E48hl4d23A67CvipC3l-P{top:100%;left:0%}.hteVRerkiKxsxbEyODBKw ._1CxmH_x7erHeDuie1yPEyk{visibility:hidden;background-color:black;color:#fff;text-align:center;padding:5px;border-radius:6px}.hteVRerkiKxsxbEyODBKw:hover ._1CxmH_x7erHeDuie1yPEyk{visibility:visible}._6CCNqRiHbh07PQTZ0g6ex line{stroke:black;stroke-width:2}._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#9467bd}._3dDY87etqydXN96YyV8mWr{width:100%;height:50px;font-family:monospace;font-size:12pt;resize:none;overflow:hidden}._1mdDHKoCTyWnW-M8s-UgxZ{height:25px !important}.xYHuW-PpkjmIpftcoyoOG{border-bottom:1px solid rgba(100,100,100,0.35);background:#e2e2e2;padding:6px 24px 4px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG h1{display:inline-block;margin:0px 14px 0 0}.xYHuW-PpkjmIpftcoyoOG button{vertical-align:top}._3jhIG6HC-WGEZsZuQ_FPM{margin-left:5px;margin-right:5px}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG{background:#040404;color:#f3f3f3}.Qsb0T1aFcWnUuy7YjeX49{background:#131313;color:#e3e3e3}.Qsb0T1aFcWnUuy7YjeX49 a{color:#5ae}.Qsb0T1aFcWnUuy7YjeX49 ._3k-obCxVEG5WXNW4d5ysbp{fill:none}.Qsb0T1aFcWnUuy7YjeX49 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-track{background:#222}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-thumb{background:#444}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text{fill:#f2f2f2;text-shadow:0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text._3KQQfVUpxeziY64StJ35Fw{fill:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 line,.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 path{stroke:#777}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG button:enabled{border-color:white !important}.Qsb0T1aFcWnUuy7YjeX49 ._6CCNqRiHbh07PQTZ0g6ex line{stroke:white;stroke-width:2}.Qsb0T1aFcWnUuy7YjeX49 ._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#635075}\n", ""]);
 // Exports
 exports.locals = {
 	"hiplot": "_2W3KtG_6I_OuzyVUJMPi81",
@@ -44673,6 +44673,7 @@ exports.locals = {
 	"background": "_3k-obCxVEG5WXNW4d5ysbp",
 	"axis": "_2OwlyBCCKpHyOTpExsmWa7",
 	"tickSelected": "_2f_wT5YLtZ6XP_X3T5YAKb",
+	"axisLabelText": "_3wGVyHwQCxI-z9sJfc5tAj",
 	"label": "_3KQQfVUpxeziY64StJ35Fw",
 	"quarter": "_1Zmx8UhusT7xyDE75TpK_5",
 	"third": "_21zhEGEWznDeWrj2qPLRmw",
@@ -66239,24 +66240,33 @@ var resizable_ResizableH = /** @class */ (function (_super) {
  */
 
 
-function leftPos(anchor, w) {
-    return {
+function leftPos(anchor, w, minmax) {
+    var left = {
         end: -w,
         start: 0,
         middle: -w / 2,
     }[anchor];
+    if (minmax) {
+        if (left < minmax[0]) {
+            left = minmax[0];
+        }
+        else if (left + w > minmax[1]) {
+            left = minmax[1] - w;
+        }
+    }
+    return left;
 }
-function foDynamicSizeFitContent(fo) {
+function foDynamicSizeFitContent(fo, minmax) {
     var TOOLTIP_WIDTH_PX = 80;
     var w = Math.floor(fo.children[0].children[0].clientWidth + 2); // borders 2 px
     var h = Math.floor(fo.children[0].children[0].clientHeight + 2);
     var anchor = fo.getAttribute("text-anchor");
     var tooltip = fo.children[0].children[1];
-    var anchor_x = leftPos(anchor, w);
+    var anchor_x = leftPos(anchor, w, minmax);
     fo.setAttribute("x", "" + anchor_x);
     // Set tooltip
     if (tooltip) {
-        var tooltip_anchor_x = leftPos(anchor, TOOLTIP_WIDTH_PX) - anchor_x;
+        var tooltip_anchor_x = leftPos(anchor, TOOLTIP_WIDTH_PX, minmax) - anchor_x;
         var tooltip_width = Math.min(TOOLTIP_WIDTH_PX, TOOLTIP_WIDTH_PX - tooltip_anchor_x);
         tooltip.style.marginLeft = tooltip_anchor_x + "px";
         tooltip.style.width = tooltip_width + "px";
@@ -66271,7 +66281,9 @@ function foCreateAxisLabel(pd, cm, tooltip) {
     var span = src_select(fo).append("xhtml:div")
         .classed(hiplot_default.a.tooltipContainer, true)
         .classed(hiplot_default.a.label, true);
-    span.append("xhtml:span").attr("class", pd.label_css)
+    span.append("xhtml:span")
+        .attr("class", pd.label_css)
+        .classed(hiplot_default.a.axisLabelText, true)
         .classed("d-inline-block", true)
         .html(pd.name)
         .on("contextmenu", function () {
@@ -66529,7 +66541,7 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         // Highlights
         var highlights = this.canvas_highlighted_ref.current.getContext('2d');
         highlights.globalCompositeOperation = "destination-over";
-        var margin = { top: 20, right: 20, bottom: 50, left: 60 };
+        var margin = { top: 40, right: 20, bottom: 70, left: 60 };
         var x_scale, y_scale, yAxis, xAxis;
         var x_scale_orig, y_scale_orig;
         function redraw_axis_and_rerender() {
@@ -66555,26 +66567,32 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
             if (!force && !me.isEnabled()) {
                 return;
             }
-            x_scale_orig = x_scale = create_scale(me.state.axis_x, [margin.left, me.state.width - margin.right]);
-            y_scale_orig = y_scale = create_scale(me.state.axis_y, [me.state.height - margin.bottom, margin.top]);
+            var insideGraphMargin = Math.max(me.props.dots_thickness, me.props.dots_highlighed_thickness, 0);
+            x_scale_orig = x_scale = create_scale(me.state.axis_x, [margin.left + insideGraphMargin, me.state.width - margin.right - insideGraphMargin]);
+            y_scale_orig = y_scale = create_scale(me.state.axis_y, [me.state.height - margin.bottom - insideGraphMargin, margin.top + insideGraphMargin]);
             zoom_brush = src_brush().extent([[margin.left, margin.top], [me.state.width - margin.right, me.state.height - margin.bottom]]).on("end", brushended);
             yAxis = function (g) { return g
                 .attr("transform", "translate(" + (margin.left - 10) + ",0)")
                 .call(axisLeft(y_scale).ticks(1 + me.state.height / 40).tickSizeInner(margin.left + margin.right - me.state.width))
                 .call(function (g) { return g.select(".domain").remove(); })
-                .call(function (g) { return g.select(".tick:last-of-type").append(function () { return foCreateAxisLabel(me.props.params_def[me.state.axis_y], me.props.context_menu_ref); })
+                .call(function (g) { return g.select(".tick:last-of-type").append(function () {
+                var label = foCreateAxisLabel(me.props.params_def[me.state.axis_y], me.props.context_menu_ref);
+                src_select(label).attr("y", "" + (-this.transform.baseVal[0].matrix.f + 10));
+                return label;
+            })
                 .attr("x", 3)
                 .attr("text-anchor", "start")
+                .attr("font-weight", "bold")
                 .classed("plotxy-label", true); })
-                .call(function (g) { return g.selectAll(".plotxy-label").each(function () { foDynamicSizeFitContent(this); }); })
-                .attr("font-size", null); };
+                .attr("font-size", null)
+                .call(function (g) { return g.selectAll(".plotxy-label").each(function () { foDynamicSizeFitContent(this); }); }); };
             xAxis = function (g) { return g
                 .attr("transform", "translate(0," + (me.state.height - margin.bottom) + ")")
                 .call(axisBottom(x_scale).ticks(1 + me.state.width / 80).tickSizeInner(margin.bottom + margin.top - me.state.height))
                 .call(function (g) { return g.select(".tick:last-of-type").each(function () {
-                var fo = foCreateAxisLabel(me.props.params_def[me.state.axis_x], me.props.context_menu_ref);
+                var fo = foCreateAxisLabel(me.props.params_def[me.state.axis_x], me.props.context_menu_ref, /* label */ null);
                 src_select(fo)
-                    .attr("y", 22)
+                    .attr("y", 40)
                     .attr("text-anchor", "end")
                     .attr("font-weight", "bold")
                     .classed("plotxy-label", true);
@@ -66592,8 +66610,8 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
                     line.setAttribute("y2", "" + (parseFloat(line.getAttribute("y2")) - 20 * (i % 2)));
                 }
             }); })
-                .call(function (g) { return g.selectAll(".plotxy-label").each(function () { foDynamicSizeFitContent(this); }); })
-                .attr("font-size", null); };
+                .attr("font-size", null)
+                .call(function (g) { return g.selectAll(".plotxy-label").each(function () { foDynamicSizeFitContent(this); }); }); };
             div.selectAll("canvas")
                 .attr("width", me.state.width - margin.left - margin.right)
                 .attr("height", me.state.height - margin.top - margin.bottom);
@@ -66836,7 +66854,7 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
                     'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
                     'lines_width': 4,
                     'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
-                    'dots_thickness': 5,
+                    'dots_thickness': me.props.dots_highlighed_thickness,
                 });
             });
         }
@@ -66966,6 +66984,7 @@ var plotxy_PlotXY = /** @class */ (function (_super) {
         axis_y: null,
         lines_thickness: 1.2,
         lines_opacity: null,
+        dots_highlighed_thickness: 5.0,
         dots_thickness: 1.4,
         dots_opacity: null,
         data: {},
@@ -67508,7 +67527,7 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
                 .attr("title", "Click to invert. Drag to reorder. Right click for options.") // TODO
                 .classed("pplot-label", true);
             me.dimensions_dom.selectAll(".pplot-label").each(function (d) {
-                foDynamicSizeFitContent(this);
+                foDynamicSizeFitContent(this, [-me.xscale(d) + 5, -me.xscale(d) + me.state.width - 5]);
             });
             // Add and store a brush for each axis.
             me.dimensions_dom.append("svg:g")
@@ -68834,7 +68853,7 @@ var tutorial_StepHiPlotInfo = /** @class */ (function (_super) {
     }
     StepHiPlotInfo.prototype.render = function () {
         // @ts-ignore
-        var pkgInfo = "lib-hiplot-0.1.19.97";
+        var pkgInfo = "lib-hiplot-0.1.19.99";
         if (pkgInfo === undefined) {
             pkgInfo = "hiplot (no version information)";
         }

@@ -451,7 +451,7 @@ var ParallelPlot = /** @class */ (function (_super) {
                 .attr("title", "Click to invert. Drag to reorder. Right click for options.") // TODO
                 .classed("pplot-label", true);
             me.dimensions_dom.selectAll(".pplot-label").each(function (d) {
-                foDynamicSizeFitContent(this);
+                foDynamicSizeFitContent(this, [-me.xscale(d) + 5, -me.xscale(d) + me.state.width - 5]);
             });
             // Add and store a brush for each axis.
             me.dimensions_dom.append("svg:g")

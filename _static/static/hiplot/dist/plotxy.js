@@ -143,7 +143,7 @@ var PlotXY = /** @class */ (function (_super) {
         // Highlights
         var highlights = this.canvas_highlighted_ref.current.getContext('2d');
         highlights.globalCompositeOperation = "destination-over";
-        var margin = { top: 20, right: 20, bottom: 50, left: 60 };
+        var margin = { top: 40, right: 20, bottom: 70, left: 60 };
         var x_scale, y_scale, yAxis, xAxis;
         var x_scale_orig, y_scale_orig;
         function redraw_axis_and_rerender() {
@@ -169,26 +169,32 @@ var PlotXY = /** @class */ (function (_super) {
             if (!force && !me.isEnabled()) {
                 return;
             }
-            x_scale_orig = x_scale = create_scale(me.state.axis_x, [margin.left, me.state.width - margin.right]);
-            y_scale_orig = y_scale = create_scale(me.state.axis_y, [me.state.height - margin.bottom, margin.top]);
+            var insideGraphMargin = Math.max(me.props.dots_thickness, me.props.dots_highlighed_thickness, 0);
+            x_scale_orig = x_scale = create_scale(me.state.axis_x, [margin.left + insideGraphMargin, me.state.width - margin.right - insideGraphMargin]);
+            y_scale_orig = y_scale = create_scale(me.state.axis_y, [me.state.height - margin.bottom - insideGraphMargin, margin.top + insideGraphMargin]);
             zoom_brush = d3.brush().extent([[margin.left, margin.top], [me.state.width - margin.right, me.state.height - margin.bottom]]).on("end", brushended);
             yAxis = function (g) { return g
                 .attr("transform", "translate(" + (margin.left - 10) + ",0)")
                 .call(d3.axisLeft(y_scale).ticks(1 + me.state.height / 40).tickSizeInner(margin.left + margin.right - me.state.width))
                 .call(function (g) { return g.select(".domain").remove(); })
-                .call(function (g) { return g.select(".tick:last-of-type").append(function () { return foCreateAxisLabel(me.props.params_def[me.state.axis_y], me.props.context_menu_ref); })
+                .call(function (g) { return g.select(".tick:last-of-type").append(function () {
+                var label = foCreateAxisLabel(me.props.params_def[me.state.axis_y], me.props.context_menu_ref);
+                d3.select(label).attr("y", "" + (-this.transform.baseVal[0].matrix.f + 10));
+                return label;
+            })
                 .attr("x", 3)
                 .attr("text-anchor", "start")
+                .attr("font-weight", "bold")
                 .classed("plotxy-label", true); })
-                .call(function (g) { return g.selectAll(".plotxy-label").each(function () { foDynamicSizeFitContent(this); }); })
-                .attr("font-size", null); };
+                .attr("font-size", null)
+                .call(function (g) { return g.selectAll(".plotxy-label").each(function () { foDynamicSizeFitContent(this); }); }); };
             xAxis = function (g) { return g
                 .attr("transform", "translate(0," + (me.state.height - margin.bottom) + ")")
                 .call(d3.axisBottom(x_scale).ticks(1 + me.state.width / 80).tickSizeInner(margin.bottom + margin.top - me.state.height))
                 .call(function (g) { return g.select(".tick:last-of-type").each(function () {
-                var fo = foCreateAxisLabel(me.props.params_def[me.state.axis_x], me.props.context_menu_ref);
+                var fo = foCreateAxisLabel(me.props.params_def[me.state.axis_x], me.props.context_menu_ref, /* label */ null);
                 d3.select(fo)
-                    .attr("y", 22)
+                    .attr("y", 40)
                     .attr("text-anchor", "end")
                     .attr("font-weight", "bold")
                     .classed("plotxy-label", true);
@@ -206,8 +212,8 @@ var PlotXY = /** @class */ (function (_super) {
                     line.setAttribute("y2", "" + (parseFloat(line.getAttribute("y2")) - 20 * (i % 2)));
                 }
             }); })
-                .call(function (g) { return g.selectAll(".plotxy-label").each(function () { foDynamicSizeFitContent(this); }); })
-                .attr("font-size", null); };
+                .attr("font-size", null)
+                .call(function (g) { return g.selectAll(".plotxy-label").each(function () { foDynamicSizeFitContent(this); }); }); };
             div.selectAll("canvas")
                 .attr("width", me.state.width - margin.left - margin.right)
                 .attr("height", me.state.height - margin.top - margin.bottom);
@@ -450,7 +456,7 @@ var PlotXY = /** @class */ (function (_super) {
                     'lines_color': [color[0], color[1], color[2], 1.0 + ')'].join(','),
                     'lines_width': 4,
                     'dots_color': [color[0], color[1], color[2], 0.8 + ')'].join(','),
-                    'dots_thickness': 5
+                    'dots_thickness': me.props.dots_highlighed_thickness
                 });
             });
         }
@@ -580,6 +586,7 @@ var PlotXY = /** @class */ (function (_super) {
         axis_y: null,
         lines_thickness: 1.2,
         lines_opacity: null,
+        dots_highlighed_thickness: 5.0,
         dots_thickness: 1.4,
         dots_opacity: null,
         data: {}

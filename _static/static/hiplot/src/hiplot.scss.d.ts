@@ -7,6 +7,7 @@ export const resize: string;
 export const background: string;
 export const axis: string;
 export const tickSelected: string;
+export const axisLabelText: string;
 export const label: string;
 export const quarter: string;
 export const third: string;

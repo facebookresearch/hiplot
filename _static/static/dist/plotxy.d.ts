@@ -8,6 +8,7 @@ export interface PlotXYDisplayData {
     lines_thickness: number;
     lines_opacity: number;
     dots_thickness: number;
+    dots_highlighed_thickness: number;
     dots_opacity: number;
     height?: number;
 }
@@ -42,6 +43,7 @@ export declare class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
         axis_y: any;
         lines_thickness: number;
         lines_opacity: any;
+        dots_highlighed_thickness: number;
         dots_thickness: number;
         dots_opacity: any;
         data: {};
