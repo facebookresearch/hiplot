@@ -41,8 +41,8 @@ export function create_d3_scale_without_outliers(pd: ParamDef): any {
         if (pd.type == ParamType.NUMERICPERCENTILE) {
             return d3_scale_percentile(dv);
         }
-        var min = pd.force_value_min !== null ? pd.force_value_min : dv[0];
-        var max = pd.force_value_max !== null ? pd.force_value_max : dv[dv.length - 1];
+        var min = pd.force_value_min != null ? pd.force_value_min : dv[0];
+        var max = pd.force_value_max != null ? pd.force_value_max : dv[dv.length - 1];
         if (pd.type == ParamType.TIMESTAMP) {
             return d3_scale_timestamp().domain([min, max]);
         }
@@ -291,8 +291,8 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             'type': type,
             'colors': hint !== undefined ? hint.colors : null,
             'colormap': hint !== undefined ? hint.colormap : null,
-            'force_value_min': hint !== undefined && hint.force_value_min !== null ? hint.force_value_min : null,
-            'force_value_max': hint !== undefined && hint.force_value_max !== null ? hint.force_value_max : null,
+            'force_value_min': hint !== undefined && hint.force_value_min != null ? hint.force_value_min : null,
+            'force_value_max': hint !== undefined && hint.force_value_max != null ? hint.force_value_max : null,
             'label_css': hint !== undefined && hint.label_css !== null ? hint.label_css : "",
         };
         // What other types we can render as?
