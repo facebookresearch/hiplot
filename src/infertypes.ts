@@ -218,8 +218,7 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
         var can_be_timestamp = numeric;
         var setVals = [];
         var special_values_set = new Set();
-        table.forEach(function(row) {
-            var v = row[key];
+        var addValue = function(v) {
             if (v === undefined) {
                 optional = true;
                 return;
@@ -239,7 +238,16 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             if (!Number.isSafeInteger(v) || v < 0) {
                 can_be_timestamp = false;
             }
+        }
+        table.forEach(function(row) {
+            addValue(row[key]);
         });
+        if (hint && hint.force_value_max != null) {
+            addValue(hint.force_value_max);
+        }
+        if (hint && hint.force_value_min != null) {
+            addValue(hint.force_value_min);
+        }
         var special_values = Array.from(special_values_set);
         var values = setVals;
         var distinct_values = Array.from(new Set(values));
