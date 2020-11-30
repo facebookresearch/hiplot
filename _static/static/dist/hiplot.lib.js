@@ -66008,8 +66008,7 @@ function infertypes(url_states, table, hints) {
         var can_be_timestamp = numeric;
         var setVals = [];
         var special_values_set = new Set();
-        table.forEach(function (row) {
-            var v = row[key];
+        var addValue = function (v) {
             if (v === undefined) {
                 optional = true;
                 return;
@@ -66030,7 +66029,16 @@ function infertypes(url_states, table, hints) {
             if (!Number.isSafeInteger(v) || v < 0) {
                 can_be_timestamp = false;
             }
+        };
+        table.forEach(function (row) {
+            addValue(row[key]);
         });
+        if (hint && hint.force_value_max != null) {
+            addValue(hint.force_value_max);
+        }
+        if (hint && hint.force_value_min != null) {
+            addValue(hint.force_value_min);
+        }
         var special_values = Array.from(special_values_set);
         var values = setVals;
         var distinct_values = Array.from(new Set(values));
@@ -68853,7 +68861,7 @@ var tutorial_StepHiPlotInfo = /** @class */ (function (_super) {
     }
     StepHiPlotInfo.prototype.render = function () {
         // @ts-ignore
-        var pkgInfo = "lib-hiplot-0.1.19.100";
+        var pkgInfo = "lib-hiplot-0.1.20.101";
         if (pkgInfo === undefined) {
             pkgInfo = "hiplot (no version information)";
         }

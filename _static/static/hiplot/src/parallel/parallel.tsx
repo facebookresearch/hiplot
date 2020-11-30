@@ -48,6 +48,9 @@ export interface ParallelPlotDisplayData {
   order?: Array<string>;
 
   // Hidden columns, that won't appear in the parallel plot
+  // NOTE: Categorical columns with more than `categoricalMaximumValues` distinct values will be hidden
+  // NOTE: Columns with a single value won't appear either unless you provide a min/max
+  //       eg: `exp.parameters_definition["column_name"].force_range(0, 100)`
   hide?: Array<string>;
 
   // These columns will be inverted (higher values are below)

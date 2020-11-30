@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>Displays reference &#8212; HiPlot 0.1.19
+    <title>Displays reference &#8212; HiPlot 0.1.21
  documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
@@ -44,7 +44,7 @@
         <li class="right" >
           <a href="py_reference.html" title="Python classes reference"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.19
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.21
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Displays reference</a></li> 
       </ul>
@@ -125,6 +125,9 @@
   <span class="nx">order?</span>: <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
 
   <span class="c1">// Hidden columns, that won&#39;t appear in the parallel plot</span>
+  <span class="c1">// NOTE: Categorical columns with more than `categoricalMaximumValues` distinct values will be hidden</span>
+  <span class="c1">// NOTE: Columns with a single value won&#39;t appear either unless you provide a min/max</span>
+  <span class="c1">//       eg: `exp.parameters_definition[&quot;column_name&quot;].force_range(0, 100)`</span>
   <span class="nx">hide?</span>: <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
 
   <span class="c1">// These columns will be inverted (higher values are below)</span>
@@ -216,7 +219,7 @@
         <li class="right" >
           <a href="py_reference.html" title="Python classes reference"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.19
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.21
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Displays reference</a></li> 
       </ul>
