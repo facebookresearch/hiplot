@@ -266,6 +266,15 @@ def demo_long_names() -> hip.Experiment:
     ])
 
 
+def demo_force_constant_pplot() -> hip.Experiment:
+    exp = hip.Experiment.from_iterable([
+        {'uid': 123, 'a': 1, 'b': 3},
+        {'uid': 345, 'a': 2, 'b': 3}
+    ])
+    exp.parameters_definition["b"].force_range(0, 100)
+    return exp
+
+
 README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_big": lambda: demo(1000),
@@ -285,4 +294,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_categorical": demo_categorical,
     "demo_customize": demo_customize,
     "demo_long_names": demo_long_names,
+    "demo_force_constant_pplot": demo_force_constant_pplot,
 }
