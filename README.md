@@ -3,7 +3,7 @@
 
 ![Logo](https://raw.githubusercontent.com/facebookresearch/hiplot/master/hiplot/static/logo.png) 
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/facebookresearch/hiplot/blob/master/examples/HiPlotColabExample.ipynb)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/facebookresearch/hiplot/blob/master/examples/HiPlotColabExample.ipynb)
 
 
 HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.
