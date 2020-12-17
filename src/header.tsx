@@ -138,7 +138,7 @@ export class ErrorDisplay extends React.Component<ErrorDisplayProps> {
         <div className="alert alert-danger" role="alert">
             <div className="container">
                 <h4 className="alert-heading">{this.props.error}</h4>
-                <p className="mb-0">HiPlot encountered the error above - more information might be available in your browser's developper web console, or in the server output</p>
+                <p className="mb-0">HiPlot encountered the error above - more information might be available in your browser's developer web console, or in the server output</p>
             </div>
         </div>
         );
