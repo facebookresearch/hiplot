@@ -1,7 +1,7 @@
 # HiPlot - High dimensional Interactive Plotting [![CircleCI](https://circleci.com/gh/facebookresearch/hiplot/tree/master.svg?style=svg&circle-token=c89b6825078e174cf35bdc18e4ad4a16e28876f9)](https://circleci.com/gh/facebookresearch/hiplot/tree/master)
 
 
-![Logo](https://raw.githubusercontent.com/facebookresearch/hiplot/master/hiplot/static/logo.png) 
+![Logo](https://raw.githubusercontent.com/facebookresearch/hiplot/master/hiplot/static/logo.png)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/facebookresearch/hiplot/blob/master/examples/HiPlotColabExample.ipynb)
 
@@ -56,6 +56,12 @@ hip.Experiment.from_iterable(data).display()
 
 ## Credits
 Inspired by and based on code from [Kai Chang](http://bl.ocks.org/syntagmatic/3150059), [Mike Bostock](http://bl.ocks.org/1341021) and [Jason Davies](http://bl.ocks.org/1341281).
+
+External contributors (*please add your name when you submit your first pull request*):
+- [louismartin](https://github.com/louismartin)
+- [GoldenCorgi](https://github.com/GoldenCorgi)
+- [callistachang](https://github.com/callistachang)
+
 
 ## License
 HiPlot is [MIT](LICENSE) licensed, as found in the [LICENSE](LICENSE) file.
