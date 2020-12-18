@@ -207,7 +207,7 @@ class Datapoint(_DictSerializable):
 
 
     :ivar uid: A unique identifier for this datapoint
-    :ivar values: A dictionnary with arbitrary metrics/values
+    :ivar values: A dictionary with arbitrary metrics/values
     :ivar from_uid: The uid of the parent :class:`Datapoint` (tp.Optional)
 
     :Example:
@@ -425,7 +425,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
 
     def display_data(self, plugin: str) -> tp.Dict[str, tp.Any]:
         """
-        Retrieve data dictionnary for a plugin, which can be modified.
+        Retrieve data dictionary for a plugin, which can be modified.
 
         :param plugin: Name of the plugin
 
@@ -530,6 +530,6 @@ class ExperimentDisplayed(metaclass=ABCMeta):
     @abstractmethod
     def get_brush_extents(self) -> tp.Dict[str, tp.Dict[str, tp.Any]]:
         """
-        Returns a dictionnary, where keys corresponds to columns currently brushed in parallel plot,
+        Returns a dictionary, where keys corresponds to columns currently brushed in parallel plot,
         and values contain information about the current brush.
         """

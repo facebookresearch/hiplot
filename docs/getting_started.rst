@@ -103,7 +103,7 @@ Option 3: Create data-apps using Streamlit |streamlit_logo|
 `Streamlit <https://www.streamlit.io/>`_ allows data scientists and machine learning engineers to create beautiful, performant apps in pure Python.
 
 This is the best way to create custom interfaces with HiPlot. For instance, you can perform dynamic actions
-based on selected rows inside HiPlot (like plotting or displaying further information), and still have a sharable/deployable interace.
+based on selected rows inside HiPlot (like plotting or displaying further information), and still have a sharable/deployable interface.
 
 **Learn more** in the tutorial: :ref:`tutoStreamlit`
 
