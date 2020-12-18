@@ -1,12 +1,14 @@
 # HiPlot - High dimensional Interactive Plotting [![CircleCI](https://circleci.com/gh/facebookresearch/hiplot/tree/master.svg?style=svg&circle-token=c89b6825078e174cf35bdc18e4ad4a16e28876f9)](https://circleci.com/gh/facebookresearch/hiplot/tree/master)
 
 
-![Logo](https://raw.githubusercontent.com/facebookresearch/hiplot/master/hiplot/static/logo.png)
+![Logo](https://raw.githubusercontent.com/facebookresearch/hiplot/master/hiplot/static/logo.png) 
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/facebookresearch/hiplot/blob/master/examples/HiPlotColabExample.ipynb)
 
 
 HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.
 
-### [Try a demo now with sweep data](https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html) or [upload your CSV](https://facebookresearch.github.io/hiplot/_static/hiplot_upload.html)
+### [Try a demo now with sweep data](https://facebookresearch.github.io/hiplot/_static/demo/ml1.csv.html) or [upload your CSV](https://facebookresearch.github.io/hiplot/_static/hiplot_upload.html)  or [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/facebookresearch/hiplot/blob/master/examples/HiPlotColabExample.ipynb)
 
 There are several modes to HiPlot:
 - As a web-server (if your data is a CSV for instance)
