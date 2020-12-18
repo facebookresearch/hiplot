@@ -313,7 +313,7 @@
 
 
 <span class="sd">    :ivar uid: A unique identifier for this datapoint</span>
-<span class="sd">    :ivar values: A dictionnary with arbitrary metrics/values</span>
+<span class="sd">    :ivar values: A dictionary with arbitrary metrics/values</span>
 <span class="sd">    :ivar from_uid: The uid of the parent :class:`Datapoint` (tp.Optional)</span>
 
 <span class="sd">    :Example:</span>
@@ -531,7 +531,7 @@
 
 <div class="viewcode-block" id="Experiment.display_data"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.display_data">[docs]</a>    <span class="k">def</span> <span class="nf">display_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieve data dictionnary for a plugin, which can be modified.</span>
+<span class="sd">        Retrieve data dictionary for a plugin, which can be modified.</span>
 
 <span class="sd">        :param plugin: Name of the plugin</span>
 
@@ -636,7 +636,7 @@
 <div class="viewcode-block" id="ExperimentDisplayed.get_brush_extents"><a class="viewcode-back" href="../../py_reference.html#hiplot.ExperimentDisplayed.get_brush_extents">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_brush_extents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a dictionnary, where keys corresponds to columns currently brushed in parallel plot,</span>
+<span class="sd">        Returns a dictionary, where keys corresponds to columns currently brushed in parallel plot,</span>
 <span class="sd">        and values contain information about the current brush.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div></div>
 </pre></div>

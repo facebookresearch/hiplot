@@ -68861,7 +68861,7 @@ var tutorial_StepHiPlotInfo = /** @class */ (function (_super) {
     }
     StepHiPlotInfo.prototype.render = function () {
         // @ts-ignore
-        var pkgInfo = "lib-hiplot-0.1.21.103";
+        var pkgInfo = "lib-hiplot-0.1.21.104";
         if (pkgInfo === undefined) {
             pkgInfo = "hiplot (no version information)";
         }
@@ -69202,7 +69202,7 @@ var header_ErrorDisplay = /** @class */ (function (_super) {
         return (external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "alert alert-danger", role: "alert" },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("div", { className: "container" },
                 external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("h4", { className: "alert-heading" }, this.props.error),
-                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", { className: "mb-0" }, "HiPlot encountered the error above - more information might be available in your browser's developper web console, or in the server output"))));
+                external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.createElement("p", { className: "mb-0" }, "HiPlot encountered the error above - more information might be available in your browser's developer web console, or in the server output"))));
     };
     return ErrorDisplay;
 }(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));

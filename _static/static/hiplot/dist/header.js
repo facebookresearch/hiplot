@@ -137,7 +137,7 @@ var ErrorDisplay = /** @class */ (function (_super) {
         return (React.createElement("div", { className: "alert alert-danger", role: "alert" },
             React.createElement("div", { className: "container" },
                 React.createElement("h4", { className: "alert-heading" }, this.props.error),
-                React.createElement("p", { className: "mb-0" }, "HiPlot encountered the error above - more information might be available in your browser's developper web console, or in the server output"))));
+                React.createElement("p", { className: "mb-0" }, "HiPlot encountered the error above - more information might be available in your browser's developer web console, or in the server output"))));
     };
     return ErrorDisplay;
 }(React.Component));
