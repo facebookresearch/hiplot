@@ -591,6 +591,20 @@
 
 <span class="sd">        :param dataframe: Pandas DataFrame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if from_uid and uid is both in columns</span>
+        <span class="k">if</span> <span class="p">{</span><span class="s1">&#39;from_uid&#39;</span><span class="p">,</span> <span class="s1">&#39;uid&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+            <span class="c1"># Check if there are any NaN values to handle</span>
+            <span class="k">if</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;from_uid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+
+                <span class="c1"># NaN values forces integer columns to become float, if uid is integer and from_uid is float, it crashes.</span>
+                <span class="c1"># The line below changes uid to match from_uid type (either float or string), since NaN cannot be integer. </span>
+                <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;from_uid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
+                <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">fillna</span><span class="p">({</span><span class="s1">&#39;from_uid&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;uid&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})</span>
+
+                <span class="c1"># Replaces their dtypes accordingly to str, which is handled better with lesser errors with no change to functionality</span>
+                <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+                <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;from_uid&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;from_uid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Experiment.merge"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.merge">[docs]</a>    <span class="nd">@staticmethod</span>
