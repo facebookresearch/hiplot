@@ -485,8 +485,6 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
 
         :param dataframe: Pandas DataFrame
         """
-
-        dataframe = dataframe.fillna({'from_uid': '', 'uid': ''})
         return Experiment.from_iterable(dataframe.to_dict(orient='records'))
 
     @staticmethod
