@@ -10,3 +10,4 @@ guzzle_sphinx_theme
 pre-commit
 pandas
 streamlit>=0.63
+beautifulsoup4
