@@ -485,6 +485,20 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
 
         :param dataframe: Pandas DataFrame
         """
+        # Check if from_uid and uid is both in columns
+        if {'from_uid', 'uid'}.issubset(dataframe.columns):
+            # Check if there are any NaN values to handle
+            if dataframe['from_uid'].isnull().values.any():
+
+                # NaN values forces integer columns to become float, if uid is integer and from_uid is float, it crashes.
+                # The line below changes uid to match from_uid type (either float or string), since NaN cannot be integer. 
+                dataframe['uid']= dataframe['uid'].astype(dataframe['from_uid'].dtypes)
+                dataframe = dataframe.fillna({'from_uid': '', 'uid': ''})
+
+                # Replaces their dtypes accordingly to str, which is handled better with lesser errors with no change to functionality
+                dataframe['uid']= dataframe['uid'].astype(str)
+                dataframe['from_uid']= dataframe['from_uid'].astype(str)
+
         return Experiment.from_iterable(dataframe.to_dict(orient='records'))
 
     @staticmethod

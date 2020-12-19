@@ -36,6 +36,26 @@ def test_from_dataframe() -> None:
     xp.validate()
     xp._asdict()
 
+def test_from_dataframe_nan_values() -> None:
+    # Pandas automatically convert numeric-based columns None to NaN in dataframes
+    # Pandas will also automatically convert columns with NaN from integer to floats, since NaN is considered a float
+    # https://pandas.pydata.org/pandas-docs/stable/user_guide/integer_na.html
+
+    df = pd.DataFrame(data={'uid':[1,2,3,4],'from_uid':[None,1,2,3],'a':[1,2,3,None],'b':[4,5,None,6]})
+    xp = hip.Experiment.from_dataframe(df)
+    assert len(xp.datapoints) == 4
+    xp.validate()
+    xp._asdict()
+
+def test_from_dataframe_none_values() -> None:
+    # Pandas will keep None values in string columns
+    df = pd.DataFrame(data={'uid':["1","2","3","4"],'from_uid':[None,"1","2","3"],'a':[23,43,5,None],'b':[33,45,None,23]})
+    xp = hip.Experiment.from_dataframe(df)
+    assert len(xp.datapoints) == 4
+    xp.validate()
+    xp._asdict()
+
+
 
 def test_validation() -> None:
     with pytest.raises(hip.ExperimentValidationError):
