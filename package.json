@@ -64,7 +64,7 @@
     "build": "npm-run-all tsm webpack",
     "build-dev": "npm-run-all tsm webpack-dev",
     "build-dev-watch": "npm-run-all tsm webpack-dev-watch",
-    "prepublish": "npm-run-all prepublish-ts",
+    "prepublish": "npm-run-all tsm prepublish-ts",
     "tsm": "tsm src -i node_modules/",
     "webpack": "webpack --display-error-details --progress",
     "webpack-dev": "webpack --display-error-details --progress -d --env.debug",
