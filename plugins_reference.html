@@ -119,7 +119,7 @@
 <div class="section" id="parallel-plot">
 <h2>Parallel Plot<a class="headerlink" href="#parallel-plot" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp.display_data(hip.Displays.PARALLEL_PLOT)`</span>
-<span class="kr">export</span> <span class="kr">interface</span> <span class="nx">ParallelPlotDisplayData</span> <span class="p">{</span>
+<span class="k">export</span> <span class="kd">interface</span> <span class="nx">ParallelPlotDisplayData</span> <span class="p">{</span>
   <span class="c1">// Ordering of the columns</span>
   <span class="nx">order?</span>: <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
 
@@ -141,7 +141,7 @@
 <div class="section" id="plotxy">
 <h2>PlotXY<a class="headerlink" href="#plotxy" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp.display_data(hip.Displays.XY)`</span>
-<span class="kr">export</span> <span class="kr">interface</span> <span class="nx">PlotXYDisplayData</span> <span class="p">{</span>
+<span class="k">export</span> <span class="kd">interface</span> <span class="nx">PlotXYDisplayData</span> <span class="p">{</span>
   <span class="nx">axis_x</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">,</span>
   <span class="nx">axis_y</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">,</span>
   <span class="nx">lines_thickness</span>: <span class="kt">number</span><span class="p">;</span>
@@ -159,7 +159,7 @@
 <div class="section" id="table">
 <h2>Table<a class="headerlink" href="#table" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp.display_data(hip.Displays.TABLE)`</span>
-<span class="kr">export</span> <span class="kr">interface</span> <span class="nx">TableDisplayData</span> <span class="p">{</span>
+<span class="k">export</span> <span class="kd">interface</span> <span class="nx">TableDisplayData</span> <span class="p">{</span>
     <span class="c1">// Hidden columns, that won&#39;t appear in the table</span>
     <span class="nx">hide</span>: <span class="kt">Array</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
 
@@ -173,7 +173,7 @@
 <div class="section" id="distribution">
 <h2>Distribution<a class="headerlink" href="#distribution" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Corresponds to values in the dict of `exp.display_data(hip.Displays.DISTRIBUTION)`</span>
-<span class="kr">export</span> <span class="kr">interface</span> <span class="nx">DistributionDisplayData</span> <span class="p">{</span>
+<span class="k">export</span> <span class="kd">interface</span> <span class="nx">DistributionDisplayData</span> <span class="p">{</span>
     <span class="c1">// Number of bins for distribution of numeric variables</span>
     <span class="nx">nbins</span>: <span class="kt">number</span><span class="p">;</span>
 
