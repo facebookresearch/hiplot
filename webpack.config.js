@@ -118,7 +118,6 @@ LICENSE file in the root directory of this source tree."),
               loader: 'worker-loader',
               options: { inline: true, fallback: false }
           },
-          { parser: { amd: false } },
           {
               test: /\.(ts|tsx)$/,
               loader: 'ts-loader',
@@ -196,6 +195,7 @@ env => { return {
     ...exportConfig(env),
     optimization: {
       minimize: false,
+      // moduleIds: 'named', // useful to debug npmjs package
     }
 };}
 ];
