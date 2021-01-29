@@ -238,7 +238,7 @@ jobs:
   mypy_pytest:
     docker:
       # specify the version you desire here
-      - image: circleci/python:3.6
+      - image: circleci/python:3.7
 
     working_directory: ~/repo
 
