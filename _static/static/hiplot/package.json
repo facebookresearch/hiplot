@@ -1,6 +1,6 @@
 {
   "name": "hiplot",
-  "version": "0.1.22.111",
+  "version": "0.1.22.112",
   "description": "HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.",
   "main": "dist/hiplot.lib.js",
   "types": "dist/hiplot.d.ts",
@@ -64,7 +64,7 @@
     "build": "npm-run-all tsm webpack",
     "build-dev": "npm-run-all tsm webpack-dev",
     "build-dev-watch": "npm-run-all tsm webpack-dev-watch",
-    "prepublish": "npm-run-all prepublish-ts",
+    "prepublish": "npm-run-all tsm prepublish-ts",
     "tsm": "tsm src -i node_modules/",
     "webpack": "webpack --display-error-details --progress",
     "webpack-dev": "webpack --display-error-details --progress -d --env.debug",
