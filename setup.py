@@ -42,7 +42,7 @@ setup(
     long_description_content_type="text/markdown",
     url='https://github.com/facebookresearch/hiplot',
     author="Facebook AI Research",
-    packages=find_packages(),
+    packages=["hiplot"],
     install_requires=requirements["main"],
     extras_require={"dev": requirements["dev"]},
     package_data={"hiplot": ["py.typed", "static/*", "static/built/*", "static/built/streamlit_component/*", "templates/*"]},
