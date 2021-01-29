@@ -97,7 +97,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 32);
+/******/ 	return __webpack_require__(__webpack_require__.s = 34);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -175,13 +175,13 @@ var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
 // The largest integer that can be represented exactly.
 var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(27)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(29)))
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*!
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
  *
@@ -11012,10 +11012,11 @@ jQuery.trim = function( text ) {
 // AMD loader is present. jQuery is a special case. For more information, see
 // https://github.com/jrburke/requirejs/wiki/Updating-existing-libraries#wiki-anon
 
-if ( typeof define === "function" && define.amd ) {
-	define( "jquery", [], function() {
+if ( true ) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function() {
 		return jQuery;
-	} );
+	}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
 
 
@@ -11059,8 +11060,8 @@ return jQuery;
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var api = __webpack_require__(9);
-            var content = __webpack_require__(25);
+var api = __webpack_require__(11);
+            var content = __webpack_require__(27);
 
             content = content.__esModule ? content.default : content;
 
@@ -11081,10 +11082,19 @@ module.exports = content.locals || {};
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+module.exports = function() {
+	throw new Error("define cannot be used indirect");
+};
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var api = __webpack_require__(9);
-            var content = __webpack_require__(31);
+var api = __webpack_require__(11);
+            var content = __webpack_require__(33);
 
             content = content.__esModule ? content.default : content;
 
@@ -11104,7 +11114,7 @@ var update = api(content, options);
 module.exports = content.locals || {};
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 
@@ -11589,7 +11599,7 @@ colorsys.darken = function (color, percentage) {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -11617,7 +11627,16 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
+/***/ (function(module, exports) {
+
+/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
+module.exports = __webpack_amd_options__;
+
+/* WEBPACK VAR INJECTION */}.call(this, {}))
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11717,7 +11736,7 @@ function toComment(sourceMap) {
 }
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -27107,7 +27126,7 @@ var define = false;
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27382,7 +27401,7 @@ module.exports = function (list, options) {
 };
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -27418,7 +27437,7 @@ var define = false;
 				// Require DataTables, which attaches to jQuery, including
 				// jQuery if needed and have a $ property so we can access the
 				// jQuery object that is used
-				$ = __webpack_require__(8)(root, $).$;
+				$ = __webpack_require__(10)(root, $).$;
 			}
 
 			return factory( $, root, root.document );
@@ -27573,7 +27592,7 @@ return DataTable;
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -27616,7 +27635,7 @@ var define = false;
 			}
 
 			if ( ! $ || ! $.fn.dataTable ) {
-				$ = __webpack_require__(8)(root, $).$;
+				$ = __webpack_require__(10)(root, $).$;
 			}
 
 			return factory( $, root, root.document );
@@ -29071,7 +29090,7 @@ return ColReorder;
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -29096,7 +29115,7 @@ var define = false;
 			}
 
 			if ( ! $ || ! $.fn.dataTable ) {
-				$ = __webpack_require__(8)(root, $).$;
+				$ = __webpack_require__(10)(root, $).$;
 			}
 
 			return factory( $, root, root.document );
@@ -31235,11 +31254,11 @@ return Buttons;
 
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var api = __webpack_require__(9);
-            var content = __webpack_require__(26);
+var api = __webpack_require__(11);
+            var content = __webpack_require__(28);
 
             content = content.__esModule ? content.default : content;
 
@@ -31259,7 +31278,7 @@ var update = api(content, options);
 module.exports = content.locals || {};
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // A library of seedable RNGs implemented in Javascript.
@@ -31274,17 +31293,17 @@ module.exports = content.locals || {};
 // alea, a 53-bit multiply-with-carry generator by Johannes Baagøe.
 // Period: ~2^116
 // Reported to pass all BigCrush tests.
-var alea = __webpack_require__(17);
+var alea = __webpack_require__(19);
 
 // xor128, a pure xor-shift generator by George Marsaglia.
 // Period: 2^128-1.
 // Reported to fail: MatrixRank and LinearComp.
-var xor128 = __webpack_require__(18);
+var xor128 = __webpack_require__(20);
 
 // xorwow, George Marsaglia's 160-bit xor-shift combined plus weyl.
 // Period: 2^192-2^32
 // Reported to fail: CollisionOver, SimpPoker, and LinearComp.
-var xorwow = __webpack_require__(19);
+var xorwow = __webpack_require__(21);
 
 // xorshift7, by François Panneton and Pierre L'ecuyer, takes
 // a different approach: it adds robustness by allowing more shifts
@@ -31292,7 +31311,7 @@ var xorwow = __webpack_require__(19);
 // with 256 bits, that passes BigCrush with no systmatic failures.
 // Period 2^256-1.
 // No systematic BigCrush failures reported.
-var xorshift7 = __webpack_require__(20);
+var xorshift7 = __webpack_require__(22);
 
 // xor4096, by Richard Brent, is a 4096-bit xor-shift with a
 // very long period that also adds a Weyl generator. It also passes
@@ -31301,18 +31320,18 @@ var xorshift7 = __webpack_require__(20);
 // collisions.
 // Period: 2^4128-2^32.
 // No systematic BigCrush failures reported.
-var xor4096 = __webpack_require__(21);
+var xor4096 = __webpack_require__(23);
 
 // Tyche-i, by Samuel Neves and Filipe Araujo, is a bit-shifting random
 // number generator derived from ChaCha, a modern stream cipher.
 // https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
 // Period: ~2^127
 // No systematic BigCrush failures reported.
-var tychei = __webpack_require__(22);
+var tychei = __webpack_require__(24);
 
 // The original ARC4-based prng included in this library.
 // Period: ~2^1600
-var sr = __webpack_require__(23);
+var sr = __webpack_require__(25);
 
 sr.alea = alea;
 sr.xor128 = xor128;
@@ -31325,7 +31344,7 @@ module.exports = sr;
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -31350,11 +31369,11 @@ var define = false;
 			}
 
 			if ( ! $ || ! $.fn.dataTable ) {
-				$ = __webpack_require__(10)(root, $).$;
+				$ = __webpack_require__(12)(root, $).$;
 			}
 
 			if ( ! $.fn.dataTable.ColReorder ) {
-				__webpack_require__(11)(root, $);
+				__webpack_require__(13)(root, $);
 			}
 
 			return factory( $, root, root.document );
@@ -31369,7 +31388,7 @@ return $.fn.dataTable;
 
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*** IMPORTS FROM imports-loader ***/
@@ -31394,11 +31413,11 @@ var define = false;
 			}
 
 			if ( ! $ || ! $.fn.dataTable ) {
-				$ = __webpack_require__(10)(root, $).$;
+				$ = __webpack_require__(12)(root, $).$;
 			}
 
 			if ( ! $.fn.dataTable.Buttons ) {
-				__webpack_require__(12)(root, $);
+				__webpack_require__(14)(root, $);
 			}
 
 			return factory( $, root, root.document );
@@ -31444,10 +31463,10 @@ return DataTable.Buttons;
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {// A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;// A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
 // http://baagoe.com/en/RandomMusings/javascript/
 // https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
 // Original work is under MIT license -
@@ -31548,8 +31567,9 @@ function Mash() {
 
 if (module && module.exports) {
   module.exports = impl;
-} else if (define && define.amd) {
-  define(function() { return impl; });
+} else if (__webpack_require__(4) && __webpack_require__(8)) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 } else {
   this.alea = impl;
 }
@@ -31557,18 +31577,18 @@ if (module && module.exports) {
 })(
   this,
    true && module,    // present in node.js
-  (typeof define) == 'function' && define   // present with an AMD loader
+  __webpack_require__(4)   // present with an AMD loader
 );
 
 
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7)(module)))
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of the "xor128" prng algorithm by
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xor128" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
 (function(global, module, define) {
@@ -31636,8 +31656,9 @@ function impl(seed, opts) {
 
 if (module && module.exports) {
   module.exports = impl;
-} else if (define && define.amd) {
-  define(function() { return impl; });
+} else if (__webpack_require__(4) && __webpack_require__(8)) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 } else {
   this.xor128 = impl;
 }
@@ -31645,18 +31666,18 @@ if (module && module.exports) {
 })(
   this,
    true && module,    // present in node.js
-  (typeof define) == 'function' && define   // present with an AMD loader
+  __webpack_require__(4)   // present with an AMD loader
 );
 
 
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7)(module)))
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of the "xorwow" prng algorithm by
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xorwow" prng algorithm by
 // George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
 
 (function(global, module, define) {
@@ -31729,8 +31750,9 @@ function impl(seed, opts) {
 
 if (module && module.exports) {
   module.exports = impl;
-} else if (define && define.amd) {
-  define(function() { return impl; });
+} else if (__webpack_require__(4) && __webpack_require__(8)) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 } else {
   this.xorwow = impl;
 }
@@ -31738,18 +31760,18 @@ if (module && module.exports) {
 })(
   this,
    true && module,    // present in node.js
-  (typeof define) == 'function' && define   // present with an AMD loader
+  __webpack_require__(4)   // present with an AMD loader
 );
 
 
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7)(module)))
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of the "xorshift7" algorithm by
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xorshift7" algorithm by
 // François Panneton and Pierre L'ecuyer:
 // "On the Xorgshift Random Number Generators"
 // http://saluc.engr.uconn.edu/refs/crypto/rng/panneton05onthexorshift.pdf
@@ -31834,8 +31856,9 @@ function impl(seed, opts) {
 
 if (module && module.exports) {
   module.exports = impl;
-} else if (define && define.amd) {
-  define(function() { return impl; });
+} else if (__webpack_require__(4) && __webpack_require__(8)) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 } else {
   this.xorshift7 = impl;
 }
@@ -31843,17 +31866,17 @@ if (module && module.exports) {
 })(
   this,
    true && module,    // present in node.js
-  (typeof define) == 'function' && define   // present with an AMD loader
+  __webpack_require__(4)   // present with an AMD loader
 );
 
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7)(module)))
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
 //
 // This fast non-cryptographic random number generator is designed for
 // use in Monte-Carlo algorithms. It combines a long-period xorshift
@@ -31988,8 +32011,9 @@ function impl(seed, opts) {
 
 if (module && module.exports) {
   module.exports = impl;
-} else if (define && define.amd) {
-  define(function() { return impl; });
+} else if (__webpack_require__(4) && __webpack_require__(8)) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 } else {
   this.xor4096 = impl;
 }
@@ -31997,16 +32021,16 @@ if (module && module.exports) {
 })(
   this,                                     // window object or global
    true && module,    // present in node.js
-  (typeof define) == 'function' && define   // present with an AMD loader
+  __webpack_require__(4)   // present with an AMD loader
 );
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7)(module)))
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(module) {// A Javascript implementaion of the "Tyche-i" prng algorithm by
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "Tyche-i" prng algorithm by
 // Samuel Neves and Filipe Araujo.
 // See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
 
@@ -32096,8 +32120,9 @@ function impl(seed, opts) {
 
 if (module && module.exports) {
   module.exports = impl;
-} else if (define && define.amd) {
-  define(function() { return impl; });
+} else if (__webpack_require__(4) && __webpack_require__(8)) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 } else {
   this.tychei = impl;
 }
@@ -32105,18 +32130,18 @@ if (module && module.exports) {
 })(
   this,
    true && module,    // present in node.js
-  (typeof define) == 'function' && define   // present with an AMD loader
+  __webpack_require__(4)   // present with an AMD loader
 );
 
 
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(6)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(7)(module)))
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*
+var __WEBPACK_AMD_DEFINE_RESULT__;/*
 Copyright 2019 David Bau.
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -32351,14 +32376,12 @@ if ( true && module.exports) {
   module.exports = seedrandom;
   // When in node.js, try using crypto package for autoseeding.
   try {
-    nodecrypto = __webpack_require__(24);
+    nodecrypto = __webpack_require__(26);
   } catch (ex) {}
-} else if ((typeof define) == 'function' && define.amd) {
-  define(function() { return seedrandom; });
-} else {
-  // When included as a plain script, set up Math.seedrandom global.
-  math['seed' + rngname] = seedrandom;
-}
+} else if (true) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return seedrandom; }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {}
 
 
 // End anonymous scope, and pass initial values.
@@ -32372,17 +32395,17 @@ if ( true && module.exports) {
 
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports) {
 
 /* (ignored) */
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(9);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, "._2W3KtG_6I_OuzyVUJMPi81{margin:0;width:100%;height:100%;padding:0}._2W3KtG_6I_OuzyVUJMPi81{font-family:Ubuntu, Tahoma, Helvetica, sans-serif;background:#f7f7f7;color:#404040}._2W3KtG_6I_OuzyVUJMPi81 a{text-decoration:none}._3ETnyEh6iVhTKwQ5avdSIQ{padding:0 3.5%}.nVv4hJybQaDA7qDZ0d89L svg{font-family:Ubuntu, Tahoma, Helvetica, sans-serif}.nVv4hJybQaDA7qDZ0d89L canvas,.nVv4hJybQaDA7qDZ0d89L svg{position:absolute;top:0;left:0}.nVv4hJybQaDA7qDZ0d89L{position:relative}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#fff}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no:hover rect._2Zz5pTQNp59anJPVmfQ7Pn{stroke:#222;stroke-dasharray:5,5}._2W3KtG_6I_OuzyVUJMPi81 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn:hover{stroke-dasharray:none}._3d1BI6G1YJrz7ognHL90dk rect{fill:none}._3k-obCxVEG5WXNW4d5ysbp{fill:none}._2OwlyBCCKpHyOTpExsmWa7 line,._2OwlyBCCKpHyOTpExsmWa7 path{fill:none;stroke:#777;stroke-width:1}._2OwlyBCCKpHyOTpExsmWa7 .tick{width:200px}._2OwlyBCCKpHyOTpExsmWa7 text{fill:#111;text-anchor:right;font-size:13px;text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff}._2OwlyBCCKpHyOTpExsmWa7 ._2f_wT5YLtZ6XP_X3T5YAKb{font-size:16px;font-weight:bold}._3wGVyHwQCxI-z9sJfc5tAj{white-space:nowrap}._2OwlyBCCKpHyOTpExsmWa7 ._3KQQfVUpxeziY64StJ35Fw{cursor:move;font-size:16px}._1Zmx8UhusT7xyDE75TpK_5,._21zhEGEWznDeWrj2qPLRmw,.klDqoJS3S1dYTy3PfPeZn{float:left}._1Zmx8UhusT7xyDE75TpK_5{width:23%;margin:0 1%}._21zhEGEWznDeWrj2qPLRmw{width:31.3%;margin:0 1%}.klDqoJS3S1dYTy3PfPeZn{width:48%;margin:0 1%}._2W3KtG_6I_OuzyVUJMPi81 h3{margin:12px 0 9px}._2W3KtG_6I_OuzyVUJMPi81 h3 small{color:#888;font-weight:normal}._2W3KtG_6I_OuzyVUJMPi81 p{margin:0.6em 0}._2W3KtG_6I_OuzyVUJMPi81 small{line-height:1.2em}._3a_XdyKvkwbYxcE3DWu9oW,.uGWuXzrPGfnvdsbqa5Ozw{width:0%;font-weight:bold;height:100%}._3a_XdyKvkwbYxcE3DWu9oW{background:#3d9aff;border-right:1px solid #666}.uGWuXzrPGfnvdsbqa5Ozw{background:rgba(171,171,171,0.5);border-right:1px solid #999}._2bj65Pw-e8FDdtwrNXnsDD{height:2px;line-height:2px;width:100%}._1GtR-FSnLAvd2uVvFnp_TB{width:268px;float:left}._2kXcOokz6ELFIV8Re6xqxw{float:right;height:24px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG button{border-color:black !important}.xYHuW-PpkjmIpftcoyoOG button:disabled{border:solid 1px transparent !important}::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#ddd;border-radius:12px}::-webkit-scrollbar-thumb{background:#b5b5b5;border-radius:12px}._2Z5awevvX1Eotn593aPCzD .tick line{color:#9a9a9a26}._1Wd9RbKBI8JBIuJpeAvkzi .tick line{color:#9a9a9a26}._2mrrk9sZFxGCNK9p270dDd{min-height:100vh}._2qDks0boww6RDTDKGQKlj7{overflow-x:auto}._3DxTCLGwAXAiDwCJL0c0R8{height:10px;width:10px;display:inline-block}.hteVRerkiKxsxbEyODBKw{display:inline-block}._1E48hl4d23A67CvipC3l-P{top:100%;left:0%}.hteVRerkiKxsxbEyODBKw ._1CxmH_x7erHeDuie1yPEyk{visibility:hidden;background-color:black;color:#fff;text-align:center;padding:5px;border-radius:6px}.hteVRerkiKxsxbEyODBKw:hover ._1CxmH_x7erHeDuie1yPEyk{visibility:visible}._6CCNqRiHbh07PQTZ0g6ex line{stroke:black;stroke-width:2}._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#9467bd}._3dDY87etqydXN96YyV8mWr{width:100%;height:50px;font-family:monospace;font-size:12pt;resize:none;overflow:hidden}._1mdDHKoCTyWnW-M8s-UgxZ{height:25px !important}.xYHuW-PpkjmIpftcoyoOG{border-bottom:1px solid rgba(100,100,100,0.35);background:#e2e2e2;padding:6px 24px 4px;line-height:24px}.xYHuW-PpkjmIpftcoyoOG h1{display:inline-block;margin:0px 14px 0 0}.xYHuW-PpkjmIpftcoyoOG button{vertical-align:top}._3jhIG6HC-WGEZsZuQ_FPM{margin-left:5px;margin-right:5px}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG{background:#040404;color:#f3f3f3}.Qsb0T1aFcWnUuy7YjeX49{background:#131313;color:#e3e3e3}.Qsb0T1aFcWnUuy7YjeX49 a{color:#5ae}.Qsb0T1aFcWnUuy7YjeX49 ._3k-obCxVEG5WXNW4d5ysbp{fill:none}.Qsb0T1aFcWnUuy7YjeX49 ._1ZwpGBLcWnbOIYXs2R34no rect._2Zz5pTQNp59anJPVmfQ7Pn{fill:rgba(100,100,100,0.15);stroke:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-track{background:#222}.Qsb0T1aFcWnUuy7YjeX49 ::-webkit-scrollbar-thumb{background:#444}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text{fill:#f2f2f2;text-shadow:0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 text._3KQQfVUpxeziY64StJ35Fw{fill:#ddd}.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 line,.Qsb0T1aFcWnUuy7YjeX49 ._2OwlyBCCKpHyOTpExsmWa7 path{stroke:#777}.Qsb0T1aFcWnUuy7YjeX49 .xYHuW-PpkjmIpftcoyoOG button:enabled{border-color:white !important}.Qsb0T1aFcWnUuy7YjeX49 ._6CCNqRiHbh07PQTZ0g6ex line{stroke:white;stroke-width:2}.Qsb0T1aFcWnUuy7YjeX49 ._33ieGlRZ_c_N0FxZBZqsZ4 rect{fill:#635075}\n", ""]);
@@ -32427,11 +32450,11 @@ module.exports = exports;
 
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(9);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".tHG56FAVLgJTZ7aGH0lye{padding-bottom:4px;position:relative}.tHG56FAVLgJTZ7aGH0lye:after{content:\" \";background-color:#ccc;position:absolute;bottom:0;left:0;width:100%;height:4px;cursor:row-resize}.lT_iCtI0fMxwxY9fyY00i{background-color:red}\n", ""]);
@@ -32444,7 +32467,7 @@ module.exports = exports;
 
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports) {
 
 var g;
@@ -32470,11 +32493,11 @@ module.exports = g;
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var api = __webpack_require__(9);
-            var content = __webpack_require__(29);
+var api = __webpack_require__(11);
+            var content = __webpack_require__(31);
 
             content = content.__esModule ? content.default : content;
 
@@ -32494,12 +32517,12 @@ var update = api(content, options);
 module.exports = content.locals || {};
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
-var ___CSS_LOADER_AT_RULE_IMPORT_0___ = __webpack_require__(30);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(9);
+var ___CSS_LOADER_AT_RULE_IMPORT_0___ = __webpack_require__(32);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic&display=swap);"]);
 exports.i(___CSS_LOADER_AT_RULE_IMPORT_0___);
@@ -32511,11 +32534,11 @@ module.exports = exports;
 
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(9);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, "@charset \"UTF-8\";\ntable.dataTable {\n  clear: both;\n  margin-top: 6px !important;\n  margin-bottom: 6px !important;\n  max-width: none !important;\n  border-collapse: separate !important;\n  border-spacing: 0;\n}\ntable.dataTable td,\ntable.dataTable th {\n  -webkit-box-sizing: content-box;\n  box-sizing: content-box;\n}\ntable.dataTable td.dataTables_empty,\ntable.dataTable th.dataTables_empty {\n  text-align: center;\n}\ntable.dataTable.nowrap th,\ntable.dataTable.nowrap td {\n  white-space: nowrap;\n}\n\ndiv.dataTables_wrapper div.dataTables_length label {\n  font-weight: normal;\n  text-align: left;\n  white-space: nowrap;\n}\ndiv.dataTables_wrapper div.dataTables_length select {\n  width: auto;\n  display: inline-block;\n}\ndiv.dataTables_wrapper div.dataTables_filter {\n  text-align: right;\n}\ndiv.dataTables_wrapper div.dataTables_filter label {\n  font-weight: normal;\n  white-space: nowrap;\n  text-align: left;\n}\ndiv.dataTables_wrapper div.dataTables_filter input {\n  margin-left: 0.5em;\n  display: inline-block;\n  width: auto;\n}\ndiv.dataTables_wrapper div.dataTables_info {\n  padding-top: 0.85em;\n}\ndiv.dataTables_wrapper div.dataTables_paginate {\n  margin: 0;\n  white-space: nowrap;\n  text-align: right;\n}\ndiv.dataTables_wrapper div.dataTables_paginate ul.pagination {\n  margin: 2px 0;\n  white-space: nowrap;\n  justify-content: flex-end;\n}\ndiv.dataTables_wrapper div.dataTables_processing {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  width: 200px;\n  margin-left: -100px;\n  margin-top: -26px;\n  text-align: center;\n  padding: 1em 0;\n}\n\ntable.dataTable > thead > tr > th:active,\ntable.dataTable > thead > tr > td:active {\n  outline: none;\n}\ntable.dataTable > thead > tr > th:not(.sorting_disabled),\ntable.dataTable > thead > tr > td:not(.sorting_disabled) {\n  padding-right: 30px;\n}\ntable.dataTable > thead .sorting,\ntable.dataTable > thead .sorting_asc,\ntable.dataTable > thead .sorting_desc,\ntable.dataTable > thead .sorting_asc_disabled,\ntable.dataTable > thead .sorting_desc_disabled {\n  cursor: pointer;\n  position: relative;\n}\ntable.dataTable > thead .sorting:before, table.dataTable > thead .sorting:after,\ntable.dataTable > thead .sorting_asc:before,\ntable.dataTable > thead .sorting_asc:after,\ntable.dataTable > thead .sorting_desc:before,\ntable.dataTable > thead .sorting_desc:after,\ntable.dataTable > thead .sorting_asc_disabled:before,\ntable.dataTable > thead .sorting_asc_disabled:after,\ntable.dataTable > thead .sorting_desc_disabled:before,\ntable.dataTable > thead .sorting_desc_disabled:after {\n  position: absolute;\n  bottom: 0.9em;\n  display: block;\n  opacity: 0.3;\n}\ntable.dataTable > thead .sorting:before,\ntable.dataTable > thead .sorting_asc:before,\ntable.dataTable > thead .sorting_desc:before,\ntable.dataTable > thead .sorting_asc_disabled:before,\ntable.dataTable > thead .sorting_desc_disabled:before {\n  right: 1em;\n  content: \"↑\";\n}\ntable.dataTable > thead .sorting:after,\ntable.dataTable > thead .sorting_asc:after,\ntable.dataTable > thead .sorting_desc:after,\ntable.dataTable > thead .sorting_asc_disabled:after,\ntable.dataTable > thead .sorting_desc_disabled:after {\n  right: 0.5em;\n  content: \"↓\";\n}\ntable.dataTable > thead .sorting_asc:before,\ntable.dataTable > thead .sorting_desc:after {\n  opacity: 1;\n}\ntable.dataTable > thead .sorting_asc_disabled:before,\ntable.dataTable > thead .sorting_desc_disabled:after {\n  opacity: 0;\n}\n\ndiv.dataTables_scrollHead table.dataTable {\n  margin-bottom: 0 !important;\n}\n\ndiv.dataTables_scrollBody table {\n  border-top: none;\n  margin-top: 0 !important;\n  margin-bottom: 0 !important;\n}\ndiv.dataTables_scrollBody table thead .sorting:before,\ndiv.dataTables_scrollBody table thead .sorting_asc:before,\ndiv.dataTables_scrollBody table thead .sorting_desc:before,\ndiv.dataTables_scrollBody table thead .sorting:after,\ndiv.dataTables_scrollBody table thead .sorting_asc:after,\ndiv.dataTables_scrollBody table thead .sorting_desc:after {\n  display: none;\n}\ndiv.dataTables_scrollBody table tbody tr:first-child th,\ndiv.dataTables_scrollBody table tbody tr:first-child td {\n  border-top: none;\n}\n\ndiv.dataTables_scrollFoot > .dataTables_scrollFootInner {\n  box-sizing: content-box;\n}\ndiv.dataTables_scrollFoot > .dataTables_scrollFootInner > table {\n  margin-top: 0 !important;\n  border-top: none;\n}\n\n@media screen and (max-width: 767px) {\n  div.dataTables_wrapper div.dataTables_length,\ndiv.dataTables_wrapper div.dataTables_filter,\ndiv.dataTables_wrapper div.dataTables_info,\ndiv.dataTables_wrapper div.dataTables_paginate {\n    text-align: center;\n  }\n  div.dataTables_wrapper div.dataTables_paginate ul.pagination {\n    justify-content: center !important;\n  }\n}\ntable.dataTable.table-sm > thead > tr > th:not(.sorting_disabled) {\n  padding-right: 20px;\n}\ntable.dataTable.table-sm .sorting:before,\ntable.dataTable.table-sm .sorting_asc:before,\ntable.dataTable.table-sm .sorting_desc:before {\n  top: 5px;\n  right: 0.85em;\n}\ntable.dataTable.table-sm .sorting:after,\ntable.dataTable.table-sm .sorting_asc:after,\ntable.dataTable.table-sm .sorting_desc:after {\n  top: 5px;\n}\n\ntable.table-bordered.dataTable {\n  border-right-width: 0;\n}\ntable.table-bordered.dataTable th,\ntable.table-bordered.dataTable td {\n  border-left-width: 0;\n}\ntable.table-bordered.dataTable th:last-child, table.table-bordered.dataTable th:last-child,\ntable.table-bordered.dataTable td:last-child,\ntable.table-bordered.dataTable td:last-child {\n  border-right-width: 1px;\n}\ntable.table-bordered.dataTable tbody th,\ntable.table-bordered.dataTable tbody td {\n  border-bottom-width: 0;\n}\n\ndiv.dataTables_scrollHead table.table-bordered {\n  border-bottom-width: 0;\n}\n\ndiv.table-responsive > div.dataTables_wrapper > div.row {\n  margin: 0;\n}\ndiv.table-responsive > div.dataTables_wrapper > div.row > div[class^=col-]:first-child {\n  padding-left: 0;\n}\ndiv.table-responsive > div.dataTables_wrapper > div.row > div[class^=col-]:last-child {\n  padding-right: 0;\n}\n", ""]);
@@ -32524,11 +32547,11 @@ module.exports = exports;
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(7);
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(9);
 exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".xZRD7cJ3eqExhoIvsDdTz{animation-duration:1s;animation-name:_1L8M0t7r7UmE24Bzg7PH5z;animation-iteration-count:infinite}@keyframes _1L8M0t7r7UmE24Bzg7PH5z{from{fill:#00000000;background-color:#00000000}to{fill:#e0e0e087;background-color:#e0e0e087}}.DZrPvkroZUXbY1UhPo2EM{animation-duration:1s;animation-name:_1UZozth3eXf0kHvLU8EuFR;animation-iteration-count:infinite;font-size:18px !important}@keyframes _1UZozth3eXf0kHvLU8EuFR{from{fill:black}to{fill:#00259e}}._3hdXyByJMArJa0irik6ELY{font-size:16px}\n", ""]);
@@ -32544,7 +32567,7 @@ module.exports = exports;
 
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -53373,11 +53396,11 @@ function defaultConstrain(transform, extent, translateExtent) {
 
 
 // EXTERNAL MODULE: ./node_modules/colorsys/colorsys.js
-var colorsys = __webpack_require__(5);
+var colorsys = __webpack_require__(6);
 var colorsys_default = /*#__PURE__*/__webpack_require__.n(colorsys);
 
 // EXTERNAL MODULE: ./node_modules/seedrandom/index.js
-var seedrandom = __webpack_require__(14);
+var seedrandom = __webpack_require__(16);
 var seedrandom_default = /*#__PURE__*/__webpack_require__.n(seedrandom);
 
 // CONCATENATED MODULE: ./src/lib/categoricalcolors.ts
@@ -54100,7 +54123,7 @@ var external_root_React_commonjs2_react_commonjs_react_amd_react_ = __webpack_re
 var external_root_React_commonjs2_react_commonjs_react_amd_react_default = /*#__PURE__*/__webpack_require__.n(external_root_React_commonjs2_react_commonjs_react_amd_react_);
 
 // EXTERNAL MODULE: ./src/lib/resizable.scss
-var resizable = __webpack_require__(13);
+var resizable = __webpack_require__(15);
 var resizable_default = /*#__PURE__*/__webpack_require__.n(resizable);
 
 // EXTERNAL MODULE: ./node_modules/underscore/modules/_setup.js
@@ -58444,27 +58467,27 @@ var parallel_ParallelPlot = /** @class */ (function (_super) {
 
 
 // EXTERNAL MODULE: ./node_modules/datatables.net/js/jquery.dataTables.js
-var jquery_dataTables = __webpack_require__(8);
+var jquery_dataTables = __webpack_require__(10);
 var jquery_dataTables_default = /*#__PURE__*/__webpack_require__.n(jquery_dataTables);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js
-var dataTables_bootstrap4 = __webpack_require__(10);
+var dataTables_bootstrap4 = __webpack_require__(12);
 var dataTables_bootstrap4_default = /*#__PURE__*/__webpack_require__.n(dataTables_bootstrap4);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-colreorder/js/dataTables.colReorder.js
-var dataTables_colReorder = __webpack_require__(11);
+var dataTables_colReorder = __webpack_require__(13);
 var dataTables_colReorder_default = /*#__PURE__*/__webpack_require__.n(dataTables_colReorder);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-colreorder-bs4/js/colReorder.bootstrap4.js
-var colReorder_bootstrap4 = __webpack_require__(15);
+var colReorder_bootstrap4 = __webpack_require__(17);
 var colReorder_bootstrap4_default = /*#__PURE__*/__webpack_require__.n(colReorder_bootstrap4);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-buttons/js/dataTables.buttons.js
-var dataTables_buttons = __webpack_require__(12);
+var dataTables_buttons = __webpack_require__(14);
 var dataTables_buttons_default = /*#__PURE__*/__webpack_require__.n(dataTables_buttons);
 
 // EXTERNAL MODULE: ./node_modules/datatables.net-buttons-bs4/js/buttons.bootstrap4.js
-var buttons_bootstrap4 = __webpack_require__(16);
+var buttons_bootstrap4 = __webpack_require__(18);
 var buttons_bootstrap4_default = /*#__PURE__*/__webpack_require__.n(buttons_bootstrap4);
 
 // CONCATENATED MODULE: ./src/rowsdisplaytable.tsx
@@ -59241,7 +59264,7 @@ var PersistentStateInMemory = /** @class */ (function () {
 ;
 
 // EXTERNAL MODULE: ./src/style/global.scss
-var global = __webpack_require__(28);
+var global = __webpack_require__(30);
 
 // CONCATENATED MODULE: ./src/controls.tsx
 /*
@@ -59413,7 +59436,7 @@ var controls_SelectedCountProgressBar = /** @class */ (function (_super) {
 // CONCATENATED MODULE: ./hiplot/static/icon-w.svg
 /* harmony default export */ var icon_w = ("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NDggODQzIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzAwZTViNjt9LmNscy0ye2ZpbGw6IzQyMTg3NztvcGFjaXR5OjAuMzU7fS5jbHMtM3tmaWxsOiNmZmY7fS5jbHMtNHtmaWxsOiNmZmI4MDI7fS5jbHMtNXtmaWxsOiNmZjcwNjA7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5IaVBsb3QtSWNvbi1XaGl0ZTwvdGl0bGU+PHBvbHlnb24gY2xhc3M9ImNscy0xIiBwb2ludHM9IjQ4MC4zNiA0NjIuNDcgNDgwLjM2IDU2OS44OCAyMjcuNzYgNjM3LjAzIDIyNy43NiA1MjkuNjIgMzA5LjMxIDUwNy45NCAzNzcuNTIgNDg5LjgyIDQ4MC4zNiA0NjIuNDciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iNDgwLjM2IDQ0NiA0ODAuMzYgNTUzLjQyIDMwOS4zMSA1MDcuOTQgMzc3LjUyIDQ4OS44MiAyMjcuNzYgNDUwLjAxIDIyNy43NiAzNzguODUgNDgwLjM2IDQ0NiIvPjxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTcwNi4xMiwzMDIuM0g4MTYuMDV2NDI4SDcwNi4xMloiLz48Y2lyY2xlIGNsYXNzPSJjbHMtMyIgY3g9Ijc2MS4wOCIgY3k9IjE4NC4zOSIgcj0iNzAuOTIiLz48cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik00ODAuMzYsMTI5LjQzVjczMC4zSDU5My42N1YxMjkuNDNaTTExNC40OCw3MzAuM0gyMjcuNzZWMTI5LjQzSDExNC40OFoiLz48cG9seWdvbiBjbGFzcz0iY2xzLTQiIHBvaW50cz0iNDgwLjM2IDQwOS43MiA0ODAuMzYgNTE3LjEzIDM3Ny41MiA0ODkuODIgMjI3Ljc2IDQ1MC4wMSAyMjcuNzYgMzQyLjYgMzQ3LjE0IDM3NC4zMyA0MTIuODEgMzkxLjc3IDQ4MC4zNiA0MDkuNzIiLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iNDgwLjM2IDMzOC45IDM0Ny4xNCAzNzQuMzMgNDEyLjgxIDM5MS43NyAzNDQuNTYgNDA5LjkyIDIyNy43NiA0NDAuOTYgMjI3Ljc2IDMzMy41NSA0ODAuMzYgMjY2LjQgNDgwLjM2IDMzOC45Ii8+PHBvbHlnb24gY2xhc3M9ImNscy01IiBwb2ludHM9IjQ4MC4zNiAyMzEuNDkgNDgwLjM2IDMzOC45IDM0Ny4xNCAzNzQuMzMgMjc4LjkzIDM5Mi40NSAyMjcuNzYgNDA2LjA2IDIyNy43NiAyOTguNjQgNDgwLjM2IDIzMS40OSIvPjwvc3ZnPgo=");
 // EXTERNAL MODULE: ./src/tutorial/style.scss
-var tutorial_style = __webpack_require__(4);
+var tutorial_style = __webpack_require__(5);
 var style_default = /*#__PURE__*/__webpack_require__.n(tutorial_style);
 
 // CONCATENATED MODULE: ./hiplot/static/logo.svg
