@@ -16,7 +16,7 @@ export declare class RowsDisplayTable extends React.Component<TablePluginProps, 
     dt: any;
     ordered_cols: Array<string>;
     empty: boolean;
-    setSelected_debounced: ((selected: Datapoint[]) => void) & _.Cancelable;
+    setSelected_debounced: ((selected: Array<Datapoint>) => void) & _.Cancelable;
     static defaultProps: {
         hide: any[];
         order_by: string[][];
