@@ -42,6 +42,7 @@ import { PlotXY } from "./plotxy";
 import { SelectedCountProgressBar } from "./controls";
 import { ErrorDisplay, HeaderBar } from "./header";
 import { StaticDataProvider } from "./dataproviders/static";
+import { uncompress } from "./lib/compress";
 //@ts-ignore
 import LogoSVG from "../hiplot/static/logo.svg";
 //@ts-ignore
@@ -115,7 +116,7 @@ var HiPlot = /** @class */ (function (_super) {
             this.sendMessage("filtered_uids", function () { return this.state.rows_filtered.map(function (row) { return '' + row['uid']; }); }.bind(this));
         }.bind(_this), 200);
         _this.state = {
-            experiment: props.experiment,
+            experiment: null,
             colormap: null,
             loadStatus: HiPlotLoadStatus.None,
             loadPromise: null,
@@ -190,6 +191,10 @@ var HiPlot = /** @class */ (function (_super) {
         }
     };
     HiPlot.prototype._loadExperiment = function (experiment) {
+        // Uncompress if compressed
+        if (experiment.datapoints === undefined) {
+            experiment.datapoints = uncompress(experiment.datapoints_compressed);
+        }
         // Generate dataset for Parallel Plot
         var dp_lookup = {};
         var initFilters = this.state.persistentState.get(PSTATE_FILTERS, []);
@@ -235,8 +240,7 @@ var HiPlot = /** @class */ (function (_super) {
     };
     ;
     HiPlot.prototype.loadWithPromise = function (prom) {
-        var me = this;
-        me.setState({
+        this.setState({
             loadStatus: HiPlotLoadStatus.Loading,
             loadPromise: makeCancelable(prom)
         });

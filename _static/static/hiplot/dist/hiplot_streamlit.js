@@ -70,7 +70,6 @@ var ReactTemplate = /** @class */ (function (_super) {
             Streamlit.setComponentValue(py_ret);
         }
         var newExp = this.props.args['experiment'];
-        var lastExp = prevProps.args['experiment'];
         if (newExp != this.state.experimentJson) {
             this.setState({
                 experiment: eval('(' + newExp + ')'),

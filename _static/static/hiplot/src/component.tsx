@@ -20,6 +20,8 @@ import { SelectedCountProgressBar, HiPlotDataControlProps } from "./controls";
 import { ErrorDisplay, HeaderBar } from "./header";
 import { HiPlotPluginData, DataProviderClass } from "./plugin";
 import { StaticDataProvider } from "./dataproviders/static";
+import { uncompress } from "./lib/compress";
+
 
 //@ts-ignore
 import LogoSVG from "../hiplot/static/logo.svg";
@@ -158,7 +160,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     constructor(props: HiPlotProps) {
         super(props);
         this.state = {
-            experiment: props.experiment,
+            experiment: null,
             colormap: null,
             loadStatus: HiPlotLoadStatus.None,
             loadPromise: null,
@@ -247,6 +249,11 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         this.sendMessage("filtered_uids", function() { return this.state.rows_filtered.map(row => '' + row['uid'])}.bind(this));
     }.bind(this), 200);
     _loadExperiment(experiment: HiPlotExperiment) {
+        // Uncompress if compressed
+        if (experiment.datapoints === undefined) {
+            experiment.datapoints = uncompress(experiment.datapoints_compressed);
+        }
+
         // Generate dataset for Parallel Plot
         var dp_lookup = {};
         var initFilters = this.state.persistentState.get(PSTATE_FILTERS, []);
@@ -299,8 +306,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         return colorScheme(this.state.params_def[this.state.colorby], trial[this.state.colorby], alpha, this.state.colormap);
     };
     loadWithPromise(prom: LoadURIPromise) {
-        var me = this;
-        me.setState({
+        this.setState({
             loadStatus: HiPlotLoadStatus.Loading,
             loadPromise: makeCancelable(prom)
         });

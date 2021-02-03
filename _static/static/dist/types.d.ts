@@ -29,8 +29,13 @@ export interface HiPlotValueDef {
     force_value_max: number | null;
     label_css: string | null;
 }
+export interface DatapointsCompressed {
+    columns: Array<string>;
+    rows: Array<Array<any>>;
+}
 export interface HiPlotExperiment {
     datapoints: Array<Datapoint>;
+    datapoints_compressed?: DatapointsCompressed;
     parameters_definition?: {
         [key: string]: HiPlotValueDef;
     };

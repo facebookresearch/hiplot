@@ -72,7 +72,6 @@ class ReactTemplate extends StreamlitComponentBase<State> {
       Streamlit.setComponentValue(py_ret);
     }
     const newExp = this.props.args['experiment'];
-    const lastExp = prevProps.args['experiment'];
     if (newExp != this.state.experimentJson) {
       this.setState({
         experiment: eval('(' + newExp + ')'),

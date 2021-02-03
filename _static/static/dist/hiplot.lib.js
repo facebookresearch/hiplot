@@ -53781,6 +53781,7 @@ var ParamType;
 })(ParamType || (ParamType = {}));
 ;
 ;
+;
 var Experiment = /** @class */ (function () {
     function Experiment() {
     }
@@ -59865,6 +59866,31 @@ var StaticDataProvider = /** @class */ (function (_super) {
 }(external_root_React_commonjs2_react_commonjs_react_amd_react_default.a.Component));
 
 
+// CONCATENATED MODULE: ./src/lib/compress.ts
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+// See `compress.py` for compression code on the python side
+function uncompress(compressed_data) {
+    var columns = compressed_data.columns;
+    var rows = compressed_data.rows;
+    return rows.map(function (row) {
+        var values = {};
+        var dp = {
+            'uid': row[0],
+            'from_uid': row[1],
+            'values': values,
+        };
+        columns.forEach(function (column, i) {
+            values[column] = row[i + 2];
+        });
+        return dp;
+    });
+}
+
 // CONCATENATED MODULE: ./hiplot/static/logo-w.svg
 /* harmony default export */ var logo_w = ("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4OTkuMzMgMzA2LjMzIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2ZmZjt9LmNscy0ye2ZpbGw6IzAwZTViNjt9LmNscy0ze2ZpbGw6IzQyMTg3NztvcGFjaXR5OjAuMzU7fS5jbHMtNHtmaWxsOiNmZmI4MDI7fS5jbHMtNXtmaWxsOiNmZjcwNjA7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5IaVBsb3QtTG9nby1XaGl0ZTwvdGl0bGU+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjYwLjI2LDEwNi4yNkgzMDFWMjY0Ljc5SDI2MC4yNloiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0zMzkuODMsNDIuMjNoNzguMzNhODMuNzMsODMuNzMsMCwwLDEsMzguNTUsOC44NkE2Ny41NCw2Ny41NCwwLDAsMSw0ODQuMDYsNzZRNDk0LDkyLDQ5NCwxMTIuNDh0LTkuOTUsMzYuNjdhNjcuMjQsNjcuMjQsMCwwLDEtMjcuMzUsMjVBODMuODYsODMuODYsMCwwLDEsNDE4LjE2LDE4M0gzODEuOHY4MS43NWgtNDJabTc5LjU4LDEwMXExNS41NCwwLDI0LjQtOWEyOS45NCwyOS45NCwwLDAsMCw4Ljg2LTIxLjc2LDI5LjQ0LDI5LjQ0LDAsMCwwLTguODYtMjEuNjFRNDM0Ljk0LDgyLDQxOS40MSw4MkgzODEuOHY2MS4yM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik01MTkuMTgsNDIuMjNINTU5LjlWMjY0Ljc5SDUxOS4xOFoiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik02MjcuMzUsMjU4LjcyYTc4LjM0LDc4LjM0LDAsMCwxLTMwLTMwLjE0cS0xMC43MS0xOS4xMi0xMC43Mi00My4wNmE4Ni44MSw4Ni44MSwwLDAsMSwxMC43Mi00Mi44OSw3OC4wOSw3OC4wOSwwLDAsMSwzMC0zMC4zMXExOS4yNy0xMSw0My44My0xMSwyNC4yNCwwLDQzLjUyLDExYTc4LjE0LDc4LjE0LDAsMCwxLDMwLDMwLjMxcTEwLjcyLDE5LjI3LDEwLjcyLDQyLjg5LDAsMjMuOTQtMTAuNzIsNDMuMDZhNzguMzgsNzguMzgsMCwwLDEtMzAsMzAuMTRxLTE5LjI5LDExLTQzLjUyLDExUTY0Ni42MSwyNjkuNzYsNjI3LjM1LDI1OC43MlptNjUuNTktMzIuMTdhNDEsNDEsMCwwLDAsMTUuODUtMTYuMTZxNS45LTEwLjU2LDUuOTEtMjQuODcsMC0xNC01LjkxLTI0LjU1YTQxLjE3LDQxLjE3LDAsMCwwLTE1Ljg1LTE2LjE3LDQ1LjE1LDQ1LjE1LDAsMCwwLTQzLjUyLDAsNDIuMTcsNDIuMTcsMCwwLDAtMTYsMTYuMTdxLTYuMDYsMTAuNTYtNi4wNiwyNC41NWE0OS4zOCw0OS4zOCwwLDAsMCw2LjA2LDI0LjcyLDQxLjgsNDEuOCwwLDAsMCwxNiwxNi4zMSw0NS4wOCw0NS4wOCwwLDAsMCw0My41MiwwWiIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI3NzUuMzIgMjY0Ljc5IDgxNi4xMyAyNjQuNzkgODE2LjEzIDE0MS4wOCA4NTggMTQxLjA4IDg1OCAxMDYuMjcgODE2LjEzIDEwNi4yNyA4MTYuMTMgNjEuNTEgODE2LjA0IDYxLjUxIDc3NS4zMiA2MS41MSA3NzUuMzIgMjY0Ljc5Ii8+PGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSIyODAuNjIiIGN5PSI2Mi41OSIgcj0iMjYuMjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMTc2LjMgMTY1LjE2IDE3Ni4zIDIwNS4xMiA4Mi4zNSAyMzAuMDkgODIuMzUgMTkwLjE0IDExMi42OCAxODIuMDggMTM4LjA1IDE3NS4zNCAxNzYuMyAxNjUuMTYiLz48cG9seWdvbiBjbGFzcz0iY2xzLTMiIHBvaW50cz0iMTc2LjMgMTU5LjA0IDE3Ni4zIDE5OC45OSAxMTIuNjggMTgyLjA4IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEzNC4wNiAxNzYuMyAxNTkuMDQiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xNzYuMyw0MS4yOVYyNjQuNzhoNDIuMTVWNDEuMjlaTTQwLjIxLDI2NC43OEg4Mi4zNVY0MS4yOUg0MC4yMVoiLz48cG9seWdvbiBjbGFzcz0iY2xzLTQiIHBvaW50cz0iMTc2LjMgMTQ1LjU0IDE3Ni4zIDE4NS41IDEzOC4wNSAxNzUuMzQgODIuMzUgMTYwLjUzIDgyLjM1IDEyMC41OCAxMjYuNzUgMTMyLjM4IDE1MS4xNyAxMzguODcgMTc2LjMgMTQ1LjU0Ii8+PHBvbHlnb24gY2xhc3M9ImNscy0zIiBwb2ludHM9IjE3Ni4zIDExOS4yIDEyNi43NSAxMzIuMzggMTUxLjE3IDEzOC44NyAxMjUuNzkgMTQ1LjYyIDgyLjM1IDE1Ny4xNiA4Mi4zNSAxMTcuMjEgMTc2LjMgOTIuMjQgMTc2LjMgMTE5LjIiLz48cG9seWdvbiBjbGFzcz0iY2xzLTUiIHBvaW50cz0iMTc2LjMgNzkuMjUgMTc2LjMgMTE5LjIgMTI2Ljc1IDEzMi4zOCAxMDEuMzggMTM5LjEyIDgyLjM1IDE0NC4xOCA4Mi4zNSAxMDQuMjMgMTc2LjMgNzkuMjUiLz48L3N2Zz4K");
 // CONCATENATED MODULE: ./src/component.tsx
@@ -59899,6 +59925,7 @@ var component_assign = (undefined && undefined.__assign) || function () {
     return component_assign.apply(this, arguments);
 };
 var component_a;
+
 
 
 
@@ -59985,7 +60012,7 @@ var component_HiPlot = /** @class */ (function (_super) {
             this.sendMessage("filtered_uids", function () { return this.state.rows_filtered.map(function (row) { return '' + row['uid']; }); }.bind(this));
         }.bind(_this), 200);
         _this.state = {
-            experiment: props.experiment,
+            experiment: null,
             colormap: null,
             loadStatus: HiPlotLoadStatus.None,
             loadPromise: null,
@@ -60060,6 +60087,10 @@ var component_HiPlot = /** @class */ (function (_super) {
         }
     };
     HiPlot.prototype._loadExperiment = function (experiment) {
+        // Uncompress if compressed
+        if (experiment.datapoints === undefined) {
+            experiment.datapoints = uncompress(experiment.datapoints_compressed);
+        }
         // Generate dataset for Parallel Plot
         var dp_lookup = {};
         var initFilters = this.state.persistentState.get(PSTATE_FILTERS, []);
@@ -60105,8 +60136,7 @@ var component_HiPlot = /** @class */ (function (_super) {
     };
     ;
     HiPlot.prototype.loadWithPromise = function (prom) {
-        var me = this;
-        me.setState({
+        this.setState({
             loadStatus: HiPlotLoadStatus.Loading,
             loadPromise: makeCancelable(prom)
         });
