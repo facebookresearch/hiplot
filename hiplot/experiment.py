@@ -14,7 +14,6 @@ import typing as tp
 
 from .render import make_experiment_standalone_page, html_inlinize
 
-
 DisplayableType = tp.Union[bool, int, float, str]
 
 
@@ -88,7 +87,8 @@ class _StreamlitHelpers:
         try:
             import streamlit.components.v1 as components
         except ModuleNotFoundError as e:
-            raise RuntimeError(f'Your streamlit version ({st.__version__}) is too old and does not support components. Please update streamlit with `pip install -U streamlit`') from e
+            raise RuntimeError(
+                f'Your streamlit version ({st.__version__}) is too old and does not support components. Please update streamlit with `pip install -U streamlit`') from e
         assert st._is_running_with_streamlit
 
         built_path = (Path(__file__).parent / "static" / "built" / "streamlit_component").resolve()
@@ -267,6 +267,7 @@ class Experiment(_DictSerializable):
         self.colormap = colormap if colormap is not None else "interpolateTurbo"
         self.colorby: tp.Optional[str] = None
         self._display_data: tp.Dict[str, tp.Dict[str, tp.Any]] = {}
+        self._compress: bool = False
 
     def validate(self) -> "Experiment":
         """
@@ -405,13 +406,18 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             })
 
     def _asdict(self) -> tp.Dict[str, tp.Any]:
-        return {
-            "datapoints": [d._asdict() for d in self.datapoints],
+        data: tp.Dict[str, tp.Any] = {
             "parameters_definition": {k: v._asdict() for k, v in self.parameters_definition.items()},
             "colormap": self.colormap,
             "colorby": self.colorby,
             "display_data": self._display_data,
         }
+        if self._compress:
+            from .compress import compress
+            data["datapoints_compressed"] = compress(self.datapoints)
+        else:
+            data["datapoints"] = [d._asdict() for d in self.datapoints]
+        return data
 
     def remove_missing_parents(self) -> "Experiment":
         """
@@ -491,13 +497,13 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             if dataframe['from_uid'].isnull().values.any():
 
                 # NaN values forces integer columns to become float, if uid is integer and from_uid is float, it crashes.
-                # The line below changes uid to match from_uid type (either float or string), since NaN cannot be integer. 
-                dataframe['uid']= dataframe['uid'].astype(dataframe['from_uid'].dtypes)
+                # The line below changes uid to match from_uid type (either float or string), since NaN cannot be integer.
+                dataframe['uid'] = dataframe['uid'].astype(dataframe['from_uid'].dtypes)
                 dataframe = dataframe.fillna({'from_uid': '', 'uid': ''})
 
                 # Replaces their dtypes accordingly to str, which is handled better with lesser errors with no change to functionality
-                dataframe['uid']= dataframe['uid'].astype(str)
-                dataframe['from_uid']= dataframe['from_uid'].astype(str)
+                dataframe['uid'] = dataframe['uid'].astype(str)
+                dataframe['from_uid'] = dataframe['from_uid'].astype(str)
 
         return Experiment.from_iterable(dataframe.to_dict(orient='records'))
 
