@@ -179,6 +179,27 @@ be re-created whenever any slider changes, and lose its current configuration/st
 <li><p>A data compression mode, which represents the underlying data more efficiently if most of the rows have the same columns</p></li>
 <li><p>Using streamlit’s caching to store a frozen copy of the experiment</p></li>
 </ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+<span class="kn">import</span> <span class="nn">hiplot.fetchers_demo</span>
+
+<span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">),</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s1">&#39;x2&#39;</span><span class="p">),</span> <span class="n">st</span><span class="o">.</span><span class="n">slider</span><span class="p">(</span><span class="s1">&#39;x3&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@st</span><span class="o">.</span><span class="n">cache</span>
+<span class="k">def</span> <span class="nf">get_experiment</span><span class="p">():</span>
+    <span class="c1"># We create a large experiment with 1000 rows</span>
+    <span class="n">big_exp</span> <span class="o">=</span> <span class="n">hiplot</span><span class="o">.</span><span class="n">fetchers_demo</span><span class="o">.</span><span class="n">demo</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="c1"># EXPERIMENTAL: Reduces bandwidth at first load</span>
+    <span class="n">big_exp</span><span class="o">.</span><span class="n">_compress</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># ... and cache its frozen copy with `@st.cache`</span>
+    <span class="k">return</span> <span class="n">big_exp</span><span class="o">.</span><span class="n">frozen_copy</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hipl&quot;</span><span class="p">)</span>
+
+
+<span class="n">xp</span> <span class="o">=</span> <span class="n">get_experiment</span><span class="p">()</span>  <span class="c1"># This will be cached the second time</span>
+<span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 </div>
 
