@@ -73,6 +73,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#displaying-an-hiplot-experiment">Displaying an <code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#hiplot-component-return-values">HiPlot component return values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#improving-performance-with-streamlit-caching-experimental">Improving performance with streamlit caching (EXPERIMENTAL)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tuto_javascript.html">NPM library (javascript)</a></li>
@@ -170,6 +171,14 @@ be re-created whenever any slider changes, and lose its current configuration/st
 <span class="n">filtered_uids</span><span class="p">,</span> <span class="n">selected_uids</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;filtered_uids&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_uids&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip3&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="improving-performance-with-streamlit-caching-experimental">
+<span id="tutostreamlitcache"></span><h2>Improving performance with streamlit caching (EXPERIMENTAL)<a class="headerlink" href="#improving-performance-with-streamlit-caching-experimental" title="Permalink to this headline">¶</a></h2>
+<p>Generating / displaying a large HiPlot Experiment / component can take a significant amount of time and bandwidth. Several things can speed up streamlit iterations:</p>
+<ul class="simple">
+<li><p>A data compression mode, which represents the underlying data more efficiently if most of the rows have the same columns</p></li>
+<li><p>Using streamlit’s caching to store a frozen copy of the experiment</p></li>
+</ul>
 </div>
 </div>
 

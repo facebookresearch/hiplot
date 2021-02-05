@@ -173,83 +173,6 @@
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">_StreamlitHelpers</span><span class="p">:</span>
-    <span class="n">component</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">tp</span><span class="o">.</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_running_within_streamlit</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
-        <span class="k">except</span><span class="p">:</span>  <span class="c1"># pylint: disable=bare-except</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">_is_running_with_streamlit</span><span class="p">)</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_component</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">component</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">streamlit.components.v1</span> <span class="k">as</span> <span class="nn">components</span>
-        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Your streamlit version (</span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s1">) is too old and does not support components. Please update streamlit with `pip install -U streamlit`&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-        <span class="k">assert</span> <span class="n">st</span><span class="o">.</span><span class="n">_is_running_with_streamlit</span>
-
-        <span class="n">built_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;static&quot;</span> <span class="o">/</span> <span class="s2">&quot;built&quot;</span> <span class="o">/</span> <span class="s2">&quot;streamlit_component&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="p">(</span><span class="n">built_path</span> <span class="o">/</span> <span class="s2">&quot;index.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;HiPlot component does not appear to exist in </span><span class="si">{</span><span class="n">built_path</span><span class="si">}</span><span class="s2"></span>
-<span class="s2">If you did not install hiplot using official channels (pip, conda...), maybe you forgot to build javascript files?</span>
-<span class="s2">See https://facebookresearch.github.io/hiplot/contributing.html#building-javascript-bundle</span>
-<span class="s2">&quot;&quot;&quot;</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">component</span> <span class="o">=</span> <span class="n">components</span><span class="o">.</span><span class="n">declare_component</span><span class="p">(</span><span class="s2">&quot;hiplot&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">built_path</span><span class="p">))</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_instance_wrapper</span><span class="p">(</span>
-            <span class="bp">cls</span><span class="p">,</span>
-            <span class="n">exp</span><span class="p">:</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">,</span>
-            <span class="n">ret</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">key</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">create_component</span><span class="p">()</span>
-        <span class="n">possible_returns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;selected_uids&#39;</span><span class="p">,</span> <span class="s1">&#39;filtered_uids&#39;</span><span class="p">,</span> <span class="s1">&#39;brush_extents&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;Creating a HiPlot component with key=None will make refreshes slower.</span>
-<span class="s2">Please use `experiment.display_st(..., key=\&quot;some_unique_key\&quot;)`&quot;&quot;&quot;</span><span class="p">)</span>
-        <span class="n">ret_type_for_js</span> <span class="o">=</span> <span class="n">ret</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">ret_type_for_js</span> <span class="o">=</span> <span class="p">[</span><span class="n">ret</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ret_type_for_js</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">possible_returns</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Unknown return type </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">. Possible values: </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">possible_returns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">assert</span> <span class="bp">cls</span><span class="o">.</span><span class="n">component</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="n">js_ret</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">component</span><span class="p">(</span><span class="n">experiment</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()),</span> <span class="n">ret</span><span class="o">=</span><span class="n">ret_type_for_js</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>  <span class="c1"># pylint: disable=not-callable</span>
-
-        <span class="k">if</span> <span class="n">js_ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">js_ret</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret_type_for_js</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ret_type_for_js</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">js_ret</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="c1"># Use default value</span>
-            <span class="k">if</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;selected_uids&#39;</span><span class="p">,</span> <span class="s1">&#39;filtered_uids&#39;</span><span class="p">]:</span>
-                <span class="n">js_ret</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">uid</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">exp</span><span class="o">.</span><span class="n">datapoints</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="s1">&#39;brush_extents&#39;</span><span class="p">:</span>
-                <span class="n">js_ret</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">js_ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">js_ret</span>
-
-
-<span class="k">def</span> <span class="nf">_is_running_ipython</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">get_ipython</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
-        <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-
 <div class="viewcode-block" id="ValueDef"><a class="viewcode-back" href="../../py_reference.html#hiplot.ValueDef">[docs]</a><span class="k">class</span> <span class="nc">ValueDef</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides a custom type, color, etc.. for a column.</span>
@@ -342,6 +265,14 @@
                 <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Datapoint </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uid</span><span class="si">}</span><span class="s1"> contains a value for &quot;</span><span class="si">{</span><span class="n">reserved_kw</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span></div></div>
 
 
+<span class="k">def</span> <span class="nf">_is_running_ipython</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">get_ipython</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
 <div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Object that can be rendered by HiPlot. It essential contains a list of metrics, but also some options on how to render it.</span>
@@ -411,6 +342,7 @@
 <span class="sd">            - only implemented for Jupyter notebook.</span>
 <span class="sd">            See :ref:`tutonotebookdisplayedexperiment`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">.streamlit_helpers</span> <span class="kn">import</span> <span class="n">_StreamlitHelpers</span>  <span class="c1"># pylint: disable=cyclic-import</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_running_ipython</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">_StreamlitHelpers</span><span class="o">.</span><span class="n">is_running_within_streamlit</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;`experiment.display` can only be called with ipython.</span>
@@ -452,6 +384,8 @@
 <span class="sd">            brush_extents, selected_uids = exp.display_st(key=&quot;hiplot3&quot;, ret=[&quot;brush_extents&quot;, &quot;selected_uids&quot;])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">.streamlit_helpers</span> <span class="kn">import</span> <span class="n">_StreamlitHelpers</span>  <span class="c1"># pylint: disable=cyclic-import</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_StreamlitHelpers</span><span class="o">.</span><span class="n">is_running_within_streamlit</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">_is_running_ipython</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;`experiment.display_st` can only be called in a streamlit script.</span>
@@ -461,6 +395,40 @@
         <span class="k">return</span> <span class="n">_StreamlitHelpers</span><span class="o">.</span><span class="n">create_instance_wrapper</span><span class="p">(</span><span class="n">exp</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">ret</span><span class="o">=</span><span class="n">ret</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span></div>
 
     <span class="c1"># pylint: enable=function-redefined</span>
+
+<div class="viewcode-block" id="Experiment.frozen_copy"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.frozen_copy">[docs]</a>    <span class="k">def</span> <span class="nf">frozen_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Streamlit only:</span>
+<span class="sd">        creates a copy of the Experiment that you can cache,</span>
+<span class="sd">        which only exposes the `display_st` method - see :ref:`tutoStreamlitCache`</span>
+
+<span class="sd">        :param key: Unique key for the streamlit component.</span>
+<span class="sd">        :returns: A frozen copy of this Experiment</span>
+
+<span class="sd">        :Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import streamlit as st</span>
+<span class="sd">            import hiplot as hip</span>
+
+<span class="sd">            @st.cache</span>
+<span class="sd">            def get_experiment():</span>
+<span class="sd">                # Create your hiplot experiment as usual</span>
+<span class="sd">                big_exp = hip.Experiment.from_iterable(...)</span>
+<span class="sd">                # ... and cache its frozen copy</span>
+<span class="sd">                return big_exp.frozen_copy(key=&quot;hipl&quot;)</span>
+
+<span class="sd">            xp = get_experiment() # This will be cached the second time</span>
+<span class="sd">            xp.display_st()</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">streamlit_helpers</span>  <span class="c1"># pylint: disable=cyclic-import</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">streamlit_helpers</span><span class="o">.</span><span class="n">_StreamlitHelpers</span><span class="o">.</span><span class="n">is_running_within_streamlit</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;`experiment.frozen_copy` is only meant to be used within streamlit&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">streamlit_helpers</span><span class="o">.</span><span class="n">ExperimentFrozenCopy</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()),</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 <div class="viewcode-block" id="Experiment.to_html"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>

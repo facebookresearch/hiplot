@@ -57,3 +57,20 @@ HiPlot is highly interactive, and there are multiple values/information that can
     xp.display_st(key="hip1")  # Does not return anything
     filtered_uids = xp.display_st(ret="filtered_uids", key="hip2")
     filtered_uids, selected_uids = xp.display_st(ret=["filtered_uids", "selected_uids"], key="hip3")
+
+
+
+.. _tutoStreamlitCache:
+
+Improving performance with streamlit caching (EXPERIMENTAL)
+-----------------------------------------------------------
+
+Generating / displaying a large HiPlot Experiment / component can take a significant amount of time and bandwidth. Several things can speed up streamlit iterations:
+
+- A data compression mode, which represents the underlying data more efficiently if most of the rows have the same columns
+- Using streamlit's caching to store a frozen copy of the experiment
+
+
+
+.. literalinclude:: ../examples/demo_streamlit_cache.py
+    :start-after: DEMO_STREAMLIT_BEGIN
