@@ -4,6 +4,9 @@
 
 import tempfile
 import shutil
+from contextlib import contextmanager
+from unittest.mock import patch
+import typing as tp
 
 import pytest
 import pandas as pd
@@ -36,25 +39,27 @@ def test_from_dataframe() -> None:
     xp.validate()
     xp._asdict()
 
+
 def test_from_dataframe_nan_values() -> None:
     # Pandas automatically convert numeric-based columns None to NaN in dataframes
     # Pandas will also automatically convert columns with NaN from integer to floats, since NaN is considered a float
     # https://pandas.pydata.org/pandas-docs/stable/user_guide/integer_na.html
 
-    df = pd.DataFrame(data={'uid':[1,2,3,4],'from_uid':[None,1,2,3],'a':[1,2,3,None],'b':[4,5,None,6]})
+    df = pd.DataFrame(data={'uid': [1, 2, 3, 4], 'from_uid': [None, 1, 2, 3], 'a': [1, 2, 3, None], 'b': [4, 5, None, 6]})
     xp = hip.Experiment.from_dataframe(df)
     assert len(xp.datapoints) == 4
     xp.validate()
     xp._asdict()
+
 
 def test_from_dataframe_none_values() -> None:
     # Pandas will keep None values in string columns
-    df = pd.DataFrame(data={'uid':["1","2","3","4"],'from_uid':[None,"1","2","3"],'a':[23,43,5,None],'b':[33,45,None,23]})
+    df = pd.DataFrame(data={'uid': ["1", "2", "3", "4"], 'from_uid': [None, "1", "2", "3"],
+                            'a': [23, 43, 5, None], 'b': [33, 45, None, 23]})
     xp = hip.Experiment.from_dataframe(df)
     assert len(xp.datapoints) == 4
     xp.validate()
     xp._asdict()
-
 
 
 def test_validation() -> None:
@@ -124,3 +129,26 @@ def test_doc() -> None:
     exp.parameters_definition["exp_metric"].colormap = "interpolateSinebow"
     # EXPERIMENT_SETTINGS_SNIPPET1_END
     exp.validate()
+
+
+@contextmanager
+def patch_streamlit() -> tp.Iterator[None]:
+    with patch("hiplot.streamlit_helpers._StreamlitHelpers.is_running_within_streamlit", lambda: True):
+        with patch("hiplot.streamlit_helpers._StreamlitHelpers.create_component"):
+            with patch("hiplot.streamlit_helpers._StreamlitHelpers.component"):
+                yield
+
+
+def test_frozen_copy() -> None:
+    exp = hip.fetchers.load_demo("demo")
+    with patch_streamlit():
+        frozen_copy = exp.frozen_copy(key="k")
+        with pytest.raises(AttributeError):
+            frozen_copy.to_html()
+        with pytest.raises(AttributeError):
+            frozen_copy.datapoints = []
+        frozen_copy.display_st()
+        with pytest.raises(RuntimeError):
+            frozen_copy.display_st(key="0")
+        with pytest.raises(RuntimeError):
+            frozen_copy.display_st(ret="selected_uids")

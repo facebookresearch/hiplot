@@ -68,83 +68,6 @@ Examples include `interpolateSpectral`, `interpolateViridis`, `interpolateSinebo
 """)
 
 
-class _StreamlitHelpers:
-    component: tp.Optional[tp.Callable[..., tp.Any]] = None
-
-    @staticmethod
-    def is_running_within_streamlit() -> bool:
-        try:
-            import streamlit as st
-        except:  # pylint: disable=bare-except
-            return False
-        return bool(st._is_running_with_streamlit)
-
-    @classmethod
-    def create_component(cls) -> None:
-        if cls.component is not None:
-            return
-        import streamlit as st
-        try:
-            import streamlit.components.v1 as components
-        except ModuleNotFoundError as e:
-            raise RuntimeError(
-                f'Your streamlit version ({st.__version__}) is too old and does not support components. Please update streamlit with `pip install -U streamlit`') from e
-        assert st._is_running_with_streamlit
-
-        built_path = (Path(__file__).parent / "static" / "built" / "streamlit_component").resolve()
-        assert (built_path / "index.html").is_file(), f"""HiPlot component does not appear to exist in {built_path}
-If you did not install hiplot using official channels (pip, conda...), maybe you forgot to build javascript files?
-See https://facebookresearch.github.io/hiplot/contributing.html#building-javascript-bundle
-"""
-        cls.component = components.declare_component("hiplot", path=str(built_path))
-
-    @classmethod
-    def create_instance_wrapper(
-            cls,
-            exp: "Experiment",
-            ret: tp.Union[str, tp.List[str], None] = None,
-            key: tp.Optional[str] = None
-    ) -> tp.Any:
-        cls.create_component()
-        possible_returns = ['selected_uids', 'filtered_uids', 'brush_extents']
-        if key is None:
-            warnings.warn(r"""Creating a HiPlot component with key=None will make refreshes slower.
-Please use `experiment.display_st(..., key=\"some_unique_key\")`""")
-        ret_type_for_js = ret if isinstance(ret, list) else []
-        if isinstance(ret, str):
-            ret_type_for_js = [ret]
-        for r in ret_type_for_js:
-            assert r in possible_returns, f"Unknown return type {r}. Possible values: {','.join(possible_returns)}"
-        assert cls.component is not None
-        js_ret = cls.component(experiment=json.dumps(exp._asdict()), ret=ret_type_for_js, key=key)  # pylint: disable=not-callable
-
-        if js_ret is None:
-            js_ret = [None] * len(ret_type_for_js)
-
-        for idx, r in enumerate(ret_type_for_js):
-            if js_ret[idx] is not None:
-                continue
-            # Use default value
-            if r in ['selected_uids', 'filtered_uids']:
-                js_ret[idx] = [dp.uid for dp in exp.datapoints]
-            if r == 'brush_extents':
-                js_ret[idx] = []
-
-        if ret is None:
-            return None
-        if isinstance(ret, str):
-            return js_ret[0]
-        return js_ret
-
-
-def _is_running_ipython() -> bool:
-    try:
-        get_ipython()  # type: ignore
-        return True
-    except NameError:
-        return False
-
-
 class ValueDef(_DictSerializable):
     """
     Provides a custom type, color, etc.. for a column.
@@ -237,6 +160,14 @@ class Datapoint(_DictSerializable):
                 raise ExperimentValidationError(f'Datapoint {self.uid} contains a value for "{reserved_kw}"')
 
 
+def _is_running_ipython() -> bool:
+    try:
+        get_ipython()  # type: ignore
+        return True
+    except NameError:
+        return False
+
+
 class Experiment(_DictSerializable):
     """
     Object that can be rendered by HiPlot. It essential contains a list of metrics, but also some options on how to render it.
@@ -306,6 +237,7 @@ class Experiment(_DictSerializable):
             - only implemented for Jupyter notebook.
             See :ref:`tutonotebookdisplayedexperiment`
         """
+        from .streamlit_helpers import _StreamlitHelpers  # pylint: disable=cyclic-import
         if not _is_running_ipython():
             if _StreamlitHelpers.is_running_within_streamlit():
                 raise RuntimeError(r"""`experiment.display` can only be called with ipython.
@@ -347,6 +279,8 @@ It appears that you are trying to create a HiPlot visualization in Streamlit: yo
             brush_extents, selected_uids = exp.display_st(key="hiplot3", ret=["brush_extents", "selected_uids"])
 
         """
+        from .streamlit_helpers import _StreamlitHelpers  # pylint: disable=cyclic-import
+
         if not _StreamlitHelpers.is_running_within_streamlit():
             if _is_running_ipython():
                 raise RuntimeError(r"""`experiment.display_st` can only be called in a streamlit script.
@@ -356,6 +290,40 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
         return _StreamlitHelpers.create_instance_wrapper(exp=self, ret=ret, key=key)
 
     # pylint: enable=function-redefined
+
+    def frozen_copy(self, key: str) -> "Experiment":
+        """
+        Streamlit only:
+        creates a copy of the Experiment that you can cache,
+        which only exposes the `display_st` method - see :ref:`tutoStreamlitCache`
+
+        :param key: Unique key for the streamlit component.
+        :returns: A frozen copy of this Experiment
+
+        :Example:
+
+        .. code-block:: python
+
+            import streamlit as st
+            import hiplot as hip
+
+            @st.cache
+            def get_experiment():
+                # Create your hiplot experiment as usual
+                big_exp = hip.Experiment.from_iterable(...)
+                # ... and cache its frozen copy
+                return big_exp.frozen_copy(key="hipl")
+
+            xp = get_experiment() # This will be cached the second time
+            xp.display_st()
+
+        """
+
+        from . import streamlit_helpers  # pylint: disable=cyclic-import
+
+        if not streamlit_helpers._StreamlitHelpers.is_running_within_streamlit():
+            raise RuntimeError(r"""`experiment.frozen_copy` is only meant to be used within streamlit""")
+        return streamlit_helpers.ExperimentFrozenCopy(json.dumps(self._asdict()), key=key)  # type: ignore
 
     def to_html(self, file: tp.Optional[tp.Union[Path, str, tp.IO[str]]] = None, **kwargs: tp.Any) -> str:
         """
