@@ -260,6 +260,8 @@ jobs:
           command: |
             . venv/bin/activate
             pytest hiplot --durations=10
+            hiplot --help
+            hiplot-render --help
 
   npm-build:
     docker:
@@ -520,6 +522,8 @@ jobs:
           command: |
             . ./venv_hiplot/Scripts/activate
             pytest hiplot
+            hiplot --help
+            hiplot-render --help
 
 workflows:
   version: 2
