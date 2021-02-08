@@ -117,8 +117,6 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">tp</span>
 
-<span class="kn">from</span> <span class="nn">.render</span> <span class="kn">import</span> <span class="n">make_experiment_standalone_page</span><span class="p">,</span> <span class="n">html_inlinize</span>
-
 <span class="n">DisplayableType</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 
 
@@ -438,6 +436,8 @@
 <span class="sd">        :param file: Path/handle to a file to write (optional)</span>
 <span class="sd">        :returns: A standalone HTML code to display this Experiment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">.render</span> <span class="kn">import</span> <span class="n">make_experiment_standalone_page</span><span class="p">,</span> <span class="n">html_inlinize</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
         <span class="n">html</span> <span class="o">=</span> <span class="n">make_experiment_standalone_page</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
