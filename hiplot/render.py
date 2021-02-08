@@ -2,12 +2,15 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-
+import sys
+import argparse
 import uuid
 import base64
 import json
 from typing import Any, Dict
 from pathlib import Path
+
+from . import fetchers
 
 
 def escapejs(val: Any) -> str:
@@ -86,3 +89,21 @@ def make_experiment_standalone_page(options: Dict[str, Any]) -> str:
         Object.assign(options, eval('(' + {escapejs(json.dumps(hiplot_options))} + ')'));
         """)
     return index_html
+
+
+def hiplot_render_main() -> int:
+    parser = argparse.ArgumentParser(prog="HiPlot", description="Render an HiPlot experiment to HTML or CSV in the standard output")
+    parser.add_argument("experiment_uri", type=str)
+    parser.add_argument("--format", default='html', choices=['csv', 'html'], help="File format")
+    parser.add_argument("fetchers", nargs="*", type=str, help="Additional fetchers to use")
+    args = parser.parse_args()
+
+    exp = fetchers.load_xp_with_fetchers(fetchers.get_fetchers(args.fetchers), args.experiment_uri)
+    exp.validate()
+    if args.format == 'csv':
+        exp.to_csv(sys.stdout)
+    elif args.format == 'html':
+        exp.to_html(sys.stdout)
+    else:
+        assert False, args.format
+    return 0

@@ -12,8 +12,6 @@ from collections import defaultdict
 from pathlib import Path
 import typing as tp
 
-from .render import make_experiment_standalone_page, html_inlinize
-
 DisplayableType = tp.Union[bool, int, float, str]
 
 
@@ -333,6 +331,8 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
         :param file: Path/handle to a file to write (optional)
         :returns: A standalone HTML code to display this Experiment.
         """
+        from .render import make_experiment_standalone_page, html_inlinize
+
         self.validate()
         html = make_experiment_standalone_page(options={
             **kwargs,
