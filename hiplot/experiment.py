@@ -12,6 +12,9 @@ from collections import defaultdict
 from pathlib import Path
 import typing as tp
 
+if tp.TYPE_CHECKING:
+    import pandas as pd
+
 DisplayableType = tp.Union[bool, int, float, str]
 
 
@@ -453,7 +456,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             return Experiment.from_iterable(csv.DictReader(file))
 
     @staticmethod
-    def from_dataframe(dataframe: tp.Any) -> "Experiment":  # No type hint to avoid having pandas as an additional dependency
+    def from_dataframe(dataframe: "pd.DataFrame") -> "Experiment":  # No type hint to avoid having pandas as an additional dependency
         """
         Creates a HiPlot experiment from a pandas DataFrame.
 
@@ -473,7 +476,13 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
                 dataframe['uid'] = dataframe['uid'].astype(str)
                 dataframe['from_uid'] = dataframe['from_uid'].astype(str)
 
-        return Experiment.from_iterable(dataframe.to_dict(orient='records'))
+        experiment = Experiment.from_iterable(dataframe.to_dict(orient='records'))
+
+        # Restore columns order
+        experiment.display_data(Displays.PARALLEL_PLOT)['order'] = list(dataframe.columns)
+        experiment.display_data(Displays.TABLE)['order'] = list(dataframe.columns)
+
+        return experiment
 
     @staticmethod
     def merge(xp_dict: tp.Dict[str, "Experiment"]) -> "Experiment":

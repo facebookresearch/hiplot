@@ -151,7 +151,9 @@ def demo_customize() -> hip.Experiment:
         # Don't display `uid` and `from_uid` columns to the user
         'hide': ['uid', 'from_uid'],
         # In the table, order rows by default
-        'order_by': [['pct_success', 'desc']]
+        'order_by': [['pct_success', 'desc']],
+        # Specify the order for columns
+        'order': ['time'],  # Put column time first on the left
     })
 
     # Provide configuration for the XY graph
