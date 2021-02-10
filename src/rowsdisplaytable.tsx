@@ -47,6 +47,9 @@ export interface TableDisplayData {
     // Default ordering of the rows in the table.
     // To order by `loss` for instance, set it to [['loss', 'desc']]
     order_by: Array<[string /* column name */, string /* "asc" or "desc" */]>;
+
+    // Ordering of the columns
+    order?: Array<string>;
 };
 // DISPLAYS_DATA_DOC_END
 
@@ -79,7 +82,7 @@ export class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisp
             return;
         }
         const dom = $(this.table_ref.current);
-        this.ordered_cols = ['', 'uid'];
+        this.ordered_cols = ['uid'];
         const me = this;
         $.each(this.props.params_def, function(k: string, def) {
             if (k == 'uid') {
@@ -87,6 +90,22 @@ export class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisp
             }
             me.ordered_cols.push(k);
         });
+        if (me.props.order) {
+            const columnOrderScore = function(col: string) {
+                const index = me.props.order.indexOf(col);
+                if (index == -1) {
+                    return me.props.order.length;
+                }
+                return index;
+            }
+            me.ordered_cols.sort(function(a, b) {
+                // Return negative if `a` comes first
+                return columnOrderScore(a) - columnOrderScore(b);
+            });
+        }
+        me.ordered_cols.unshift('');
+        const uidColIndex = me.ordered_cols.indexOf('uid');
+
         dom.empty();
         var columns: Array<{[k: string]: any}> = this.ordered_cols.map(function(x) {
             const pd = me.props.params_def[x];
@@ -110,7 +129,7 @@ export class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisp
             if (!me.dt) {
                 return '';
             }
-            const individualUidColIdx = me.dt.colReorder.order().indexOf(1);
+            const individualUidColIdx = me.dt.colReorder.order().indexOf(uidColIndex);
             const color = me.props.get_color_for_row(me.props.dp_lookup[row[individualUidColIdx]], 1.0);
             return `<span class="${style.colorBlock}" style="background-color: ${color}" />`;
         };
@@ -167,7 +186,7 @@ export class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisp
                 }
                 const rowIdx = me.dt.cell(this).index().row;
                 const row = me.dt.row(rowIdx);
-                const individualUidColIdx = me.dt.colReorder.order().indexOf(1);
+                const individualUidColIdx = me.dt.colReorder.order().indexOf(uidColIndex);
 
                 dom.find(`.table-primary`).removeClass("table-primary");
                 $(row.nodes()).addClass("table-primary");
