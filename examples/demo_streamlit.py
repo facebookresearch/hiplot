@@ -16,7 +16,8 @@ data = [{'uid': 'a', 'dropout': 0.1, 'lr': 0.001, 'loss': 10.0, 'optimizer': 'SG
         {'uid': 'c', 'dropout': 0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam', 'x': x3}]
 xp = hip.Experiment.from_iterable(data)
 
-# Display with `display_st` instead of `display`
-ret_val = xp.display_st(ret="selected_uids", key="hip")
+# Instead of calling directly `.display()`
+# just convert it to a streamlit component with `.to_streamlit()` before
+ret_val = xp.to_streamlit(ret="selected_uids", key="hip").display()
 
 st.markdown("hiplot returned " + json.dumps(ret_val))

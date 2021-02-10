@@ -19,11 +19,11 @@ Displaying an :class:`hiplot.Experiment`
 -----------------------------------------
 
 Displaying an HiPlot experiment in Streamlit is very similar to how you would do it in a Jupyter notebook, except that you should call
-:meth:`hiplot.Experiment.display_st` instead of :meth:`hiplot.Experiment.display`.
+:meth:`hiplot.Experiment.to_streamlit` before calling :meth:`hiplot.Experiment.display`.
 
 
 
-.. note:: :meth:`hiplot.Experiment.display_st` has a ``key`` parameter, that can
+.. note:: :meth:`hiplot.Experiment.to_streamlit` has a ``key`` parameter, that can
     be used to assign your component a fixed identity if you want to change its
     arguments over time and not have it be re-created.
 
@@ -43,7 +43,7 @@ Displaying an HiPlot experiment in Streamlit is very similar to how you would do
 HiPlot component return values
 -----------------------------------
 
-HiPlot is highly interactive, and there are multiple values/information that can be returned, depending on what the user provides for the parameter ``ret`` in :meth:`hiplot.Experiment.display_st`
+HiPlot is highly interactive, and there are multiple values/information that can be returned, depending on what the user provides for the parameter ``ret`` in :meth:`hiplot.Experiment.to_streamlit`
 
 - ``ret="filtered_uids"``: returns a list of uid for filtered datapoints. Filtered datapoints change when the user clicks on *Keep* or *Exclude* buttons.
 - ``ret="selected_uids"``: returns a list of uid for selected datapoints. Selected datapoints correspond to currently visible points (for example when slicing in the parallel plot) - it's a subset of filtered datapoints.
@@ -54,9 +54,9 @@ HiPlot is highly interactive, and there are multiple values/information that can
 .. code-block:: python
 
 
-    xp.display_st(key="hip1")  # Does not return anything
-    filtered_uids = xp.display_st(ret="filtered_uids", key="hip2")
-    filtered_uids, selected_uids = xp.display_st(ret=["filtered_uids", "selected_uids"], key="hip3")
+    xp.to_streamlit(key="hip1").display()  # Does not return anything
+    filtered_uids = xp.to_streamlit(ret="filtered_uids", key="hip2").display()
+    filtered_uids, selected_uids = xp.to_streamlit(ret=["filtered_uids", "selected_uids"], key="hip3").display()
 
 
 

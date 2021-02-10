@@ -12,6 +12,9 @@ from collections import defaultdict
 from pathlib import Path
 import typing as tp
 
+if tp.TYPE_CHECKING:
+    from .streamlit_helpers import ExperimentStreamlitComponent
+
 DisplayableType = tp.Union[bool, int, float, str]
 
 
@@ -264,6 +267,8 @@ It appears that you are trying to create a HiPlot visualization in Streamlit: yo
         """
         Displays an experiment in a Streamlit app - see :ref:`tutoStreamlit`
 
+        This function can be pretty slow, see :ref:`tutoStreamlitCache` to learn how to make it faster.
+
         :param key: Unique key for the streamlit component. It is strongly recommended to give some unique string.
         :param ret: Specify what HiPlot should return.
         :returns: Return value depends on ``ret``
@@ -277,26 +282,19 @@ It appears that you are trying to create a HiPlot visualization in Streamlit: yo
             brush_extents, selected_uids = exp.display_st(key="hiplot3", ret=["brush_extents", "selected_uids"])
 
         """
-        from .streamlit_helpers import _StreamlitHelpers  # pylint: disable=cyclic-import
-
-        if not _StreamlitHelpers.is_running_within_streamlit():
-            if _is_running_ipython():
-                raise RuntimeError(r"""`experiment.display_st` can only be called in a streamlit script.
-It appears that you are trying to create a HiPlot visualization in ipython: you should use `display` instead of `display_st`""")
-            raise RuntimeError(r"""`experiment.display_st` can only be called in a streamlit script.
-To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_page = experiment.to_html()`""")
-        return _StreamlitHelpers.create_instance_wrapper(exp=self, ret=ret, key=key)
+        return self.to_streamlit(ret=ret, key=key).display()
 
     # pylint: enable=function-redefined
 
-    def frozen_copy(self, key: str) -> "Experiment":
+    def to_streamlit(self, key: tp.Optional[str] = None, ret: tp.Union[str, tp.List[str], None] = None) -> "ExperimentStreamlitComponent":
         """
         Streamlit only:
         creates a copy of the Experiment that you can cache,
         which only exposes the `display_st` method - see :ref:`tutoStreamlitCache`
 
         :param key: Unique key for the streamlit component.
-        :returns: A frozen copy of this Experiment
+        :param ret: Specify what HiPlot should return.
+        :returns: A `component` object that be rendered with `component.display()`
 
         :Example:
 
@@ -309,19 +307,23 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             def get_experiment():
                 # Create your hiplot experiment as usual
                 big_exp = hip.Experiment.from_iterable(...)
-                # ... and cache its frozen copy
-                return big_exp.frozen_copy(key="hipl")
+                # ... and cache the component
+                return big_exp.to_streamlit(key="hipl", ret=["brush_extents", "selected_uids"])
 
-            xp = get_experiment() # This will be cached the second time
-            xp.display_st()
+            exp = get_experiment() # This will be cached the second time
+            brush_extents, selected_uids = exp.display()
 
         """
 
         from . import streamlit_helpers  # pylint: disable=cyclic-import
 
         if not streamlit_helpers._StreamlitHelpers.is_running_within_streamlit():
-            raise RuntimeError(r"""`experiment.frozen_copy` is only meant to be used within streamlit""")
-        return streamlit_helpers.ExperimentFrozenCopy(json.dumps(self._asdict()), key=key)  # type: ignore
+            if _is_running_ipython():
+                raise RuntimeError(r"""`experiment.to_streamlit` can only be called in a streamlit script.
+It appears that you are trying to create a HiPlot visualization in ipython: you should use `display` instead of `to_streamlit`""")
+            raise RuntimeError(r"""`experiment.to_streamlit` can only be called in a streamlit script.
+To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_page = experiment.to_html()`""")
+        return streamlit_helpers.ExperimentStreamlitComponent(self, key=key, ret=ret)
 
     def to_html(self, file: tp.Optional[tp.Union[Path, str, tp.IO[str]]] = None, **kwargs: tp.Any) -> str:
         """

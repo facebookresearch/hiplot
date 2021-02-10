@@ -17,9 +17,9 @@ def get_experiment():
     big_exp = hiplot.fetchers_demo.demo(1000)
     # EXPERIMENTAL: Reduces bandwidth at first load
     big_exp._compress = True
-    # ... and cache its frozen copy with `@st.cache`
-    return big_exp.frozen_copy(key="hipl")
+    # ... convert it to streamlit and cache that (`@st.cache` decorator)
+    return big_exp.to_streamlit(key="hiplot")
 
 
 xp = get_experiment()  # This will be cached the second time
-xp.display_st()
+xp.display()
