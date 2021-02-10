@@ -4,6 +4,7 @@
 
 import typing as tp
 import json
+import uuid
 import warnings
 from pathlib import Path
 
@@ -22,9 +23,9 @@ class _StreamlitHelpers:
         return bool(st._is_running_with_streamlit)
 
     @classmethod
-    def create_component(cls) -> None:
+    def create_component(cls) -> tp.Optional[tp.Callable[..., tp.Any]]:
         if cls.component is not None:
-            return
+            return cls.component
         import streamlit as st
         try:
             import streamlit.components.v1 as components
@@ -39,72 +40,75 @@ If you did not install hiplot using official channels (pip, conda...), maybe you
 See https://facebookresearch.github.io/hiplot/contributing.html#building-javascript-bundle
 """
         cls.component = components.declare_component("hiplot", path=str(built_path))
+        return cls.component
 
-    @classmethod
-    def create_instance_wrapper(
-            cls,
-            exp: tp.Union[Experiment, str],
-            ret: tp.Union[str, tp.List[str], None] = None,
-            key: tp.Optional[str] = None
-    ) -> tp.Any:
-        cls.create_component()
-        possible_returns = ['selected_uids', 'filtered_uids', 'brush_extents']
+
+class ExperimentStreamlitComponent:
+    def __init__(self, experiment: Experiment, key: tp.Optional[str], ret: tp.Union[str, tp.List[str], None]) -> None:
         if key is None:
             warnings.warn(r"""Creating a HiPlot component with key=None will make refreshes slower.
-Please use `experiment.display_st(..., key=\"some_unique_key\")`""")
-        ret_type_for_js = ret if isinstance(ret, list) else []
-        if isinstance(ret, str):
-            ret_type_for_js = [ret]
-        for r in ret_type_for_js:
-            assert r in possible_returns, f"Unknown return type {r}. Possible values: {','.join(possible_returns)}"
-        assert cls.component is not None
-        exp_str = exp if isinstance(exp, str) else json.dumps(exp._asdict())
-        js_ret = cls.component(experiment=exp_str, ret=ret_type_for_js, key=key)  # pylint: disable=not-callable
+Please use `experiment.to_streamlit(..., key=\"some_unique_key\")`""")
+            key = f"hiplot_autogen_{str(uuid.uuid4())}"
+        self._exp_json = json.dumps(experiment._asdict())
+        self._key = key
+        self._ret = ret
+        self._js_default_ret = tuple(self.get_default_return_for(experiment, ret=r) for r in self.js_ret_spec)
 
-        if js_ret is None:
-            js_ret = [None] * len(ret_type_for_js)
+    @property
+    def js_ret_spec(self) -> tp.List[str]:
+        if self._ret is None:
+            return []
+        elif isinstance(self._ret, str):
+            return [self._ret]
+        assert isinstance(self._ret, (tuple, list)), \
+            "HiPlot: Invalid return type specification. Should be `None`, a string, a list or a tuple."
+        return list(self._ret)
 
-        for idx, r in enumerate(ret_type_for_js):
-            if js_ret[idx] is not None:
-                continue
-            # Use default value
-            if r in ['selected_uids', 'filtered_uids']:
-                assert not isinstance(exp, str)
-                js_ret[idx] = [dp.uid for dp in exp.datapoints]
-            if r == 'brush_extents':
-                js_ret[idx] = []
-
+    @classmethod
+    def get_default_return(cls, experiment: Experiment, ret: tp.Union[str, tp.List[str], None]) -> tp.Any:
         if ret is None:
             return None
-        if isinstance(ret, str):
-            return js_ret[0]
-        return js_ret
+        elif isinstance(ret, str):
+            return cls.get_default_return_for(experiment, ret)
+        assert isinstance(ret, (tuple, list)), "HiPlot: Invalid return type specification. Should be `None`, a string, a list or a tuple."
+        return tuple(
+            cls.get_default_return(experiment, r) for r in ret
+        )
 
+    @staticmethod
+    def get_default_return_for(experiment: Experiment, ret: str) -> tp.Any:
+        if ret == 'brush_extents':
+            return ()
+        elif ret in ['selected_uids', 'filtered_uids']:
+            return tuple(dp.uid for dp in experiment.datapoints)
+        else:
+            raise RuntimeError(f"HiPlot: Unknown return type \"{ret}\"")
 
-class ExperimentFrozenCopy:
-    def __init__(self, exp_json: str, key: str) -> None:
-        self._exp_json = exp_json
-        self._key = key
-
-    def display_st(self, *, ret: tp.Union[str, tp.List[str], None] = None, key: tp.Optional[str] = None) -> None:
-        if ret is not None:
-            raise RuntimeError(f"""Return values (requested "{ret}") are not implemented for frozen Experiment""")
-        if key is not None and key != self._key:
-            raise RuntimeError(f"""Provided key "{key}" differs from the one given in the "frozen_copy" call ({self._key}).
-You don't need to provide the key argument to "display_st" in a frozen Experiment, because you specified it already.""")
+    def display(self) -> tp.Any:
         if not _StreamlitHelpers.is_running_within_streamlit():
             if _is_running_ipython():
                 raise RuntimeError(r"""`experiment.display_st` can only be called in a streamlit script.
 It appears that you are trying to create a HiPlot visualization in ipython: you should use `display` instead of `display_st`""")
             raise RuntimeError(r"""`experiment.display_st` can only be called in a streamlit script.
 To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_page = experiment.to_html()`""")
-        return _StreamlitHelpers.create_instance_wrapper(exp=self._exp_json, key=self._key)  # type: ignore
 
-    def __getattr__(self, attr: str) -> None:
-        raise AttributeError(
-            f"""Can't access attribute "{attr}" in frozen copy of `Experiment`. The only method available is "display_st".""")
+        component = _StreamlitHelpers.create_component()
 
-    def __setattr__(self, attr: str, val: tp.Any) -> None:
-        if attr in ["_exp_json", "_key"]:
-            return super().__setattr__(attr, val)
-        raise AttributeError(f"""Can't set attribute "{attr}" in frozen copy of `Experiment`. The only method available is "display_st".""")
+        js_ret = component(experiment=self._exp_json, ret=self.js_ret_spec, key=self._key)  # type: ignore
+
+        if js_ret is None:
+            js_ret = self._js_default_ret
+        assert len(self._js_default_ret) == len(
+            js_ret), f"JS returned {len(js_ret)} fields, expected {len(self._js_default_ret)} (ret={self._ret})"
+
+        for idx in range(len(self.js_ret_spec)):
+            if js_ret[idx] is not None:
+                continue
+            # Use default value
+            js_ret = self._js_default_ret[idx]
+
+        if not js_ret:
+            return None
+        if isinstance(self._ret, str):
+            return js_ret[0]
+        return js_ret

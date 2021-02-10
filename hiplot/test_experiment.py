@@ -134,21 +134,26 @@ def test_doc() -> None:
 @contextmanager
 def patch_streamlit() -> tp.Iterator[None]:
     with patch("hiplot.streamlit_helpers._StreamlitHelpers.is_running_within_streamlit", lambda: True):
-        with patch("hiplot.streamlit_helpers._StreamlitHelpers.create_component"):
+        with patch("hiplot.streamlit_helpers._StreamlitHelpers.create_component", lambda: (lambda experiment, ret, key: None)):
             with patch("hiplot.streamlit_helpers._StreamlitHelpers.component"):
                 yield
 
 
-def test_frozen_copy() -> None:
+def test_to_streamlit() -> None:
     exp = hip.fetchers.load_demo("demo")
     with patch_streamlit():
-        frozen_copy = exp.frozen_copy(key="k")
-        with pytest.raises(AttributeError):
-            frozen_copy.to_html()
-        with pytest.raises(AttributeError):
-            frozen_copy.datapoints = []
-        frozen_copy.display_st()
-        with pytest.raises(RuntimeError):
-            frozen_copy.display_st(key="0")
-        with pytest.raises(RuntimeError):
-            frozen_copy.display_st(ret="selected_uids")
+        exp_st = exp.to_streamlit(key="k")
+        ret = exp_st.display()
+        assert ret is None
+
+        exp_st = exp.to_streamlit(key="k2", ret="selected_uids")
+        selected_uids = exp_st.display()
+        assert selected_uids
+        assert isinstance(selected_uids[0], str)
+
+        exp_st = exp.to_streamlit(key="k3", ret=["selected_uids", "filtered_uids"])
+        selected_uids, filtered_uids = exp_st.display()
+        assert selected_uids
+        assert filtered_uids
+        assert isinstance(selected_uids[0], str)
+        assert isinstance(filtered_uids[0], str)
