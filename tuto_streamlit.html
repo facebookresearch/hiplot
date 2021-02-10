@@ -126,10 +126,10 @@
 <div class="section" id="displaying-an-hiplot-experiment">
 <h2>Displaying an <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a><a class="headerlink" href="#displaying-an-hiplot-experiment" title="Permalink to this headline">¶</a></h2>
 <p>Displaying an HiPlot experiment in Streamlit is very similar to how you would do it in a Jupyter notebook, except that you should call
-<a class="reference internal" href="py_reference.html#hiplot.Experiment.display_st" title="hiplot.Experiment.display_st"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_st()</span></code></a> instead of <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display()</span></code></a>.</p>
+<a class="reference internal" href="py_reference.html#hiplot.Experiment.to_streamlit" title="hiplot.Experiment.to_streamlit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.to_streamlit()</span></code></a> before calling <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display()</span></code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="py_reference.html#hiplot.Experiment.display_st" title="hiplot.Experiment.display_st"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_st()</span></code></a> has a <code class="docutils literal notranslate"><span class="pre">key</span></code> parameter, that can
+<p><a class="reference internal" href="py_reference.html#hiplot.Experiment.to_streamlit" title="hiplot.Experiment.to_streamlit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.to_streamlit()</span></code></a> has a <code class="docutils literal notranslate"><span class="pre">key</span></code> parameter, that can
 be used to assign your component a fixed identity if you want to change its
 arguments over time and not have it be re-created.</p>
 <p>If you remove the <code class="docutils literal notranslate"><span class="pre">key</span></code> argument in the example below, then the component will
@@ -147,8 +147,9 @@ be re-created whenever any slider changes, and lose its current configuration/st
         <span class="p">{</span><span class="s1">&#39;uid&#39;</span><span class="p">:</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span> <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s1">&#39;Adam&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x3</span><span class="p">}]</span>
 <span class="n">xp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-<span class="c1"># Display with `display_st` instead of `display`</span>
-<span class="n">ret_val</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="s2">&quot;selected_uids&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip&quot;</span><span class="p">)</span>
+<span class="c1"># Instead of calling directly `.display()`</span>
+<span class="c1"># just convert it to a streamlit component with `.to_streamlit()` before</span>
+<span class="n">ret_val</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">to_streamlit</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="s2">&quot;selected_uids&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 
 <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;hiplot returned &quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ret_val</span><span class="p">))</span>
 </pre></div>
@@ -159,16 +160,16 @@ be re-created whenever any slider changes, and lose its current configuration/st
 </div>
 <div class="section" id="hiplot-component-return-values">
 <span id="tutostreamlitretvalues"></span><h2>HiPlot component return values<a class="headerlink" href="#hiplot-component-return-values" title="Permalink to this headline">¶</a></h2>
-<p>HiPlot is highly interactive, and there are multiple values/information that can be returned, depending on what the user provides for the parameter <code class="docutils literal notranslate"><span class="pre">ret</span></code> in <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_st" title="hiplot.Experiment.display_st"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_st()</span></code></a></p>
+<p>HiPlot is highly interactive, and there are multiple values/information that can be returned, depending on what the user provides for the parameter <code class="docutils literal notranslate"><span class="pre">ret</span></code> in <a class="reference internal" href="py_reference.html#hiplot.Experiment.to_streamlit" title="hiplot.Experiment.to_streamlit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.to_streamlit()</span></code></a></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ret=&quot;filtered_uids&quot;</span></code>: returns a list of uid for filtered datapoints. Filtered datapoints change when the user clicks on <em>Keep</em> or <em>Exclude</em> buttons.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ret=&quot;selected_uids&quot;</span></code>: returns a list of uid for selected datapoints. Selected datapoints correspond to currently visible points (for example when slicing in the parallel plot) - it’s a subset of filtered datapoints.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ret=&quot;brush_extents&quot;</span></code>: returns information about current brush extents in the parallel plot</p></li>
 <li><p>or a list containing several values above. In that case, HiPlot will return a list with the return values</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip1&quot;</span><span class="p">)</span>  <span class="c1"># Does not return anything</span>
-<span class="n">filtered_uids</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="s2">&quot;filtered_uids&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip2&quot;</span><span class="p">)</span>
-<span class="n">filtered_uids</span><span class="p">,</span> <span class="n">selected_uids</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;filtered_uids&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_uids&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip3&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xp</span><span class="o">.</span><span class="n">to_streamlit</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>  <span class="c1"># Does not return anything</span>
+<span class="n">filtered_uids</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">to_streamlit</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="s2">&quot;filtered_uids&quot;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip2&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+<span class="n">filtered_uids</span><span class="p">,</span> <span class="n">selected_uids</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">to_streamlit</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;filtered_uids&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_uids&quot;</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;hip3&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -192,12 +193,12 @@ be re-created whenever any slider changes, and lose its current configuration/st
     <span class="n">big_exp</span> <span class="o">=</span> <span class="n">hiplot</span><span class="o">.</span><span class="n">fetchers_demo</span><span class="o">.</span><span class="n">demo</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
     <span class="c1"># EXPERIMENTAL: Reduces bandwidth at first load</span>
     <span class="n">big_exp</span><span class="o">.</span><span class="n">_compress</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="c1"># ... and cache its frozen copy with `@st.cache`</span>
-    <span class="k">return</span> <span class="n">big_exp</span><span class="o">.</span><span class="n">frozen_copy</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hipl&quot;</span><span class="p">)</span>
+    <span class="c1"># ... convert it to streamlit and cache that (`@st.cache` decorator)</span>
+    <span class="k">return</span> <span class="n">big_exp</span><span class="o">.</span><span class="n">to_streamlit</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hiplot&quot;</span><span class="p">)</span>
 
 
 <span class="n">xp</span> <span class="o">=</span> <span class="n">get_experiment</span><span class="p">()</span>  <span class="c1"># This will be cached the second time</span>
-<span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">()</span>
+<span class="n">xp</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

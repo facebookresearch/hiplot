@@ -117,6 +117,9 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">tp</span>
 
+<span class="k">if</span> <span class="n">tp</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.streamlit_helpers</span> <span class="kn">import</span> <span class="n">ExperimentStreamlitComponent</span>
+
 <span class="n">DisplayableType</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 
 
@@ -369,6 +372,8 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays an experiment in a Streamlit app - see :ref:`tutoStreamlit`</span>
 
+<span class="sd">        This function can be pretty slow, see :ref:`tutoStreamlitCache` to learn how to make it faster.</span>
+
 <span class="sd">        :param key: Unique key for the streamlit component. It is strongly recommended to give some unique string.</span>
 <span class="sd">        :param ret: Specify what HiPlot should return.</span>
 <span class="sd">        :returns: Return value depends on ``ret``</span>
@@ -382,26 +387,19 @@
 <span class="sd">            brush_extents, selected_uids = exp.display_st(key=&quot;hiplot3&quot;, ret=[&quot;brush_extents&quot;, &quot;selected_uids&quot;])</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">.streamlit_helpers</span> <span class="kn">import</span> <span class="n">_StreamlitHelpers</span>  <span class="c1"># pylint: disable=cyclic-import</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_StreamlitHelpers</span><span class="o">.</span><span class="n">is_running_within_streamlit</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">_is_running_ipython</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;`experiment.display_st` can only be called in a streamlit script.</span>
-<span class="s2">It appears that you are trying to create a HiPlot visualization in ipython: you should use `display` instead of `display_st`&quot;&quot;&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;`experiment.display_st` can only be called in a streamlit script.</span>
-<span class="s2">To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_page = experiment.to_html()`&quot;&quot;&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_StreamlitHelpers</span><span class="o">.</span><span class="n">create_instance_wrapper</span><span class="p">(</span><span class="n">exp</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">ret</span><span class="o">=</span><span class="n">ret</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_streamlit</span><span class="p">(</span><span class="n">ret</span><span class="o">=</span><span class="n">ret</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span></div>
 
     <span class="c1"># pylint: enable=function-redefined</span>
 
-<div class="viewcode-block" id="Experiment.frozen_copy"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.frozen_copy">[docs]</a>    <span class="k">def</span> <span class="nf">frozen_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
+<div class="viewcode-block" id="Experiment.to_streamlit"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.to_streamlit">[docs]</a>    <span class="k">def</span> <span class="nf">to_streamlit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ret</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentStreamlitComponent&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Streamlit only:</span>
 <span class="sd">        creates a copy of the Experiment that you can cache,</span>
 <span class="sd">        which only exposes the `display_st` method - see :ref:`tutoStreamlitCache`</span>
 
 <span class="sd">        :param key: Unique key for the streamlit component.</span>
-<span class="sd">        :returns: A frozen copy of this Experiment</span>
+<span class="sd">        :param ret: Specify what HiPlot should return.</span>
+<span class="sd">        :returns: A `component` object that be rendered with `component.display()`</span>
 
 <span class="sd">        :Example:</span>
 
@@ -414,19 +412,23 @@
 <span class="sd">            def get_experiment():</span>
 <span class="sd">                # Create your hiplot experiment as usual</span>
 <span class="sd">                big_exp = hip.Experiment.from_iterable(...)</span>
-<span class="sd">                # ... and cache its frozen copy</span>
-<span class="sd">                return big_exp.frozen_copy(key=&quot;hipl&quot;)</span>
+<span class="sd">                # ... and cache the component</span>
+<span class="sd">                return big_exp.to_streamlit(key=&quot;hipl&quot;, ret=[&quot;brush_extents&quot;, &quot;selected_uids&quot;])</span>
 
-<span class="sd">            xp = get_experiment() # This will be cached the second time</span>
-<span class="sd">            xp.display_st()</span>
+<span class="sd">            exp = get_experiment() # This will be cached the second time</span>
+<span class="sd">            brush_extents, selected_uids = exp.display()</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">streamlit_helpers</span>  <span class="c1"># pylint: disable=cyclic-import</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">streamlit_helpers</span><span class="o">.</span><span class="n">_StreamlitHelpers</span><span class="o">.</span><span class="n">is_running_within_streamlit</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;`experiment.frozen_copy` is only meant to be used within streamlit&quot;&quot;&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">streamlit_helpers</span><span class="o">.</span><span class="n">ExperimentFrozenCopy</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()),</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
+            <span class="k">if</span> <span class="n">_is_running_ipython</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;`experiment.to_streamlit` can only be called in a streamlit script.</span>
+<span class="s2">It appears that you are trying to create a HiPlot visualization in ipython: you should use `display` instead of `to_streamlit`&quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;`experiment.to_streamlit` can only be called in a streamlit script.</span>
+<span class="s2">To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_page = experiment.to_html()`&quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">streamlit_helpers</span><span class="o">.</span><span class="n">ExperimentStreamlitComponent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">ret</span><span class="o">=</span><span class="n">ret</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Experiment.to_html"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>

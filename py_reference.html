@@ -188,6 +188,7 @@ See <a class="reference internal" href="tuto_notebook.html#tutonotebookdisplayed
 <dt>
 <code class="sig-name descname">display_st</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'None'</span></em><span class="sig-paren">)</span> &#x2192; None</dt>
 <dd><p>Displays an experiment in a Streamlit app - see <a class="reference internal" href="tuto_streamlit.html#tutostreamlit"><span class="std std-ref">HiPlot component for Streamlit</span></a></p>
+<p>This function can be pretty slow, see <a class="reference internal" href="tuto_streamlit.html#tutostreamlitcache"><span class="std std-ref">Improving performance with streamlit caching (EXPERIMENTAL)</span></a> to learn how to make it faster.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -250,38 +251,6 @@ This is the easiest way to generate an <cite>hiplot.Experiment</cite> object.</p
 </dd></dl>
 
 <dl class="py method">
-<dt id="hiplot.Experiment.frozen_copy">
-<code class="sig-name descname">frozen_copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.frozen_copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.frozen_copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Streamlit only:
-creates a copy of the Experiment that you can cache,
-which only exposes the <cite>display_st</cite> method - see <a class="reference internal" href="tuto_streamlit.html#tutostreamlitcache"><span class="std std-ref">Improving performance with streamlit caching (EXPERIMENTAL)</span></a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> – Unique key for the streamlit component.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A frozen copy of this Experiment</p>
-</dd>
-<dt class="field-odd">Example</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
-<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
-
-<span class="nd">@st</span><span class="o">.</span><span class="n">cache</span>
-<span class="k">def</span> <span class="nf">get_experiment</span><span class="p">():</span>
-    <span class="c1"># Create your hiplot experiment as usual</span>
-    <span class="n">big_exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-    <span class="c1"># ... and cache its frozen copy</span>
-    <span class="k">return</span> <span class="n">big_exp</span><span class="o">.</span><span class="n">frozen_copy</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hipl&quot;</span><span class="p">)</span>
-
-<span class="n">xp</span> <span class="o">=</span> <span class="n">get_experiment</span><span class="p">()</span> <span class="c1"># This will be cached the second time</span>
-<span class="n">xp</span><span class="o">.</span><span class="n">display_st</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt id="hiplot.Experiment.merge">
 <em class="property">static </em><code class="sig-name descname">merge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xp_dict</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>hiplot.experiment.Experiment<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; hiplot.experiment.Experiment<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.merge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge several experiments into a single one</p>
@@ -318,6 +287,41 @@ without any dependency to HiPlot server or static files.</p>
 <dd class="field-even"><p>A standalone HTML code to display this Experiment.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="hiplot.Experiment.to_streamlit">
+<code class="sig-name descname">to_streamlit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ret</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; ExperimentStreamlitComponent<a class="reference internal" href="_modules/hiplot/experiment.html#Experiment.to_streamlit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hiplot.Experiment.to_streamlit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Streamlit only:
+creates a copy of the Experiment that you can cache,
+which only exposes the <cite>display_st</cite> method - see <a class="reference internal" href="tuto_streamlit.html#tutostreamlitcache"><span class="std std-ref">Improving performance with streamlit caching (EXPERIMENTAL)</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – Unique key for the streamlit component.</p></li>
+<li><p><strong>ret</strong> – Specify what HiPlot should return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <cite>component</cite> object that be rendered with <cite>component.display()</cite></p>
+</dd>
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="kn">import</span> <span class="nn">hiplot</span> <span class="k">as</span> <span class="nn">hip</span>
+
+<span class="nd">@st</span><span class="o">.</span><span class="n">cache</span>
+<span class="k">def</span> <span class="nf">get_experiment</span><span class="p">():</span>
+    <span class="c1"># Create your hiplot experiment as usual</span>
+    <span class="n">big_exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="c1"># ... and cache the component</span>
+    <span class="k">return</span> <span class="n">big_exp</span><span class="o">.</span><span class="n">to_streamlit</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;hipl&quot;</span><span class="p">,</span> <span class="n">ret</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;brush_extents&quot;</span><span class="p">,</span> <span class="s2">&quot;selected_uids&quot;</span><span class="p">])</span>
+
+<span class="n">exp</span> <span class="o">=</span> <span class="n">get_experiment</span><span class="p">()</span> <span class="c1"># This will be cached the second time</span>
+<span class="n">brush_extents</span><span class="p">,</span> <span class="n">selected_uids</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
