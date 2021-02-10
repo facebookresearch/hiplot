@@ -7,6 +7,7 @@ interface RowsDisplayTableState {
 export interface TableDisplayData {
     hide: Array<string>;
     order_by: Array<[string, string]>;
+    order?: Array<string>;
 }
 interface TablePluginProps extends HiPlotPluginData, TableDisplayData {
 }

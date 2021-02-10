@@ -58557,7 +58557,7 @@ var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
             return;
         }
         var dom = jquery_default()(this.table_ref.current);
-        this.ordered_cols = ['', 'uid'];
+        this.ordered_cols = ['uid'];
         var me = this;
         jquery_default.a.each(this.props.params_def, function (k, def) {
             if (k == 'uid') {
@@ -58565,6 +58565,21 @@ var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
             }
             me.ordered_cols.push(k);
         });
+        if (me.props.order) {
+            var columnOrderScore_1 = function (col) {
+                var index = me.props.order.indexOf(col);
+                if (index == -1) {
+                    return me.props.order.length;
+                }
+                return index;
+            };
+            me.ordered_cols.sort(function (a, b) {
+                // Return negative if `a` comes first
+                return columnOrderScore_1(a) - columnOrderScore_1(b);
+            });
+        }
+        me.ordered_cols.unshift('');
+        var uidColIndex = me.ordered_cols.indexOf('uid');
         dom.empty();
         var columns = this.ordered_cols.map(function (x) {
             var pd = me.props.params_def[x];
@@ -58585,7 +58600,7 @@ var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
             if (!me.dt) {
                 return '';
             }
-            var individualUidColIdx = me.dt.colReorder.order().indexOf(1);
+            var individualUidColIdx = me.dt.colReorder.order().indexOf(uidColIndex);
             var color = me.props.get_color_for_row(me.props.dp_lookup[row[individualUidColIdx]], 1.0);
             return "<span class=\"" + hiplot_default.a.colorBlock + "\" style=\"background-color: " + color + "\" />";
         };
@@ -58641,7 +58656,7 @@ var rowsdisplaytable_RowsDisplayTable = /** @class */ (function (_super) {
             }
             var rowIdx = me.dt.cell(this).index().row;
             var row = me.dt.row(rowIdx);
-            var individualUidColIdx = me.dt.colReorder.order().indexOf(1);
+            var individualUidColIdx = me.dt.colReorder.order().indexOf(uidColIndex);
             dom.find(".table-primary").removeClass("table-primary");
             jquery_default()(row.nodes()).addClass("table-primary");
             me.props.setHighlighted([me.props.dp_lookup[row.data()[individualUidColIdx]]]);

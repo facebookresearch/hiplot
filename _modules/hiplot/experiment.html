@@ -118,6 +118,7 @@
 <span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">tp</span>
 
 <span class="k">if</span> <span class="n">tp</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
     <span class="kn">from</span> <span class="nn">.streamlit_helpers</span> <span class="kn">import</span> <span class="n">ExperimentStreamlitComponent</span>
 
 <span class="n">DisplayableType</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
@@ -560,7 +561,7 @@
             <span class="k">return</span> <span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">file</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Experiment.from_dataframe"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.from_dataframe">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>  <span class="c1"># No type hint to avoid having pandas as an additional dependency</span>
+    <span class="k">def</span> <span class="nf">from_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">:</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>  <span class="c1"># No type hint to avoid having pandas as an additional dependency</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a HiPlot experiment from a pandas DataFrame.</span>
 
@@ -580,7 +581,13 @@
                 <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
                 <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;from_uid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;from_uid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">))</span></div>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">))</span>
+
+        <span class="c1"># Restore columns order</span>
+        <span class="n">experiment</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">Displays</span><span class="o">.</span><span class="n">PARALLEL_PLOT</span><span class="p">)[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">experiment</span><span class="o">.</span><span class="n">display_data</span><span class="p">(</span><span class="n">Displays</span><span class="o">.</span><span class="n">TABLE</span><span class="p">)[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">experiment</span></div>
 
 <div class="viewcode-block" id="Experiment.merge"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.merge">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="n">xp_dict</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
