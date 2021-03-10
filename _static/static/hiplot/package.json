@@ -1,6 +1,6 @@
 {
   "name": "hiplot",
-  "version": "0.1.23-rc.121",
+  "version": "0.1.24-rc.122",
   "description": "HiPlot is a lightweight interactive visualization tool to help AI researchers discover correlations and patterns in high-dimensional data using parallel plots and other graphical ways to represent information.",
   "main": "dist/hiplot.lib.js",
   "types": "dist/hiplot.d.ts",
