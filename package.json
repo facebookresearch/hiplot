@@ -6,7 +6,7 @@
   "types": "dist/hiplot.d.ts",
   "dependencies": {},
   "peerDependencies": {
-    "react": "^16.12.0"
+    "react": ">=16"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
@@ -43,8 +43,8 @@
     "postcss-loader": "^3.0.0",
     "postcss-rem-to-pixel": "^4.1.2",
     "randomcolor": "^0.5.4",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-dropzone": "^11.2.4",
     "sass-loader": "^8.0.2",
     "seedrandom": "^3.0.5",
