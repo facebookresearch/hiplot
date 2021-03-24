@@ -106,29 +106,47 @@ function compute_val2color(pd) {
     }
 }
 ;
-function parseColorMap(name, description) {
-    if (!name) {
+function parseColorMap(full_name, description) {
+    if (!full_name) {
         // @ts-ignore
         return d3.interpolateTurbo;
     }
+    var parts = full_name.split("#");
+    var name = parts[0];
     var fn = d3[name];
     if (!fn) {
         throw new Error("Invalid color map " + name + " " + description);
     }
-    if (name.startsWith("interpolate")) {
-        return fn; // This is a function
-    }
     // Assume this is a scheme (eg array of colors)
-    if (typeof fn[0] != "string") {
-        fn = fn[fn.length - 1];
+    if (!name.startsWith("interpolate")) {
+        if (typeof fn[0] != "string") {
+            fn = fn[fn.length - 1];
+        }
+        var array_of_colors_1 = fn;
+        fn = function (colr) {
+            return array_of_colors_1[Math.max(0, Math.min(array_of_colors_1.length - 1, Math.floor(colr * array_of_colors_1.length)))];
+        };
     }
-    return function (colr) {
-        return fn[Math.max(0, Math.min(fn.length - 1, Math.floor(colr * fn.length)))];
-    };
+    // Apply modifiers
+    if (parts.length > 1) {
+        parts[1].split(",").forEach(function (modifier_name) {
+            if (modifier_name == "inverse") {
+                var orig_fn_1 = fn;
+                fn = function (colr) {
+                    return orig_fn_1(-colr);
+                };
+            }
+        });
+    }
+    return fn;
 }
 function getColorMap(pd, defaultColorMap) {
     if (pd.colormap) {
-        return parseColorMap(pd.colormap, "for column " + pd.name);
+        if (pd.__colormap) {
+            return pd.__colormap;
+        }
+        pd.__colormap = parseColorMap(pd.colormap, "for column " + pd.name);
+        return pd.__colormap;
     }
     return parseColorMap(defaultColorMap, "(global default color map)");
 }

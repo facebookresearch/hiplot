@@ -444,13 +444,13 @@ and values contain information about the current brush.</p>
 <dl class="py attribute">
 <dt id="hiplot.ValueType.NUMERIC_LOG">
 <code class="sig-name descname"><span class="pre">NUMERIC_LOG</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'numericlog'</span></em><a class="headerlink" href="#hiplot.ValueType.NUMERIC_LOG" title="Permalink to this definition">¶</a></dt>
-<dd><p>Same as NUMERIC, displayed on a logarithmic scale.</p>
+<dd><p>Same as <a class="reference internal" href="#hiplot.ValueType.NUMERIC" title="hiplot.ValueType.NUMERIC"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hiplot.ValueType.NUMERIC</span></code></a>, displayed on a logarithmic scale.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="hiplot.ValueType.NUMERIC_PERCENTILE">
 <code class="sig-name descname"><span class="pre">NUMERIC_PERCENTILE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'numericpercentile'</span></em><a class="headerlink" href="#hiplot.ValueType.NUMERIC_PERCENTILE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Same as NUMERIC, displayed on a percentile scale.</p>
+<dd><p>Same as <a class="reference internal" href="#hiplot.ValueType.NUMERIC" title="hiplot.ValueType.NUMERIC"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hiplot.ValueType.NUMERIC</span></code></a>, displayed on a percentile scale.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -468,10 +468,12 @@ and values contain information about the current brush.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>type</strong> – Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, …</p></li>
+<li><p><strong>type</strong> – See <a class="reference internal" href="#hiplot.ValueType" title="hiplot.ValueType"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hiplot.ValueType</span></code></a> for possible values</p></li>
 <li><p><strong>colors</strong> – Categorical scales only: mapping from value to HTML color (either <code class="code docutils literal notranslate"><span class="pre">rgb(R,</span> <span class="pre">G,</span> <span class="pre">B)</span></code> or <code class="code docutils literal notranslate"><span class="pre">#RRGGBB</span></code>)</p></li>
 <li><p><strong>colormap</strong> – Numerical scales only: <a class="reference external" href="https://github.com/d3/d3-scale-chromatic">D3 scale</a> to use
-(default scale is <a class="reference external" href="https://github.com/d3/d3-scale-chromatic#interpolateTurbo">interpolateTurbo</a>)</p></li>
+(default scale is <a class="reference external" href="https://github.com/d3/d3-scale-chromatic#interpolateTurbo">interpolateTurbo</a>).
+For example <code class="code docutils literal notranslate"><span class="pre">&quot;interpolateSinebow&quot;</span></code>.
+To inverse the colormap, append <cite>#inverse</cite> to the name (eg <code class="code docutils literal notranslate"><span class="pre">&quot;interpolateSinebow#inverse&quot;</span></code>)</p></li>
 <li><p><strong>label_css</strong> – Space-separated bootstrap CSS classes to apply on the label when supported</p></li>
 </ul>
 </dd>
@@ -480,7 +482,7 @@ and values contain information about the current brush.</p>
 <dl class="py method">
 <dt id="hiplot.ValueDef.force_range">
 <code class="sig-name descname"><span class="pre">force_range</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimum</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">hiplot.experiment.ValueDef</span><a class="reference internal" href="_modules/hiplot/experiment.html#ValueDef.force_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#hiplot.ValueDef.force_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Enforces the range of the column</p>
+<dd><p>Enforces the range of the column.</p>
 </dd></dl>
 
 </dd></dl>

@@ -11,6 +11,7 @@ export interface ParamDef extends HiPlotValueDef {
         [k: string]: any;
     };
     __colorscale?: any;
+    __colormap?: any;
 }
 export declare function is_special_numeric(x: any): boolean;
 export declare function create_d3_scale_without_outliers(pd: ParamDef): any;

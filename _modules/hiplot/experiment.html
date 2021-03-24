@@ -151,8 +151,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">CATEGORICAL</span> <span class="o">=</span> <span class="s1">&#39;categorical&#39;</span>                 <span class="c1">#: Categorical value</span>
     <span class="n">NUMERIC</span> <span class="o">=</span> <span class="s1">&#39;numeric&#39;</span>                         <span class="c1">#: Numeric value on a linear scale. Supports integers, floats, NaNs and inf</span>
-    <span class="n">NUMERIC_LOG</span> <span class="o">=</span> <span class="s1">&#39;numericlog&#39;</span>                  <span class="c1">#: Same as NUMERIC, displayed on a logarithmic scale.</span>
-    <span class="n">NUMERIC_PERCENTILE</span> <span class="o">=</span> <span class="s1">&#39;numericpercentile&#39;</span>    <span class="c1">#: Same as NUMERIC, displayed on a percentile scale.</span>
+    <span class="n">NUMERIC_LOG</span> <span class="o">=</span> <span class="s1">&#39;numericlog&#39;</span>                  <span class="c1">#: Same as :attr:`hiplot.ValueType.NUMERIC`, displayed on a logarithmic scale.</span>
+    <span class="n">NUMERIC_PERCENTILE</span> <span class="o">=</span> <span class="s1">&#39;numericpercentile&#39;</span>    <span class="c1">#: Same as :attr:`hiplot.ValueType.NUMERIC`, displayed on a percentile scale.</span>
     <span class="n">TIMESTAMP</span> <span class="o">=</span> <span class="s1">&#39;timestamp&#39;</span>                     <span class="c1">#: Timestamps in seconds (only integers)</span></div>
 
 
@@ -167,11 +167,22 @@
 
 
 <span class="k">def</span> <span class="nf">validate_colormap</span><span class="p">(</span><span class="n">cm</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">VALID_MODIFIERS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;inverse&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">cm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">cm_modifiers</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">cm_modifiers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># We don&#39;t want `d3.interpolateTurbo` but just `interpolateTurbo`</span>
     <span class="k">if</span> <span class="n">cm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cm</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;interpolate&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cm</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;scheme&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;Invalid colormap `</span><span class="si">{</span><span class="n">cm</span><span class="si">}</span><span class="s2">`.</span>
 <span class="s2">Valid colormaps can be found in https://github.com/d3/d3-scale-chromatic. Their name starts with `interpolate` or `scheme`.</span>
 <span class="s2">Examples include `interpolateSpectral`, `interpolateViridis`, `interpolateSinebow`, `schemeYlOrRd`</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cm_modifiers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="n">cm_modifiers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">modifier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VALID_MODIFIERS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;Invalid colormap modifier `</span><span class="si">{</span><span class="n">modifier</span><span class="si">}</span><span class="s2">`.</span>
+<span class="s2">Valid colormaps modifiers: </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VALID_MODIFIERS</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
 
@@ -179,10 +190,12 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides a custom type, color, etc.. for a column.</span>
 
-<span class="sd">    :ivar type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...</span>
+<span class="sd">    :ivar type: See :attr:`hiplot.ValueType` for possible values</span>
 <span class="sd">    :ivar colors: Categorical scales only: mapping from value to HTML color (either :code:`rgb(R, G, B)` or :code:`#RRGGBB`)</span>
 <span class="sd">    :ivar colormap: Numerical scales only: `D3 scale &lt;https://github.com/d3/d3-scale-chromatic&gt;`_ to use</span>
-<span class="sd">        (default scale is `interpolateTurbo &lt;https://github.com/d3/d3-scale-chromatic#interpolateTurbo&gt;`_)</span>
+<span class="sd">        (default scale is `interpolateTurbo &lt;https://github.com/d3/d3-scale-chromatic#interpolateTurbo&gt;`_).</span>
+<span class="sd">        For example :code:`&quot;interpolateSinebow&quot;`.</span>
+<span class="sd">        To inverse the colormap, append `#inverse` to the name (eg :code:`&quot;interpolateSinebow#inverse&quot;`)</span>
 <span class="sd">    :ivar label_css: Space-separated bootstrap CSS classes to apply on the label when supported</span>
 
 <span class="sd">    See :attr:`hiplot.Experiment.parameters_definition`</span>
@@ -204,7 +217,7 @@
 
 <div class="viewcode-block" id="ValueDef.force_range"><a class="viewcode-back" href="../../py_reference.html#hiplot.ValueDef.force_range">[docs]</a>    <span class="k">def</span> <span class="nf">force_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimum</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">maximum</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ValueDef&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Enforces the range of the column</span>
+<span class="sd">        Enforces the range of the column.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">force_value_min</span> <span class="o">=</span> <span class="n">minimum</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">force_value_max</span> <span class="o">=</span> <span class="n">maximum</span>
