@@ -46,8 +46,8 @@ class ValueType(Enum):
     """
     CATEGORICAL = 'categorical'                 #: Categorical value
     NUMERIC = 'numeric'                         #: Numeric value on a linear scale. Supports integers, floats, NaNs and inf
-    NUMERIC_LOG = 'numericlog'                  #: Same as NUMERIC, displayed on a logarithmic scale.
-    NUMERIC_PERCENTILE = 'numericpercentile'    #: Same as NUMERIC, displayed on a percentile scale.
+    NUMERIC_LOG = 'numericlog'                  #: Same as :attr:`hiplot.ValueType.NUMERIC`, displayed on a logarithmic scale.
+    NUMERIC_PERCENTILE = 'numericpercentile'    #: Same as :attr:`hiplot.ValueType.NUMERIC`, displayed on a percentile scale.
     TIMESTAMP = 'timestamp'                     #: Timestamps in seconds (only integers)
 
 
@@ -62,11 +62,22 @@ class Displays:
 
 
 def validate_colormap(cm: tp.Optional[str]) -> None:
+    VALID_MODIFIERS = ["inverse"]
+    if cm is None:
+        return
+    cm_modifiers = cm.split('#', 1)
+    cm = cm_modifiers[0]
     # We don't want `d3.interpolateTurbo` but just `interpolateTurbo`
     if cm is not None and not cm.startswith("interpolate") and not cm.startswith("scheme"):
         raise ExperimentValidationError(f"""Invalid colormap `{cm}`.
 Valid colormaps can be found in https://github.com/d3/d3-scale-chromatic. Their name starts with `interpolate` or `scheme`.
 Examples include `interpolateSpectral`, `interpolateViridis`, `interpolateSinebow`, `schemeYlOrRd`
+""")
+    if len(cm_modifiers) > 1:
+        for modifier in cm_modifiers[1].split(","):
+            if modifier not in VALID_MODIFIERS:
+                raise ExperimentValidationError(f"""Invalid colormap modifier `{modifier}`.
+Valid colormaps modifiers: {','.join(VALID_MODIFIERS)}
 """)
 
 
@@ -74,10 +85,12 @@ class ValueDef(_DictSerializable):
     """
     Provides a custom type, color, etc.. for a column.
 
-    :ivar type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
+    :ivar type: See :attr:`hiplot.ValueType` for possible values
     :ivar colors: Categorical scales only: mapping from value to HTML color (either :code:`rgb(R, G, B)` or :code:`#RRGGBB`)
     :ivar colormap: Numerical scales only: `D3 scale <https://github.com/d3/d3-scale-chromatic>`_ to use
-        (default scale is `interpolateTurbo <https://github.com/d3/d3-scale-chromatic#interpolateTurbo>`_)
+        (default scale is `interpolateTurbo <https://github.com/d3/d3-scale-chromatic#interpolateTurbo>`_).
+        For example :code:`"interpolateSinebow"`.
+        To inverse the colormap, append `#inverse` to the name (eg :code:`"interpolateSinebow#inverse"`)
     :ivar label_css: Space-separated bootstrap CSS classes to apply on the label when supported
 
     See :attr:`hiplot.Experiment.parameters_definition`
@@ -99,7 +112,7 @@ class ValueDef(_DictSerializable):
 
     def force_range(self, minimum: float, maximum: float) -> "ValueDef":
         """
-        Enforces the range of the column
+        Enforces the range of the column.
         """
         self.force_value_min = minimum
         self.force_value_max = maximum
