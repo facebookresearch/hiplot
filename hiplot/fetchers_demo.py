@@ -220,6 +220,13 @@ def demo_color_scheme_accent() -> hip.Experiment:
     return exp
 
 
+def demo_color_interpolate_inverse() -> hip.Experiment:
+    exp = demo_color_interpolate()
+    assert exp.parameters_definition["exp_metric"].colormap is not None
+    exp.parameters_definition["exp_metric"].colormap += "#inverse"
+    return exp
+
+
 def demo_axis_style() -> hip.Experiment:
     data: t.List[t.Dict[str, t.Any]] = []
     for _ in range(100):
@@ -297,4 +304,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_customize": demo_customize,
     "demo_long_names": demo_long_names,
     "demo_force_constant_pplot": demo_force_constant_pplot,
+    "demo_color_interpolate_inverse": demo_color_interpolate_inverse,
 }
