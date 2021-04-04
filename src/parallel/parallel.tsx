@@ -532,7 +532,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
             type: range.type,
             min: min,
             max: max,
-            include_infnans: range.include_infnans,
+            include_infnans: true,
           }
         };
       });
