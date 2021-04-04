@@ -90,6 +90,7 @@ export function scale_pixels_range(scale: any, extents: [number, number]): Scale
                 "type": scale.hip_type,
                 "brush_extents_normalized": normalized,
                 "values": domain.slice(firstIdx, lastIdx),
+                "include_infnans": true,
             };
         case ParamType.NUMERIC:
         case ParamType.NUMERICLOG:
