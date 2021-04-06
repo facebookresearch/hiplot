@@ -284,6 +284,17 @@ def demo_force_constant_pplot() -> hip.Experiment:
     return exp
 
 
+def demo_first_value_nan() -> hip.Experiment:
+    return hip.Experiment.from_iterable([
+        {'a': None},
+        {'a': 2},
+        {'a': 2.1},
+        {'a': 2.2},
+        {'a': 5.5},
+        {'a': math.nan},
+    ])
+
+
 README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_big": lambda: demo(1000),
@@ -305,4 +316,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_long_names": demo_long_names,
     "demo_force_constant_pplot": demo_force_constant_pplot,
     "demo_color_interpolate_inverse": demo_color_interpolate_inverse,
+    "demo_first_value_nan": demo_first_value_nan,
 }

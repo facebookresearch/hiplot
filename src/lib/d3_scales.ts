@@ -7,6 +7,13 @@
 
 import * as d3 from "d3";
 
+
+const special_numerics = ['inf', '-inf', Infinity, -Infinity, null, '', 'NaN'];
+export function is_special_numeric(x) {
+    return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
+};
+
+
 interface d3ScalePercentile {
     (x: any): any;
     domain_idx: any;
@@ -187,10 +194,7 @@ export function scale_add_outliers(scale_orig) {
       var range = scale_orig.range();
       var origin_scale_size = compute_origin_scale_size();
       var ascending_order = range[0] < range[1];
-      if (Number.isNaN(x) || x == Infinity || x == -Infinity || x == "inf" || x == "-inf" || x === null) {
-          if (ascending_order) {
-              return range[1];
-          }
+      if (is_special_numeric(x)) {
           return range[1];
       }
       var scale_orig_value_rel = (scale_orig(x) - range[0]) / (range[1] - range[0]) * origin_scale_size;

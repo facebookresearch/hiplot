@@ -11,7 +11,7 @@ import colorsys from "colorsys";
 
 import { PersistentState } from "./lib/savedstate";
 import { categoricalColorScheme } from "./lib/categoricalcolors";
-import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers } from "./lib/d3_scales";
+import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers, is_special_numeric } from "./lib/d3_scales";
 import { Datapoint, ParamType, HiPlotValueDef } from "./types";
 
 
@@ -27,12 +27,6 @@ export interface ParamDef extends HiPlotValueDef {
     __colormap?: any;
 }
 
-const special_numerics = ['inf', '-inf', Infinity, -Infinity, null];
-export function is_special_numeric(x) {
-    return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
-};
-
-
 export function create_d3_scale_without_outliers(pd: ParamDef): any {
     var dv = pd.distinct_values;
     if (pd.type == ParamType.CATEGORICAL) {
@@ -44,6 +38,8 @@ export function create_d3_scale_without_outliers(pd: ParamDef): any {
         }
         var min = pd.force_value_min != null ? pd.force_value_min : dv[0];
         var max = pd.force_value_max != null ? pd.force_value_max : dv[dv.length - 1];
+        console.assert(!isNaN(min));
+        console.assert(!isNaN(max));
         if (pd.type == ParamType.TIMESTAMP) {
             return d3_scale_timestamp().domain([min, max]);
         }
