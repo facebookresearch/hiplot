@@ -10,16 +10,9 @@ commands:
       - run:
           name: Set package name and version
           command: |
-            if [ -z ${CIRCLE_TAG+x} ];
-            then
-              echo "export HIPLOT_PACKAGE=hiplot-master" >> $BASH_ENV
-              echo "export HIPLOT_VERSION=`git describe --tags --abbrev=0 master`.`git rev-list --count HEAD`" >> $BASH_ENV
-            else
-              echo "export HIPLOT_PACKAGE=hiplot" >> $BASH_ENV
-              echo "export HIPLOT_VERSION=$CIRCLE_TAG" >> $BASH_ENV
-            fi
+            python3 .circleci/generate_version.py >> $BASH_ENV
             source $BASH_ENV
-            echo "Building $HIPLOT_PACKAGE version $HIPLOT_VERSION"
+            echo "Building hiplot version $HIPLOT_VERSION_PYPI (pypi) / $HIPLOT_VERSION_NPM (npm)"
   attach_built_js:
     steps:
       - attach_workspace:
@@ -161,15 +154,11 @@ commands:
       - run:
           name: Set version and package name
           command: |
-            echo "Building $HIPLOT_PACKAGE $HIPLOT_VERSION"
+            echo "Building hiplot $HIPLOT_VERSION_PYPI"
 
             # Set version
             git show HEAD:hiplot/pkginfo.py | sed '/Set by CI/d' > hiplot/pkginfo.py
-            echo "version = \"$HIPLOT_VERSION\"" >> hiplot/pkginfo.py
-            echo "package_name = \"$HIPLOT_PACKAGE\"" >> hiplot/pkginfo.py
-
-            # Set package name
-            git show HEAD:setup.py | sed "s/name=\"hiplot\"/name=\"$HIPLOT_PACKAGE\"/" > setup.py
+            echo "version = \"$HIPLOT_VERSION_PYPI\"" >> hiplot/pkginfo.py
       - run:
           name: create packages
           command: |
@@ -238,7 +227,7 @@ jobs:
   mypy_pytest:
     docker:
       # specify the version you desire here
-      - image: circleci/python:3.6
+      - image: circleci/python:3.7
 
     working_directory: ~/repo
 
@@ -271,6 +260,8 @@ jobs:
           command: |
             . venv/bin/activate
             pytest hiplot --durations=10
+            hiplot --help
+            hiplot-render --help
 
   npm-build:
     docker:
@@ -297,7 +288,7 @@ jobs:
           name: Gather NPM package files
           command: |
             mkdir -p npm-package/hiplot
-            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"${HIPLOT_VERSION}\",/" package.json
+            sed -i "s/\"version\": \"0.0.0\",/\"version\": \"${HIPLOT_VERSION_NPM}\",/" package.json
             cp -r package.json tsconfig.json webpack.config.js README.md LICENSE src npm-build/dist npm-package/hiplot
             rm -rf npm-package/hiplot/dist/hiplot-*  # Leftover from setup.py
       - store_artifacts:
@@ -513,23 +504,6 @@ jobs:
     steps:
       - pypi_deploy
 
-  pypi-build-master:
-    docker:
-      - image: python:3.7
-    steps:
-      - checkout
-      - set_package_name_and_version
-      - run:
-          name: Set package name and version
-          command: echo 'export HIPLOT_PACKAGE="hiplot-master"' >> $BASH_ENV
-      - pip_build
-
-  pypi-deploy-master:
-    docker:
-      - image: python:3.7
-    steps:
-      - pypi_deploy
-
   win-tests:
     executor:
       name: win/default
@@ -548,6 +522,8 @@ jobs:
           command: |
             . ./venv_hiplot/Scripts/activate
             pytest hiplot
+            hiplot --help
+            hiplot-render --help
 
 workflows:
   version: 2
@@ -612,42 +588,18 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - pypi-build:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
       - docs-deploy:
           requires:
             - docs-build
           filters:
             branches:
               only: master
-      - pypi-build:
-          requires:
-            - npm-build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /.*/
-      - pypi-build-master:
-          requires:
-            - npm-build
-          filters:
-            tags:
-              only: /.*/
-      - pypi-deploy-master:
-          requires:
-            - pypi-build-master
-            - npm-build
-            - docs-build
-            - browser-jupyter-chrome
-            - browser-jupyter-chrome-dev
-            - browser-teste2e-chrome
-            - browser-render-chrome
-            - browser-render-firefox
-            - mypy_pytest
-          filters:
-            branches:
-              only: master
-            tags: # Re-deploy master build when pushing a new tag
-              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.post(0|[1-9][0-9]*))?/
       - pypi-deploy:
           requires:
             - pypi-build
@@ -661,10 +613,10 @@ workflows:
             - browser-render-firefox
             - mypy_pytest
           filters:
-            tags:
-              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.post(0|[1-9][0-9]*))?/
             branches:
-              ignore: /.*/
+              only: master
+            tags: # Re-deploy master build when pushing a new tag
+              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.post(0|[1-9][0-9]*))?/
       - npm-deploy:
           requires:
             - pypi-build
@@ -678,7 +630,7 @@ workflows:
             - browser-render-firefox
             - mypy_pytest
           filters:
-            tags:
-              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)/
             branches:
-              ignore: /.*/
+              only: master
+            tags: # Re-deploy master build when pushing a new tag
+              only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.post(0|[1-9][0-9]*))?/

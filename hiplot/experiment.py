@@ -12,8 +12,9 @@ from collections import defaultdict
 from pathlib import Path
 import typing as tp
 
-from .render import make_experiment_standalone_page, html_inlinize
-
+if tp.TYPE_CHECKING:
+    import pandas as pd
+    from .streamlit_helpers import ExperimentStreamlitComponent
 
 DisplayableType = tp.Union[bool, int, float, str]
 
@@ -45,8 +46,8 @@ class ValueType(Enum):
     """
     CATEGORICAL = 'categorical'                 #: Categorical value
     NUMERIC = 'numeric'                         #: Numeric value on a linear scale. Supports integers, floats, NaNs and inf
-    NUMERIC_LOG = 'numericlog'                  #: Same as NUMERIC, displayed on a logarithmic scale.
-    NUMERIC_PERCENTILE = 'numericpercentile'    #: Same as NUMERIC, displayed on a percentile scale.
+    NUMERIC_LOG = 'numericlog'                  #: Same as :attr:`hiplot.ValueType.NUMERIC`, displayed on a logarithmic scale.
+    NUMERIC_PERCENTILE = 'numericpercentile'    #: Same as :attr:`hiplot.ValueType.NUMERIC`, displayed on a percentile scale.
     TIMESTAMP = 'timestamp'                     #: Timestamps in seconds (only integers)
 
 
@@ -61,98 +62,35 @@ class Displays:
 
 
 def validate_colormap(cm: tp.Optional[str]) -> None:
+    VALID_MODIFIERS = ["inverse"]
+    if cm is None:
+        return
+    cm_modifiers = cm.split('#', 1)
+    cm = cm_modifiers[0]
     # We don't want `d3.interpolateTurbo` but just `interpolateTurbo`
     if cm is not None and not cm.startswith("interpolate") and not cm.startswith("scheme"):
         raise ExperimentValidationError(f"""Invalid colormap `{cm}`.
 Valid colormaps can be found in https://github.com/d3/d3-scale-chromatic. Their name starts with `interpolate` or `scheme`.
 Examples include `interpolateSpectral`, `interpolateViridis`, `interpolateSinebow`, `schemeYlOrRd`
 """)
-
-
-class _StreamlitHelpers:
-    component: tp.Optional[tp.Callable[..., tp.Any]] = None
-
-    @staticmethod
-    def is_running_within_streamlit() -> bool:
-        try:
-            import streamlit as st
-        except:  # pylint: disable=bare-except
-            return False
-        return bool(st._is_running_with_streamlit)
-
-    @classmethod
-    def create_component(cls) -> None:
-        if cls.component is not None:
-            return
-        import streamlit as st
-        try:
-            import streamlit.components.v1 as components
-        except ModuleNotFoundError as e:
-            raise RuntimeError(f'Your streamlit version ({st.__version__}) is too old and does not support components. Please update streamlit with `pip install -U streamlit`') from e
-        assert st._is_running_with_streamlit
-
-        built_path = (Path(__file__).parent / "static" / "built" / "streamlit_component").resolve()
-        assert (built_path / "index.html").is_file(), f"""HiPlot component does not appear to exist in {built_path}
-If you did not install hiplot using official channels (pip, conda...), maybe you forgot to build javascript files?
-See https://facebookresearch.github.io/hiplot/contributing.html#building-javascript-bundle
-"""
-        cls.component = components.declare_component("hiplot", path=str(built_path))
-
-    @classmethod
-    def create_instance_wrapper(
-            cls,
-            exp: "Experiment",
-            ret: tp.Union[str, tp.List[str], None] = None,
-            key: tp.Optional[str] = None
-    ) -> tp.Any:
-        cls.create_component()
-        possible_returns = ['selected_uids', 'filtered_uids', 'brush_extents']
-        if key is None:
-            warnings.warn(r"""Creating a HiPlot component with key=None will make refreshes slower.
-Please use `experiment.display_st(..., key=\"some_unique_key\")`""")
-        ret_type_for_js = ret if isinstance(ret, list) else []
-        if isinstance(ret, str):
-            ret_type_for_js = [ret]
-        for r in ret_type_for_js:
-            assert r in possible_returns, f"Unknown return type {r}. Possible values: {','.join(possible_returns)}"
-        assert cls.component is not None
-        js_ret = cls.component(experiment=json.dumps(exp._asdict()), ret=ret_type_for_js, key=key)  # pylint: disable=not-callable
-
-        if js_ret is None:
-            js_ret = [None] * len(ret_type_for_js)
-
-        for idx, r in enumerate(ret_type_for_js):
-            if js_ret[idx] is not None:
-                continue
-            # Use default value
-            if r in ['selected_uids', 'filtered_uids']:
-                js_ret[idx] = [dp.uid for dp in exp.datapoints]
-            if r == 'brush_extents':
-                js_ret[idx] = []
-
-        if ret is None:
-            return None
-        if isinstance(ret, str):
-            return js_ret[0]
-        return js_ret
-
-
-def _is_running_ipython() -> bool:
-    try:
-        get_ipython()  # type: ignore
-        return True
-    except NameError:
-        return False
+    if len(cm_modifiers) > 1:
+        for modifier in cm_modifiers[1].split(","):
+            if modifier not in VALID_MODIFIERS:
+                raise ExperimentValidationError(f"""Invalid colormap modifier `{modifier}`.
+Valid colormaps modifiers: {','.join(VALID_MODIFIERS)}
+""")
 
 
 class ValueDef(_DictSerializable):
     """
     Provides a custom type, color, etc.. for a column.
 
-    :ivar type: Possible values: ValueDef.CATEGORICAL, ValueDef.NUMERIC, ...
+    :ivar type: See :attr:`hiplot.ValueType` for possible values
     :ivar colors: Categorical scales only: mapping from value to HTML color (either :code:`rgb(R, G, B)` or :code:`#RRGGBB`)
     :ivar colormap: Numerical scales only: `D3 scale <https://github.com/d3/d3-scale-chromatic>`_ to use
-        (default scale is `interpolateTurbo <https://github.com/d3/d3-scale-chromatic#interpolateTurbo>`_)
+        (default scale is `interpolateTurbo <https://github.com/d3/d3-scale-chromatic#interpolateTurbo>`_).
+        For example :code:`"interpolateSinebow"`.
+        To inverse the colormap, append `#inverse` to the name (eg :code:`"interpolateSinebow#inverse"`)
     :ivar label_css: Space-separated bootstrap CSS classes to apply on the label when supported
 
     See :attr:`hiplot.Experiment.parameters_definition`
@@ -174,7 +112,7 @@ class ValueDef(_DictSerializable):
 
     def force_range(self, minimum: float, maximum: float) -> "ValueDef":
         """
-        Enforces the range of the column
+        Enforces the range of the column.
         """
         self.force_value_min = minimum
         self.force_value_max = maximum
@@ -237,6 +175,14 @@ class Datapoint(_DictSerializable):
                 raise ExperimentValidationError(f'Datapoint {self.uid} contains a value for "{reserved_kw}"')
 
 
+def _is_running_ipython() -> bool:
+    try:
+        get_ipython()  # type: ignore
+        return True
+    except NameError:
+        return False
+
+
 class Experiment(_DictSerializable):
     """
     Object that can be rendered by HiPlot. It essential contains a list of metrics, but also some options on how to render it.
@@ -267,6 +213,7 @@ class Experiment(_DictSerializable):
         self.colormap = colormap if colormap is not None else "interpolateTurbo"
         self.colorby: tp.Optional[str] = None
         self._display_data: tp.Dict[str, tp.Dict[str, tp.Any]] = {}
+        self._compress: bool = False
 
     def validate(self) -> "Experiment":
         """
@@ -305,6 +252,7 @@ class Experiment(_DictSerializable):
             - only implemented for Jupyter notebook.
             See :ref:`tutonotebookdisplayedexperiment`
         """
+        from .streamlit_helpers import _StreamlitHelpers  # pylint: disable=cyclic-import
         if not _is_running_ipython():
             if _StreamlitHelpers.is_running_within_streamlit():
                 raise RuntimeError(r"""`experiment.display` can only be called with ipython.
@@ -333,6 +281,8 @@ It appears that you are trying to create a HiPlot visualization in Streamlit: yo
         """
         Displays an experiment in a Streamlit app - see :ref:`tutoStreamlit`
 
+        This function can be pretty slow, see :ref:`tutoStreamlitCache` to learn how to make it faster.
+
         :param key: Unique key for the streamlit component. It is strongly recommended to give some unique string.
         :param ret: Specify what HiPlot should return.
         :returns: Return value depends on ``ret``
@@ -346,15 +296,48 @@ It appears that you are trying to create a HiPlot visualization in Streamlit: yo
             brush_extents, selected_uids = exp.display_st(key="hiplot3", ret=["brush_extents", "selected_uids"])
 
         """
-        if not _StreamlitHelpers.is_running_within_streamlit():
-            if _is_running_ipython():
-                raise RuntimeError(r"""`experiment.display_st` can only be called in a streamlit script.
-It appears that you are trying to create a HiPlot visualization in ipython: you should use `display` instead of `display_st`""")
-            raise RuntimeError(r"""`experiment.display_st` can only be called in a streamlit script.
-To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_page = experiment.to_html()`""")
-        return _StreamlitHelpers.create_instance_wrapper(exp=self, ret=ret, key=key)
+        return self.to_streamlit(ret=ret, key=key).display()
 
     # pylint: enable=function-redefined
+
+    def to_streamlit(self, key: tp.Optional[str] = None, ret: tp.Union[str, tp.List[str], None] = None) -> "ExperimentStreamlitComponent":
+        """
+        Streamlit only:
+        creates a copy of the Experiment that you can cache,
+        which only exposes the `display_st` method - see :ref:`tutoStreamlitCache`
+
+        :param key: Unique key for the streamlit component.
+        :param ret: Specify what HiPlot should return.
+        :returns: A `component` object that be rendered with `component.display()`
+
+        :Example:
+
+        .. code-block:: python
+
+            import streamlit as st
+            import hiplot as hip
+
+            @st.cache
+            def get_experiment():
+                # Create your hiplot experiment as usual
+                big_exp = hip.Experiment.from_iterable(...)
+                # ... and cache the component
+                return big_exp.to_streamlit(key="hipl", ret=["brush_extents", "selected_uids"])
+
+            exp = get_experiment() # This will be cached the second time
+            brush_extents, selected_uids = exp.display()
+
+        """
+
+        from . import streamlit_helpers  # pylint: disable=cyclic-import
+
+        if not streamlit_helpers._StreamlitHelpers.is_running_within_streamlit():
+            if _is_running_ipython():
+                raise RuntimeError(r"""`experiment.to_streamlit` can only be called in a streamlit script.
+It appears that you are trying to create a HiPlot visualization in ipython: you should use `display` instead of `to_streamlit`""")
+            raise RuntimeError(r"""`experiment.to_streamlit` can only be called in a streamlit script.
+To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_page = experiment.to_html()`""")
+        return streamlit_helpers.ExperimentStreamlitComponent(self, key=key, ret=ret)
 
     def to_html(self, file: tp.Optional[tp.Union[Path, str, tp.IO[str]]] = None, **kwargs: tp.Any) -> str:
         """
@@ -364,6 +347,8 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
         :param file: Path/handle to a file to write (optional)
         :returns: A standalone HTML code to display this Experiment.
         """
+        from .render import make_experiment_standalone_page, html_inlinize
+
         self.validate()
         html = make_experiment_standalone_page(options={
             **kwargs,
@@ -405,13 +390,18 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             })
 
     def _asdict(self) -> tp.Dict[str, tp.Any]:
-        return {
-            "datapoints": [d._asdict() for d in self.datapoints],
+        data: tp.Dict[str, tp.Any] = {
             "parameters_definition": {k: v._asdict() for k, v in self.parameters_definition.items()},
             "colormap": self.colormap,
             "colorby": self.colorby,
             "display_data": self._display_data,
         }
+        if self._compress:
+            from .compress import compress
+            data["datapoints_compressed"] = compress(self.datapoints)
+        else:
+            data["datapoints"] = [d._asdict() for d in self.datapoints]
+        return data
 
     def remove_missing_parents(self) -> "Experiment":
         """
@@ -479,7 +469,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             return Experiment.from_iterable(csv.DictReader(file))
 
     @staticmethod
-    def from_dataframe(dataframe: tp.Any) -> "Experiment":  # No type hint to avoid having pandas as an additional dependency
+    def from_dataframe(dataframe: "pd.DataFrame") -> "Experiment":  # No type hint to avoid having pandas as an additional dependency
         """
         Creates a HiPlot experiment from a pandas DataFrame.
 
@@ -491,15 +481,21 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             if dataframe['from_uid'].isnull().values.any():
 
                 # NaN values forces integer columns to become float, if uid is integer and from_uid is float, it crashes.
-                # The line below changes uid to match from_uid type (either float or string), since NaN cannot be integer. 
-                dataframe['uid']= dataframe['uid'].astype(dataframe['from_uid'].dtypes)
+                # The line below changes uid to match from_uid type (either float or string), since NaN cannot be integer.
+                dataframe['uid'] = dataframe['uid'].astype(dataframe['from_uid'].dtypes)
                 dataframe = dataframe.fillna({'from_uid': '', 'uid': ''})
 
                 # Replaces their dtypes accordingly to str, which is handled better with lesser errors with no change to functionality
-                dataframe['uid']= dataframe['uid'].astype(str)
-                dataframe['from_uid']= dataframe['from_uid'].astype(str)
+                dataframe['uid'] = dataframe['uid'].astype(str)
+                dataframe['from_uid'] = dataframe['from_uid'].astype(str)
 
-        return Experiment.from_iterable(dataframe.to_dict(orient='records'))
+        experiment = Experiment.from_iterable(dataframe.to_dict(orient='records'))
+
+        # Restore columns order
+        experiment.display_data(Displays.PARALLEL_PLOT)['order'] = list(dataframe.columns)
+        experiment.display_data(Displays.TABLE)['order'] = list(dataframe.columns)
+
+        return experiment
 
     @staticmethod
     def merge(xp_dict: tp.Dict[str, "Experiment"]) -> "Experiment":

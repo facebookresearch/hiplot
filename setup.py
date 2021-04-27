@@ -10,8 +10,9 @@ import sys
 import importlib.util
 from pathlib import Path
 from typing import Dict, List
-from setuptools import setup, find_packages
-from setuptools.command.install import install
+
+import setuptools
+from distutils.core import setup
 
 
 requirements: Dict[str, List[str]] = {}
@@ -35,18 +36,23 @@ def readme() -> str:
 
 
 setup(
-    name="hiplot",  # CI_PACKAGE_NAME: replaced by ci for hiplot-master
+    name="hiplot",
     version=version,
     description="High dimensional Interactive Plotting tool",
     long_description=readme(),
     long_description_content_type="text/markdown",
     url='https://github.com/facebookresearch/hiplot',
     author="Facebook AI Research",
-    packages=find_packages(),
+    packages=["hiplot"],
     install_requires=requirements["main"],
     extras_require={"dev": requirements["dev"]},
     package_data={"hiplot": ["py.typed", "static/*", "static/built/*", "static/built/streamlit_component/*", "templates/*"]},
     include_package_data=True,
-    scripts=['scripts/hiplot', 'scripts/hiplot-render'],
+    entry_points={
+        'console_scripts': [
+            'hiplot = hiplot.server:run_server_main',
+            'hiplot-render = hiplot.render:hiplot_render_main',
+        ]
+    },
     python_requires='>=3.6',
 )

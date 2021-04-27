@@ -16,11 +16,15 @@ def test_demos_ipython() -> None:
         print(k)
         v().display()
 
+
 @unittest.mock.patch('streamlit._is_running_with_streamlit', new=True, create=True)
 def test_demos_streamlit() -> None:
     for k, v in README_DEMOS.items():
         print(k)
-        v().display_st(ret='selected_uids', key=f'hiplot{k}')
+        v().display_st(key=f'hiplot{k}a')
+        v().display_st(ret='selected_uids', key=f'hiplot{k}b')
+        v().display_st(ret=['selected_uids'], key=f'hiplot{k}c')
+
 
 def test_index_html_valid() -> None:
     """

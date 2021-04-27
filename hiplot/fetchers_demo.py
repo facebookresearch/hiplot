@@ -151,7 +151,9 @@ def demo_customize() -> hip.Experiment:
         # Don't display `uid` and `from_uid` columns to the user
         'hide': ['uid', 'from_uid'],
         # In the table, order rows by default
-        'order_by': [['pct_success', 'desc']]
+        'order_by': [['pct_success', 'desc']],
+        # Specify the order for columns
+        'order': ['time'],  # Put column time first on the left
     })
 
     # Provide configuration for the XY graph
@@ -215,6 +217,13 @@ def demo_color_scheme_ylrd() -> hip.Experiment:
 def demo_color_scheme_accent() -> hip.Experiment:
     exp = demo()
     exp.parameters_definition["exp_metric"].colormap = "schemeAccent"
+    return exp
+
+
+def demo_color_interpolate_inverse() -> hip.Experiment:
+    exp = demo_color_interpolate()
+    assert exp.parameters_definition["exp_metric"].colormap is not None
+    exp.parameters_definition["exp_metric"].colormap += "#inverse"
     return exp
 
 
@@ -295,4 +304,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_customize": demo_customize,
     "demo_long_names": demo_long_names,
     "demo_force_constant_pplot": demo_force_constant_pplot,
+    "demo_color_interpolate_inverse": demo_color_interpolate_inverse,
 }
