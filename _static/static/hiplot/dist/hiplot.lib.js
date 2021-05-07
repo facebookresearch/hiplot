@@ -132,7 +132,7 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__0__;
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return nonEnumerableProps; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return MAX_ARRAY_INDEX; });
 // Current version.
-var VERSION = '1.12.0';
+var VERSION = '1.12.1';
 
 // Establish the root object, `window` (`self`) in the browser, `global`
 // on the server, or `this` in some virtual machines. We use `self`
@@ -55239,6 +55239,8 @@ function escapeChar(match) {
   return '\\' + escapes[match];
 }
 
+var bareIdentifier = /^\s*(\w|\$)+\s*$/;
+
 // JavaScript micro-templating, similar to John Resig's implementation.
 // Underscore templating handles arbitrary delimiters, preserves whitespace,
 // and correctly escapes quotes within interpolated code.
@@ -55274,8 +55276,14 @@ function template_template(text, settings, oldSettings) {
   });
   source += "';\n";
 
-  // If a variable is not specified, place data values in local scope.
-  if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+  var argument = settings.variable;
+  if (argument) {
+    if (!bareIdentifier.test(argument)) throw new Error(argument);
+  } else {
+    // If a variable is not specified, place data values in local scope.
+    source = 'with(obj||{}){\n' + source + '}\n';
+    argument = 'obj';
+  }
 
   source = "var __t,__p='',__j=Array.prototype.join," +
     "print=function(){__p+=__j.call(arguments,'');};\n" +
@@ -55283,7 +55291,7 @@ function template_template(text, settings, oldSettings) {
 
   var render;
   try {
-    render = new Function(settings.variable || 'obj', '_', source);
+    render = new Function(argument, '_', source);
   } catch (e) {
     e.source = source;
     throw e;
@@ -55294,7 +55302,6 @@ function template_template(text, settings, oldSettings) {
   };
 
   // Provide the compiled source as a convenience for precompilation.
-  var argument = settings.variable || 'obj';
   template.source = 'function(' + argument + '){\n' + source + '}';
 
   return template;
@@ -55554,29 +55561,34 @@ function throttle(func, wait, options) {
 // parameter. If `immediate` is passed, the argument function will be
 // triggered at the beginning of the sequence instead of at the end.
 function debounce(func, wait, immediate) {
-  var timeout, result;
+  var timeout, previous, args, result, context;
 
-  var later = function(context, args) {
-    timeout = null;
-    if (args) result = func.apply(context, args);
+  var later = function() {
+    var passed = modules_now() - previous;
+    if (wait > passed) {
+      timeout = setTimeout(later, wait - passed);
+    } else {
+      timeout = null;
+      if (!immediate) result = func.apply(context, args);
+      // This check is needed because `func` can recursively invoke `debounced`.
+      if (!timeout) args = context = null;
+    }
   };
 
-  var debounced = restArguments(function(args) {
-    if (timeout) clearTimeout(timeout);
-    if (immediate) {
-      var callNow = !timeout;
+  var debounced = restArguments(function(_args) {
+    context = this;
+    args = _args;
+    previous = modules_now();
+    if (!timeout) {
       timeout = setTimeout(later, wait);
-      if (callNow) result = func.apply(this, args);
-    } else {
-      timeout = modules_delay(later, wait, this, args);
+      if (immediate) result = func.apply(context, args);
     }
-
     return result;
   });
 
   debounced.cancel = function() {
     clearTimeout(timeout);
-    timeout = null;
+    timeout = args = context = null;
   };
 
   return debounced;
@@ -56553,7 +56565,7 @@ each_each(['concat', 'join', 'slice'], function(name) {
 // Named Exports
 // =============
 
-//     Underscore.js 1.12.0
+//     Underscore.js 1.12.1
 //     https://underscorejs.org
 //     (c) 2009-2020 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
