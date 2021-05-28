@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
@@ -16,9 +17,9 @@
   
     <title>NPM library (javascript) &#8212; HiPlot 0.1.24
  documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/guzzle.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -112,22 +113,22 @@
           
           <div class="document clearer body">
             
-  <div class="section" id="npm-library-javascript">
+  <section id="npm-library-javascript">
 <span id="tutojavascript"></span><h1>NPM library (javascript)<a class="headerlink" href="#npm-library-javascript" title="Permalink to this headline">¶</a></h1>
 <p>HiPlot is released as a React component in an <a class="reference external" href="https://www.npmjs.com/package/hiplot">NPM package</a>, and can be embeded in any javascript/React codebase.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The Javascript library API is very recent, subject to changes, and less used compared to the python API. Please report any bug or suggestion by creating a <a class="reference external" href="https://github.com/facebookresearch/hiplot/issues/new">github issue</a></p>
 </div>
-<div class="section" id="getting-started">
+<section id="getting-started">
 <h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
 <p>Download hiplot in your favorite package manager</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">npm</span> <span class="n">install</span> <span class="n">hiplot</span>  <span class="c1"># if using npm</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">yarn</span> <span class="n">add</span> <span class="n">hiplot</span> <span class="c1"># for yarn users</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="basic-example">
+</section>
+<section id="basic-example">
 <h2>Basic example<a class="headerlink" href="#basic-example" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">hip</span> <span class="k">from</span> <span class="s1">&#39;hiplot&#39;</span><span class="p">;</span>
 
@@ -142,8 +143,8 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<iframe src="./_static/examples_javascript/Basic/index.html" height="700px" width="100%"></iframe></div>
-<div class="section" id="customizing-hiplot-react-component">
+<iframe src="./_static/examples_javascript/Basic/index.html" height="700px" width="100%"></iframe></section>
+<section id="customizing-hiplot-react-component">
 <h2>Customizing HiPlot react component<a class="headerlink" href="#customizing-hiplot-react-component" title="Permalink to this headline">¶</a></h2>
 <p>There are two main ways to customize your HiPlot component:</p>
 <ul class="simple">
@@ -158,7 +159,7 @@
 </dl>
 </li>
 </ul>
-<div class="section" id="react-properties">
+<section id="react-properties">
 <h3>React properties<a class="headerlink" href="#react-properties" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">export</span> <span class="kd">interface</span> <span class="nx">HiPlotProps</span> <span class="p">{</span>
     <span class="c1">// Experiment to be displayed. Can be created with `hip.Experiment.from_iterable`</span>
@@ -183,8 +184,8 @@
 <span class="p">};</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="an-advanced-example">
+</section>
+<section id="an-advanced-example">
 <span id="tutojsadvanced"></span><h3>An advanced example<a class="headerlink" href="#an-advanced-example" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span>function Custom() { // CI_BUILD
   // Create an experiment, and store it in the state
@@ -234,9 +235,9 @@
 }
 </pre></div>
 </div>
-<iframe src="./_static/examples_javascript/Custom/index.html?hip.PARALLEL_PLOT.height=250" height="400px" width="100%"></iframe></div>
-</div>
-</div>
+<iframe src="./_static/examples_javascript/Custom/index.html?hip.PARALLEL_PLOT.height=250" height="400px" width="100%"></iframe></section>
+</section>
+</section>
 
 
           </div>

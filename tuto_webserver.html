@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
@@ -16,9 +17,9 @@
   
     <title>Advanced uses: Webserver &#8212; HiPlot 0.1.24
  documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/guzzle.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -113,19 +114,19 @@
           
           <div class="document clearer body">
             
-  <div class="section" id="advanced-uses-webserver">
+  <section id="advanced-uses-webserver">
 <span id="tutowebserver"></span><h1>Advanced uses: Webserver<a class="headerlink" href="#advanced-uses-webserver" title="Permalink to this headline">¶</a></h1>
 <p>This section assumes you already have a hiplot webserver running (otherwise, see <a class="reference internal" href="getting_started.html#getstartedwebserver"><span class="std std-ref">Option 2: Use HiPlot webserver</span></a>)</p>
-<div class="section" id="experiments-uri">
+<section id="experiments-uri">
 <span id="tutowebserverexperimenturi"></span><h2>Experiments URI<a class="headerlink" href="#experiments-uri" title="Permalink to this headline">¶</a></h2>
 <p>In HiPlot server, experiments are loaded by entering a string in the textarea. It can be the path to a CSV file, or really anything that can uniquely specify which experiment we are trying to load.
 This string is the <em>Experiment Universal Resource Identifier</em> (or in short <code class="code docutils literal notranslate"><span class="pre">Experiment</span> <span class="pre">URI</span></code>).
 HiPlot translates those URIs into <code class="code docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code> using experiment fetchers. We will see later how to write our own one (<a class="reference internal" href="#tutowebservercustomfetcher"><span class="std std-ref">Make HiPlot server render your own experiments</span></a>).</p>
-</div>
-<div class="section" id="compare-multiple-experiments">
+</section>
+<section id="compare-multiple-experiments">
 <span id="tutowebservercomparexp"></span><h2>Compare multiple experiments<a class="headerlink" href="#compare-multiple-experiments" title="Permalink to this headline">¶</a></h2>
 <p>Multiple experiments can be combined together in the interface using the special <code class="code docutils literal notranslate"><span class="pre">multi</span></code> fetcher. It allows 2 syntaxes:</p>
-<div class="section" id="dictionary-of-named-experiments">
+<section id="dictionary-of-named-experiments">
 <h3>Dictionary of named experiments<a class="headerlink" href="#dictionary-of-named-experiments" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">multi</span><span class="p">:</span><span class="o">//</span><span class="p">{</span>
     <span class="s2">&quot;exp1_name&quot;</span><span class="p">:</span> <span class="s2">&quot;exp1_uri&quot;</span><span class="p">,</span>
@@ -133,8 +134,8 @@ HiPlot translates those URIs into <code class="code docutils literal notranslate
 <span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="list-of-experiments">
+</section>
+<section id="list-of-experiments">
 <h3>List of experiments<a class="headerlink" href="#list-of-experiments" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">multi</span><span class="p">:</span><span class="o">//</span><span class="p">[</span>
     <span class="s2">&quot;exp1_uri&quot;</span><span class="p">,</span>
@@ -142,11 +143,11 @@ HiPlot translates those URIs into <code class="code docutils literal notranslate
 <span class="p">]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="make-hiplot-server-render-your-own-experiments">
+</section>
+</section>
+<section id="make-hiplot-server-render-your-own-experiments">
 <span id="tutowebservercustomfetcher"></span><h2>Make HiPlot server render your own experiments<a class="headerlink" href="#make-hiplot-server-render-your-own-experiments" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="about-experiment-fetchers">
+<section id="about-experiment-fetchers">
 <h3>About experiment fetchers<a class="headerlink" href="#about-experiment-fetchers" title="Permalink to this headline">¶</a></h3>
 <p>When we request an experiment in HiPlot, the server will call the experiment fetchers it has iteratively.
 Each fetcher can either:</p>
@@ -155,16 +156,16 @@ Each fetcher can either:</p>
 <li><p>Raise an <a class="reference internal" href="py_reference.html#hiplot.ExperimentFetcherDoesntApply" title="hiplot.ExperimentFetcherDoesntApply"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ExperimentFetcherDoesntApply</span></code></a> exception, in which case the server moves on and tries the next fetcher</p></li>
 </ul>
 <p>In order to avoid conflicts, it is good practice to use a prefix to determine which fetcher we want to call. Here we use <code class="code docutils literal notranslate"><span class="pre">myxp://</span></code></p>
-</div>
-<div class="section" id="how-we-will-do-that">
+</section>
+<section id="how-we-will-do-that">
 <h3>How we will do that<a class="headerlink" href="#how-we-will-do-that" title="Permalink to this headline">¶</a></h3>
 <p>We are going to write our own experiment fetcher, to translate custom <a class="reference internal" href="#tutowebserverexperimenturi"><span class="std std-ref">Experiments URI</span></a> into <code class="code docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code>. We will do that in several steps:</p>
 <ol class="arabic simple">
 <li><p>First we will write a file <code class="docutils literal notranslate"><span class="pre">my_fetcher.py</span></code> that contains our fetcher function <cite>fetch_my_experiment</cite></p></li>
 <li><p>Then, we will restart HiPlot server with this additional fetcher: <code class="docutils literal notranslate"><span class="pre">hiplot</span> <span class="pre">my_fetcher.fetch_my_experiment</span></code></p></li>
 </ol>
-</div>
-<div class="section" id="step-1-create-an-experiment-fetcher">
+</section>
+<section id="step-1-create-an-experiment-fetcher">
 <h3>Step 1: Create an experiment fetcher<a class="headerlink" href="#step-1-create-an-experiment-fetcher" title="Permalink to this headline">¶</a></h3>
 <p>An experiment fetcher transforms a string (that the user enters, a path for instance) into a proper <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a>.
 Let’s write a dummy one that takes a folder, and returns the content of <code class="code docutils literal notranslate"><span class="pre">data.csv</span></code> inside if the file exists.</p>
@@ -182,8 +183,8 @@ Let’s write a dummy one that takes a folder, and returns the content of <code 
     <span class="k">return</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="n">uri</span> <span class="o">+</span> <span class="s1">&#39;/data.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="step-2-run-hiplot-server-with-the-new-fetcher">
+</section>
+<section id="step-2-run-hiplot-server-with-the-new-fetcher">
 <h3>Step 2: Run HiPlot server with the new fetcher<a class="headerlink" href="#step-2-run-hiplot-server-with-the-new-fetcher" title="Permalink to this headline">¶</a></h3>
 <p>Our fetcher is ready, let’s simulate a dummy experiment that we can load later</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Some dummy data for the demo</span>
@@ -195,9 +196,9 @@ mkdir xp_folder
 </pre></div>
 </div>
 <p>In the interface, you can load the string <code class="code docutils literal notranslate"><span class="pre">myxp://xp_folder</span></code></p>
-</div>
-</div>
-<div class="section" id="dump-your-experiments-to-csv-or-html-with-hiplot-render">
+</section>
+</section>
+<section id="dump-your-experiments-to-csv-or-html-with-hiplot-render">
 <span id="tutohiplotrender"></span><h2>Dump your experiments to CSV or HTML with <code class="code docutils literal notranslate"><span class="pre">hiplot-render</span></code><a class="headerlink" href="#dump-your-experiments-to-csv-or-html-with-hiplot-render" title="Permalink to this headline">¶</a></h2>
 <p>HiPlot also provides a script to generate CSV or a standalone HTML file for an experiment from the command line.
 Like the webserver, it can take additional fetchers to render custom experiments (see also <a class="reference internal" href="#tutowebservercustomfetcher"><span class="std std-ref">Make HiPlot server render your own experiments</span></a> above).
@@ -205,8 +206,8 @@ You can get started with:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span><span class="o">-</span><span class="n">render</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>

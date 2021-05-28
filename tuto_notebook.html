@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   
   <!-- Licensed under the Apache 2.0 License -->
   <link rel="stylesheet" type="text/css" href="_static/fonts/open-sans/stylesheet.css" />
@@ -16,9 +17,9 @@
   
     <title>Advanced uses: notebooks &#8212; HiPlot 0.1.24
  documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/guzzle.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/guzzle.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -111,9 +112,9 @@
           
           <div class="document clearer body">
             
-  <div class="section" id="advanced-uses-notebooks">
+  <section id="advanced-uses-notebooks">
 <span id="tutonotebook"></span><h1>Advanced uses: notebooks<a class="headerlink" href="#advanced-uses-notebooks" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="remembering-state-between-runs">
+<section id="remembering-state-between-runs">
 <span id="tutonotebookstate"></span><h2>Remembering state between runs<a class="headerlink" href="#remembering-state-between-runs" title="Permalink to this headline">¶</a></h2>
 <p>While it’s possible to change the visualization settings in python using <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_data" title="hiplot.Experiment.display_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_data()</span></code></a> and <a class="reference internal" href="py_reference.html#hiplot.ValueDef" title="hiplot.ValueDef"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ValueDef</span></code></a>, it is more convenient to
 define XY plots, change column types or coloring in the user interface directly. However, all of this is reset when executing the cell a second time.</p>
@@ -127,8 +128,8 @@ and restored when <a class="reference internal" href="py_reference.html#hiplot.E
 <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">store_state_key</span><span class="o">=</span><span class="s2">&quot;cell1&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="interactions-with-displayed-visualization">
+</section>
+<section id="interactions-with-displayed-visualization">
 <span id="tutonotebookdisplayedexperiment"></span><h2>Interactions with displayed visualization<a class="headerlink" href="#interactions-with-displayed-visualization" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -147,9 +148,9 @@ about selected datapoints, filtering, …</p>
 <span class="n">displayed_exp</span> <span class="o">=</span> <span class="n">hip</span><span class="o">.</span><span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">display</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/displayed_experiment.png"><img alt="_images/displayed_experiment.png" src="_images/displayed_experiment.png" style="width: 800px;" /></a>
-</div>
+</figure>
 <p>After the visualization has loaded, and in another cell, python code can query information from HiPlot</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">displayed_exp</span><span class="o">.</span><span class="n">get_selected</span><span class="p">()</span>  <span class="c1"># Return all the datapoints currently selected</span>
 <span class="go"> [&lt;hiplot.experiment.Datapoint at 0x10b32dc10&gt;]</span>
@@ -175,8 +176,8 @@ about selected datapoints, filtering, …</p>
 <p class="admonition-title">Warning</p>
 <p>The user can modify the data type of variables - so the data type returned by <a class="reference internal" href="py_reference.html#hiplot.ExperimentDisplayed.get_brush_extents" title="hiplot.ExperimentDisplayed.get_brush_extents"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.ExperimentDisplayed.get_brush_extents()</span></code></a> does not always match the one provided in Python.</p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
