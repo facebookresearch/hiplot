@@ -41,7 +41,6 @@ import { ParallelPlot } from "./parallel/parallel";
 import { HiPlot } from "./hiplot";
 import React from "react";
 import ReactDOM from "react-dom";
-import assert from "assert";
 import { PlotXY } from "./plotxy";
 import { build_props } from "./hiplot_web";
 ;
@@ -62,22 +61,22 @@ var HiPlotTester = /** @class */ (function (_super) {
         _this.testSelection = [
             { name: "testSelect", test: _this.testSelect },
             { name: "keepBtn", test: function () { this.testButton("Keep"); } },
-            { name: "kept", test: function () { assert(this.hiplot.current.state.rows_filtered.length == this.state.keepCount); } },
+            { name: "kept", test: function () { console.assert(this.hiplot.current.state.rows_filtered.length == this.state.keepCount); } },
             { name: "restoreBtn", test: function () { this.testButton("Restore"); } },
-            { name: "restored", test: function () { assert(this.hiplot.current.state.rows_filtered.length != this.state.keepCount); } },
+            { name: "restored", test: function () { console.assert(this.hiplot.current.state.rows_filtered.length != this.state.keepCount); } },
             { name: "testSelect", test: _this.testSelect },
             { name: "excludeBtn", test: function () { this.testButton("Exclude"); } },
             { name: "restoreBtn", test: function () { this.testButton("Restore"); } },
         ];
         _this.testFn = __spreadArrays([
-            { name: "responsiveWidth", test: function () { assert(this.root.current.scrollWidth == this.state.width); } },
+            { name: "responsiveWidth", test: function () { console.assert(this.root.current.scrollWidth == this.state.width); } },
             { name: "testSelect", test: _this.testSelect },
             { name: "testSelectNone", test: _this.testSelectNone },
             { name: "testSelectAll", test: _this.testSelectAll }
         ], _this.testSelection, [
             { name: "testResize", test: function () { this.setState({ width: 800 }); } },
             { name: "testResize2", test: function () { $(window).trigger('resize'); } },
-            { name: "responsiveWidth", test: function () { assert(this.root.current.scrollWidth == this.state.width); } },
+            { name: "responsiveWidth", test: function () { console.assert(this.root.current.scrollWidth == this.state.width); } },
             { name: "testResize", test: function () { this.setState({ width: 1024 }); } },
             { name: "testResize2", test: function () { $(window).trigger('resize'); } },
             { name: "changeColor", test: _this.testChangeColor },
@@ -149,7 +148,7 @@ var HiPlotTester = /** @class */ (function (_super) {
     };
     HiPlotTester.prototype.simulateRefresh = function () {
         var exp = this.hiplot.current.state.experiment;
-        assert(exp);
+        console.assert(exp);
         this.hiplot.current.loadWithPromise(new Promise(function (rs, rj) {
             rs({
                 experiment: exp
@@ -162,12 +161,12 @@ var HiPlotTester = /** @class */ (function (_super) {
     };
     HiPlotTester.prototype.pplot = function () {
         var pplot = this.hiplot.current.getPlugin(ParallelPlot);
-        assert(pplot);
+        console.assert(pplot);
         return pplot;
     };
     HiPlotTester.prototype.plotxy = function () {
         var plotxy = this.hiplot.current.getPlugin(PlotXY);
-        assert(plotxy);
+        console.assert(plotxy);
         return plotxy;
     };
     return HiPlotTester;
@@ -222,8 +221,8 @@ function test_plotxy() {
                 this.simulateRefresh();
             } },
         { name: 'axisKept', test: function () {
-                assert(plotxy().state.axis_x == selectAxis(2), "axis_x error: " + plotxy().state);
-                assert(plotxy().state.axis_y == selectAxis(1), "axis_y error: " + plotxy().state);
+                console.assert(plotxy().state.axis_x == selectAxis(2), "axis_x error: " + plotxy().state);
+                console.assert(plotxy().state.axis_y == selectAxis(1), "axis_y error: " + plotxy().state);
             } }
     ];
     return prefix("plotxy", tests);
