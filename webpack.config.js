@@ -58,8 +58,14 @@ LICENSE file in the root directory of this source tree."),
     module: {
       rules: [
           {
-            test: /datatables\.net.*/,
-            loader: 'imports-loader?define=>false'
+            test: /datatables\.net.*js$/,
+            use: [{
+              loader: "imports-loader",
+              options: {
+                additionalCode:
+                  "var define = false;", //Disable AMD for misbehaving libraries
+              },
+            }],
           },
           {
               test: /\.(png|jp(e*)g|svg)$/,
@@ -67,19 +73,19 @@ LICENSE file in the root directory of this source tree."),
                   loader: 'url-loader',
                   options: {
                       limit: 1000000, // Convert images < 1MB to base64 strings
-                      name: 'images/[hash]-[name].[ext]'
+                      name: 'images/[contenthash]-[name].[ext]',
                   }
               }]
           },
           {
             test: /\.s(a|c)ss$/,
             exclude: /global.(s(a|c)ss)$/,
-            loader: [
-              'style-loader',
+            use: [
+              { loader: 'style-loader'},
               {
                 loader: "css-loader",
                 options: {
-                  modules: is_debug ? {localIdentName: '[local]_[hash:base64:5]'} : true
+                  modules: is_debug ? {localIdentName: '[local]_[contenthash:base64:5]'} : true
                 }
               },
               {
@@ -92,7 +98,7 @@ LICENSE file in the root directory of this source tree."),
           },
           {
             test: /global.(s(a|c)ss)$/,
-            loader: [
+            use: [
               'style-loader',
               "css-loader",
               {
@@ -100,9 +106,11 @@ LICENSE file in the root directory of this source tree."),
                 options: {
                   // We can be emded anywhere, with arbitrary `font-size` for `body` element
                   // So we better don't use `rem` in CSS and set sizes in pixel instead.
-                  plugins: [remToPx({
-                    propList: ['font', 'font-size', 'line-height', 'letter-spacing', 'padding*', 'border*'],
-                  })]
+                  postcssOptions: {
+                    plugins: [remToPx({
+                      propList: ['font', 'font-size', 'line-height', 'letter-spacing', 'padding*', 'border*'],
+                    })],
+                  },
                 }
               },
               {
@@ -121,7 +129,7 @@ LICENSE file in the root directory of this source tree."),
           {
               test: /\.(ts|tsx)$/,
               loader: 'ts-loader',
-              query: {
+              options: {
                 compilerOptions: {
                   declaration: false,
                 }
