@@ -27,6 +27,24 @@ export interface ParamDef extends HiPlotValueDef {
     __colormap?: any;
 }
 
+function get_min_max_for_numeric_scale(pd: ParamDef): [number, number] {
+    var min = pd.force_value_min;
+    var max = pd.force_value_max;
+    pd.distinct_values.forEach(function(value: any) {
+        const parsed = parseFloat(value);
+        if (is_special_numeric(parsed)) {
+            return;
+        }
+        if (min === null || parsed < min) {
+            min = parsed;
+        }
+        if (max === null || parsed > max) {
+            max = parsed;
+        }
+    });
+    return [min, max];
+}
+
 export function create_d3_scale_without_outliers(pd: ParamDef): any {
     var dv = pd.distinct_values;
     if (pd.type == ParamType.CATEGORICAL) {
@@ -36,8 +54,7 @@ export function create_d3_scale_without_outliers(pd: ParamDef): any {
         if (pd.type == ParamType.NUMERICPERCENTILE) {
             return d3_scale_percentile(dv);
         }
-        var min = pd.force_value_min != null ? pd.force_value_min : dv[0];
-        var max = pd.force_value_max != null ? pd.force_value_max : dv[dv.length - 1];
+        const [min, max] = get_min_max_for_numeric_scale(pd);
         console.assert(!isNaN(min));
         console.assert(!isNaN(max));
         if (pd.type == ParamType.TIMESTAMP) {
@@ -241,9 +258,8 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             var is_special_num = is_special_numeric(v);
             if (is_special_num) {
                 special_values_set.add(v);
-            } else {
-                setVals.push(v);
             }
+            setVals.push(v);
             // Detect non-numeric column
             if ((typeof v != "number" && !is_special_num && isNaN(v)) ||
                     v === true || v === false) {
@@ -257,12 +273,6 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
         table.forEach(function(row) {
             addValue(row[key]);
         });
-        if (hint && hint.force_value_max != null) {
-            addValue(hint.force_value_max);
-        }
-        if (hint && hint.force_value_min != null) {
-            addValue(hint.force_value_min);
-        }
         var special_values = Array.from(special_values_set);
         var values = setVals;
         var distinct_values = Array.from(new Set(values));
