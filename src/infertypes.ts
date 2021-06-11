@@ -11,7 +11,7 @@ import colorsys from "colorsys";
 
 import { PersistentState } from "./lib/savedstate";
 import { categoricalColorScheme } from "./lib/categoricalcolors";
-import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers, is_special_numeric, d3_scale_categorical } from "./lib/d3_scales";
+import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers, is_special_numeric, d3_scale_categorical, get_numeric_values_sorted } from "./lib/d3_scales";
 import { Datapoint, ParamType, HiPlotValueDef } from "./types";
 
 
@@ -66,10 +66,12 @@ export function create_d3_scale_without_outliers(pd: ParamDef): any {
         const [min, max] = get_min_max_for_numeric_scale(pd);
         console.assert(!isNaN(min));
         console.assert(!isNaN(max));
+        console.assert(min <= max);
         if (pd.type == ParamType.TIMESTAMP) {
             return d3_scale_timestamp().domain([min, max]);
         }
         if (pd.type == ParamType.NUMERICLOG) {
+            console.assert(min > 0, `Min value for "${pd.name}" is negative (${min}), can't use log-scale`);
             return d3.scaleLog().domain([min, max]);
         }
         console.assert(pd.type == ParamType.NUMERIC, "Unknown variable type " + pd.type);
@@ -280,24 +282,19 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
         });
         var values = setVals;
         var distinct_values = Array.from(new Set(values));
-        var logscale = false;
-        if (numeric) {
-            var sortFloat = function(a, b) {
-                return parseFloat(a) - parseFloat(b);
-            };
-            if (values.length > 10 && distinct_values[0] > 0) {
-                values.sort(sortFloat);
-                var top5pct = values[Math.min(values.length - 1, ~~(19 * values.length / 20))];
-                var bot5pct = values[~~(values.length / 20)];
-                logscale = (top5pct / bot5pct) > 100;
-            }
+        const numericSorted = numeric ? get_numeric_values_sorted(distinct_values) : [];
+        var spansMultipleOrdersOfMagnitude = false;
+        if (numericSorted.length > 10 && numericSorted[0] > 0) {
+            var top5pct = numericSorted[Math.min(numericSorted.length - 1, ~~(19 * numericSorted.length / 20))];
+            var bot5pct = numericSorted[~~(numericSorted.length / 20)];
+            spansMultipleOrdersOfMagnitude = (top5pct / bot5pct) > 100;
         }
         var categorical = !numeric || ((Math.max(values.length, 10) / distinct_values.length) > 10 && distinct_values.length < 6);
         var type = ParamType.CATEGORICAL;
         if (numeric && !categorical) {
             type = ParamType.NUMERIC;
-            if (logscale) {
-                type = distinct_values[0] > 0 ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
+            if (spansMultipleOrdersOfMagnitude) {
+                type = numericSorted[0] > 0 ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
             }
         }
         if (hint !== undefined && hint.type !== null) {
@@ -323,7 +320,7 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
         // What other types we can render as?
         if (numeric) {
             info.type_options.push(ParamType.NUMERIC);
-            if (distinct_values[0] > 0) {
+            if (numericSorted[0] > 0) {
                 info.type_options.push(ParamType.NUMERICLOG);
             }
             info.type_options.push(ParamType.NUMERICPERCENTILE);

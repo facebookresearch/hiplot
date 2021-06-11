@@ -64,16 +64,20 @@ export function d3_scale_categorical(distinct_values: Array<any>): d3.ScalePoint
     return scale_fn;
 }
 
+export function get_numeric_values_sorted(values: Array<any>): Array<number> {
+    values = values.map(x => parseFloat(x)).filter(x => Number.isFinite(x));
+    values = Array.from(new Set(values));
+    values.sort(function(a, b) { return parseFloat(a) - parseFloat(b); });
+    return values;
+}
+
 export function d3_scale_percentile(values: Array<any>): d3ScalePercentile {
     /**
      * Creates a quantile scale for d3js.
      * maps a point to its quantile (from 0 to 1)
      * .. and handles ticks correctly (unlike d3.scaleQuantile)
      */
-    values = values.map(x => parseFloat(x)).filter(x => Number.isFinite(x));
-    values = Array.from(new Set(values));
-    values.sort(function(a, b) { return parseFloat(a) - parseFloat(b); });
-    return d3_scale_percentile_values_sorted(values);
+    return d3_scale_percentile_values_sorted(get_numeric_values_sorted(values));
 }
 
 export function d3_scale_percentile_values_sorted(values: Array<number>): d3ScalePercentile {
