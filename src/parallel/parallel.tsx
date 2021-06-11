@@ -240,7 +240,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   }.bind(this), 400);
   forceHideColumn = function(pd: ParamDef) {
     return pd === undefined ||
-      pd.special_values.length + pd.distinct_values.length <= 1 ||
+      pd.distinct_values.length <= 1 ||
       (pd.type == ParamType.CATEGORICAL && pd.distinct_values.length > this.props.categoricalMaximumValues)
   }.bind(this);
   componentDidMount() {

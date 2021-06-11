@@ -20,7 +20,6 @@ export interface ParamDef extends HiPlotValueDef {
     optional: boolean,
     numeric: boolean,
     distinct_values: Array<any>,
-    special_values: Array<any>,
     type_options: Array<ParamType>,
     __val2color?: {[k: string]: any};
     __colorscale?: any;
@@ -43,6 +42,16 @@ function get_min_max_for_numeric_scale(pd: ParamDef): [number, number] {
         }
     });
     return [min, max];
+}
+
+function has_inf_or_nans(pd: ParamDef): boolean {
+    for (var i = 0; i < pd.distinct_values.length; ++i) {
+        const parsed = parseFloat(pd.distinct_values[i]);
+        if (is_special_numeric(parsed)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 export function create_d3_scale_without_outliers(pd: ParamDef): any {
@@ -70,7 +79,7 @@ export function create_d3_scale_without_outliers(pd: ParamDef): any {
 
 export function create_d3_scale(pd: ParamDef): any {
     var scale = create_d3_scale_without_outliers(pd);
-    if (pd.special_values.length && [ParamType.NUMERIC, ParamType.NUMERICLOG, ParamType.NUMERICPERCENTILE].indexOf(pd.type) >= 0) {
+    if (has_inf_or_nans(pd) && [ParamType.NUMERIC, ParamType.NUMERICLOG, ParamType.NUMERICPERCENTILE].indexOf(pd.type) >= 0) {
         scale = scale_add_outliers(scale);
     }
     scale.hip_type = pd.type;
@@ -249,16 +258,12 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
         var numeric = ["uid", "from_uid"].indexOf(key) == -1;
         var can_be_timestamp = numeric;
         var setVals = [];
-        var special_values_set = new Set();
         var addValue = function(v) {
             if (v === undefined) {
                 optional = true;
                 return;
             }
             var is_special_num = is_special_numeric(v);
-            if (is_special_num) {
-                special_values_set.add(v);
-            }
             setVals.push(v);
             // Detect non-numeric column
             if ((typeof v != "number" && !is_special_num && isNaN(v)) ||
@@ -273,7 +278,6 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
         table.forEach(function(row) {
             addValue(row[key]);
         });
-        var special_values = Array.from(special_values_set);
         var values = setVals;
         var distinct_values = Array.from(new Set(values));
         var logscale = false;
@@ -318,7 +322,6 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             'optional': optional,
             'numeric': numeric,
             'distinct_values': distinct_values,
-            'special_values': special_values,
             'type_options': [ParamType.CATEGORICAL],
 
             'type': type,
