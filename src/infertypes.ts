@@ -11,7 +11,7 @@ import colorsys from "colorsys";
 
 import { PersistentState } from "./lib/savedstate";
 import { categoricalColorScheme } from "./lib/categoricalcolors";
-import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers, is_special_numeric } from "./lib/d3_scales";
+import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers, is_special_numeric, d3_scale_categorical } from "./lib/d3_scales";
 import { Datapoint, ParamType, HiPlotValueDef } from "./types";
 
 
@@ -57,7 +57,7 @@ function has_inf_or_nans(pd: ParamDef): boolean {
 export function create_d3_scale_without_outliers(pd: ParamDef): any {
     var dv = pd.distinct_values;
     if (pd.type == ParamType.CATEGORICAL) {
-      return d3.scalePoint().domain(dv);
+      return d3_scale_categorical(dv);
     }
     else {
         if (pd.type == ParamType.NUMERICPERCENTILE) {
@@ -285,23 +285,12 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             var sortFloat = function(a, b) {
                 return parseFloat(a) - parseFloat(b);
             };
-            distinct_values = distinct_values.map(x => is_special_numeric(x) ? x : parseFloat(x));
-            table.forEach(function(row) {
-                var v = row[key];
-                if (v !== undefined && v !== null && !is_special_numeric(v)) {
-                    row[key] = parseFloat(v);
-                }
-            });
-            distinct_values.sort(sortFloat);
             if (values.length > 10 && distinct_values[0] > 0) {
                 values.sort(sortFloat);
                 var top5pct = values[Math.min(values.length - 1, ~~(19 * values.length / 20))];
                 var bot5pct = values[~~(values.length / 20)];
                 logscale = (top5pct / bot5pct) > 100;
             }
-        }
-        else {
-            distinct_values.sort();
         }
         var categorical = !numeric || ((Math.max(values.length, 10) / distinct_values.length) > 10 && distinct_values.length < 6);
         var type = ParamType.CATEGORICAL;

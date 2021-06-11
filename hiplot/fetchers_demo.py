@@ -286,6 +286,7 @@ def demo_force_constant_pplot() -> hip.Experiment:
 
 def demo_first_value_nan() -> hip.Experiment:
     return hip.Experiment.from_iterable([
+        {},
         {'a': None},
         {'a': 2},
         {'a': 2.1},
