@@ -7,28 +7,52 @@
 import * as d3 from "d3";
 import colorsys from "colorsys";
 import { categoricalColorScheme } from "./lib/categoricalcolors";
-import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers } from "./lib/d3_scales";
+import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers, is_special_numeric, d3_scale_categorical, get_numeric_values_sorted } from "./lib/d3_scales";
 import { ParamType } from "./types";
-var special_numerics = ['inf', '-inf', Infinity, -Infinity, null];
-export function is_special_numeric(x) {
-    return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
+function get_min_max_for_numeric_scale(pd) {
+    var min = pd.force_value_min;
+    var max = pd.force_value_max;
+    pd.distinct_values.forEach(function (value) {
+        var parsed = parseFloat(value);
+        if (is_special_numeric(parsed)) {
+            return;
+        }
+        if (min === null || parsed < min) {
+            min = parsed;
+        }
+        if (max === null || parsed > max) {
+            max = parsed;
+        }
+    });
+    return [min, max];
 }
-;
+function has_inf_or_nans(pd) {
+    for (var i = 0; i < pd.distinct_values.length; ++i) {
+        var parsed = parseFloat(pd.distinct_values[i]);
+        if (is_special_numeric(parsed)) {
+            return true;
+        }
+    }
+    return false;
+}
 export function create_d3_scale_without_outliers(pd) {
     var dv = pd.distinct_values;
     if (pd.type == ParamType.CATEGORICAL) {
-        return d3.scalePoint().domain(dv);
+        return d3_scale_categorical(dv);
     }
     else {
         if (pd.type == ParamType.NUMERICPERCENTILE) {
             return d3_scale_percentile(dv);
         }
-        var min = pd.force_value_min != null ? pd.force_value_min : dv[0];
-        var max = pd.force_value_max != null ? pd.force_value_max : dv[dv.length - 1];
+        var _a = get_min_max_for_numeric_scale(pd), min = _a[0], max = _a[1];
+        console.assert(!isNaN(min));
+        console.assert(!isNaN(max));
+        console.assert(min <= max);
         if (pd.type == ParamType.TIMESTAMP) {
             return d3_scale_timestamp().domain([min, max]);
         }
         if (pd.type == ParamType.NUMERICLOG) {
+            console.assert(min > 0, "Min value for \"" + pd.name + "\" is negative (" + min + "), can't use log-scale");
             return d3.scaleLog().domain([min, max]);
         }
         console.assert(pd.type == ParamType.NUMERIC, "Unknown variable type " + pd.type);
@@ -37,7 +61,7 @@ export function create_d3_scale_without_outliers(pd) {
 }
 export function create_d3_scale(pd) {
     var scale = create_d3_scale_without_outliers(pd);
-    if (pd.special_values.length && [ParamType.NUMERIC, ParamType.NUMERICLOG, ParamType.NUMERICPERCENTILE].indexOf(pd.type) >= 0) {
+    if (has_inf_or_nans(pd) && [ParamType.NUMERIC, ParamType.NUMERICLOG, ParamType.NUMERICPERCENTILE].indexOf(pd.type) >= 0) {
         scale = scale_add_outliers(scale);
     }
     scale.hip_type = pd.type;
@@ -198,19 +222,13 @@ export function infertypes(url_states, table, hints) {
         var numeric = ["uid", "from_uid"].indexOf(key) == -1;
         var can_be_timestamp = numeric;
         var setVals = [];
-        var special_values_set = new Set();
         var addValue = function (v) {
             if (v === undefined) {
                 optional = true;
                 return;
             }
             var is_special_num = is_special_numeric(v);
-            if (is_special_num) {
-                special_values_set.add(v);
-            }
-            else {
-                setVals.push(v);
-            }
+            setVals.push(v);
             // Detect non-numeric column
             if ((typeof v != "number" && !is_special_num && isNaN(v)) ||
                 v === true || v === false) {
@@ -224,44 +242,21 @@ export function infertypes(url_states, table, hints) {
         table.forEach(function (row) {
             addValue(row[key]);
         });
-        if (hint && hint.force_value_max != null) {
-            addValue(hint.force_value_max);
-        }
-        if (hint && hint.force_value_min != null) {
-            addValue(hint.force_value_min);
-        }
-        var special_values = Array.from(special_values_set);
         var values = setVals;
         var distinct_values = Array.from(new Set(values));
-        var logscale = false;
-        if (numeric) {
-            var sortFloat = function (a, b) {
-                return parseFloat(a) - parseFloat(b);
-            };
-            distinct_values = distinct_values.map(function (x) { return is_special_numeric(x) ? x : parseFloat(x); });
-            table.forEach(function (row) {
-                var v = row[key];
-                if (v !== undefined && v !== null && !is_special_numeric(v)) {
-                    row[key] = parseFloat(v);
-                }
-            });
-            distinct_values.sort(sortFloat);
-            if (values.length > 10 && distinct_values[0] > 0) {
-                values.sort(sortFloat);
-                var top5pct = values[Math.min(values.length - 1, ~~(19 * values.length / 20))];
-                var bot5pct = values[~~(values.length / 20)];
-                logscale = (top5pct / bot5pct) > 100;
-            }
-        }
-        else {
-            distinct_values.sort();
+        var numericSorted = numeric ? get_numeric_values_sorted(distinct_values) : [];
+        var spansMultipleOrdersOfMagnitude = false;
+        if (numericSorted.length > 10 && numericSorted[0] > 0) {
+            var top5pct = numericSorted[Math.min(numericSorted.length - 1, ~~(19 * numericSorted.length / 20))];
+            var bot5pct = numericSorted[~~(numericSorted.length / 20)];
+            spansMultipleOrdersOfMagnitude = (top5pct / bot5pct) > 100;
         }
         var categorical = !numeric || ((Math.max(values.length, 10) / distinct_values.length) > 10 && distinct_values.length < 6);
         var type = ParamType.CATEGORICAL;
         if (numeric && !categorical) {
             type = ParamType.NUMERIC;
-            if (logscale) {
-                type = distinct_values[0] > 0 ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
+            if (spansMultipleOrdersOfMagnitude) {
+                type = numericSorted[0] > 0 ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
             }
         }
         if (hint !== undefined && hint.type !== null) {
@@ -275,7 +270,6 @@ export function infertypes(url_states, table, hints) {
             'optional': optional,
             'numeric': numeric,
             'distinct_values': distinct_values,
-            'special_values': special_values,
             'type_options': [ParamType.CATEGORICAL],
             'type': type,
             'colors': hint !== undefined ? hint.colors : null,
@@ -287,7 +281,7 @@ export function infertypes(url_states, table, hints) {
         // What other types we can render as?
         if (numeric) {
             info.type_options.push(ParamType.NUMERIC);
-            if (distinct_values[0] > 0) {
+            if (numericSorted[0] > 0) {
                 info.type_options.push(ParamType.NUMERICLOG);
             }
             info.type_options.push(ParamType.NUMERICPERCENTILE);

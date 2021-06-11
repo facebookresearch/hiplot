@@ -78,7 +78,7 @@ var ParallelPlot = /** @class */ (function (_super) {
         }.bind(_this), 400);
         _this.forceHideColumn = function (pd) {
             return pd === undefined ||
-                pd.special_values.length + pd.distinct_values.length <= 1 ||
+                pd.distinct_values.length <= 1 ||
                 (pd.type == ParamType.CATEGORICAL && pd.distinct_values.length > this.props.categoricalMaximumValues);
         }.bind(_this);
         _this.position = function (d) {

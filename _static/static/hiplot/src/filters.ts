@@ -7,8 +7,8 @@
 
 
 import $ from "jquery";
+import { convert_to_categorical_input } from "./lib/d3_scales";
 import { Datapoint, ParamType } from "./types";
-import { is_special_numeric } from "./infertypes";
 
 
 export interface Filter {
@@ -45,13 +45,29 @@ function filter_range(data: FilterRange): (dp: Datapoint) => boolean {
     if (data.type == ParamType.CATEGORICAL) {
         console.assert(typeof data.min == typeof data.max, data.min, data.max);
         return function(dp: Datapoint) {
-            const value = typeof data.min == 'string' ? `${dp[data.col]}` : dp[data.col];
-            return value !== undefined && data.min <= value && value <= data.max;
+            var value = dp[data.col];
+            if (value === undefined) {
+                return false;
+            }
+            value = convert_to_categorical_input(value);
+            return data.min <= value && value <= data.max;
         }
     }
     return function(dp: Datapoint) {
-        const value = parseFloat(dp[data.col]);
-        return value !== undefined && ((data.min <= value && value <= data.max) || (data.include_infnans && is_special_numeric(value)));
+        var value = dp[data.col];
+        if (value === undefined) {
+            return false;
+        }
+        value = parseFloat(value);
+        if (data.min <= value && value <= data.max) {
+            // Easy, in range
+            return true;
+        } else if (data.include_infnans) {
+            // Not in `[min, max]`, but we also include inf and nans
+            return Number.isNaN(value) || !Number.isFinite(value);
+        } else {
+            return false;
+        }
     }
 };
 

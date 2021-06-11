@@ -5,7 +5,6 @@ export interface ParamDef extends HiPlotValueDef {
     optional: boolean;
     numeric: boolean;
     distinct_values: Array<any>;
-    special_values: Array<any>;
     type_options: Array<ParamType>;
     __val2color?: {
         [k: string]: any;
@@ -13,7 +12,6 @@ export interface ParamDef extends HiPlotValueDef {
     __colorscale?: any;
     __colormap?: any;
 }
-export declare function is_special_numeric(x: any): boolean;
 export declare function create_d3_scale_without_outliers(pd: ParamDef): any;
 export declare function create_d3_scale(pd: ParamDef): any;
 export interface ScaleDomainRange {

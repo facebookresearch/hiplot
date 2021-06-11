@@ -53293,6 +53293,11 @@ function categoricalColorScheme(value) {
  * LICENSE file in the root directory of this source tree.
  */
 
+var special_numerics = ['inf', '-inf', Infinity, -Infinity, null, '', 'NaN'];
+function is_special_numeric(x) {
+    return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
+}
+;
 ;
 function toPrecisionFloor(v, p) {
     if (v < 0) {
@@ -53304,12 +53309,48 @@ function toPrecisionFloor(v, p) {
     var pow = Math.pow(10, (p - 1 - Math.floor(Math.log10(v))));
     return Math.floor(v * pow) / pow;
 }
+function convert_to_categorical_input(v) {
+    if (v === "") {
+        return "(empty)";
+    }
+    return "" + v;
+}
+function d3_scale_categorical(distinct_values) {
+    var valuesSet = new Set();
+    for (var idx = 0; idx < distinct_values.length; ++idx) {
+        valuesSet.add(convert_to_categorical_input(distinct_values[idx]));
+    }
+    distinct_values = Array.from(valuesSet);
+    distinct_values.sort();
+    var scale = band_point().domain(distinct_values);
+    function scale_fn(x) {
+        return scale(convert_to_categorical_input(x));
+    }
+    Object.assign(scale_fn, {
+        'copy': scale.copy,
+        'range': scale.range,
+        'rangeRound': scale.rangeRound,
+        'round': scale.round,
+        'domain': scale.domain,
+    });
+    // @ts-ignore
+    return scale_fn;
+}
+function get_numeric_values_sorted(values) {
+    values = values.map(function (x) { return parseFloat(x); }).filter(function (x) { return Number.isFinite(x); });
+    values = Array.from(new Set(values));
+    values.sort(function (a, b) { return parseFloat(a) - parseFloat(b); });
+    return values;
+}
 function d3_scale_percentile(values) {
     /**
      * Creates a quantile scale for d3js.
      * maps a point to its quantile (from 0 to 1)
      * .. and handles ticks correctly (unlike d3.scaleQuantile)
      */
+    return d3_scale_percentile_values_sorted(get_numeric_values_sorted(values));
+}
+function d3_scale_percentile_values_sorted(values) {
     console.assert(values.length >= 2);
     var domain_idx = [0, values.length - 1];
     var scaleOutput = src_linear_linear().domain([0, 1]);
@@ -53326,6 +53367,7 @@ function d3_scale_percentile(values) {
             var upperV = values[upper];
             console.assert(lowerV != upperV, "values should be distinct", lowerV, upperV);
             console.assert(lowerV <= x && x <= upperV, "percentile_scale(" + x + "): lowerV=" + lowerV + ", x=" + x + ", upperV=" + upperV, {
+                'x': x,
                 'values': values,
                 'lower': lower,
                 'domain_idx': domain_idx,
@@ -53375,7 +53417,7 @@ function d3_scale_percentile(values) {
     }
     ;
     function copy() {
-        var new_scale = d3_scale_percentile(values);
+        var new_scale = d3_scale_percentile_values_sorted(values);
         new_scale.domain_idx(domain_idx);
         new_scale.range(scaleOutput.range());
         return new_scale;
@@ -53466,10 +53508,7 @@ function scale_add_outliers(scale_orig) {
         var range = scale_orig.range();
         var origin_scale_size = compute_origin_scale_size();
         var ascending_order = range[0] < range[1];
-        if (Number.isNaN(x) || x == Infinity || x == -Infinity || x == "inf" || x == "-inf" || x === null) {
-            if (ascending_order) {
-                return range[1];
-            }
+        if (is_special_numeric(x)) {
             return range[1];
         }
         var scale_orig_value_rel = (scale_orig(x) - range[0]) / (range[1] - range[0]) * origin_scale_size;
@@ -53669,26 +53708,50 @@ var PSTATE_FILTERS = 'filters';
 
 
 
-var special_numerics = ['inf', '-inf', Infinity, -Infinity, null];
-function is_special_numeric(x) {
-    return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
+function get_min_max_for_numeric_scale(pd) {
+    var min = pd.force_value_min;
+    var max = pd.force_value_max;
+    pd.distinct_values.forEach(function (value) {
+        var parsed = parseFloat(value);
+        if (is_special_numeric(parsed)) {
+            return;
+        }
+        if (min === null || parsed < min) {
+            min = parsed;
+        }
+        if (max === null || parsed > max) {
+            max = parsed;
+        }
+    });
+    return [min, max];
 }
-;
+function has_inf_or_nans(pd) {
+    for (var i = 0; i < pd.distinct_values.length; ++i) {
+        var parsed = parseFloat(pd.distinct_values[i]);
+        if (is_special_numeric(parsed)) {
+            return true;
+        }
+    }
+    return false;
+}
 function create_d3_scale_without_outliers(pd) {
     var dv = pd.distinct_values;
     if (pd.type == ParamType.CATEGORICAL) {
-        return band_point().domain(dv);
+        return d3_scale_categorical(dv);
     }
     else {
         if (pd.type == ParamType.NUMERICPERCENTILE) {
             return d3_scale_percentile(dv);
         }
-        var min = pd.force_value_min != null ? pd.force_value_min : dv[0];
-        var max = pd.force_value_max != null ? pd.force_value_max : dv[dv.length - 1];
+        var _a = get_min_max_for_numeric_scale(pd), min = _a[0], max = _a[1];
+        console.assert(!isNaN(min));
+        console.assert(!isNaN(max));
+        console.assert(min <= max);
         if (pd.type == ParamType.TIMESTAMP) {
             return d3_scale_timestamp().domain([min, max]);
         }
         if (pd.type == ParamType.NUMERICLOG) {
+            console.assert(min > 0, "Min value for \"" + pd.name + "\" is negative (" + min + "), can't use log-scale");
             return log_log().domain([min, max]);
         }
         console.assert(pd.type == ParamType.NUMERIC, "Unknown variable type " + pd.type);
@@ -53697,7 +53760,7 @@ function create_d3_scale_without_outliers(pd) {
 }
 function create_d3_scale(pd) {
     var scale = create_d3_scale_without_outliers(pd);
-    if (pd.special_values.length && [ParamType.NUMERIC, ParamType.NUMERICLOG, ParamType.NUMERICPERCENTILE].indexOf(pd.type) >= 0) {
+    if (has_inf_or_nans(pd) && [ParamType.NUMERIC, ParamType.NUMERICLOG, ParamType.NUMERICPERCENTILE].indexOf(pd.type) >= 0) {
         scale = scale_add_outliers(scale);
     }
     scale.hip_type = pd.type;
@@ -53858,19 +53921,13 @@ function infertypes(url_states, table, hints) {
         var numeric = ["uid", "from_uid"].indexOf(key) == -1;
         var can_be_timestamp = numeric;
         var setVals = [];
-        var special_values_set = new Set();
         var addValue = function (v) {
             if (v === undefined) {
                 optional = true;
                 return;
             }
             var is_special_num = is_special_numeric(v);
-            if (is_special_num) {
-                special_values_set.add(v);
-            }
-            else {
-                setVals.push(v);
-            }
+            setVals.push(v);
             // Detect non-numeric column
             if ((typeof v != "number" && !is_special_num && isNaN(v)) ||
                 v === true || v === false) {
@@ -53884,44 +53941,21 @@ function infertypes(url_states, table, hints) {
         table.forEach(function (row) {
             addValue(row[key]);
         });
-        if (hint && hint.force_value_max != null) {
-            addValue(hint.force_value_max);
-        }
-        if (hint && hint.force_value_min != null) {
-            addValue(hint.force_value_min);
-        }
-        var special_values = Array.from(special_values_set);
         var values = setVals;
         var distinct_values = Array.from(new Set(values));
-        var logscale = false;
-        if (numeric) {
-            var sortFloat = function (a, b) {
-                return parseFloat(a) - parseFloat(b);
-            };
-            distinct_values = distinct_values.map(function (x) { return is_special_numeric(x) ? x : parseFloat(x); });
-            table.forEach(function (row) {
-                var v = row[key];
-                if (v !== undefined && v !== null && !is_special_numeric(v)) {
-                    row[key] = parseFloat(v);
-                }
-            });
-            distinct_values.sort(sortFloat);
-            if (values.length > 10 && distinct_values[0] > 0) {
-                values.sort(sortFloat);
-                var top5pct = values[Math.min(values.length - 1, ~~(19 * values.length / 20))];
-                var bot5pct = values[~~(values.length / 20)];
-                logscale = (top5pct / bot5pct) > 100;
-            }
-        }
-        else {
-            distinct_values.sort();
+        var numericSorted = numeric ? get_numeric_values_sorted(distinct_values) : [];
+        var spansMultipleOrdersOfMagnitude = false;
+        if (numericSorted.length > 10 && numericSorted[0] > 0) {
+            var top5pct = numericSorted[Math.min(numericSorted.length - 1, ~~(19 * numericSorted.length / 20))];
+            var bot5pct = numericSorted[~~(numericSorted.length / 20)];
+            spansMultipleOrdersOfMagnitude = (top5pct / bot5pct) > 100;
         }
         var categorical = !numeric || ((Math.max(values.length, 10) / distinct_values.length) > 10 && distinct_values.length < 6);
         var type = ParamType.CATEGORICAL;
         if (numeric && !categorical) {
             type = ParamType.NUMERIC;
-            if (logscale) {
-                type = distinct_values[0] > 0 ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
+            if (spansMultipleOrdersOfMagnitude) {
+                type = numericSorted[0] > 0 ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
             }
         }
         if (hint !== undefined && hint.type !== null) {
@@ -53935,7 +53969,6 @@ function infertypes(url_states, table, hints) {
             'optional': optional,
             'numeric': numeric,
             'distinct_values': distinct_values,
-            'special_values': special_values,
             'type_options': [ParamType.CATEGORICAL],
             'type': type,
             'colors': hint !== undefined ? hint.colors : null,
@@ -53947,7 +53980,7 @@ function infertypes(url_states, table, hints) {
         // What other types we can render as?
         if (numeric) {
             info.type_options.push(ParamType.NUMERIC);
-            if (distinct_values[0] > 0) {
+            if (numericSorted[0] > 0) {
                 info.type_options.push(ParamType.NUMERICLOG);
             }
             info.type_options.push(ParamType.NUMERICPERCENTILE);
@@ -57595,13 +57628,31 @@ function filter_range(data) {
     if (data.type == ParamType.CATEGORICAL) {
         console.assert(typeof data.min == typeof data.max, data.min, data.max);
         return function (dp) {
-            var value = typeof data.min == 'string' ? "" + dp[data.col] : dp[data.col];
-            return value !== undefined && data.min <= value && value <= data.max;
+            var value = dp[data.col];
+            if (value === undefined) {
+                return false;
+            }
+            value = convert_to_categorical_input(value);
+            return data.min <= value && value <= data.max;
         };
     }
     return function (dp) {
-        var value = parseFloat(dp[data.col]);
-        return value !== undefined && ((data.min <= value && value <= data.max) || (data.include_infnans && is_special_numeric(value)));
+        var value = dp[data.col];
+        if (value === undefined) {
+            return false;
+        }
+        value = parseFloat(value);
+        if (data.min <= value && value <= data.max) {
+            // Easy, in range
+            return true;
+        }
+        else if (data.include_infnans) {
+            // Not in `[min, max]`, but we also include inf and nans
+            return Number.isNaN(value) || !Number.isFinite(value);
+        }
+        else {
+            return false;
+        }
     };
 }
 ;
@@ -57724,7 +57775,7 @@ var ParallelPlot = /** @class */ (function (_super) {
         }.bind(_this), 400);
         _this.forceHideColumn = function (pd) {
             return pd === undefined ||
-                pd.special_values.length + pd.distinct_values.length <= 1 ||
+                pd.distinct_values.length <= 1 ||
                 (pd.type == ParamType.CATEGORICAL && pd.distinct_values.length > this.props.categoricalMaximumValues);
         }.bind(_this);
         _this.position = function (d) {
