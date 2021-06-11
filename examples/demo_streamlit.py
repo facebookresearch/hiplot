@@ -15,6 +15,7 @@ data = [{'uid': 'a', 'dropout': 0.1, 'lr': 0.001, 'loss': 10.0, 'optimizer': 'SG
         {'uid': 'b', 'dropout': 0.15, 'lr': 0.01, 'loss': 3.5, 'optimizer': 'Adam', 'x': x2},
         {'uid': 'c', 'dropout': 0.3, 'lr': 0.1, 'loss': 4.5, 'optimizer': 'Adam', 'x': x3}]
 xp = hip.Experiment.from_iterable(data)
+xp = hip.Experiment.from_csv("Random-Forest-Example.csv")
 
 # Instead of calling directly `.display()`
 # just convert it to a streamlit component with `.to_streamlit()` before

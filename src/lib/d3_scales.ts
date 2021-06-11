@@ -7,6 +7,13 @@
 
 import * as d3 from "d3";
 
+
+const special_numerics = ['inf', '-inf', Infinity, -Infinity, null, '', 'NaN'];
+export function is_special_numeric(x) {
+    return special_numerics.indexOf(x) >= 0 || Number.isNaN(x);
+};
+
+
 interface d3ScalePercentile {
     (x: any): any;
     domain_idx: any;
@@ -27,12 +34,53 @@ function toPrecisionFloor(v: number, p: number): number {
     return Math.floor(v * pow) / pow;
 }
 
-export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
+export function convert_to_categorical_input(v: any): any {
+    if (v === "") {
+        return "(empty)";
+    }
+    return "" + v;
+}
+
+export function d3_scale_categorical(distinct_values: Array<any>): d3.ScalePoint<any> {
+    const valuesSet = new Set();
+    for (var idx = 0; idx < distinct_values.length; ++idx) {
+        valuesSet.add(convert_to_categorical_input(distinct_values[idx]));
+    }
+    distinct_values = Array.from(valuesSet);
+    distinct_values.sort();
+    const scale = d3.scalePoint().domain(distinct_values);
+
+    function scale_fn(x: any): number {
+        return scale(convert_to_categorical_input(x));
+    }
+    Object.assign(scale_fn, {
+        'copy': scale.copy,
+        'range': scale.range,
+        'rangeRound': scale.rangeRound,
+        'round': scale.round,
+        'domain': scale.domain,
+    });
+    // @ts-ignore
+    return scale_fn;
+}
+
+export function get_numeric_values_sorted(values: Array<any>): Array<number> {
+    values = values.map(x => parseFloat(x)).filter(x => Number.isFinite(x));
+    values = Array.from(new Set(values));
+    values.sort(function(a, b) { return parseFloat(a) - parseFloat(b); });
+    return values;
+}
+
+export function d3_scale_percentile(values: Array<any>): d3ScalePercentile {
     /**
      * Creates a quantile scale for d3js.
      * maps a point to its quantile (from 0 to 1)
      * .. and handles ticks correctly (unlike d3.scaleQuantile)
      */
+    return d3_scale_percentile_values_sorted(get_numeric_values_sorted(values));
+}
+
+export function d3_scale_percentile_values_sorted(values: Array<number>): d3ScalePercentile {
     console.assert(values.length >= 2);
     var domain_idx = [0, values.length - 1];
     var scaleOutput = d3.scaleLinear().domain([0, 1]);
@@ -49,6 +97,7 @@ export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
             const upperV = values[upper];
             console.assert(lowerV != upperV, "values should be distinct", lowerV, upperV);
             console.assert(lowerV <= x && x <= upperV, `percentile_scale(${x}): lowerV=${lowerV}, x=${x}, upperV=${upperV}`, {
+                'x': x,
                 'values': values,
                 'lower': lower,
                 'domain_idx': domain_idx,
@@ -95,7 +144,7 @@ export function d3_scale_percentile(values: Array<number>): d3ScalePercentile {
         return scale;
     };
     function copy() {
-        var new_scale = d3_scale_percentile(values);
+        var new_scale = d3_scale_percentile_values_sorted(values);
         new_scale.domain_idx(domain_idx);
         new_scale.range(scaleOutput.range());
         return new_scale;
@@ -187,10 +236,7 @@ export function scale_add_outliers(scale_orig) {
       var range = scale_orig.range();
       var origin_scale_size = compute_origin_scale_size();
       var ascending_order = range[0] < range[1];
-      if (Number.isNaN(x) || x == Infinity || x == -Infinity || x == "inf" || x == "-inf" || x === null) {
-          if (ascending_order) {
-              return range[1];
-          }
+      if (is_special_numeric(x)) {
           return range[1];
       }
       var scale_orig_value_rel = (scale_orig(x) - range[0]) / (range[1] - range[0]) * origin_scale_size;
