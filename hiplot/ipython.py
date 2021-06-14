@@ -43,6 +43,12 @@ def jupyter_make_full_width(content: str) -> str:
 <script type="text/javascript">
 (function() {{
     const elem = document.getElementById({json.dumps(w_id)});
+    try {{
+        Jupyter.notebook.kernel; // `Jupyter` is not defined on Labs
+    }} catch(err) {{
+        console.warn('Option "force_full_width" is only supported on Jupyter Notebooks (Labs is not supported as the display area is larger)');
+        return;
+    }}
     elem.style.width = "100vw";
     const removeElems = elem.parentElement.parentElement.getElementsByClassName("prompt");
     for (var i = 0; i < removeElems.length; ++i) {{
