@@ -267,6 +267,8 @@ load_wav2letter = Wav2letterLoader()
 
 def _get_module_by_name_in_cwd(name: str) -> tp.Any:
     spec = importlib.util.spec_from_file_location(name, str(Path(os.getcwd()) / f"{name}.py"))
+    if spec is None:
+        return None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)  # type: ignore
     return module
@@ -280,6 +282,8 @@ def get_fetcher(fetcher_spec: str) -> hip.ExperimentFetcher:
         if len(parts) != 2:
             raise
         module = _get_module_by_name_in_cwd(parts[0])
+    if module is None:
+        raise RuntimeError(f"Unable to create fetcher '{fetcher_spec}'")
 
     return getattr(module, parts[-1])  # type: ignore
 
