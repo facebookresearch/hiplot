@@ -153,7 +153,7 @@ try {{
         }});
         comm_message_id += 1;
     }};
-    Object.assign(options, {{"on_change": {{
+    Object.assign(options, {{"onChange": {{
         "selected_uids": send_data_change,
         "brush_extents": send_data_change,
     }}}});
