@@ -7,7 +7,7 @@
 
 import * as d3 from "d3";
 
-import color from "color";
+import * as color from "color";
 
 import { PersistentState } from "./lib/savedstate";
 import { categoricalColorScheme } from "./lib/categoricalcolors";
