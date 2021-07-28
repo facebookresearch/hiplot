@@ -135,6 +135,17 @@ LICENSE file in the root directory of this source tree."),
                 }
               }
           },
+          {
+              // Let's pass the color* modules through the TS Loader to transpile to ES3
+              test: /\.(js)$/,
+              loader: 'ts-loader',
+              exclude: /node_modules\/(?!color)/,
+              options: {
+                compilerOptions: {
+                  declaration: false,
+                }
+              }
+          },
           // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
           {
               enforce: "pre",
