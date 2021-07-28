@@ -127,8 +127,18 @@ LICENSE file in the root directory of this source tree."),
               options: { inline: true, fallback: false }
           },
           {
+              // Let's pass the color* modules through the TS Loader to transpile to ES3
+              test: /\.js$/,
+              loader: 'ts-loader',
+              include: /node_modules\/color/,
+              options: {
+                transpileOnly: true,
+              }
+          },
+          {
               test: /\.(ts|tsx)$/,
               loader: 'ts-loader',
+              exclude: /node_modules/,
               options: {
                 compilerOptions: {
                   declaration: false,
@@ -149,6 +159,25 @@ LICENSE file in the root directory of this source tree."),
     plugins: plugins,
     devtool: 'source-map',
 }};
+
+
+// Make sure we generate ES3 code
+const webpackOutputEnvironment = {
+  // The environment supports arrow functions ('() => { ... }').
+  arrowFunction: false,
+  // The environment supports BigInt as literal (123n).
+  bigIntLiteral: false,
+  // The environment supports const and let for variable declarations.
+  const: false,
+  // The environment supports destructuring ('{ a, b } = obj').
+  destructuring: false,
+  // The environment supports an async import() function to import EcmaScript modules.
+  dynamicImport: false,
+  // The environment supports 'for of' iteration ('for (const x of array) { ... }').
+  forOf: false,
+  // The environment supports ECMAScript Module syntax to import ECMAScript modules (import ... from '...').
+  module: false,
+};
 
 module.exports = [
 // Web config - for hiplot webserver, notebook and streamlit
@@ -174,7 +203,8 @@ env => {
         path: distPath,
         filename: '[name].bundle.js',
         library: 'hiplot',
-        libraryTarget: 'var'
+        libraryTarget: 'var',
+        environment: webpackOutputEnvironment,
     },
     ...exportConfig(env, {
       web: true,
@@ -190,7 +220,8 @@ env => { return {
         path: distPath,
         filename: '[name].lib.js',
         library: 'hiplot',
-        libraryTarget: 'umd'
+        libraryTarget: 'umd',
+        environment: webpackOutputEnvironment,
     },
     externals: {
       react: {

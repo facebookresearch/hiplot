@@ -6,7 +6,7 @@
  */
 import * as d3 from "d3";
 import seedrandom from "seedrandom";
-import colorsys from "colorsys";
+import * as color from "color";
 function hashCode(str) {
     var hash = 0, i, chr;
     if (str.length === 0)
@@ -24,18 +24,12 @@ export function categoricalColorScheme(value) {
     var h = hashCode(json);
     var uniform01 = seedrandom(json)();
     // @ts-ignore
-    var c_turbo = colorsys.parseCss(d3.interpolateTurbo(uniform01));
-    var c_hsv = colorsys.rgb_to_hsv(c_turbo);
+    var c = color(d3.interpolateTurbo(uniform01)).hsv().object();
     if ((h % 3) == 1) {
-        c_hsv.v -= 20;
+        c.v -= 20;
     }
     if ((h % 3) == 2) {
-        c_hsv.s -= 20;
+        c.s -= 20;
     }
-    var c = colorsys.hsv_to_rgb({
-        h: c_hsv.h,
-        s: c_hsv.s,
-        v: c_hsv.v
-    });
-    return 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+    return color(c).rgb().string();
 }

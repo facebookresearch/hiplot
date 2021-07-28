@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import * as d3 from "d3";
-import colorsys from "colorsys";
+import * as color from "color";
 import { categoricalColorScheme } from "./lib/categoricalcolors";
 import { d3_scale_percentile, d3_scale_timestamp, scale_add_outliers, is_special_numeric, d3_scale_categorical, get_numeric_values_sorted } from "./lib/d3_scales";
 import { ParamType } from "./types";
@@ -122,8 +122,7 @@ function compute_val2color(pd) {
         }
         if (pd.distinct_values.length <= 20) {
             var scheme = ["#1f77b4", "#ff7f0e", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#1f77b4", "#aec7e8", "#ffbb78", "#ff9896", "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5", "#2ca02c"];
-            var c = colorsys.parseCss(scheme[i]);
-            pd.__val2color[pd.distinct_values[i]] = 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+            pd.__val2color[pd.distinct_values[i]] = color(scheme[i]).rgb().string();
             continue;
         }
         pd.__val2color[pd.distinct_values[i]] = categoricalColorScheme(pd.distinct_values[i]);
@@ -197,7 +196,7 @@ export function colorScheme(pd, value, alpha, defaultColorMap) {
         var interpColFn = getColorMap(pd, defaultColorMap);
         try {
             var code = interpColFn(colr);
-            var rgb = colorsys.parseCss(code);
+            var rgb = color(code).rgb().object();
             return "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", " + alpha + ")";
         }
         catch (err) {
