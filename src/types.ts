@@ -48,6 +48,7 @@ export interface HiPlotExperiment { // Mirror of python `hip.Experiment`
     parameters_definition?: {[key: string]: HiPlotValueDef},
     colormap?: string;
     colorby?: string;
+    weightcolumn?: string;
     display_data?: {[key: string]: {[key2: string]: any}},
 }
 

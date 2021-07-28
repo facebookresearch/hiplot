@@ -191,6 +191,9 @@ class Experiment(_DictSerializable):
 
     :ivar datapoints: All the measurements we have. One datapoint corresponds to one line in the parallel plot and to one line in the table.
     :ivar parameters_definition: Characteristics of the columns (ordering, type, etc...)
+    :ivar colormap: Colormap to use
+    :ivar colorby: Default column to color by
+    :ivar weightcolumn: If rows have different weights, use this column as the weight (default to 1 if not specified)
 
     :Example:
 
@@ -212,6 +215,7 @@ class Experiment(_DictSerializable):
         self.parameters_definition = parameters_definition if parameters_definition is not None else defaultdict(ValueDef)
         self.colormap = colormap if colormap is not None else "interpolateTurbo"
         self.colorby: tp.Optional[str] = None
+        self.weightcolumn: tp.Optional[str] = None
         self._display_data: tp.Dict[str, tp.Dict[str, tp.Any]] = {}
         self._compress: bool = False
 
@@ -394,6 +398,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             "parameters_definition": {k: v._asdict() for k, v in self.parameters_definition.items()},
             "colormap": self.colormap,
             "colorby": self.colorby,
+            "weightcolumn": self.weightcolumn,
             "display_data": self._display_data,
         }
         if self._compress:
