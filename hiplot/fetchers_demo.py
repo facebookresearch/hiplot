@@ -296,6 +296,20 @@ def demo_first_value_nan() -> hip.Experiment:
     ])
 
 
+def demo_weighted_rows() -> hip.Experiment:
+    experiment = hip.Experiment.from_iterable([
+        {'w': 1.0, 'a': 1, 'b': 1},
+        {'w': 2.0, 'a': 2, 'b': 1},
+        {'w': -2.0, 'a': 2, 'b': 1},
+        {'w': math.inf, 'a': 2, 'b': 2},
+        {'w': 'not_a_number', 'a': 2, 'b': 3},
+        {'w': None, 'a': 3, 'b': 3},
+        {'a': 4, 'b': 3},
+    ])
+    experiment.weightcolumn = "w"
+    return experiment
+
+
 README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_big": lambda: demo(1000),
@@ -318,4 +332,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_force_constant_pplot": demo_force_constant_pplot,
     "demo_color_interpolate_inverse": demo_color_interpolate_inverse,
     "demo_first_value_nan": demo_first_value_nan,
+    "demo_weighted_rows": demo_weighted_rows,
 }
