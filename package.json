@@ -21,7 +21,7 @@
     "@types/source-map": "^0.5.7",
     "@types/underscore": "^1.10.24",
     "bootstrap": "^4.6.0",
-    "colorsys": "^1.0.22",
+    "color": "^4.0.0",
     "css-loader": "^5.2.6",
     "d3": "^5.16.0",
     "datatables.net-bs4": "^1.10.23",
