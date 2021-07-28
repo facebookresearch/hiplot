@@ -322,7 +322,7 @@ jobs:
       - attach_workspace:
           at: npm-package
       - run: npm install es-check
-      - run: npx es-check es3 npm-package/hiplot.lib.js
+      - run: npx es-check es3 npm-package/hiplot/dist/hiplot.lib.js
 
   npm-test:
     docker:
