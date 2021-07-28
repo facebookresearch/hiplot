@@ -127,19 +127,18 @@ LICENSE file in the root directory of this source tree."),
               options: { inline: true, fallback: false }
           },
           {
-              test: /\.(ts|tsx)$/,
+              // Let's pass the color* modules through the TS Loader to transpile to ES3
+              test: /\.js$/,
               loader: 'ts-loader',
+              include: /node_modules\/color/,
               options: {
-                compilerOptions: {
-                  declaration: false,
-                }
+                transpileOnly: true,
               }
           },
           {
-              // Let's pass the color* modules through the TS Loader to transpile to ES3
-              test: /\.(js)$/,
+              test: /\.(ts|tsx)$/,
               loader: 'ts-loader',
-              exclude: /node_modules\/(?!color)/,
+              exclude: /node_modules/,
               options: {
                 compilerOptions: {
                   declaration: false,
