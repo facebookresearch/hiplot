@@ -8,7 +8,7 @@
 import * as d3 from "d3";
 
 import seedrandom from "seedrandom";
-import colorsys from "colorsys";
+import * as color from "color";
 
 
 function hashCode(str: string): number {
@@ -27,18 +27,12 @@ export function categoricalColorScheme(value: string): string {
     const h = hashCode(json);
     const uniform01 = seedrandom(json)();
     // @ts-ignore
-    const c_turbo = colorsys.parseCss(d3.interpolateTurbo(uniform01));
-    const c_hsv = colorsys.rgb_to_hsv(c_turbo);
+    const c = color(d3.interpolateTurbo(uniform01)).hsv().object();
     if ((h % 3) == 1) {
-        c_hsv.v -= 20;
+        c.v -= 20;
     }
     if ((h % 3) == 2) {
-        c_hsv.s -= 20;
+        c.s -= 20;
     }
-    const c = colorsys.hsv_to_rgb({
-        h: c_hsv.h,
-        s: c_hsv.s,
-        v: c_hsv.v
-    });
-    return 'rgb(' + c.r + ', ' + c.g + ',' + c.b + ')';
+    return color(c).rgb().string();
 }

@@ -314,6 +314,16 @@ jobs:
           paths:
             - built
 
+  npm-test-ES3:
+    docker:
+      - image: node:lts-buster
+    steps:
+      - checkout
+      - attach_workspace:
+          at: npm-package
+      - run: npm install es-check
+      - run: npx es-check es3 npm-package/hiplot/dist/hiplot.lib.js
+
   npm-test:
     docker:
       - image: node:lts-buster
@@ -539,6 +549,12 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - npm-test-ES3:
+          requires:
+            - npm-build
+          filters:
+            tags:
+              only: /.*/
       - mypy_pytest:
           requires:
             - npm-build
@@ -604,6 +620,7 @@ workflows:
           requires:
             - pypi-build
             - npm-build
+            - npm-test-ES3
             - npm-test
             - docs-build
             - browser-jupyter-chrome
@@ -621,6 +638,7 @@ workflows:
           requires:
             - pypi-build
             - npm-build
+            - npm-test-ES3
             - npm-test
             - docs-build
             - browser-jupyter-chrome
