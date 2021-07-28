@@ -7,7 +7,7 @@
 
 import style from "./hiplot.scss";
 import React from "react";
-import { HiPlotLoadStatus, IDatasets } from "./types";
+import { Datapoint, HiPlotLoadStatus, IDatasets } from "./types";
 import { HiPlotDataControlProps, RestoreDataBtn, ExcludeDataBtn, ExportDataCSVBtn, KeepDataBtn } from "./controls";
 import { DataProviderClass, DataProviderComponentClass, DataProviderProps} from "./plugin";
 
@@ -22,6 +22,7 @@ import { PersistentState } from "./lib/savedstate";
 
 
 interface HeaderBarProps extends IDatasets, HiPlotDataControlProps {
+    weightColumn?: string;
     loadStatus: HiPlotLoadStatus; // Should not allow to load an xp when already loading another xp
     persistentState: PersistentState;
     onLoadExperiment: (load_promise: Promise<any>) => void;
@@ -33,13 +34,12 @@ interface HeaderBarProps extends IDatasets, HiPlotDataControlProps {
 interface HeaderBarState {
     isTextareaFocused: boolean;
     hasTutorial: boolean;
+    selectedPct: string;
+    selectedPctWeighted: string;
 };
 
 export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
     dataProviderRef = React.createRef<DataProviderClass>();
-    selected_count_ref: React.RefObject<HTMLElement> = React.createRef();
-    selected_pct_ref: React.RefObject<HTMLElement> = React.createRef();
-    total_count_ref: React.RefObject<HTMLElement> = React.createRef();
     controls_root_ref: React.RefObject<HTMLDivElement> = React.createRef();
 
     constructor(props: HeaderBarProps) {
@@ -47,23 +47,51 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
         this.state = {
             isTextareaFocused: false,
             hasTutorial: false,
+            selectedPct: '???',
+            selectedPctWeighted: '???',
         };
     }
     recomputeMetrics() {
-        if (!this.selected_count_ref.current) {
+        const newSelectedPct = (100 * this.props.rows_selected.length / this.props.rows_filtered.length).toPrecision(3);
+        if (newSelectedPct != this.state.selectedPct) {
+            this.setState({
+                selectedPct: (100 * this.props.rows_selected.length / this.props.rows_filtered.length).toPrecision(3)
+            });
+        }
+    }
+    recomputeSelectedWeightedSum() {
+        if (!this.props.weightColumn) {
+            this.setState({
+                selectedPctWeighted: '???',
+            });
             return;
         }
-        const selected_count = this.props.rows_selected.length;
-        const total_count = this.props.rows_filtered.length;
-        this.selected_count_ref.current.innerText = '' + selected_count;
-        this.selected_pct_ref.current.innerText = '' + (100 * selected_count / total_count).toPrecision(3);
-        this.total_count_ref.current.innerText = '' + total_count;
+        const getWeight = function(dp: Datapoint): number {
+            const w = parseFloat(dp[this.props.weightColumn]);
+            return !isNaN(w) && isFinite(w) && w > 0.0 ? w : 1.0;
+        }.bind(this);
+        var totalWeightFiltered = 0.0, totalWeightSelected = 0.0;
+        this.props.rows_filtered.forEach(function(dp: Datapoint) {
+            totalWeightFiltered += getWeight(dp);
+        });
+        this.props.rows_selected.forEach(function(dp: Datapoint) {
+            totalWeightSelected += getWeight(dp);
+        });
+        const pctage = (100 * totalWeightSelected / totalWeightFiltered);
+        console.assert(!isNaN(pctage), {"pctage": pctage, "totalWeightFiltered": totalWeightFiltered, "totalWeightSelected": totalWeightSelected});
+        this.setState({
+            selectedPctWeighted: pctage.toPrecision(3)
+        });
     }
     componentDidMount() {
         this.recomputeMetrics();
+        this.recomputeSelectedWeightedSum();
     }
-    componentDidUpdate() {
+    componentDidUpdate(prevProps: HeaderBarProps, prevState: HeaderBarState): void {
         this.recomputeMetrics();
+        if (prevProps.weightColumn != this.props.weightColumn || this.props.rows_selected != prevProps.rows_selected || this.props.rows_filtered != prevProps.rows_filtered) {
+            this.recomputeSelectedWeightedSum();
+        }
     }
     onToggleTutorial() {
         this.setState(function(prevState, prevProps) {
@@ -107,9 +135,15 @@ export class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
                     </div>
                     <div className={style.controlGroup}>
                         <div style={{"fontFamily": "monospace", "fontSize": "14px"}}>
-            Selected: <strong ref={this.selected_count_ref} style={{"minWidth": "4em", "textAlign": "right", "display": "inline-block"}}>??</strong>
-                    /<strong ref={this.total_count_ref} style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>??</strong> (
-                        <span style={{"minWidth": "3em", "textAlign": "right", "display": "inline-block"}} ref={this.selected_pct_ref}>??</span>%)
+            Selected: <strong style={{"minWidth": "4em", "textAlign": "right", "display": "inline-block"}}>{this.props.rows_selected.length}</strong>
+                    /<strong style={{"minWidth": "4em", "textAlign": "left", "display": "inline-block"}}>{this.props.rows_filtered.length}</strong> (
+                        {!this.props.weightColumn &&
+                            <React.Fragment><span style={{"minWidth": "3em", "textAlign": "right", "display": "inline-block"}}>{this.state.selectedPct}</span>%</React.Fragment>
+                        }
+                        {this.props.weightColumn &&
+                            <React.Fragment><span style={{"minWidth": "3em", "textAlign": "right", "display": "inline-block"}}>{this.state.selectedPctWeighted}</span>% weighted</React.Fragment>
+                        }
+                        )
                         </div>
                     </div>
                 </React.Fragment>

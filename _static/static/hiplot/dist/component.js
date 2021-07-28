@@ -439,7 +439,7 @@ var HiPlot = /** @class */ (function (_super) {
         return (React.createElement("div", { className: "hip_thm--" + (this.state.dark ? "dark" : "light") },
             React.createElement("div", { className: style.hiplot + " " + (this.state.dark ? style.dark : "") },
                 React.createElement(SelectedCountProgressBar, __assign({}, controlProps)),
-                React.createElement(HeaderBar, __assign({ onLoadExperiment: this.loadWithPromise.bind(this), persistentState: this.state.persistentState, dataProvider: this.state.dataProvider, loadStatus: this.state.loadStatus, dark: this.state.dark }, controlProps)),
+                React.createElement(HeaderBar, __assign({ weightColumn: this.state.experiment ? this.state.experiment.weightcolumn : undefined, onLoadExperiment: this.loadWithPromise.bind(this), persistentState: this.state.persistentState, dataProvider: this.state.dataProvider, loadStatus: this.state.loadStatus, dark: this.state.dark }, controlProps)),
                 this.state.loadStatus == HiPlotLoadStatus.Error &&
                     React.createElement(ErrorDisplay, { error: this.state.error }),
                 this.state.loadStatus != HiPlotLoadStatus.Loaded &&

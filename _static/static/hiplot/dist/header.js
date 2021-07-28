@@ -44,31 +44,56 @@ var HeaderBar = /** @class */ (function (_super) {
     function HeaderBar(props) {
         var _this = _super.call(this, props) || this;
         _this.dataProviderRef = React.createRef();
-        _this.selected_count_ref = React.createRef();
-        _this.selected_pct_ref = React.createRef();
-        _this.total_count_ref = React.createRef();
         _this.controls_root_ref = React.createRef();
         _this.state = {
             isTextareaFocused: false,
-            hasTutorial: false
+            hasTutorial: false,
+            selectedPct: '???',
+            selectedPctWeighted: '???'
         };
         return _this;
     }
     HeaderBar.prototype.recomputeMetrics = function () {
-        if (!this.selected_count_ref.current) {
+        var newSelectedPct = (100 * this.props.rows_selected.length / this.props.rows_filtered.length).toPrecision(3);
+        if (newSelectedPct != this.state.selectedPct) {
+            this.setState({
+                selectedPct: (100 * this.props.rows_selected.length / this.props.rows_filtered.length).toPrecision(3)
+            });
+        }
+    };
+    HeaderBar.prototype.recomputeSelectedWeightedSum = function () {
+        if (!this.props.weightColumn) {
+            this.setState({
+                selectedPctWeighted: '???'
+            });
             return;
         }
-        var selected_count = this.props.rows_selected.length;
-        var total_count = this.props.rows_filtered.length;
-        this.selected_count_ref.current.innerText = '' + selected_count;
-        this.selected_pct_ref.current.innerText = '' + (100 * selected_count / total_count).toPrecision(3);
-        this.total_count_ref.current.innerText = '' + total_count;
+        var getWeight = function (dp) {
+            var w = parseFloat(dp[this.props.weightColumn]);
+            return !isNaN(w) && isFinite(w) && w > 0.0 ? w : 1.0;
+        }.bind(this);
+        var totalWeightFiltered = 0.0, totalWeightSelected = 0.0;
+        this.props.rows_filtered.forEach(function (dp) {
+            totalWeightFiltered += getWeight(dp);
+        });
+        this.props.rows_selected.forEach(function (dp) {
+            totalWeightSelected += getWeight(dp);
+        });
+        var pctage = (100 * totalWeightSelected / totalWeightFiltered);
+        console.assert(!isNaN(pctage), { "pctage": pctage, "totalWeightFiltered": totalWeightFiltered, "totalWeightSelected": totalWeightSelected });
+        this.setState({
+            selectedPctWeighted: pctage.toPrecision(3)
+        });
     };
     HeaderBar.prototype.componentDidMount = function () {
         this.recomputeMetrics();
+        this.recomputeSelectedWeightedSum();
     };
-    HeaderBar.prototype.componentDidUpdate = function () {
+    HeaderBar.prototype.componentDidUpdate = function (prevProps, prevState) {
         this.recomputeMetrics();
+        if (prevProps.weightColumn != this.props.weightColumn || this.props.rows_selected != prevProps.rows_selected || this.props.rows_filtered != prevProps.rows_filtered) {
+            this.recomputeSelectedWeightedSum();
+        }
     };
     HeaderBar.prototype.onToggleTutorial = function () {
         this.setState(function (prevState, prevProps) {
@@ -109,12 +134,19 @@ var HeaderBar = /** @class */ (function (_super) {
                     React.createElement("div", { className: style.controlGroup },
                         React.createElement("div", { style: { "fontFamily": "monospace", "fontSize": "14px" } },
                             "Selected: ",
-                            React.createElement("strong", { ref: this.selected_count_ref, style: { "minWidth": "4em", "textAlign": "right", "display": "inline-block" } }, "??"),
+                            React.createElement("strong", { style: { "minWidth": "4em", "textAlign": "right", "display": "inline-block" } }, this.props.rows_selected.length),
                             "/",
-                            React.createElement("strong", { ref: this.total_count_ref, style: { "minWidth": "4em", "textAlign": "left", "display": "inline-block" } }, "??"),
+                            React.createElement("strong", { style: { "minWidth": "4em", "textAlign": "left", "display": "inline-block" } }, this.props.rows_filtered.length),
                             " (",
-                            React.createElement("span", { style: { "minWidth": "3em", "textAlign": "right", "display": "inline-block" }, ref: this.selected_pct_ref }, "??"),
-                            "%)")))));
+                            !this.props.weightColumn &&
+                                React.createElement(React.Fragment, null,
+                                    React.createElement("span", { style: { "minWidth": "3em", "textAlign": "right", "display": "inline-block" } }, this.state.selectedPct),
+                                    "%"),
+                            this.props.weightColumn &&
+                                React.createElement(React.Fragment, null,
+                                    React.createElement("span", { style: { "minWidth": "3em", "textAlign": "right", "display": "inline-block" } }, this.state.selectedPctWeighted),
+                                    "% weighted"),
+                            ")")))));
     };
     HeaderBar.prototype.render = function () {
         var _this = this;

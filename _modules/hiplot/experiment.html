@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>hiplot.experiment &#8212; HiPlot 0.1.26
+    <title>hiplot.experiment &#8212; HiPlot 0.1.27
  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/guzzle.css" />
@@ -22,7 +22,7 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <link rel="shortcut icon" href="../../_static/../hiplot/static/icon.png"/>
+    <link rel="shortcut icon" href="../../_static/icon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   
@@ -35,7 +35,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.26
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.27
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 
@@ -296,6 +296,9 @@
 
 <span class="sd">    :ivar datapoints: All the measurements we have. One datapoint corresponds to one line in the parallel plot and to one line in the table.</span>
 <span class="sd">    :ivar parameters_definition: Characteristics of the columns (ordering, type, etc...)</span>
+<span class="sd">    :ivar colormap: Colormap to use</span>
+<span class="sd">    :ivar colorby: Default column to color by</span>
+<span class="sd">    :ivar weightcolumn: If rows have different weights, use this column as the weight (default to 1 if not specified)</span>
 
 <span class="sd">    :Example:</span>
 
@@ -317,6 +320,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters_definition</span> <span class="o">=</span> <span class="n">parameters_definition</span> <span class="k">if</span> <span class="n">parameters_definition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">ValueDef</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span> <span class="o">=</span> <span class="n">colormap</span> <span class="k">if</span> <span class="n">colormap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;interpolateTurbo&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">colorby</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weightcolumn</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_display_data</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_compress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -499,6 +503,7 @@
             <span class="s2">&quot;parameters_definition&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters_definition</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
             <span class="s2">&quot;colormap&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormap</span><span class="p">,</span>
             <span class="s2">&quot;colorby&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorby</span><span class="p">,</span>
+            <span class="s2">&quot;weightcolumn&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">weightcolumn</span><span class="p">,</span>
             <span class="s2">&quot;display_data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_data</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compress</span><span class="p">:</span>
@@ -661,7 +666,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.26
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.27
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 

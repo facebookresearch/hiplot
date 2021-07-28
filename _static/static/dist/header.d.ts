@@ -4,6 +4,7 @@ import { HiPlotDataControlProps } from "./controls";
 import { DataProviderClass } from "./plugin";
 import { PersistentState } from "./lib/savedstate";
 interface HeaderBarProps extends IDatasets, HiPlotDataControlProps {
+    weightColumn?: string;
     loadStatus: HiPlotLoadStatus;
     persistentState: PersistentState;
     onLoadExperiment: (load_promise: Promise<any>) => void;
@@ -13,17 +14,17 @@ interface HeaderBarProps extends IDatasets, HiPlotDataControlProps {
 interface HeaderBarState {
     isTextareaFocused: boolean;
     hasTutorial: boolean;
+    selectedPct: string;
+    selectedPctWeighted: string;
 }
 export declare class HeaderBar extends React.Component<HeaderBarProps, HeaderBarState> {
     dataProviderRef: React.RefObject<DataProviderClass>;
-    selected_count_ref: React.RefObject<HTMLElement>;
-    selected_pct_ref: React.RefObject<HTMLElement>;
-    total_count_ref: React.RefObject<HTMLElement>;
     controls_root_ref: React.RefObject<HTMLDivElement>;
     constructor(props: HeaderBarProps);
     recomputeMetrics(): void;
+    recomputeSelectedWeightedSum(): void;
     componentDidMount(): void;
-    componentDidUpdate(): void;
+    componentDidUpdate(prevProps: HeaderBarProps, prevState: HeaderBarState): void;
     onToggleTutorial(): void;
     onRefresh(): void;
     renderControls(): JSX.Element;

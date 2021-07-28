@@ -536,6 +536,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             <div className={`${style.hiplot} ${this.state.dark ? style.dark : ""}`}>
             <SelectedCountProgressBar {...controlProps} />
             <HeaderBar
+                weightColumn={this.state.experiment ? this.state.experiment.weightcolumn : undefined}
                 onLoadExperiment={this.loadWithPromise.bind(this)}
                 persistentState={this.state.persistentState}
                 dataProvider={this.state.dataProvider}

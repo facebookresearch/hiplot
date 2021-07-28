@@ -41,6 +41,7 @@ export interface HiPlotExperiment {
     };
     colormap?: string;
     colorby?: string;
+    weightcolumn?: string;
     display_data?: {
         [key: string]: {
             [key2: string]: any;
