@@ -71,7 +71,7 @@ github_doc_root = 'https://github.com/facebookresearch/hiplot'
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-release = os.environ.get("CIRCLE_TAG", subprocess.check_output(["git", "describe", "--tags", "--abbrev=0", "master"]).decode('utf-8'))
+release = os.environ.get("CIRCLE_TAG", subprocess.check_output(["git", "describe", "--tags", "--abbrev=0", "main"]).decode('utf-8'))
 
 # The short X.Y version.
 version = '.'.join(release.split('.')[:2])
