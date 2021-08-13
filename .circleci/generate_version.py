@@ -6,7 +6,7 @@ import shlex
 if "CIRCLE_TAG" in os.environ:
     python_version = npm_version = os.environ['CIRCLE_TAG']
 else:
-    last_tag = subprocess.check_output(shlex.split("git describe --tags --abbrev=0 master"), encoding="utf-8")
+    last_tag = subprocess.check_output(shlex.split("git describe --tags --abbrev=0 main"), encoding="utf-8")
     last_tag = [int(s) for s in last_tag.split(".")]
     assert len(last_tag) == 3
     last_tag[-1] += 1

@@ -615,7 +615,7 @@ workflows:
             - docs-build
           filters:
             branches:
-              only: master
+              only: main
       - pypi-deploy:
           requires:
             - pypi-build
@@ -631,8 +631,8 @@ workflows:
             - mypy_pytest
           filters:
             branches:
-              only: master
-            tags: # Re-deploy master build when pushing a new tag
+              only: main
+            tags: # Re-deploy main build when pushing a new tag
               only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.post(0|[1-9][0-9]*))?/
       - npm-deploy:
           requires:
@@ -649,6 +649,6 @@ workflows:
             - mypy_pytest
           filters:
             branches:
-              only: master
-            tags: # Re-deploy master build when pushing a new tag
+              only: main
+            tags: # Re-deploy main build when pushing a new tag
               only: /(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.post(0|[1-9][0-9]*))?/
