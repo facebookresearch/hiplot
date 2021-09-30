@@ -400,7 +400,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       me.dimensions_dom.selectAll(".label-name").style("font-size", "20px");
       me.dimensions_dom.selectAll(".pplot-label").each(function(this: SVGForeignObjectElement, d: string) {
         foDynamicSizeFitContent(this, [-me.xscale(d) + 5, -me.xscale(d) + me.state.width - 5]);
-      }).attr("x", 0).style("width", "0px");
+      }).attr("x", 0).style("width", "1px");
       me.updateAxisTitlesAnglesAndFontSize();
       // Add and store a brush for each axis.
       me.dimensions_dom.append("svg:g")
