@@ -13,6 +13,8 @@
 }
 .hiplot {
   font-family: Ubuntu, Tahoma, Helvetica, sans-serif;
+}
+:global(.hip_thm--light) {
   background: #f7f7f7;
   color: #404040;
 }
@@ -167,6 +169,13 @@
   text-decoration: underline dotted;
 }
 
+:global(.hip_thm--dark) .axisLabelText {
+  color: #b7b7b7;
+}
+:global(.hip_thm--dark) .axisLabelText:hover {
+  color: white;
+}
+
 /* Histogram */
 .histSelected line {
   stroke: black;
@@ -209,39 +218,39 @@
   margin-right: 5px;
 }
 
-:global(.dark) .axis text.label {
+:global(.hip_thm--dark) .axis text.label {
   fill: #ddd;
 }
 /* dark theme */
 
-:global(.dark) .header {
+:global(.hip_thm--dark) .header {
   background: #040404;
   color: #f3f3f3;
 }
 
-:global(.dark) {
+:global(.hip_thm--dark) {
   background: #131313;
   color: #e3e3e3;
 }
-:global(.dark) a {
+:global(.hip_thm--dark) a {
   color: #5ae;
 }
-:global(.dark) .background {
+:global(.hip_thm--dark) .background {
   fill: none;
 }
-:global(.dark) ::-webkit-scrollbar-track {
+:global(.hip_thm--dark) ::-webkit-scrollbar-track {
   background: #222;
 }
-:global(.dark) ::-webkit-scrollbar-thumb {
+:global(.hip_thm--dark) ::-webkit-scrollbar-thumb {
   background: #444;
 }
-:global(.dark) .header button:enabled {
+:global(.hip_thm--dark) .header button:enabled {
   border-color: white !important;
 }
-:global(.dark) .histSelected line {
+:global(.hip_thm--dark) .histSelected line {
   stroke: white;
   stroke-width: 2;
 }
-:global(.dark) .histAll rect {
+:global(.hip_thm--dark) .histAll rect {
   fill:rgb(99, 80, 117);
 }
