@@ -661,7 +661,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     // Set optimal rotation angle and scale fonts so that everything fits on screen
     const MIN_ROTATION_ANGLE = 20;
     const MAX_ROTATION_ANGLE = 70;
-    const MAX_FONT_SIZE = 20;
+    const MAX_FONT_SIZE = 16;
     const MIN_FONT_SIZE = 6;
     const MAX_X = this.dimensions_dom.node().parentElement.parentElement.getBoundingClientRect().right;
     const ROTATION_ANGLE_RADS = Math.max(MIN_ROTATION_ANGLE * Math.PI / 180, Math.min(MAX_ROTATION_ANGLE * Math.PI / 180,
