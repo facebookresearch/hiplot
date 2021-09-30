@@ -1,0 +1,68 @@
+
+.parallel-plot-chart svg {
+    font-family: Ubuntu, Tahoma, Helvetica, sans-serif;
+  }
+  .parallel-plot-chart canvas, .parallel-plot-chart svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .parallel-plot-chart {
+    position: relative;
+  }
+.brush rect.extent {
+    fill: rgba(100,100,100,0.15);
+    stroke: #fff;
+}
+.brush:hover rect.extent {
+    stroke: #222;
+    stroke-dasharray: 5,5;
+}
+.brush rect.extent:hover {
+    stroke-dasharray: none;
+}
+
+.pplotLabel :global(.label-name) {
+    transform: rotate(327deg);
+    transform-origin: bottom left;
+}
+
+.axis .tickSelected {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.axis {
+    cursor: move;
+    font-size: 16px;
+}
+.axis text {
+  fill: #111;
+  text-anchor: right;
+  font-size: 13px;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+
+.axis line, .axis path {
+    fill: none;
+    stroke: #777;
+    stroke-width: 1;
+  }
+  .axis :global(.tick) {
+    width: 200px;
+  }
+  .axis :global(.label-name) {
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+  }
+/* Dark mode */
+:global(.dark) .brush rect.extent {
+    fill: rgba(100,100,100,0.15);
+    stroke: #ddd;
+  }
+:global(.dark) .axis text {
+    fill: #f2f2f2;
+    text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
+}
+:global(.dark) .axis line, :global(.dark) .axis path {
+    stroke: #777;
+}

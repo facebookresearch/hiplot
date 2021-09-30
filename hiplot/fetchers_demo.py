@@ -310,8 +310,21 @@ def demo_weighted_rows() -> hip.Experiment:
     return experiment
 
 
+def demo_3xcols() -> hip.Experiment:
+    xp = demo()
+    for i in range(2):
+        new_xp = demo()
+        for dp, new_dp in zip(xp.datapoints, new_xp.datapoints):
+            dp.values.update({
+                f"{k}{i}": v
+                for k, v in new_dp.values.items()
+            })
+    return xp
+
+
 README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo": demo,
+    "demo_3xcols": demo_3xcols,
     "demo_big": lambda: demo(1000),
     "demo_change_column_properties": demo_change_column_properties,
     "demo_basic_usage": demo_basic_usage,

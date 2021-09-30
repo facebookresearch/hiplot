@@ -15,6 +15,7 @@ function leftPos(anchor: string, w: number, minmax?: [number, number]): number {
     var left = {
         end: -w,
         start: 0,
+        left: 0,
         middle: -w / 2,
     }[anchor];
     if (minmax) {
@@ -53,6 +54,7 @@ export function foCreateAxisLabel(pd: ParamDef, cm?: React.RefObject<ContextMenu
         .classed(style.label, true);
     span.append("xhtml:span")
         .attr("class", pd.label_css)
+        .classed("label-name", true)
         .classed(style.axisLabelText, true)
         .classed("d-inline-block", true)
         .html(pd.name)
