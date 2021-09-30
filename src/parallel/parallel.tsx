@@ -10,14 +10,12 @@
 
 import $ from "jquery";
 import React from "react";
-import fitty from "fitty";
 import * as d3 from "d3";
 import _ from 'underscore';
 
 import { Datapoint, ParamType } from "../types";
 import { create_d3_scale, scale_pixels_range, ParamDef } from "../infertypes";
-import style from "./parallel.scss";
-import hiplotStyle from "../hiplot.scss";
+import style from "../hiplot.scss";
 import { HiPlotPluginData } from "../plugin";
 import { ResizableH } from "../lib/resizable";
 import { Filter, FilterType, apply_filters } from "../filters";
@@ -459,7 +457,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           };
         });
         me.setScaleRange(d);
-        div.selectAll("." + hiplotStyle.label)
+        div.selectAll("." + style.label)
           .filter(function(p) { return p == d; })
           .style("text-decoration", null);
       } else {
@@ -471,7 +469,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           };
         });
         me.setScaleRange(d);
-        div.selectAll("." + hiplotStyle.label)
+        div.selectAll("." + style.label)
           .filter(function(p) { return p == d; })
           .style("text-decoration", "underline");
       }
@@ -506,7 +504,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
               .selectAll('text')
               .classed(style.tickSelected, true)
               .style('display', function() {
-                if (d3.select(this).classed(hiplotStyle.label)) {
+                if (d3.select(this).classed(style.label)) {
                   return null;
                 }
                 var value = d3.select(this).data();
@@ -519,13 +517,13 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
               .style('display', null);
           }
           d3.select(this)
-            .selectAll("." + hiplotStyle.label)
+            .selectAll("." + style.label)
             .style('display', null);
         });
         ;
 
       // bold dimensions with label
-      div.selectAll("." + hiplotStyle.label)
+      div.selectAll("." + style.label)
         .style("font-weight", function(dimension) {
           if (_.include(actives, dimension)) return "bold";
           return null;

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@import "parallel/parallel.scss";
+
 .hiplot {
   margin: 0;
   width: 100%;
@@ -141,6 +143,8 @@
 /* Tooltips when hovering column labels */
 .tooltipContainer {
   display: inline-block;
+  /* we have overflow:visible so that's fine. This prevents from moving the axes by dragging inside the plot area */
+  width: 0px;
 }
 
 .tooltipBot {
