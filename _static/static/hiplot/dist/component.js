@@ -437,7 +437,7 @@ var HiPlot = /** @class */ (function (_super) {
             return __assign(__assign(__assign({ ref: this.plugins_ref[idx] }, (this.state.experiment.display_data && this.state.experiment.display_data[name] ? this.state.experiment.display_data[name] : {})), datasets), { rows_selected_filter: this.state.rows_selected_filter, name: name, persistentState: this.state.persistentState.children(name), window_state: this.plugins_window_state[name], sendMessage: this.sendMessage.bind(this), get_color_for_row: this.getColorForRow.bind(this), experiment: this.state.experiment, params_def: this.state.params_def, params_def_unfiltered: this.state.params_def_unfiltered, dp_lookup: this.state.dp_lookup, colorby: this.state.colorby, render_row_text: this.renderRowText.bind(this), context_menu_ref: this.contextMenuRef, setSelected: this.setSelected.bind(this), setHighlighted: this.setHighlighted.bind(this), asserts: this.props.asserts });
         }.bind(this);
         return (React.createElement("div", { className: "hip_thm--" + (this.state.dark ? "dark" : "light") },
-            React.createElement("div", { className: style.hiplot + " " + (this.state.dark ? style.dark : "") },
+            React.createElement("div", { className: style.hiplot },
                 React.createElement(SelectedCountProgressBar, __assign({}, controlProps)),
                 React.createElement(HeaderBar, __assign({ weightColumn: this.state.experiment ? this.state.experiment.weightcolumn : undefined, onLoadExperiment: this.loadWithPromise.bind(this), persistentState: this.state.persistentState, dataProvider: this.state.dataProvider, loadStatus: this.state.loadStatus, dark: this.state.dark }, controlProps)),
                 this.state.loadStatus == HiPlotLoadStatus.Error &&

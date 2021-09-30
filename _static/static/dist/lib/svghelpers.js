@@ -10,6 +10,7 @@ function leftPos(anchor, w, minmax) {
     var left = {
         end: -w,
         start: 0,
+        left: 0,
         middle: -w / 2
     }[anchor];
     if (minmax) {
@@ -46,9 +47,11 @@ export function foCreateAxisLabel(pd, cm, tooltip) {
     var fo = document.createElementNS('http://www.w3.org/2000/svg', "foreignObject");
     var span = d3.select(fo).append("xhtml:div")
         .classed(style.tooltipContainer, true)
-        .classed(style.label, true);
+        .classed(style.label, true)
+        .style("position", "fixed"); // BUGFIX for transforms in Safari (https://stackoverflow.com/questions/51313873/svg-foreignobject-not-working-properly-on-safari)
     span.append("xhtml:span")
         .attr("class", pd.label_css)
+        .classed("label-name", true)
         .classed(style.axisLabelText, true)
         .classed("d-inline-block", true)
         .html(pd.name)
@@ -60,10 +63,9 @@ export function foCreateAxisLabel(pd, cm, tooltip) {
         }
     });
     if (tooltip) {
-        span.append("span")
+        span.append("div")
             .classed(style.tooltiptext, true)
             .classed(style.tooltipBot, true)
-            .classed("d-inline-block", true)
             .text(tooltip);
     }
     return fo;
