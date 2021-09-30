@@ -71,6 +71,7 @@ export declare class ParallelPlot extends React.Component<ParallelPlotData, Para
     initParallelPlot(this: ParallelPlot): void;
     setScaleRange(k: string): void;
     createScale(k: string): any;
+    updateAxisTitlesAnglesAndFontSize(): void;
     compute_dimensions(): void;
     update_ticks: any;
     paths: any;

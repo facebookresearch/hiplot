@@ -40,7 +40,7 @@ import { foDynamicSizeFitContent, foCreateAxisLabel } from "../lib/svghelpers";
 ;
 ;
 ;
-var TOP_MARGIN_PIXELS = 100;
+var TOP_MARGIN_PIXELS = 80;
 var ParallelPlot = /** @class */ (function (_super) {
     __extends(ParallelPlot, _super);
     function ParallelPlot(props) {
@@ -261,6 +261,7 @@ var ParallelPlot = /** @class */ (function (_super) {
             }
             g.attr("transform", function (p) { return "translate(" + this.position(p) + ")"; }.bind(this));
             this.update_ticks();
+            this.updateAxisTitlesAnglesAndFontSize();
         }
         // Highlight polylines
         if (prevProps.rows_highlighted != this.props.rows_highlighted) {
@@ -458,31 +459,10 @@ var ParallelPlot = /** @class */ (function (_super) {
                 .classed("pplot-label", true)
                 .classed(style.pplotLabel, true);
             me.dimensions_dom.selectAll(".label-name").style("font-size", "20px");
-            // Set optimal rotation angle and scale fonts so that everything fits on screen
-            var MIN_ROTATION_ANGLE = 20;
-            var MAX_ROTATION_ANGLE = 70;
-            var MAX_FONT_SIZE = 24;
-            var MIN_FONT_SIZE = 8;
-            var MAX_X = me.dimensions_dom.node().parentElement.parentElement.getBoundingClientRect().right;
-            var ROTATION_ANGLE_RADS = Math.max(MIN_ROTATION_ANGLE * Math.PI / 180, Math.min(MAX_ROTATION_ANGLE * Math.PI / 180, Math.atan(24 * me.state.dimensions.length / me.state.width)));
-            var maxWidthForTop = TOP_MARGIN_PIXELS / Math.sin(ROTATION_ANGLE_RADS) - MAX_FONT_SIZE;
-            me.dimensions_dom.selectAll(".label-name").each(function () {
-                // Scale the font-size up or down depending on the text-length
-                var beginX = this.getBoundingClientRect().left;
-                var maxWidth = Math.min(
-                // Should not go outside of the svg (top)
-                maxWidthForTop, 
-                // Should not go outside of the svg (right)
-                (MAX_X - beginX) / Math.cos(ROTATION_ANGLE_RADS));
-                var newFontSize = Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, maxWidth / this.clientWidth * parseFloat(this.style.fontSize)));
-                this.style.fontSize = newFontSize + "px";
-                this.style.transform = "rotate(" + (360 - ROTATION_ANGLE_RADS * 180 / Math.PI) + "deg)";
-                var fo = this.parentElement.parentElement;
-                fo.setAttribute("y", -newFontSize + "");
-            });
             me.dimensions_dom.selectAll(".pplot-label").each(function (d) {
                 foDynamicSizeFitContent(this, [-me.xscale(d) + 5, -me.xscale(d) + me.state.width - 5]);
-            }).attr("x", 0);
+            }).attr("x", 0).style("width", "1px");
+            me.updateAxisTitlesAnglesAndFontSize();
             // Add and store a brush for each axis.
             me.dimensions_dom.append("svg:g")
                 .classed(style.brush, true)
@@ -718,6 +698,30 @@ var ParallelPlot = /** @class */ (function (_super) {
         scale.range(range);
         scale.parallel_plot_axis = k;
         return scale;
+    };
+    ParallelPlot.prototype.updateAxisTitlesAnglesAndFontSize = function () {
+        // Set optimal rotation angle and scale fonts so that everything fits on screen
+        var MIN_ROTATION_ANGLE = 20;
+        var MAX_ROTATION_ANGLE = 70;
+        var MAX_FONT_SIZE = 20;
+        var MIN_FONT_SIZE = 6;
+        var MAX_X = this.dimensions_dom.node().parentElement.parentElement.getBoundingClientRect().right;
+        var ROTATION_ANGLE_RADS = Math.max(MIN_ROTATION_ANGLE * Math.PI / 180, Math.min(MAX_ROTATION_ANGLE * Math.PI / 180, Math.atan(24 * this.state.dimensions.length / this.state.width)));
+        var maxWidthForTop = TOP_MARGIN_PIXELS / Math.sin(ROTATION_ANGLE_RADS) - MAX_FONT_SIZE;
+        this.dimensions_dom.selectAll(".label-name").each(function () {
+            // Scale the font-size up or down depending on the text-length
+            var beginX = this.getBoundingClientRect().left;
+            var maxWidth = Math.min(
+            // Should not go outside of the svg (top)
+            maxWidthForTop, 
+            // Should not go outside of the svg (right)
+            (MAX_X - beginX) / Math.cos(ROTATION_ANGLE_RADS));
+            var newFontSize = Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, maxWidth / this.clientWidth * parseFloat(this.style.fontSize)));
+            this.style.fontSize = newFontSize + "px";
+            this.style.transform = "rotate(" + (360 - ROTATION_ANGLE_RADS * 180 / Math.PI) + "deg)";
+            var fo = this.parentElement.parentElement;
+            fo.setAttribute("y", -newFontSize + "");
+        });
     };
     ParallelPlot.prototype.compute_dimensions = function () {
         this.w = this.state.width - this.m[1] - this.m[3];
