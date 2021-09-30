@@ -380,7 +380,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         me.dimensions_dom.remove();
       }
       me.dimensions_dom = d3.select(me.svgg_ref.current).selectAll<SVGGElement, string>(".dimension")
-          .data(me.state.dimensions)
+          // reverse the order so that the tooltips appear on top of the axis ticks
+          .data(me.state.dimensions.reverse())
         .enter().append<SVGGElement>("svg:g")
           .attr("class", "dimension")
           .attr("transform", function(d) { return "translate(" + me.xscale(d) + ")"; })
