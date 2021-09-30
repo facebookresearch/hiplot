@@ -59773,7 +59773,7 @@ var ParallelPlot = /** @class */ (function (_super) {
         // Set optimal rotation angle and scale fonts so that everything fits on screen
         var MIN_ROTATION_ANGLE = 20;
         var MAX_ROTATION_ANGLE = 70;
-        var MAX_FONT_SIZE = 20;
+        var MAX_FONT_SIZE = 16;
         var MIN_FONT_SIZE = 6;
         var MAX_X = this.dimensions_dom.node().parentElement.parentElement.getBoundingClientRect().right;
         var ROTATION_ANGLE_RADS = Math.max(MIN_ROTATION_ANGLE * Math.PI / 180, Math.min(MAX_ROTATION_ANGLE * Math.PI / 180, Math.atan(24 * this.state.dimensions.length / this.state.width)));
