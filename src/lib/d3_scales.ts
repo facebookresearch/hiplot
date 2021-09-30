@@ -88,6 +88,11 @@ export function d3_scale_percentile_values_sorted(values: Array<number>): d3Scal
         if (x == Infinity || x == -Infinity || isNaN(x)) {
             return scaleOutput(-1);
         }
+        if (x > values[domain_idx[domain_idx.length - 1]]) {
+            return scaleOutput(1.0);
+        } else if (x < values[domain_idx[0]]) {
+            return scaleOutput(0.0);
+        }
         const upper = d3.bisectLeft(values, x, domain_idx[0], domain_idx[1]);
         var pctile = (upper - domain_idx[0]) / (domain_idx[1] - domain_idx[0]);
         if (values[upper] !== x && upper > domain_idx[0]) {
