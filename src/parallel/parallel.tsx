@@ -409,7 +409,6 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         Math.atan(24 * me.state.dimensions.length / me.state.width)
       ));
       const maxWidthForTop = TOP_MARGIN_PIXELS / Math.sin(ROTATION_ANGLE_RADS) - MAX_FONT_SIZE;
-      console.log("Rotation: ", ROTATION_ANGLE_RADS * 180 / Math.PI, "maxWidth:", maxWidthForTop);
       me.dimensions_dom.selectAll(".label-name").each(function(this: HTMLSpanElement) {
         // Scale the font-size up or down depending on the text-length
         const beginX = this.getBoundingClientRect().left;
