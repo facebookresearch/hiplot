@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@import "parallel/parallel.scss";
+
 .hiplot {
   margin: 0;
   width: 100%;
@@ -13,6 +15,8 @@
 }
 .hiplot {
   font-family: Ubuntu, Tahoma, Helvetica, sans-serif;
+}
+:global(.hip_thm--light) {
   background: #f7f7f7;
   color: #404040;
 }
@@ -22,59 +26,16 @@
 .wrap {
   padding: 0 3.5%;
 }
-.parallel-plot-chart svg {
-  font-family: Ubuntu, Tahoma, Helvetica, sans-serif;
-}
-.parallel-plot-chart canvas, .parallel-plot-chart svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-.parallel-plot-chart {
-  position: relative;
-}
-.hiplot .brush rect.extent {
-  fill: rgba(100,100,100,0.15);
-  stroke: #fff;
-}
-.hiplot .brush:hover rect.extent {
-  stroke: #222;
-  stroke-dasharray: 5,5;
-}
-.hiplot .brush rect.extent:hover {
-  stroke-dasharray: none;
-}
 .resize rect {
   fill: none;
 }
 .background {
   fill: none;
 }
-.axis line, .axis path {
-  fill: none;
-  stroke: #777;
-  stroke-width: 1;
-}
-.axis :global(.tick) {
-  width: 200px;
-}
-.axis text {
-  fill: #111;
-  text-anchor: right;
-  font-size: 13px;
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-}
-.axis .tickSelected {
-  font-size: 16px;
-  font-weight: bold;
-}
 .axisLabelText {
   white-space: nowrap;
 }
-.axis .label {
-  cursor: move;
-  font-size: 16px;
-}
+
 .quarter, .third, .half {
   float: left;
 }
@@ -182,6 +143,8 @@
 /* Tooltips when hovering column labels */
 .tooltipContainer {
   display: inline-block;
+  /* we have overflow:visible so that's fine. This prevents from moving the axes by dragging inside the plot area */
+  width: 0px;
 }
 
 .tooltipBot {
@@ -199,10 +162,23 @@
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
-.tooltipContainer:hover .tooltiptext {
+.axisLabelText:hover + .tooltiptext {
   visibility: visible;
 }
+.axisLabelText {
+  color: #5e5e5e;
+}
+.axisLabelText:hover {
+  color: black;
+  text-decoration: underline dotted;
+}
 
+:global(.hip_thm--dark) .axisLabelText {
+  color: #b7b7b7;
+}
+:global(.hip_thm--dark) .axisLabelText:hover {
+  color: white;
+}
 
 /* Histogram */
 .histSelected line {
@@ -246,51 +222,39 @@
   margin-right: 5px;
 }
 
-
+:global(.hip_thm--dark) .axis text.label {
+  fill: #ddd;
+}
 /* dark theme */
 
-.dark .header {
+:global(.hip_thm--dark) .header {
   background: #040404;
   color: #f3f3f3;
 }
 
-.dark {
+:global(.hip_thm--dark) {
   background: #131313;
   color: #e3e3e3;
 }
-.dark a {
+:global(.hip_thm--dark) a {
   color: #5ae;
 }
-.dark .background {
+:global(.hip_thm--dark) .background {
   fill: none;
 }
-.dark .brush rect.extent {
-  fill: rgba(100,100,100,0.15);
-  stroke: #ddd;
-}
-.dark ::-webkit-scrollbar-track {
+:global(.hip_thm--dark) ::-webkit-scrollbar-track {
   background: #222;
 }
-.dark ::-webkit-scrollbar-thumb {
+:global(.hip_thm--dark) ::-webkit-scrollbar-thumb {
   background: #444;
 }
-.dark .axis text {
-  fill: #f2f2f2;
-  text-shadow: 0 1px 0 #000, 1px 0 0 #000, 0 -1px 0 #000, -1px 0 0 #000;
-}
-.dark .axis text.label {
-  fill: #ddd;
-}
-.dark .axis line, .dark .axis path {
-  stroke: #777;
-}
-.dark .header button:enabled {
+:global(.hip_thm--dark) .header button:enabled {
   border-color: white !important;
 }
-.dark .histSelected line {
+:global(.hip_thm--dark) .histSelected line {
   stroke: white;
   stroke-width: 2;
 }
-.dark .histAll rect {
+:global(.hip_thm--dark) .histAll rect {
   fill:rgb(99, 80, 117);
 }

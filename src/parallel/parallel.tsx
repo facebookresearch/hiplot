@@ -64,9 +64,15 @@ export interface ParallelPlotDisplayData {
 export interface ParallelPlotData extends HiPlotPluginData, ParallelPlotDisplayData {
 };
 
+const TOP_MARGIN_PIXELS = 100;
 export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlotState> {
   on_resize: () => void = null;
-  m = [75, 0, 10, 0]; // Margins
+  m = [
+    TOP_MARGIN_PIXELS, // top
+    TOP_MARGIN_PIXELS * 0.5, // right
+    10, // bottom
+    10 // left
+  ]; // Margins
   // Available space minus margins
   w: number;
   h: number;
@@ -372,7 +378,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         me.dimensions_dom.remove();
       }
       me.dimensions_dom = d3.select(me.svgg_ref.current).selectAll<SVGGElement, string>(".dimension")
-          .data(me.state.dimensions)
+          // reverse the order so that the tooltips appear on top of the axis ticks
+          .data(me.state.dimensions.reverse())
         .enter().append<SVGGElement>("svg:g")
           .attr("class", "dimension")
           .attr("transform", function(d) { return "translate(" + me.xscale(d) + ")"; })
@@ -385,13 +392,41 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           .attr("transform", "translate(0,0)")
           .each(function(d) { console.assert(me.yscale[d], d, me.yscale, this); d3.select(this).call(me.axis.scale(me.yscale[d])); })
         .append(function(dim) { return foCreateAxisLabel(me.props.params_def[dim], me.props.context_menu_ref, "Drag to move, right click for options"); })
-          .attr("y", function(d: string, i: number) { return -21 - 16 * (i%3); } )
-          .attr("text-anchor", "middle")
-          .attr("title", "Click to invert. Drag to reorder. Right click for options.") // TODO
-          .classed("pplot-label", true);
+          .attr("y", -20)
+          .attr("text-anchor", "left")
+          .classed("pplot-label", true)
+          .classed(style.pplotLabel, true);
+      me.dimensions_dom.selectAll(".label-name").style("font-size", "20px");
+      // Set optimal rotation angle and scale fonts so that everything fits on screen
+      const MIN_ROTATION_ANGLE = 20;
+      const MAX_ROTATION_ANGLE = 70;
+      const MAX_FONT_SIZE = 24;
+      const MIN_FONT_SIZE = 8;
+      const MAX_X = me.dimensions_dom.node().parentElement.parentElement.getBoundingClientRect().right;
+      const ROTATION_ANGLE_RADS = Math.max(MIN_ROTATION_ANGLE * Math.PI / 180, Math.min(MAX_ROTATION_ANGLE * Math.PI / 180,
+        Math.atan(24 * me.state.dimensions.length / me.state.width)
+      ));
+      const maxWidthForTop = TOP_MARGIN_PIXELS / Math.sin(ROTATION_ANGLE_RADS) - MAX_FONT_SIZE;
+      me.dimensions_dom.selectAll(".label-name").each(function(this: HTMLSpanElement) {
+        // Scale the font-size up or down depending on the text-length
+        const beginX = this.getBoundingClientRect().left;
+        const maxWidth = Math.min(
+          // Should not go outside of the svg (top)
+          maxWidthForTop,
+          // Should not go outside of the svg (right)
+          (MAX_X - beginX) / Math.cos(ROTATION_ANGLE_RADS)
+        );
+        const newFontSize = Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE,
+          maxWidth / this.clientWidth * parseFloat(this.style.fontSize)
+        ));
+        this.style.fontSize = newFontSize + "px";
+        this.style.transform = "rotate(" + (360 - ROTATION_ANGLE_RADS * 180 / Math.PI) + "deg)";
+        const fo = this.parentElement.parentElement as any as SVGForeignObjectElement;
+        fo.setAttribute("y", -newFontSize + "");
+      });
       me.dimensions_dom.selectAll(".pplot-label").each(function(this: SVGForeignObjectElement, d: string) {
         foDynamicSizeFitContent(this, [-me.xscale(d) + 5, -me.xscale(d) + me.state.width - 5]);
-      })
+      }).attr("x", 0);
 
       // Add and store a brush for each axis.
       me.dimensions_dom.append("svg:g")

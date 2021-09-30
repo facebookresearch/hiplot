@@ -533,7 +533,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         }.bind(this);
         return (
         <div className={`hip_thm--${this.state.dark ? "dark" : "light"}`}>
-            <div className={`${style.hiplot} ${this.state.dark ? style.dark : ""}`}>
+            <div className={style.hiplot}>
             <SelectedCountProgressBar {...controlProps} />
             <HeaderBar
                 weightColumn={this.state.experiment ? this.state.experiment.weightcolumn : undefined}

@@ -15,6 +15,7 @@ function leftPos(anchor: string, w: number, minmax?: [number, number]): number {
     var left = {
         end: -w,
         start: 0,
+        left: 0,
         middle: -w / 2,
     }[anchor];
     if (minmax) {
@@ -31,7 +32,7 @@ export function foDynamicSizeFitContent(fo: SVGForeignObjectElement, minmax?: [n
     const w = Math.floor(fo.children[0].children[0].clientWidth + 2); // borders 2 px
     const h = Math.floor(fo.children[0].children[0].clientHeight + 2);
     const anchor = fo.getAttribute("text-anchor");
-    const tooltip = fo.children[0].children[1] as HTMLSpanElement;
+    const tooltip = fo.children[0].children[1] as HTMLDivElement;
     const anchor_x = leftPos(anchor, w, minmax);
     fo.setAttribute("x", `${anchor_x}`);
     // Set tooltip
@@ -50,9 +51,11 @@ export function foCreateAxisLabel(pd: ParamDef, cm?: React.RefObject<ContextMenu
     var fo = document.createElementNS('http://www.w3.org/2000/svg',"foreignObject");
     const span = d3.select(fo).append("xhtml:div")
         .classed(style.tooltipContainer, true)
-        .classed(style.label, true);
+        .classed(style.label, true)
+        .style("position", "fixed"); // BUGFIX for transforms in Safari (https://stackoverflow.com/questions/51313873/svg-foreignobject-not-working-properly-on-safari)
     span.append("xhtml:span")
         .attr("class", pd.label_css)
+        .classed("label-name", true)
         .classed(style.axisLabelText, true)
         .classed("d-inline-block", true)
         .html(pd.name)
@@ -64,10 +67,9 @@ export function foCreateAxisLabel(pd: ParamDef, cm?: React.RefObject<ContextMenu
             }
         });
     if (tooltip) {
-        span.append("span")
+        span.append("div")
             .classed(style.tooltiptext, true)
             .classed(style.tooltipBot, true)
-            .classed("d-inline-block", true)
             .text(tooltip);
     }
     return fo;
