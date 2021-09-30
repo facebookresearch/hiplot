@@ -50,9 +50,7 @@
   .axis :global(.tick) {
     width: 200px;
   }
-  :global(.hip_thm--light) .axis :global(.label-name) {
-    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
-  }
+
 /* Dark mode */
 :global(.hip_thm--dark) .brush rect.extent {
     fill: rgba(100,100,100,0.15);
