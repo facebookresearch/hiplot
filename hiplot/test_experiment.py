@@ -42,7 +42,7 @@ def test_from_dataframe() -> None:
 
 def test_from_optuna() -> None:
 
-    def objective(trial):
+    def objective(trial: "optuna.trial.Trial") -> float:
         x = trial.suggest_float("x", -1, 1)
         return x ** 2
 
