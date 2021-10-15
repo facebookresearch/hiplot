@@ -10,6 +10,7 @@ import typing as tp
 
 import pytest
 import pandas as pd
+import optuna
 
 import hiplot as hip
 
@@ -36,6 +37,24 @@ def test_from_dataframe() -> None:
     df = pd.DataFrame([{"uid": 1, "k": "v1"}, {"uid": 2, "k": "v2"}])
     xp = hip.Experiment.from_dataframe(df)
     assert len(xp.datapoints) == 2
+    xp.validate()
+    xp._asdict()
+
+def test_from_optuna() -> None:
+
+    def objective(trial):
+        x = trial.suggest_float("x", -1, 1)
+        return x ** 2
+
+    study = optuna.create_study()
+    study.optimize(objective, n_trials=3)
+
+    # Create a dataframe from the study.
+    df = study.trials_dataframe()
+    assert isinstance(df, pd.DataFrame)
+    assert df.shape[0] == 3  # n_trials.
+    xp = hip.Experiment.from_optuna(study)
+    assert len(xp.datapoints) == 3
     xp.validate()
     xp._asdict()
 
