@@ -503,7 +503,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
         return experiment
 
     @staticmethod
-    def from_optuna(study: "optuna.study.Study") -> "Experiment":  # No type hint to avoid having pandas as an additional dependency
+    def from_optuna(study: "optuna.study.Study") -> "Experiment":  # No type hint to avoid having optuna as an additional dependency
         """
         Creates a HiPlot experiment from a Optuna Study.
 
