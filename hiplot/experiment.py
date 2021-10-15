@@ -15,6 +15,7 @@ import typing as tp
 if tp.TYPE_CHECKING:
     import pandas as pd
     from .streamlit_helpers import ExperimentStreamlitComponent
+    import optuna
 
 DisplayableType = tp.Union[bool, int, float, str]
 
