@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>hiplot.experiment &#8212; HiPlot 0.1.30
+    <title>hiplot.experiment &#8212; HiPlot 0.1.31
  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/guzzle.css" />
@@ -35,7 +35,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.30
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.31
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 
@@ -108,6 +108,7 @@
 <span class="c1"># LICENSE file in the root directory of this source tree.</span>
 
 <span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -619,11 +620,18 @@
 
         <span class="c1"># Create a list of dictionary objects using study trials</span>
         <span class="c1"># All parameters are taken using params.copy()</span>
-    
+
         <span class="n">hyper_opt_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">each_trial</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">:</span>
             <span class="n">trial_params</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">trial_params</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">each_trial</span><span class="o">.</span><span class="n">value</span> <span class="c1"># name = value, as it could be RMSE / accuracy, or any value that the user selects for tuning</span>
+            <span class="n">num_objectives</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">each_trial</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">num_objectives</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">trial_params</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">each_trial</span><span class="o">.</span><span class="n">value</span> <span class="c1"># name = value, as it could be RMSE / accuracy, or any value that the user selects for tuning</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">objective_id</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">each_trial</span><span class="o">.</span><span class="n">values</span><span class="p">):</span>
+                    <span class="n">trial_params</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;value_</span><span class="si">{</span><span class="n">objective_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
             <span class="n">trial_params</span><span class="p">[</span><span class="s2">&quot;uid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">each_trial</span><span class="o">.</span><span class="n">number</span>
             <span class="n">trial_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">each_trial</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
             <span class="n">hyper_opt_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trial_params</span><span class="p">)</span>
@@ -692,7 +700,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.30
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.31
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 
