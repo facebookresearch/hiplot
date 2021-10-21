@@ -3,6 +3,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import csv
+import enum
 import uuid
 import json
 import warnings
@@ -514,11 +515,18 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
 
         # Create a list of dictionary objects using study trials
         # All parameters are taken using params.copy()
-    
+
         hyper_opt_data = []
         for each_trial in study.trials:
             trial_params = {}
-            trial_params["value"] = each_trial.value # name = value, as it could be RMSE / accuracy, or any value that the user selects for tuning
+            num_objectives = len(each_trial.values)
+
+            if num_objectives == 1:
+                trial_params["value"] = each_trial.value # name = value, as it could be RMSE / accuracy, or any value that the user selects for tuning
+            else:
+                for objective_id, value in enumerate(each_trial.values):
+                    trial_params[f"value_{objective_id}"] = value
+
             trial_params["uid"] = each_trial.number
             trial_params.update(each_trial.params.copy())
             hyper_opt_data.append(trial_params)

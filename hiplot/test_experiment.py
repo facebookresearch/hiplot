@@ -59,6 +59,26 @@ def test_from_optuna() -> None:
     xp._asdict()
 
 
+def test_from_optuna_multi_objective() -> None:
+
+    def objective(trial: "optuna.trial.Trial") -> tp.Tuple[float, float]:
+        x = trial.suggest_float("x", -1, 1)
+        y = trial.suggest_float("y", -1, 1)
+        return x ** 2, y
+
+    study = optuna.create_study(directions=["minimize", "minimize"])
+    study.optimize(objective, n_trials=3)
+
+    # Create a dataframe from the study.
+    df = study.trials_dataframe()
+    assert isinstance(df, pd.DataFrame)
+    assert df.shape[0] == 3  # n_trials.
+    xp = hip.Experiment.from_optuna(study)
+    assert len(xp.datapoints) == 3
+    xp.validate()
+    xp._asdict()
+
+
 def test_from_dataframe_nan_values() -> None:
     # Pandas automatically convert numeric-based columns None to NaN in dataframes
     # Pandas will also automatically convert columns with NaN from integer to floats, since NaN is considered a float
