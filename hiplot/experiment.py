@@ -15,6 +15,7 @@ import typing as tp
 if tp.TYPE_CHECKING:
     import pandas as pd
     from .streamlit_helpers import ExperimentStreamlitComponent
+    import optuna
 
 DisplayableType = tp.Union[bool, int, float, str]
 
@@ -501,6 +502,31 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
         experiment.display_data(Displays.TABLE)['order'] = list(dataframe.columns)
 
         return experiment
+
+    @staticmethod
+    def from_optuna(study: "optuna.study.Study") -> "Experiment":  # No type hint to avoid having optuna as an additional dependency
+        """
+        Creates a HiPlot experiment from a Optuna Study.
+
+        :param study: Optuna Study
+        """
+
+
+        # Create a list of dictionary objects using study trials
+        # All parameters are taken using params.copy()
+    
+        hyper_opt_data = []
+        for each_trial in study.trials:
+            trial_params = {}
+            trial_params["value"] = each_trial.value # name = value, as it could be RMSE / accuracy, or any value that the user selects for tuning
+            trial_params["uid"] = each_trial.number
+            trial_params.update(each_trial.params.copy())
+            hyper_opt_data.append(trial_params)
+        experiment = Experiment.from_iterable(hyper_opt_data)
+
+        return experiment
+
+
 
     @staticmethod
     def merge(xp_dict: tp.Dict[str, "Experiment"]) -> "Experiment":

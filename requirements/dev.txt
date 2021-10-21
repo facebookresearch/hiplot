@@ -11,3 +11,4 @@ pre-commit
 pandas
 streamlit>=0.63
 beautifulsoup4
+optuna
