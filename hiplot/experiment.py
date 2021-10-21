@@ -506,7 +506,8 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
     @staticmethod
     def from_optuna(study: "optuna.study.Study") -> "Experiment":  # No type hint to avoid having optuna as an additional dependency
         """
-        Creates a HiPlot experiment from a Optuna Study.
+        Creates a HiPlot experiment from a Optuna Study that has
+        single objective.
 
         :param study: Optuna Study
         """
@@ -514,7 +515,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
 
         # Create a list of dictionary objects using study trials
         # All parameters are taken using params.copy()
-    
+
         hyper_opt_data = []
         for each_trial in study.trials:
             trial_params = {}
