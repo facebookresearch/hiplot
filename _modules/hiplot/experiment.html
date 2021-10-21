@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>hiplot.experiment &#8212; HiPlot 0.1.28
+    <title>hiplot.experiment &#8212; HiPlot 0.1.30
  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/guzzle.css" />
@@ -35,7 +35,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.28
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.30
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 
@@ -120,6 +120,7 @@
 <span class="k">if</span> <span class="n">tp</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
     <span class="kn">from</span> <span class="nn">.streamlit_helpers</span> <span class="kn">import</span> <span class="n">ExperimentStreamlitComponent</span>
+    <span class="kn">import</span> <span class="nn">optuna</span>
 
 <span class="n">DisplayableType</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 
@@ -607,6 +608,31 @@
 
         <span class="k">return</span> <span class="n">experiment</span></div>
 
+<div class="viewcode-block" id="Experiment.from_optuna"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.from_optuna">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_optuna</span><span class="p">(</span><span class="n">study</span><span class="p">:</span> <span class="s2">&quot;optuna.study.Study&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>  <span class="c1"># No type hint to avoid having optuna as an additional dependency</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a HiPlot experiment from a Optuna Study.</span>
+
+<span class="sd">        :param study: Optuna Study</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+        <span class="c1"># Create a list of dictionary objects using study trials</span>
+        <span class="c1"># All parameters are taken using params.copy()</span>
+    
+        <span class="n">hyper_opt_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">each_trial</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">:</span>
+            <span class="n">trial_params</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">trial_params</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">each_trial</span><span class="o">.</span><span class="n">value</span> <span class="c1"># name = value, as it could be RMSE / accuracy, or any value that the user selects for tuning</span>
+            <span class="n">trial_params</span><span class="p">[</span><span class="s2">&quot;uid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">each_trial</span><span class="o">.</span><span class="n">number</span>
+            <span class="n">trial_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">each_trial</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="n">hyper_opt_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trial_params</span><span class="p">)</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">Experiment</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">hyper_opt_data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">experiment</span></div>
+
+
+
 <div class="viewcode-block" id="Experiment.merge"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.merge">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="n">xp_dict</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -666,7 +692,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.28
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.30
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 
