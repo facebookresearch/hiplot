@@ -61,7 +61,7 @@ def test_from_optuna() -> None:
 
 def test_from_optuna_multi_objective() -> None:
 
-    def objective(trial: "optuna.trial.Trial") -> float:
+    def objective(trial: "optuna.trial.Trial") -> tp.Tuple[float, float]:
         x = trial.suggest_float("x", -1, 1)
         y = trial.suggest_float("y", -1, 1)
         return x ** 2, y
