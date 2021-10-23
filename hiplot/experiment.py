@@ -519,6 +519,8 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
         hyper_opt_data = []
         for each_trial in study.trials:
             trial_params = {}
+            if not each_trial.values: # This checks if the trial was fully completed - the value will be None if the trial was interrupted halfway (e.g. via KeyboardInterrupt)
+                continue
             num_objectives = len(each_trial.values)
 
             if num_objectives == 1:
