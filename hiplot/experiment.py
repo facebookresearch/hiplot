@@ -515,9 +515,10 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
 
         # Create a list of dictionary objects using study trials
         # All parameters are taken using params.copy()
-
+        import optuna
+        
         hyper_opt_data = []
-        for each_trial in study.trials:
+        for each_trial in study.get_trials(states=(optuna.trial.TrialState.COMPLETE, )):
             trial_params = {}
             if not each_trial.values: # This checks if the trial was fully completed - the value will be None if the trial was interrupted halfway (e.g. via KeyboardInterrupt)
                 continue
