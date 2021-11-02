@@ -3,9 +3,9 @@
 # LICENSE file in the root directory of this source tree.
 
 import csv
-import enum
 import uuid
 import json
+import codecs
 import warnings
 from abc import ABCMeta, abstractmethod
 from enum import Enum
@@ -17,6 +17,8 @@ if tp.TYPE_CHECKING:
     import pandas as pd
     from .streamlit_helpers import ExperimentStreamlitComponent
     import optuna
+
+TextWriterIO = tp.Union[tp.IO[str], codecs.StreamWriter]
 
 DisplayableType = tp.Union[bool, int, float, str]
 
@@ -345,7 +347,7 @@ It appears that you are trying to create a HiPlot visualization in ipython: you 
 To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_page = experiment.to_html()`""")
         return streamlit_helpers.ExperimentStreamlitComponent(self, key=key, ret=ret)
 
-    def to_html(self, file: tp.Optional[tp.Union[Path, str, tp.IO[str]]] = None, **kwargs: tp.Any) -> str:
+    def to_html(self, file: tp.Optional[tp.Union[Path, str, TextWriterIO]] = None, **kwargs: tp.Any) -> str:
         """
         Returns the content of a standalone .html file that displays this experiment
         without any dependency to HiPlot server or static files.
@@ -368,7 +370,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
                 file.write(html)
         return html
 
-    def to_csv(self, file: tp.Union[Path, str, tp.IO[str]]) -> None:
+    def to_csv(self, file: tp.Union[Path, str, TextWriterIO]) -> None:
         """
         Dumps this Experiment as a .csv file.
         Information about display_data, parameters definition will be lost.
@@ -381,7 +383,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
         else:
             return self._to_csv(file)
 
-    def _to_csv(self, fh: tp.IO[str]) -> None:
+    def _to_csv(self, fh: TextWriterIO) -> None:
         fieldnames: tp.Set[str] = set()
         for dp in self.datapoints:
             for f in dp.values.keys():
@@ -512,20 +514,23 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
         :param study: Optuna Study
         """
 
-
         # Create a list of dictionary objects using study trials
         # All parameters are taken using params.copy()
+        # pylint: disable=redefined-outer-name
         import optuna
-        
+
         hyper_opt_data = []
         for each_trial in study.get_trials(states=(optuna.trial.TrialState.COMPLETE, )):
             trial_params = {}
-            if not each_trial.values: # This checks if the trial was fully completed - the value will be None if the trial was interrupted halfway (e.g. via KeyboardInterrupt)
+            # This checks if the trial was fully completed
+            # the value will be None if the trial was interrupted halfway (e.g. via KeyboardInterrupt)
+            if not each_trial.values:
                 continue
             num_objectives = len(each_trial.values)
 
             if num_objectives == 1:
-                trial_params["value"] = each_trial.value # name = value, as it could be RMSE / accuracy, or any value that the user selects for tuning
+                # name = value, as it could be RMSE / accuracy, or any value that the user selects for tuning
+                trial_params["value"] = each_trial.value
             else:
                 for objective_id, value in enumerate(each_trial.values):
                     trial_params[f"value_{objective_id}"] = value
@@ -536,8 +541,6 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
         experiment = Experiment.from_iterable(hyper_opt_data)
 
         return experiment
-
-
 
     @staticmethod
     def merge(xp_dict: tp.Dict[str, "Experiment"]) -> "Experiment":
