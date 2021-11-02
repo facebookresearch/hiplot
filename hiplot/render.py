@@ -9,6 +9,7 @@ import base64
 import json
 from typing import Any, Dict
 from pathlib import Path
+import codecs
 
 from . import fetchers
 
@@ -100,10 +101,11 @@ def hiplot_render_main() -> int:
 
     exp = fetchers.load_xp_with_fetchers(fetchers.get_fetchers(args.fetchers), args.experiment_uri)
     exp.validate()
+    stdout_writer = codecs.getwriter("utf-8")(sys.stdout.buffer)
     if args.format == 'csv':
-        exp.to_csv(sys.stdout)
+        exp.to_csv(stdout_writer)
     elif args.format == 'html':
-        exp.to_html(sys.stdout)
+        exp.to_html(stdout_writer)
     else:
         assert False, args.format
     return 0
