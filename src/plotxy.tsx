@@ -591,10 +591,14 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     if (prevState.height != this.state.height || prevState.width != this.state.width) {
         if (this.plot) {
           this.plot.on_resize();
+          this.props.sendMessage("height_changed", () => null);
         }
     }
     if (!this.isEnabled()) {
-      this.plot = null;
+      if (this.plot !== null) {
+        this.plot = null;
+        this.props.sendMessage("height_changed", () => null);
+      }
       if (this.state.hover_uid !== null) {
         this.setState({
           hover_uid: null,
@@ -604,6 +608,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     else {
       if (anyAxisChanged) {
         this.plot.update_axis();
+        this.props.sendMessage("height_changed", () => null);
       }
     }
     if (this.state.hover_uid != prevState.hover_uid) {
