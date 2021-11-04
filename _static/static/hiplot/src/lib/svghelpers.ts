@@ -11,6 +11,7 @@ import { ParamDef } from "../infertypes";
 import style from "../hiplot.scss";
 import { ContextMenu } from "../contextmenu";
 
+
 function leftPos(anchor: string, w: number, minmax?: [number, number]): number {
     var left = {
         end: -w,
@@ -51,8 +52,7 @@ export function foCreateAxisLabel(pd: ParamDef, cm?: React.RefObject<ContextMenu
     var fo = document.createElementNS('http://www.w3.org/2000/svg',"foreignObject");
     const span = d3.select(fo).append("xhtml:div")
         .classed(style.tooltipContainer, true)
-        .classed(style.label, true)
-        .style("position", "fixed"); // BUGFIX for transforms in Safari (https://stackoverflow.com/questions/51313873/svg-foreignobject-not-working-properly-on-safari)
+        .classed(style.label, true);
     span.append("xhtml:span")
         .attr("class", pd.label_css)
         .classed("label-name", true)

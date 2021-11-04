@@ -21,7 +21,7 @@ import { ErrorDisplay, HeaderBar } from "./header";
 import { HiPlotPluginData, DataProviderClass } from "./plugin";
 import { StaticDataProvider } from "./dataproviders/static";
 import { uncompress } from "./lib/compress";
-
+import { setupBrowserCompat } from "./lib/browsercompat";
 
 //@ts-ignore
 import LogoSVG from "../hiplot/static/logo.svg";
@@ -152,6 +152,7 @@ export function createDefaultPlugins(): PluginsMap {
 export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     // React refs
     contextMenuRef = React.createRef<ContextMenu>();
+    rootRef = React.createRef<HTMLDivElement>();
 
     plugins_window_state: {[plugin: string]: any} = {};
 
@@ -322,6 +323,8 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         this.callFilteredUidsHooks.cancel();
     }
     componentDidMount() {
+        setupBrowserCompat(this.rootRef.current);
+
         // Setup contextmenu when we right-click a parameter
         this.contextMenuRef.current.addCallback(this.columnContextMenu.bind(this), this);
 
@@ -532,7 +535,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             };
         }.bind(this);
         return (
-        <div className={`hip_thm--${this.state.dark ? "dark" : "light"}`}>
+        <div ref={this.rootRef} className={`hip_thm--${this.state.dark ? "dark" : "light"}`}>
             <div className={style.hiplot}>
             <SelectedCountProgressBar {...controlProps} />
             <HeaderBar

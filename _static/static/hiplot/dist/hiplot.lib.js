@@ -58255,8 +58255,7 @@ function foCreateAxisLabel(pd, cm, tooltip) {
     var fo = document.createElementNS('http://www.w3.org/2000/svg', "foreignObject");
     var span = src_select(fo).append("xhtml:div")
         .classed(src_hiplot.tooltipContainer, true)
-        .classed(src_hiplot.label, true)
-        .style("position", "fixed"); // BUGFIX for transforms in Safari (https://stackoverflow.com/questions/51313873/svg-foreignobject-not-working-properly-on-safari)
+        .classed(src_hiplot.label, true);
     span.append("xhtml:span")
         .attr("class", pd.label_css)
         .classed("label-name", true)
@@ -59067,6 +59066,33 @@ function apply_filters(rows, filters) {
     return rows;
 }
 
+;// CONCATENATED MODULE: ./src/lib/browsercompat.ts
+var IS_SAFARI = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+function redrawObject(fo) {
+    var parent = fo.parentNode;
+    parent.removeChild(fo);
+    parent.appendChild(fo);
+}
+function redrawAllForeignObjectsIfSafari() {
+    if (!IS_SAFARI) {
+        return;
+    }
+    var fo = document.getElementsByTagName("foreignObject");
+    Array.from(fo).forEach(redrawObject);
+}
+function setupBrowserCompat(root) {
+    /**
+     * Safari has a lot of trouble with foreignObjects inside canvas. Especially when we apply rotations, etc...
+     * As it considers the parent of the objects inside the FO to be the canvas origin, and not the FO.
+     * See https://stackoverflow.com/questions/51313873/svg-foreignobject-not-working-properly-on-safari
+     * Applying the fix in the link above fixes their position upon scroll - we don't want that, so we
+     * manually force-redraw them upon scroll.
+     */
+    if (IS_SAFARI) {
+        root.addEventListener("wheel", redrawAllForeignObjectsIfSafari);
+    }
+}
+
 ;// CONCATENATED MODULE: ./src/parallel/parallel.tsx
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -59096,6 +59122,7 @@ var __spreadArrays = (undefined && undefined.__spreadArrays) || function () {
 };
 // This file is largely inspired from the snippet by Kai Chang
 // available in http://bl.ocks.org/syntagmatic/3150059
+
 
 
 
@@ -59326,10 +59353,11 @@ var ParallelPlot = /** @class */ (function (_super) {
             this.xscale.domain(this.state.dimensions);
             this.dimensions_dom.filter(function (p) { return this.state.dimensions.indexOf(p) == -1; }.bind(this)).remove();
             this.dimensions_dom = this.dimensions_dom.filter(function (p) { return this.state.dimensions.indexOf(p) !== -1; }.bind(this));
-            if (!this.state.dragging) {
+            if (!this.state.dragging && !IS_SAFARI) {
                 g = g.transition();
             }
             g.attr("transform", function (p) { return "translate(" + this.position(p) + ")"; }.bind(this));
+            redrawAllForeignObjectsIfSafari();
             this.update_ticks();
             this.updateAxisTitlesAnglesAndFontSize();
         }
@@ -59482,6 +59510,7 @@ var ParallelPlot = /** @class */ (function (_super) {
                         me.setState({ dimensions: new_dimensions });
                     }
                     me.dimensions_dom.attr("transform", function (d) { return "translate(" + me.position(d) + ")"; });
+                    redrawAllForeignObjectsIfSafari();
                 })
                     .on("end", function (d) {
                     if (!me.state.dragging.dragging) {
@@ -59490,7 +59519,11 @@ var ParallelPlot = /** @class */ (function (_super) {
                     }
                     else {
                         // reorder axes
-                        src_select(this).transition().attr("transform", "translate(" + me.xscale(d) + ")");
+                        var drag = src_select(this);
+                        if (!IS_SAFARI) {
+                            drag = drag.transition();
+                        }
+                        drag.attr("transform", "translate(" + me.xscale(d) + ")");
                         var extents = brush_extends();
                         extent = extents[d];
                     }
@@ -59733,6 +59766,7 @@ var ParallelPlot = /** @class */ (function (_super) {
                 .each(function (d) {
                 src_select(this).call(me.axis.scale(me.yscale[d]));
             });
+            me.updateAxisTitlesAnglesAndFontSize();
             // render data
             this.setState(function (prevState) { return { brush_count: prevState.brush_count + 1 }; });
         }, 100);
@@ -59789,6 +59823,9 @@ var ParallelPlot = /** @class */ (function (_super) {
             var newFontSize = Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, maxWidth / this.clientWidth * parseFloat(this.style.fontSize)));
             this.style.fontSize = newFontSize + "px";
             this.style.transform = "rotate(" + (360 - ROTATION_ANGLE_RADS * 180 / Math.PI) + "deg)";
+            if (IS_SAFARI) {
+                this.parentElement.style.position = "fixed";
+            }
             var fo = this.parentElement.parentElement;
             fo.setAttribute("y", -newFontSize + "");
         });
@@ -61400,6 +61437,7 @@ var component_a;
 
 
 
+
 //@ts-ignore
 
 //@ts-ignore
@@ -61464,6 +61502,7 @@ var HiPlot = /** @class */ (function (_super) {
         var _this = _super.call(this, props) || this;
         // React refs
         _this.contextMenuRef = external_root_React_commonjs2_react_commonjs_react_amd_react_default().createRef();
+        _this.rootRef = external_root_React_commonjs2_react_commonjs_react_amd_react_default().createRef();
         _this.plugins_window_state = {};
         _this.plugins_ref = []; // For debugging/tests
         _this.callSelectedUidsHooks = debounce(function () {
@@ -61613,6 +61652,7 @@ var HiPlot = /** @class */ (function (_super) {
         this.callFilteredUidsHooks.cancel();
     };
     HiPlot.prototype.componentDidMount = function () {
+        setupBrowserCompat(this.rootRef.current);
         // Setup contextmenu when we right-click a parameter
         this.contextMenuRef.current.addCallback(this.columnContextMenu.bind(this), this);
         // Load experiment provided in constructor if any
@@ -61793,7 +61833,7 @@ var HiPlot = /** @class */ (function (_super) {
         var createPluginProps = function (idx, name) {
             return component_assign(component_assign(component_assign({ ref: this.plugins_ref[idx] }, (this.state.experiment.display_data && this.state.experiment.display_data[name] ? this.state.experiment.display_data[name] : {})), datasets), { rows_selected_filter: this.state.rows_selected_filter, name: name, persistentState: this.state.persistentState.children(name), window_state: this.plugins_window_state[name], sendMessage: this.sendMessage.bind(this), get_color_for_row: this.getColorForRow.bind(this), experiment: this.state.experiment, params_def: this.state.params_def, params_def_unfiltered: this.state.params_def_unfiltered, dp_lookup: this.state.dp_lookup, colorby: this.state.colorby, render_row_text: this.renderRowText.bind(this), context_menu_ref: this.contextMenuRef, setSelected: this.setSelected.bind(this), setHighlighted: this.setHighlighted.bind(this), asserts: this.props.asserts });
         }.bind(this);
-        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement("div", { className: "hip_thm--" + (this.state.dark ? "dark" : "light") },
+        return (external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement("div", { ref: this.rootRef, className: "hip_thm--" + (this.state.dark ? "dark" : "light") },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement("div", { className: src_hiplot.hiplot },
                 external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement(SelectedCountProgressBar, component_assign({}, controlProps)),
                 external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement(HeaderBar, component_assign({ weightColumn: this.state.experiment ? this.state.experiment.weightcolumn : undefined, onLoadExperiment: this.loadWithPromise.bind(this), persistentState: this.state.persistentState, dataProvider: this.state.dataProvider, loadStatus: this.state.loadStatus, dark: this.state.dark }, controlProps)),

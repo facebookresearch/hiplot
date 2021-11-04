@@ -64,6 +64,7 @@ export declare const defaultPlugins: PluginsMap;
 export declare function createDefaultPlugins(): PluginsMap;
 export declare class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     contextMenuRef: React.RefObject<ContextMenu>;
+    rootRef: React.RefObject<HTMLDivElement>;
     plugins_window_state: {
         [plugin: string]: any;
     };

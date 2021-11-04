@@ -36,6 +36,7 @@ import style from "../hiplot.scss";
 import { ResizableH } from "../lib/resizable";
 import { FilterType, apply_filters } from "../filters";
 import { foDynamicSizeFitContent, foCreateAxisLabel } from "../lib/svghelpers";
+import { IS_SAFARI, redrawAllForeignObjectsIfSafari } from "../lib/browsercompat";
 ;
 ;
 ;
@@ -256,10 +257,11 @@ var ParallelPlot = /** @class */ (function (_super) {
             this.xscale.domain(this.state.dimensions);
             this.dimensions_dom.filter(function (p) { return this.state.dimensions.indexOf(p) == -1; }.bind(this)).remove();
             this.dimensions_dom = this.dimensions_dom.filter(function (p) { return this.state.dimensions.indexOf(p) !== -1; }.bind(this));
-            if (!this.state.dragging) {
+            if (!this.state.dragging && !IS_SAFARI) {
                 g = g.transition();
             }
             g.attr("transform", function (p) { return "translate(" + this.position(p) + ")"; }.bind(this));
+            redrawAllForeignObjectsIfSafari();
             this.update_ticks();
             this.updateAxisTitlesAnglesAndFontSize();
         }
@@ -412,6 +414,7 @@ var ParallelPlot = /** @class */ (function (_super) {
                         me.setState({ dimensions: new_dimensions });
                     }
                     me.dimensions_dom.attr("transform", function (d) { return "translate(" + me.position(d) + ")"; });
+                    redrawAllForeignObjectsIfSafari();
                 })
                     .on("end", function (d) {
                     if (!me.state.dragging.dragging) {
@@ -420,7 +423,11 @@ var ParallelPlot = /** @class */ (function (_super) {
                     }
                     else {
                         // reorder axes
-                        d3.select(this).transition().attr("transform", "translate(" + me.xscale(d) + ")");
+                        var drag = d3.select(this);
+                        if (!IS_SAFARI) {
+                            drag = drag.transition();
+                        }
+                        drag.attr("transform", "translate(" + me.xscale(d) + ")");
                         var extents = brush_extends();
                         extent = extents[d];
                     }
@@ -663,6 +670,7 @@ var ParallelPlot = /** @class */ (function (_super) {
                 .each(function (d) {
                 d3.select(this).call(me.axis.scale(me.yscale[d]));
             });
+            me.updateAxisTitlesAnglesAndFontSize();
             // render data
             this.setState(function (prevState) { return { brush_count: prevState.brush_count + 1 }; });
         }, 100);
@@ -719,6 +727,9 @@ var ParallelPlot = /** @class */ (function (_super) {
             var newFontSize = Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, maxWidth / this.clientWidth * parseFloat(this.style.fontSize)));
             this.style.fontSize = newFontSize + "px";
             this.style.transform = "rotate(" + (360 - ROTATION_ANGLE_RADS * 180 / Math.PI) + "deg)";
+            if (IS_SAFARI) {
+                this.parentElement.style.position = "fixed";
+            }
             var fo = this.parentElement.parentElement;
             fo.setAttribute("y", -newFontSize + "");
         });

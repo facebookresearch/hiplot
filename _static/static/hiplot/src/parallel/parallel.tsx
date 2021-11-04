@@ -20,6 +20,7 @@ import { HiPlotPluginData } from "../plugin";
 import { ResizableH } from "../lib/resizable";
 import { Filter, FilterType, apply_filters } from "../filters";
 import { foDynamicSizeFitContent, foCreateAxisLabel } from "../lib/svghelpers";
+import { IS_SAFARI, redrawAllForeignObjectsIfSafari } from "../lib/browsercompat";
 
 interface StringMapping<V> { [key: string]: V; };
 
@@ -152,10 +153,11 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       this.xscale.domain(this.state.dimensions);
       this.dimensions_dom.filter(function(this: ParallelPlot, p) { return this.state.dimensions.indexOf(p) == -1; }.bind(this)).remove();
       this.dimensions_dom = this.dimensions_dom.filter(function(this: ParallelPlot, p) { return this.state.dimensions.indexOf(p) !== -1; }.bind(this));
-      if (!this.state.dragging) {
+      if (!this.state.dragging && !IS_SAFARI) {
         g = g.transition();
       }
       g.attr("transform", function(this: ParallelPlot, p) { return "translate(" + this.position(p) + ")"; }.bind(this));
+      redrawAllForeignObjectsIfSafari();
       this.update_ticks();
       this.updateAxisTitlesAnglesAndFontSize();
     }
@@ -349,6 +351,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
             me.setState({dimensions: new_dimensions});
           }
           me.dimensions_dom.attr("transform", function(d) { return "translate(" + me.position(d) + ")"; });
+          redrawAllForeignObjectsIfSafari();
         })
         .on("end", function(d: string) {
           if (!me.state.dragging.dragging) {
@@ -356,7 +359,11 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
             var extent = invert_axis(d);
           } else {
             // reorder axes
-            d3.select(this).transition().attr("transform", "translate(" + me.xscale(d) + ")");
+            var drag: any = d3.select(this);
+            if (!IS_SAFARI) {
+              drag = drag.transition();
+            }
+            drag.attr("transform", "translate(" + me.xscale(d) + ")");
             var extents = brush_extends();
             extent = extents[d];
           }
@@ -612,6 +619,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         .each(function(d: string) {
           d3.select(this).call(me.axis.scale(me.yscale[d]));
       });
+      me.updateAxisTitlesAnglesAndFontSize();
 
       // render data
       this.setState(function(prevState) { return { brush_count: prevState.brush_count + 1}; });
@@ -682,6 +690,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       ));
       this.style.fontSize = newFontSize + "px";
       this.style.transform = "rotate(" + (360 - ROTATION_ANGLE_RADS * 180 / Math.PI) + "deg)";
+      if (IS_SAFARI) {
+        this.parentElement.style.position = "fixed";
+      }
       const fo = this.parentElement.parentElement as any as SVGForeignObjectElement;
       fo.setAttribute("y", -newFontSize + "");
     });
