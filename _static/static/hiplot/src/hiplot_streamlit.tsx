@@ -43,6 +43,7 @@ class ReactTemplate extends StreamlitComponentBase<State> {
       'selected_uids': this.onChange.bind(this),
       'filtered_uids': this.onChange.bind(this),
       'brush_extents': this.onChange.bind(this),
+      'height_changed': () => Streamlit.setFrameHeight(),
     };
     return <HiPlot experiment={this.state.experiment} onChange={onChangeHandlers} />;
   }

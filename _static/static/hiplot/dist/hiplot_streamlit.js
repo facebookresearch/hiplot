@@ -32,7 +32,8 @@ var ReactTemplate = /** @class */ (function (_super) {
             var onChangeHandlers = {
                 'selected_uids': _this.onChange.bind(_this),
                 'filtered_uids': _this.onChange.bind(_this),
-                'brush_extents': _this.onChange.bind(_this)
+                'brush_extents': _this.onChange.bind(_this),
+                'height_changed': function () { return Streamlit.setFrameHeight(); }
             };
             return React.createElement(HiPlot, { experiment: _this.state.experiment, onChange: onChangeHandlers });
         };

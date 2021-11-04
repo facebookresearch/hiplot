@@ -58911,10 +58911,14 @@ var PlotXY = /** @class */ (function (_super) {
         if (prevState.height != this.state.height || prevState.width != this.state.width) {
             if (this.plot) {
                 this.plot.on_resize();
+                this.props.sendMessage("height_changed", function () { return null; });
             }
         }
         if (!this.isEnabled()) {
-            this.plot = null;
+            if (this.plot !== null) {
+                this.plot = null;
+                this.props.sendMessage("height_changed", function () { return null; });
+            }
             if (this.state.hover_uid !== null) {
                 this.setState({
                     hover_uid: null,
@@ -58924,6 +58928,7 @@ var PlotXY = /** @class */ (function (_super) {
         else {
             if (anyAxisChanged) {
                 this.plot.update_axis();
+                this.props.sendMessage("height_changed", function () { return null; });
             }
         }
         if (this.state.hover_uid != prevState.hover_uid) {
@@ -59769,6 +59774,7 @@ var ParallelPlot = /** @class */ (function (_super) {
             me.updateAxisTitlesAnglesAndFontSize();
             // render data
             this.setState(function (prevState) { return { brush_count: prevState.brush_count + 1 }; });
+            this.props.sendMessage("height_changed", function () { return null; });
         }, 100);
         me.compute_dimensions();
         redraw_axis();
@@ -60544,6 +60550,7 @@ var HiPlotDistributionPlugin = /** @class */ (function (_super) {
         _this.onResize = index_default.debounce(function (height, width) {
             if (height != this.state.height || width != this.state.width) {
                 this.setState({ height: height, width: width });
+                this.props.sendMessage("height_changed", function () { return null; });
             }
         }.bind(_this), 150);
         var axis = _this.props.persistentState.get('axis', null);
@@ -60586,6 +60593,7 @@ var HiPlotDistributionPlugin = /** @class */ (function (_super) {
     };
     HiPlotDistributionPlugin.prototype.componentDidUpdate = function (prevProps, prevState) {
         if (prevState.axis != this.state.axis) {
+            this.props.sendMessage("height_changed", function () { return null; });
             if (this.props.persistentState) {
                 this.props.persistentState.set('axis', this.state.axis);
             }

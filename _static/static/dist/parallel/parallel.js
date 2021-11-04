@@ -673,6 +673,7 @@ var ParallelPlot = /** @class */ (function (_super) {
             me.updateAxisTitlesAnglesAndFontSize();
             // render data
             this.setState(function (prevState) { return { brush_count: prevState.brush_count + 1 }; });
+            this.props.sendMessage("height_changed", function () { return null; });
         }, 100);
         me.compute_dimensions();
         redraw_axis();

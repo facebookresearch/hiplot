@@ -45,6 +45,7 @@ var HiPlotDistributionPlugin = /** @class */ (function (_super) {
         _this.onResize = _.debounce(function (height, width) {
             if (height != this.state.height || width != this.state.width) {
                 this.setState({ height: height, width: width });
+                this.props.sendMessage("height_changed", function () { return null; });
             }
         }.bind(_this), 150);
         var axis = _this.props.persistentState.get('axis', null);
@@ -87,6 +88,7 @@ var HiPlotDistributionPlugin = /** @class */ (function (_super) {
     };
     HiPlotDistributionPlugin.prototype.componentDidUpdate = function (prevProps, prevState) {
         if (prevState.axis != this.state.axis) {
+            this.props.sendMessage("height_changed", function () { return null; });
             if (this.props.persistentState) {
                 this.props.persistentState.set('axis', this.state.axis);
             }

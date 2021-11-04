@@ -538,10 +538,14 @@ var PlotXY = /** @class */ (function (_super) {
         if (prevState.height != this.state.height || prevState.width != this.state.width) {
             if (this.plot) {
                 this.plot.on_resize();
+                this.props.sendMessage("height_changed", function () { return null; });
             }
         }
         if (!this.isEnabled()) {
-            this.plot = null;
+            if (this.plot !== null) {
+                this.plot = null;
+                this.props.sendMessage("height_changed", function () { return null; });
+            }
             if (this.state.hover_uid !== null) {
                 this.setState({
                     hover_uid: null
@@ -551,6 +555,7 @@ var PlotXY = /** @class */ (function (_super) {
         else {
             if (anyAxisChanged) {
                 this.plot.update_axis();
+                this.props.sendMessage("height_changed", function () { return null; });
             }
         }
         if (this.state.hover_uid != prevState.hover_uid) {
