@@ -88,6 +88,7 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
     }
     componentDidUpdate(prevProps: HiPlotPluginData, prevState: HiPlotDistributionPluginState) {
         if (prevState.axis != this.state.axis) {
+            this.props.sendMessage("height_changed", () => null);
             if (this.props.persistentState) {
                 this.props.persistentState.set('axis', this.state.axis);
             }
@@ -123,6 +124,7 @@ export class HiPlotDistributionPlugin extends React.Component<DistributionPlugin
     onResize = _.debounce(function(height: number, width: number) {
         if (height != this.state.height || width != this.state.width) {
             this.setState({height: height, width: width});
+            this.props.sendMessage("height_changed", () => null);
         }
     }.bind(this), 150);
     disable(): void {
