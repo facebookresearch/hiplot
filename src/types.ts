@@ -35,6 +35,7 @@ export interface HiPlotValueDef { // Mirror of python `hip.ValueDef`
     force_value_min: number | null;
     force_value_max: number | null;
     label_css: string | null;
+    label_html: string | null;
 };
 
 export interface DatapointsCompressed {

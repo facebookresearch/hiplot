@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
+import $ from "jquery";
 import * as d3 from "d3";
 
 import * as color from "color";
@@ -315,6 +315,7 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             'force_value_min': hint !== undefined && hint.force_value_min != null ? hint.force_value_min : null,
             'force_value_max': hint !== undefined && hint.force_value_max != null ? hint.force_value_max : null,
             'label_css': hint !== undefined && hint.label_css !== null ? hint.label_css : "",
+            'label_html': hint !== undefined && hint.label_html !== null && hint.label_html !== undefined ? hint.label_html : $("<div>").text(key).html(),
         };
         // What other types we can render as?
         if (numeric) {

@@ -322,6 +322,18 @@ def demo_3xcols() -> hip.Experiment:
     return xp
 
 
+def demo_col_html() -> hip.Experiment:
+    COL1 = "<h1>col1</h1>"
+    COL2 = "col_2"
+    experiment = hip.Experiment.from_iterable([
+        {COL1: 1.0, COL2: 1},
+        {COL1: 2.0, COL2: 2},
+        {COL1: 3.0, COL2: 3},
+    ])
+    experiment.parameters_definition[COL2].label_html = "col<sub>2</sub>"
+    return experiment
+
+
 README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_3xcols": demo_3xcols,
@@ -346,4 +358,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_color_interpolate_inverse": demo_color_interpolate_inverse,
     "demo_first_value_nan": demo_first_value_nan,
     "demo_weighted_rows": demo_weighted_rows,
+    "demo_col_html": demo_col_html,
 }
