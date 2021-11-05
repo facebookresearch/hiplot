@@ -110,7 +110,7 @@ export class RowsDisplayTable extends React.Component<TablePluginProps, RowsDisp
         var columns: Array<{[k: string]: any}> = this.ordered_cols.map(function(x) {
             const pd = me.props.params_def[x];
             return {
-                'title': x == '' ? '' : $("<span />").attr("class", pd.label_css).text(x)[0].outerHTML,
+                'title': x == '' ? '' : $("<span />").attr("class", pd.label_css).html(pd.label_html)[0].outerHTML,
                 'defaultContent': 'null',
                 'type': x == '' ? 'html' : (pd.numeric ? "num" : "string"),
                 'visible': !me.props.hide || !me.props.hide.includes(x),

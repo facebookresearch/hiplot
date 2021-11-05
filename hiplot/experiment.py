@@ -96,6 +96,7 @@ class ValueDef(_DictSerializable):
         For example :code:`"interpolateSinebow"`.
         To inverse the colormap, append `#inverse` to the name (eg :code:`"interpolateSinebow#inverse"`)
     :ivar label_css: Space-separated bootstrap CSS classes to apply on the label when supported
+    :ivar label_html: HTML code used to render the column name
 
     See :attr:`hiplot.Experiment.parameters_definition`
     """
@@ -113,6 +114,7 @@ class ValueDef(_DictSerializable):
         self.label_css = label_css
         self.force_value_min: tp.Optional[float] = None
         self.force_value_max: tp.Optional[float] = None
+        self.label_html: tp.Optional[str] = None
 
     def force_range(self, minimum: float, maximum: float) -> "ValueDef":
         """
@@ -139,6 +141,7 @@ class ValueDef(_DictSerializable):
             "force_value_min": self.force_value_min,
             "force_value_max": self.force_value_max,
             "label_css": self.label_css,
+            "label_html": self.label_html,
         }
 
 
