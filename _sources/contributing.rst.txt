@@ -1,6 +1,6 @@
 .. _contributing:
 
-Contributing
+Building HiPlot from source
 ==========================
 
 Python developer setup
@@ -12,12 +12,33 @@ provided in the git repository. The easiest solution is to download the latest v
 Building Javascript bundle
 --------------------------
 
-HiPlot's frontend is built with React in TypeScript. Those files need to be compiled and bundled into plain Javascript to generate :code:`hiplot.bundle.js`.
+HiPlot's frontend is built with React in TypeScript.
+Those files need to be compiled and bundled into plain Javascript to generate :code:`hiplot.bundle.js`.
+Node/npm is required in order to build those files
 
-* Node/npm is required in order to build those files
-* Required packages can be installed with :code:`npm install` from HiPlot root directory
-* To build files :code:`npm run build` (or in development mode :code:`npm run build-dev`)
+.. code-block:: bash
 
+    # First, install npm packages
+    npm install
+    # Then either:
+    # (1) Dev (recommended): automatically re-build when a change is detected
+    npm run build-dev-watch
+    # (2) Build in release mode (for better performance)
+    npm run webpack-dev-watch
+
+
+It's also recommended to run a HiPlot server locally to experiment:
+
+.. code-block:: bash
+
+    pip install -e .
+    python -m hiplot --dev
+
+Now open your browser and play with the code :)
+
+.. warning::
+
+    Do not forget to refresh the page and clear the cache when changing javascript files (for Chrome: :code:`CMD+SHIFT+R` on MacOS, or :code:`CTRL+SHIFT+R` on Windows).
 
 
 Building documentation

@@ -15,7 +15,7 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>Contributing &#8212; HiPlot 0.1.32
+    <title>Building HiPlot from source &#8212; HiPlot 0.1.32
  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/guzzle.css" />
@@ -42,7 +42,7 @@
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Contributing</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Building HiPlot from source</a></li> 
       </ul>
     </div>
     <div class="container-wrapper">
@@ -70,7 +70,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tuto_javascript.html">NPM library (javascript)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="py_reference.html">Python classes reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins_reference.html">Displays reference</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Building HiPlot from source</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#python-developer-setup">Python developer setup</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-javascript-bundle">Building Javascript bundle</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-documentation">Building documentation</a></li>
@@ -103,14 +103,14 @@
             <ol class="breadcrumb">
               <li><a href="index.html">Docs</a></li>
               
-              <li>Contributing</li>
+              <li>Building HiPlot from source</li>
             </ol>
           </div>
           
           <div class="document clearer body">
             
-  <section id="contributing">
-<span id="id1"></span><h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+  <section id="building-hiplot-from-source">
+<span id="contributing"></span><h1>Building HiPlot from source<a class="headerlink" href="#building-hiplot-from-source" title="Permalink to this headline">¶</a></h1>
 <section id="python-developer-setup">
 <h2>Python developer setup<a class="headerlink" href="#python-developer-setup" title="Permalink to this headline">¶</a></h2>
 <p>It is not necessary to build the Javascript bundle when developing the python side of HiPlot. However, the generated bundle (<code class="code docutils literal notranslate"><span class="pre">hiplot/static/built/hiplot.bundle.js</span></code>) is not
@@ -118,12 +118,28 @@ provided in the git repository. The easiest solution is to download the latest v
 </section>
 <section id="building-javascript-bundle">
 <h2>Building Javascript bundle<a class="headerlink" href="#building-javascript-bundle" title="Permalink to this headline">¶</a></h2>
-<p>HiPlot’s frontend is built with React in TypeScript. Those files need to be compiled and bundled into plain Javascript to generate <code class="code docutils literal notranslate"><span class="pre">hiplot.bundle.js</span></code>.</p>
-<ul class="simple">
-<li><p>Node/npm is required in order to build those files</p></li>
-<li><p>Required packages can be installed with <code class="code docutils literal notranslate"><span class="pre">npm</span> <span class="pre">install</span></code> from HiPlot root directory</p></li>
-<li><p>To build files <code class="code docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">build</span></code> (or in development mode <code class="code docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">build-dev</span></code>)</p></li>
-</ul>
+<p>HiPlot’s frontend is built with React in TypeScript.
+Those files need to be compiled and bundled into plain Javascript to generate <code class="code docutils literal notranslate"><span class="pre">hiplot.bundle.js</span></code>.
+Node/npm is required in order to build those files</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># First, install npm packages</span>
+npm install
+<span class="c1"># Then either:</span>
+<span class="c1"># (1) Dev (recommended): automatically re-build when a change is detected</span>
+npm run build-dev-watch
+<span class="c1"># (2) Build in release mode (for better performance)</span>
+npm run webpack-dev-watch
+</pre></div>
+</div>
+<p>It’s also recommended to run a HiPlot server locally to experiment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e .
+python -m hiplot --dev
+</pre></div>
+</div>
+<p>Now open your browser and play with the code :)</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not forget to refresh the page and clear the cache when changing javascript files (for Chrome: <code class="code docutils literal notranslate"><span class="pre">CMD+SHIFT+R</span></code> on MacOS, or <code class="code docutils literal notranslate"><span class="pre">CTRL+SHIFT+R</span></code> on Windows).</p>
+</div>
 </section>
 <section id="building-documentation">
 <h2>Building documentation<a class="headerlink" href="#building-documentation" title="Permalink to this headline">¶</a></h2>
@@ -161,7 +177,7 @@ make html
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
  documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Contributing</a></li> 
+        <li class="nav-item nav-item-this"><a href="">Building HiPlot from source</a></li> 
       </ul>
     </div>
 <script type="text/javascript">
