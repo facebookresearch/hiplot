@@ -28,6 +28,7 @@ export interface HiPlotValueDef {
     force_value_min: number | null;
     force_value_max: number | null;
     label_css: string | null;
+    label_html: string | null;
 }
 export interface DatapointsCompressed {
     columns: Array<string>;

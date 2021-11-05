@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="../../_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>hiplot.experiment &#8212; HiPlot 0.1.31
+    <title>hiplot.experiment &#8212; HiPlot 0.1.32
  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/guzzle.css" />
@@ -35,7 +35,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.31
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.32
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 
@@ -201,6 +201,7 @@
 <span class="sd">        For example :code:`&quot;interpolateSinebow&quot;`.</span>
 <span class="sd">        To inverse the colormap, append `#inverse` to the name (eg :code:`&quot;interpolateSinebow#inverse&quot;`)</span>
 <span class="sd">    :ivar label_css: Space-separated bootstrap CSS classes to apply on the label when supported</span>
+<span class="sd">    :ivar label_html: HTML code used to render the column name</span>
 
 <span class="sd">    See :attr:`hiplot.Experiment.parameters_definition`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -218,6 +219,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">label_css</span> <span class="o">=</span> <span class="n">label_css</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">force_value_min</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">force_value_max</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_html</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ValueDef.force_range"><a class="viewcode-back" href="../../py_reference.html#hiplot.ValueDef.force_range">[docs]</a>    <span class="k">def</span> <span class="nf">force_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimum</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">maximum</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ValueDef&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -244,6 +246,7 @@
             <span class="s2">&quot;force_value_min&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">force_value_min</span><span class="p">,</span>
             <span class="s2">&quot;force_value_max&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">force_value_max</span><span class="p">,</span>
             <span class="s2">&quot;label_css&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_css</span><span class="p">,</span>
+            <span class="s2">&quot;label_html&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_html</span><span class="p">,</span>
         <span class="p">}</span></div>
 
 
@@ -706,7 +709,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.31
+        <li class="nav-item nav-item-0"><a href="../../index.html">HiPlot 0.1.32
  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">hiplot.experiment</a></li> 

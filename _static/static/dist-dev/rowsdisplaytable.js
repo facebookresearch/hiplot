@@ -90,7 +90,7 @@ var RowsDisplayTable = /** @class */ (function (_super) {
         var columns = this.ordered_cols.map(function (x) {
             var pd = me.props.params_def[x];
             return {
-                'title': x == '' ? '' : $("<span />").attr("class", pd.label_css).text(x)[0].outerHTML,
+                'title': x == '' ? '' : $("<span />").attr("class", pd.label_css).html(pd.label_html)[0].outerHTML,
                 'defaultContent': 'null',
                 'type': x == '' ? 'html' : (pd.numeric ? "num" : "string"),
                 'visible': !me.props.hide || !me.props.hide.includes(x),

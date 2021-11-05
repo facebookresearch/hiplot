@@ -55080,6 +55080,7 @@ var PSTATE_FILTERS = 'filters';
 
 
 
+
 function get_min_max_for_numeric_scale(pd) {
     var min = pd.force_value_min;
     var max = pd.force_value_max;
@@ -55347,6 +55348,7 @@ function infertypes(url_states, table, hints) {
             'force_value_min': hint !== undefined && hint.force_value_min != null ? hint.force_value_min : null,
             'force_value_max': hint !== undefined && hint.force_value_max != null ? hint.force_value_max : null,
             'label_css': hint !== undefined && hint.label_css !== null ? hint.label_css : "",
+            'label_html': hint !== undefined && hint.label_html !== null && hint.label_html !== undefined ? hint.label_html : jquery_default()("<div>").text(key).html(),
         };
         // What other types we can render as?
         if (numeric) {
@@ -58261,7 +58263,7 @@ function foCreateAxisLabel(pd, cm, tooltip) {
         .classed("label-name", true)
         .classed(src_hiplot.axisLabelText, true)
         .classed("d-inline-block", true)
-        .html(pd.name)
+        .html(pd.label_html)
         .on("contextmenu", function () {
         if (cm) {
             cm.current.show(on_event.pageX, on_event.pageY, pd.name);
@@ -60016,7 +60018,7 @@ var RowsDisplayTable = /** @class */ (function (_super) {
         var columns = this.ordered_cols.map(function (x) {
             var pd = me.props.params_def[x];
             return {
-                'title': x == '' ? '' : jquery_default()("<span />").attr("class", pd.label_css).text(x)[0].outerHTML,
+                'title': x == '' ? '' : jquery_default()("<span />").attr("class", pd.label_css).html(pd.label_html)[0].outerHTML,
                 'defaultContent': 'null',
                 'type': x == '' ? 'html' : (pd.numeric ? "num" : "string"),
                 'visible': !me.props.hide || !me.props.hide.includes(x),

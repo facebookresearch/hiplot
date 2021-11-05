@@ -53,7 +53,7 @@ export function foCreateAxisLabel(pd, cm, tooltip) {
         .classed("label-name", true)
         .classed(style.axisLabelText, true)
         .classed("d-inline-block", true)
-        .html(pd.name)
+        .html(pd.label_html)
         .on("contextmenu", function () {
         if (cm) {
             cm.current.show(d3.event.pageX, d3.event.pageY, pd.name);
