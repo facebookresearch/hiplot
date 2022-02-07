@@ -129,6 +129,7 @@ commands:
           when: always
           command: |
             . venv/bin/activate
+            jupyter notebook --version
             jupyter notebook --port=8888 --ip=127.0.0.1 --notebook-dir=.circleci/ &
             sleep 1
             export NOTEBOOK_TOKEN=`jupyter notebook list | grep http | cut -d' ' -f1 | cut -d= -f2`
