@@ -131,7 +131,9 @@ commands:
             . venv/bin/activate
             jupyter notebook --version
             jupyter notebook --port=8888 --ip=127.0.0.1 --notebook-dir=.circleci/ &
-            sleep 1
+            sleep 3
+            ls ../.local/share/jupyter/runtime/ || true
+            cat ../.local/share/jupyter/runtime/notebook_cookie_secret || true
             export NOTEBOOK_TOKEN=`jupyter notebook list | grep http | cut -d' ' -f1 | cut -d= -f2`
             echo "Notebook running (pid $!): token = $NOTEBOOK_TOKEN"
             pytest -s .circleci/test_notebook.py
