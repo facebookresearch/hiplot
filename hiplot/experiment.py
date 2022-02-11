@@ -190,6 +190,7 @@ def _is_running_ipython() -> bool:
         return False
 
 
+# pylint: disable=too-many-instance-attributes
 class Experiment(_DictSerializable):
     """
     Object that can be rendered by HiPlot. It essential contains a list of metrics, but also some options on how to render it.
@@ -201,6 +202,7 @@ class Experiment(_DictSerializable):
     :ivar colormap: Colormap to use
     :ivar colorby: Default column to color by
     :ivar weightcolumn: If rows have different weights, use this column as the weight (default to 1 if not specified)
+    :ivar enabledDisplays: Ordered displays to enable (by default all are enabled)
 
     :Example:
 
@@ -223,6 +225,7 @@ class Experiment(_DictSerializable):
         self.colormap = colormap if colormap is not None else "interpolateTurbo"
         self.colorby: tp.Optional[str] = None
         self.weightcolumn: tp.Optional[str] = None
+        self.enabledDisplays: tp.List[str] = [Displays.PARALLEL_PLOT, Displays.XY, Displays.DISTRIBUTION, Displays.TABLE]
         self._display_data: tp.Dict[str, tp.Dict[str, tp.Any]] = {}
         self._compress: bool = False
 
@@ -407,6 +410,7 @@ To render an experiment to HTML, use `experiment.to_html(file_name)` or `html_pa
             "colorby": self.colorby,
             "weightcolumn": self.weightcolumn,
             "display_data": self._display_data,
+            "enabled_displays": self.enabledDisplays,
         }
         if self._compress:
             from .compress import compress

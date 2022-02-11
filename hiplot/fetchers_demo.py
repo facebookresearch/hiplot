@@ -334,6 +334,12 @@ def demo_col_html() -> hip.Experiment:
     return experiment
 
 
+def demo_disable_table() -> hip.Experiment:
+    experiment = demo()
+    experiment.enabledDisplays.remove(hip.Displays.TABLE)
+    return experiment
+
+
 README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_3xcols": demo_3xcols,
@@ -359,4 +365,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_first_value_nan": demo_first_value_nan,
     "demo_weighted_rows": demo_weighted_rows,
     "demo_col_html": demo_col_html,
+    "demo_disable_table": demo_disable_table,
 }
