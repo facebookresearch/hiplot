@@ -156,7 +156,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
 
     plugins_window_state: {[plugin: string]: any} = {};
 
-    plugins_ref: Array<React.RefObject<PluginClass>> = []; // For debugging/tests
+    plugins_ref: {[plugin: string]: React.RefObject<PluginClass>} = {}; // For debugging/tests
 
     constructor(props: HiPlotProps) {
         super(props);
@@ -182,7 +182,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         };
         Object.keys(props.plugins).forEach((name, index) => {
             this.plugins_window_state[name] = {};
-            this.plugins_ref[index] = React.createRef<PluginClass>();
+            this.plugins_ref[name] = React.createRef<PluginClass>();
         });
     }
     static defaultProps = {
@@ -511,9 +511,9 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             filterRows: this.filterRows.bind(this),
             ...datasets
         };
-        const createPluginProps = function(this: HiPlot, idx: number, name: string): React.ClassAttributes<React.ComponentClass<HiPlotPluginData>> & HiPlotPluginData {
+        const createPluginProps = function(this: HiPlot, name: string): React.ClassAttributes<React.ComponentClass<HiPlotPluginData>> & HiPlotPluginData {
             return {
-                ref: this.plugins_ref[idx],
+                ref: this.plugins_ref[name],
                 ...(this.state.experiment.display_data && this.state.experiment.display_data[name] ? this.state.experiment.display_data[name] : {}),
                 ...datasets,
                 rows_selected_filter: this.state.rows_selected_filter,
@@ -556,7 +556,10 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
             <ContextMenu ref={this.contextMenuRef}/>
             {this.state.loadStatus == HiPlotLoadStatus.Loaded &&
             <div>
-                {Object.entries(this.props.plugins).map((plugin, idx) => <React.Fragment key={idx}>{React.createElement(plugin[1], createPluginProps(idx, plugin[0]))}</React.Fragment>)}
+                {(this.state.experiment.enabled_displays !== undefined ? this.state.experiment.enabled_displays : Object.keys(this.props.plugins)).map(function(display_name: string) {
+                    const plugin = this.props.plugins[display_name];
+                    return <React.Fragment key={display_name}>{React.createElement(plugin, createPluginProps(display_name))}</React.Fragment>;
+                }.bind(this))}
             </div>
             }
             </div>
@@ -567,7 +570,7 @@ export class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
         const entries = Object.entries(this.props.plugins);
         for (var i = 0; i < entries.length; ++i) {
             if (entries[i][1] == cls) {
-                return this.plugins_ref[i].current as unknown as T;
+                return this.plugins_ref[entries[i][0]].current as unknown as T;
             }
         }
        throw new Error("Can not find plugin" + cls);

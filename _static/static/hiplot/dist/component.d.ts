@@ -68,7 +68,9 @@ export declare class HiPlot extends React.Component<HiPlotProps, HiPlotState> {
     plugins_window_state: {
         [plugin: string]: any;
     };
-    plugins_ref: Array<React.RefObject<PluginClass>>;
+    plugins_ref: {
+        [plugin: string]: React.RefObject<PluginClass>;
+    };
     constructor(props: HiPlotProps);
     static defaultProps: {
         loadURI: any;

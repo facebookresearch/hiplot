@@ -48,6 +48,7 @@ export interface HiPlotExperiment {
             [key2: string]: any;
         };
     };
+    enabled_displays?: Array<string>;
 }
 export declare class Experiment {
     static from_iterable(values: object[]): HiPlotExperiment;

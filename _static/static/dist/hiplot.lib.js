@@ -61514,7 +61514,7 @@ var HiPlot = /** @class */ (function (_super) {
         _this.contextMenuRef = external_root_React_commonjs2_react_commonjs_react_amd_react_default().createRef();
         _this.rootRef = external_root_React_commonjs2_react_commonjs_react_amd_react_default().createRef();
         _this.plugins_window_state = {};
-        _this.plugins_ref = []; // For debugging/tests
+        _this.plugins_ref = {}; // For debugging/tests
         _this.callSelectedUidsHooks = debounce(function () {
             this.sendMessage("selected_uids", function () { return this.state.rows_selected.map(function (row) { return '' + row['uid']; }); }.bind(this));
         }.bind(_this), 200);
@@ -61543,7 +61543,7 @@ var HiPlot = /** @class */ (function (_super) {
         };
         Object.keys(props.plugins).forEach(function (name, index) {
             _this.plugins_window_state[name] = {};
-            _this.plugins_ref[index] = external_root_React_commonjs2_react_commonjs_react_amd_react_default().createRef();
+            _this.plugins_ref[name] = external_root_React_commonjs2_react_commonjs_react_amd_react_default().createRef();
         });
         return _this;
     }
@@ -61840,8 +61840,8 @@ var HiPlot = /** @class */ (function (_super) {
             rows_selected: this.state.rows_selected
         };
         var controlProps = component_assign({ restoreAllRows: this.restoreAllRows.bind(this), filterRows: this.filterRows.bind(this) }, datasets);
-        var createPluginProps = function (idx, name) {
-            return component_assign(component_assign(component_assign({ ref: this.plugins_ref[idx] }, (this.state.experiment.display_data && this.state.experiment.display_data[name] ? this.state.experiment.display_data[name] : {})), datasets), { rows_selected_filter: this.state.rows_selected_filter, name: name, persistentState: this.state.persistentState.children(name), window_state: this.plugins_window_state[name], sendMessage: this.sendMessage.bind(this), get_color_for_row: this.getColorForRow.bind(this), experiment: this.state.experiment, params_def: this.state.params_def, params_def_unfiltered: this.state.params_def_unfiltered, dp_lookup: this.state.dp_lookup, colorby: this.state.colorby, render_row_text: this.renderRowText.bind(this), context_menu_ref: this.contextMenuRef, setSelected: this.setSelected.bind(this), setHighlighted: this.setHighlighted.bind(this), asserts: this.props.asserts });
+        var createPluginProps = function (name) {
+            return component_assign(component_assign(component_assign({ ref: this.plugins_ref[name] }, (this.state.experiment.display_data && this.state.experiment.display_data[name] ? this.state.experiment.display_data[name] : {})), datasets), { rows_selected_filter: this.state.rows_selected_filter, name: name, persistentState: this.state.persistentState.children(name), window_state: this.plugins_window_state[name], sendMessage: this.sendMessage.bind(this), get_color_for_row: this.getColorForRow.bind(this), experiment: this.state.experiment, params_def: this.state.params_def, params_def_unfiltered: this.state.params_def_unfiltered, dp_lookup: this.state.dp_lookup, colorby: this.state.colorby, render_row_text: this.renderRowText.bind(this), context_menu_ref: this.contextMenuRef, setSelected: this.setSelected.bind(this), setHighlighted: this.setHighlighted.bind(this), asserts: this.props.asserts });
         }.bind(this);
         return (external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement("div", { ref: this.rootRef, className: "hip_thm--" + (this.state.dark ? "dark" : "light") },
             external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement("div", { className: src_hiplot.hiplot },
@@ -61853,13 +61853,16 @@ var HiPlot = /** @class */ (function (_super) {
                     external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement(DocAndCredits, { dark: this.state.dark }),
                 external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement(ContextMenu, { ref: this.contextMenuRef }),
                 this.state.loadStatus == HiPlotLoadStatus.Loaded &&
-                    external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement("div", null, Object.entries(this.props.plugins).map(function (plugin, idx) { return external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement((external_root_React_commonjs2_react_commonjs_react_amd_react_default()).Fragment, { key: idx }, external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement(plugin[1], createPluginProps(idx, plugin[0]))); })))));
+                    external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement("div", null, (this.state.experiment.enabled_displays !== undefined ? this.state.experiment.enabled_displays : Object.keys(this.props.plugins)).map(function (display_name) {
+                        var plugin = this.props.plugins[display_name];
+                        return external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement((external_root_React_commonjs2_react_commonjs_react_amd_react_default()).Fragment, { key: display_name }, external_root_React_commonjs2_react_commonjs_react_amd_react_default().createElement(plugin, createPluginProps(display_name)));
+                    }.bind(this))))));
     };
     HiPlot.prototype.getPlugin = function (cls) {
         var entries = Object.entries(this.props.plugins);
         for (var i = 0; i < entries.length; ++i) {
             if (entries[i][1] == cls) {
-                return this.plugins_ref[i].current;
+                return this.plugins_ref[entries[i][0]].current;
             }
         }
         throw new Error("Can not find plugin" + cls);
