@@ -225,7 +225,7 @@ class Experiment(_DictSerializable):
         self.colormap = colormap if colormap is not None else "interpolateTurbo"
         self.colorby: tp.Optional[str] = None
         self.weightcolumn: tp.Optional[str] = None
-        self.enabledDisplays: tp.Tuple[str] = [Displays.PARALLEL_PLOT, Displays.XY, Displays.DISTRIBUTION, Displays.TABLE]
+        self.enabledDisplays: tp.List[str] = [Displays.PARALLEL_PLOT, Displays.XY, Displays.DISTRIBUTION, Displays.TABLE]
         self._display_data: tp.Dict[str, tp.Dict[str, tp.Any]] = {}
         self._compress: bool = False
 
