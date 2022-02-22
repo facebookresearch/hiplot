@@ -245,6 +245,8 @@ export function infertypes(url_states, table, hints) {
         var values = setVals;
         var distinct_values = Array.from(new Set(values));
         var numericSorted = numeric ? get_numeric_values_sorted(distinct_values) : [];
+        var forceValueMinNegative = hint !== undefined && hint.force_value_min != null && hint.force_value_min !== undefined && hint.force_value_min <= 0;
+        var canBeLogScale = (numericSorted[0] > 0 && !forceValueMinNegative);
         var spansMultipleOrdersOfMagnitude = false;
         if (numericSorted.length > 10 && numericSorted[0] > 0) {
             var top5pct = numericSorted[Math.min(numericSorted.length - 1, ~~(19 * numericSorted.length / 20))];
@@ -256,7 +258,7 @@ export function infertypes(url_states, table, hints) {
         if (numeric && !categorical) {
             type = ParamType.NUMERIC;
             if (spansMultipleOrdersOfMagnitude) {
-                type = numericSorted[0] > 0 ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
+                type = canBeLogScale ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
             }
         }
         if (hint !== undefined && hint.type !== null) {
@@ -282,7 +284,7 @@ export function infertypes(url_states, table, hints) {
         // What other types we can render as?
         if (numeric) {
             info.type_options.push(ParamType.NUMERIC);
-            if (numericSorted[0] > 0) {
+            if (canBeLogScale) {
                 info.type_options.push(ParamType.NUMERICLOG);
             }
             info.type_options.push(ParamType.NUMERICPERCENTILE);

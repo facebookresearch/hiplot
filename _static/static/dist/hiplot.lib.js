@@ -54887,18 +54887,19 @@ function scale_add_outliers(scale_orig) {
         return ascending_order ? range[0] + scale_orig_value_rel : range[0] - scale_orig_value_rel;
     };
     function invert(y) {
+        var domain = scale_orig.domain();
         var range = scale_orig.range();
         var origin_scale_size = compute_origin_scale_size();
         var ascending_order = range[0] < range[1];
         if (ascending_order) {
             if (y > range[0] + origin_scale_size) { // Infinite domain
-                return range[1];
+                return domain[1] * 1.1;
             }
             y -= range[0];
         }
         else {
             if (y < range[0] - origin_scale_size) { // Infinite domain
-                return range[0];
+                return domain[1] * 1.1;
             }
             y = -y + range[0];
         }
@@ -55316,6 +55317,8 @@ function infertypes(url_states, table, hints) {
         var values = setVals;
         var distinct_values = Array.from(new Set(values));
         var numericSorted = numeric ? get_numeric_values_sorted(distinct_values) : [];
+        var forceValueMinNegative = hint !== undefined && hint.force_value_min != null && hint.force_value_min !== undefined && hint.force_value_min <= 0;
+        var canBeLogScale = (numericSorted[0] > 0 && !forceValueMinNegative);
         var spansMultipleOrdersOfMagnitude = false;
         if (numericSorted.length > 10 && numericSorted[0] > 0) {
             var top5pct = numericSorted[Math.min(numericSorted.length - 1, ~~(19 * numericSorted.length / 20))];
@@ -55327,7 +55330,7 @@ function infertypes(url_states, table, hints) {
         if (numeric && !categorical) {
             type = ParamType.NUMERIC;
             if (spansMultipleOrdersOfMagnitude) {
-                type = numericSorted[0] > 0 ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
+                type = canBeLogScale ? ParamType.NUMERICLOG : ParamType.NUMERICPERCENTILE;
             }
         }
         if (hint !== undefined && hint.type !== null) {
@@ -55353,7 +55356,7 @@ function infertypes(url_states, table, hints) {
         // What other types we can render as?
         if (numeric) {
             info.type_options.push(ParamType.NUMERIC);
-            if (numericSorted[0] > 0) {
+            if (canBeLogScale) {
                 info.type_options.push(ParamType.NUMERICLOG);
             }
             info.type_options.push(ParamType.NUMERICPERCENTILE);
