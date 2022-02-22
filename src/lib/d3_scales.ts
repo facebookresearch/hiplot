@@ -248,18 +248,19 @@ export function scale_add_outliers(scale_orig) {
       return ascending_order ? range[0] + scale_orig_value_rel : range[0] - scale_orig_value_rel;
     };
     function invert(y) {
-        var range = scale_orig.range();
+        const domain = scale_orig.domain();
+        const range = scale_orig.range();
         var origin_scale_size = compute_origin_scale_size();
         var ascending_order = range[0] < range[1];
         if (ascending_order) {
             if (y > range[0]+origin_scale_size) { // Infinite domain
-                return range[1];
+                return domain[1] * 1.1;
             }
             y -= range[0];
         }
         else {
             if (y < range[0]-origin_scale_size) {  // Infinite domain
-                return range[0];
+                return domain[1] * 1.1;
             }
             y = -y + range[0];
         }
