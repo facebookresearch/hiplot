@@ -340,6 +340,15 @@ def demo_disable_table() -> hip.Experiment:
     return experiment
 
 
+def demo_big_floats() -> hip.Experiment:
+    return hip.Experiment.from_iterable(
+        {
+            'bigfloat': math.nan if i < 10 else 10 ** random.uniform(15, 32),
+        }
+        for i in range(100)
+    )
+
+
 README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo": demo,
     "demo_3xcols": demo_3xcols,
@@ -366,4 +375,5 @@ README_DEMOS: t.Dict[str, t.Callable[[], hip.Experiment]] = {
     "demo_weighted_rows": demo_weighted_rows,
     "demo_col_html": demo_col_html,
     "demo_disable_table": demo_disable_table,
+    "demo_big_floats": demo_big_floats,
 }
