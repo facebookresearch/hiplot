@@ -3,6 +3,7 @@
 
 ![Logo](https://raw.githubusercontent.com/facebookresearch/hiplot/main/hiplot/static/logo.png)
 
+[![Support Ukraine](https://img.shields.io/badge/Support-Ukraine-FFD500?style=flat&labelColor=005BBB)](https://opensource.fb.com/support-ukraine)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![PyPI download month](https://img.shields.io/pypi/dm/hiplot.svg)](https://pypi.python.org/pypi/hiplot/) [![PyPI version](https://img.shields.io/pypi/v/hiplot.svg)](https://pypi.python.org/pypi/hiplot/) [![docs](https://img.shields.io/badge/docs-passing-brightgreen.svg)](https://facebookresearch.github.io/hiplot/index.html) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/facebookresearch/hiplot/blob/main/examples/HiPlotColabExample.ipynb)
 
