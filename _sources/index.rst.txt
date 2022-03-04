@@ -4,7 +4,6 @@
    :start-line: 6
    :end-line: 8
 
-
 HiPlot demonstration
 ====================
 
