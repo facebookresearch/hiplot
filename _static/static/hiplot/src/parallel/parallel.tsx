@@ -259,10 +259,10 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       }
       this.yscale[k] = this.createScale(k);
       return true;
-    }.bind(this)).sort(function(this: ParallelPlot, a: string, b: string) {
+    }.bind(this)).reverse().sort(function(this: ParallelPlot, a: string, b: string) {
       const pda = this.state.order.findIndex((e) => e == a);
       const pdb = this.state.order.findIndex((e) => e == b);
-      return (pda == -1 ? this.state.order.length : pda) - (pdb == -1 ? this.state.order.length : pdb);
+      return (pdb == -1 ? this.state.order.length : pdb) - (pda == -1 ? this.state.order.length : pda);
     }.bind(this));
     this.setState({
       width: this.state.width == 0 ? this.root_ref.current.offsetWidth : this.state.width,
@@ -387,7 +387,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       }
       me.dimensions_dom = d3.select(me.svgg_ref.current).selectAll<SVGGElement, string>(".dimension")
           // reverse the order so that the tooltips appear on top of the axis ticks
-          .data(me.state.dimensions.reverse())
+          .data(me.state.dimensions.slice().reverse())
         .enter().append<SVGGElement>("svg:g")
           .attr("class", "dimension")
           .attr("transform", function(d) { return "translate(" + me.xscale(d) + ")"; })

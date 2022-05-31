@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -15,13 +15,14 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>HiPlot component for Streamlit &#8212; HiPlot 0.1.32
+    <title>HiPlot component for Streamlit &#8212; HiPlot 0.1.33
  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/guzzle.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
@@ -44,7 +45,7 @@
         <li class="right" >
           <a href="tuto_notebook.html" title="Advanced uses: notebooks"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.33
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">HiPlot component for Streamlit</a></li> 
       </ul>
@@ -115,17 +116,17 @@
           <div class="document clearer body">
             
   <section id="hiplot-component-for-streamlit">
-<span id="tutostreamlit"></span><h1>HiPlot component for Streamlit<a class="headerlink" href="#hiplot-component-for-streamlit" title="Permalink to this headline">¶</a></h1>
+<span id="tutostreamlit"></span><h1>HiPlot component for Streamlit<a class="headerlink" href="#hiplot-component-for-streamlit" title="Permalink to this heading">¶</a></h1>
 <p><a class="reference external" href="https://www.streamlit.io/">Streamlit</a> is an open-source app framework. It enables data scientists and machine learning engineers to create beautiful, performant apps in pure Python.</p>
 <section id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading">¶</a></h2>
 <p>You’ll need both Streamlit (&gt;=0.63 for <a class="reference external" href="https://medium.com/streamlit/introducing-streamlit-components-d73f2092ae30">components support</a>) and HiPlot (&gt;=0.18)</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">streamlit</span> <span class="n">hiplot</span>
 </pre></div>
 </div>
 </section>
 <section id="displaying-an-hiplot-experiment">
-<h2>Displaying an <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a><a class="headerlink" href="#displaying-an-hiplot-experiment" title="Permalink to this headline">¶</a></h2>
+<h2>Displaying an <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a><a class="headerlink" href="#displaying-an-hiplot-experiment" title="Permalink to this heading">¶</a></h2>
 <p>Displaying an HiPlot experiment in Streamlit is very similar to how you would do it in a Jupyter notebook, except that you should call
 <a class="reference internal" href="py_reference.html#hiplot.Experiment.to_streamlit" title="hiplot.Experiment.to_streamlit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.to_streamlit()</span></code></a> before calling <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display()</span></code></a>.</p>
 <div class="admonition note">
@@ -160,7 +161,7 @@ be re-created whenever any slider changes, and lose its current configuration/st
 </figure>
 </section>
 <section id="hiplot-component-return-values">
-<span id="tutostreamlitretvalues"></span><h2>HiPlot component return values<a class="headerlink" href="#hiplot-component-return-values" title="Permalink to this headline">¶</a></h2>
+<span id="tutostreamlitretvalues"></span><h2>HiPlot component return values<a class="headerlink" href="#hiplot-component-return-values" title="Permalink to this heading">¶</a></h2>
 <p>HiPlot is highly interactive, and there are multiple values/information that can be returned, depending on what the user provides for the parameter <code class="docutils literal notranslate"><span class="pre">ret</span></code> in <a class="reference internal" href="py_reference.html#hiplot.Experiment.to_streamlit" title="hiplot.Experiment.to_streamlit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.to_streamlit()</span></code></a></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ret=&quot;filtered_uids&quot;</span></code>: returns a list of uid for filtered datapoints. Filtered datapoints change when the user clicks on <em>Keep</em> or <em>Exclude</em> buttons.</p></li>
@@ -175,7 +176,7 @@ be re-created whenever any slider changes, and lose its current configuration/st
 </div>
 </section>
 <section id="improving-performance-with-streamlit-caching-experimental">
-<span id="tutostreamlitcache"></span><h2>Improving performance with streamlit caching (EXPERIMENTAL)<a class="headerlink" href="#improving-performance-with-streamlit-caching-experimental" title="Permalink to this headline">¶</a></h2>
+<span id="tutostreamlitcache"></span><h2>Improving performance with streamlit caching (EXPERIMENTAL)<a class="headerlink" href="#improving-performance-with-streamlit-caching-experimental" title="Permalink to this heading">¶</a></h2>
 <p>Generating / displaying a large HiPlot Experiment / component can take a significant amount of time and bandwidth. Several things can speed up streamlit iterations:</p>
 <ul class="simple">
 <li><p>A data compression mode, which represents the underlying data more efficiently if most of the rows have the same columns</p></li>
@@ -235,7 +236,7 @@ be re-created whenever any slider changes, and lose its current configuration/st
         <li class="right" >
           <a href="tuto_notebook.html" title="Advanced uses: notebooks"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.33
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">HiPlot component for Streamlit</a></li> 
       </ul>

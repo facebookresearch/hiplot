@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -15,13 +15,14 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>NPM library (javascript) &#8212; HiPlot 0.1.32
+    <title>NPM library (javascript) &#8212; HiPlot 0.1.33
  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/guzzle.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
@@ -44,7 +45,7 @@
         <li class="right" >
           <a href="tuto_streamlit.html" title="HiPlot component for Streamlit"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.33
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">NPM library (javascript)</a></li> 
       </ul>
@@ -114,14 +115,14 @@
           <div class="document clearer body">
             
   <section id="npm-library-javascript">
-<span id="tutojavascript"></span><h1>NPM library (javascript)<a class="headerlink" href="#npm-library-javascript" title="Permalink to this headline">¶</a></h1>
+<span id="tutojavascript"></span><h1>NPM library (javascript)<a class="headerlink" href="#npm-library-javascript" title="Permalink to this heading">¶</a></h1>
 <p>HiPlot is released as a React component in an <a class="reference external" href="https://www.npmjs.com/package/hiplot">NPM package</a>, and can be embeded in any javascript/React codebase.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The Javascript library API is very recent, subject to changes, and less used compared to the python API. Please report any bug or suggestion by creating a <a class="reference external" href="https://github.com/facebookresearch/hiplot/issues/new">github issue</a></p>
 </div>
 <section id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading">¶</a></h2>
 <p>Download hiplot in your favorite package manager</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">npm</span> <span class="n">install</span> <span class="n">hiplot</span>  <span class="c1"># if using npm</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">yarn</span> <span class="n">add</span> <span class="n">hiplot</span> <span class="c1"># for yarn users</span>
@@ -129,23 +130,23 @@
 </div>
 </section>
 <section id="basic-example">
-<h2>Basic example<a class="headerlink" href="#basic-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="o">*</span> <span class="kr">as</span> <span class="nx">hip</span> <span class="kr">from</span> <span class="s1">&#39;hiplot&#39;</span><span class="p">;</span>
+<h2>Basic example<a class="headerlink" href="#basic-example" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">hip</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;hiplot&#39;</span><span class="p">;</span><span class="w"></span>
 
-<span class="kd">function</span> <span class="nx">HiPlotWithData</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="nx">experiment</span> <span class="o">=</span> <span class="nx">hip</span><span class="p">.</span><span class="nx">Experiment</span><span class="p">.</span><span class="nx">from_iterable</span><span class="p">([</span>
-        <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;sgd&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.1</span><span class="p">},</span>
-        <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.2</span><span class="p">},</span>
-        <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.3</span><span class="p">},</span>
-        <span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span> <span class="s1">&#39;sgd&#39;</span><span class="p">,</span> <span class="s1">&#39;lr&#39;</span><span class="o">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;dropout&#39;</span><span class="o">:</span> <span class="mf">0.4</span><span class="p">},</span>
-    <span class="p">]);</span>
-    <span class="k">return</span> <span class="o">&lt;</span><span class="nx">hip</span><span class="p">.</span><span class="nx">HiPlot</span> <span class="nx">experiment</span><span class="o">=</span><span class="p">{</span><span class="nx">experiment</span><span class="p">}</span> <span class="o">/&gt;</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">HiPlotWithData</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">experiment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">hip</span><span class="p">.</span><span class="nx">Experiment</span><span class="p">.</span><span class="nx">from_iterable</span><span class="p">([</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;sgd&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;lr&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">0.01</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;dropout&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;adam&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;lr&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;dropout&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;adam&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;lr&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">1.</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;dropout&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">0.3</span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="s1">&#39;opt&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;sgd&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;lr&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">0.001</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;dropout&#39;</span><span class="o">:</span><span class="w"> </span><span class="mf">0.4</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="p">]);</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">hip</span><span class="p">.</span><span class="nx">HiPlot</span><span class="w"> </span><span class="nx">experiment</span><span class="o">=</span><span class="p">{</span><span class="nx">experiment</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <iframe src="./_static/examples_javascript/Basic/index.html" height="700px" width="100%"></iframe></section>
 <section id="customizing-hiplot-react-component">
-<h2>Customizing HiPlot react component<a class="headerlink" href="#customizing-hiplot-react-component" title="Permalink to this headline">¶</a></h2>
+<h2>Customizing HiPlot react component<a class="headerlink" href="#customizing-hiplot-react-component" title="Permalink to this heading">¶</a></h2>
 <p>There are two main ways to customize your HiPlot component:</p>
 <ul class="simple">
 <li><dl class="simple">
@@ -160,33 +161,33 @@
 </li>
 </ul>
 <section id="react-properties">
-<h3>React properties<a class="headerlink" href="#react-properties" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">export</span> <span class="kd">interface</span> <span class="nx">HiPlotProps</span> <span class="p">{</span>
-    <span class="c1">// Experiment to be displayed. Can be created with `hip.Experiment.from_iterable`</span>
-    <span class="nx">experiment</span>: <span class="kt">HiPlotExperiment</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>
-    <span class="c1">// Display plugins (by default parallel plot, plotxy, distribution and table)</span>
-    <span class="nx">plugins</span>: <span class="kt">PluginsMap</span><span class="p">;</span>
-    <span class="c1">// An object where we can persist changes</span>
-    <span class="c1">// If not provided, will create a `PersistentStateInMemory` object</span>
-    <span class="nx">persistentState?</span>: <span class="kt">PersistentState</span><span class="p">;</span>
-    <span class="c1">// Callbacks when selection changes, filtering, or brush extents change</span>
-    <span class="nx">onChange</span><span class="o">:</span> <span class="p">{[</span><span class="nx">k</span>: <span class="kt">string</span><span class="p">]</span><span class="o">:</span> <span class="p">(</span><span class="kr">type</span><span class="o">:</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">data</span>: <span class="kt">any</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="ow">void</span><span class="p">};</span>
-    <span class="c1">// Enable dark-mode</span>
-    <span class="nx">dark</span>: <span class="kt">boolean</span><span class="p">;</span>
-    <span class="c1">// Adds extra assertions (disabled by default)</span>
-    <span class="nx">asserts</span>: <span class="kt">boolean</span><span class="p">;</span>
-    <span class="cm">/* A class that can be used to dynamically fetch experiments</span>
+<h3>React properties<a class="headerlink" href="#react-properties" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">HiPlotProps</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Experiment to be displayed. Can be created with `hip.Experiment.from_iterable`</span><span class="w"></span>
+<span class="w">    </span><span class="nx">experiment</span><span class="o">:</span><span class="w"> </span><span class="kt">HiPlotExperiment</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Display plugins (by default parallel plot, plotxy, distribution and table)</span><span class="w"></span>
+<span class="w">    </span><span class="nx">plugins</span><span class="o">:</span><span class="w"> </span><span class="kt">PluginsMap</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// An object where we can persist changes</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// If not provided, will create a `PersistentStateInMemory` object</span><span class="w"></span>
+<span class="w">    </span><span class="nx">persistentState?</span><span class="o">:</span><span class="w"> </span><span class="kt">PersistentState</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Callbacks when selection changes, filtering, or brush extents change</span><span class="w"></span>
+<span class="w">    </span><span class="nx">onChange</span><span class="o">:</span><span class="w"> </span><span class="p">{[</span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="p">};</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Enable dark-mode</span><span class="w"></span>
+<span class="w">    </span><span class="nx">dark</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// Adds extra assertions (disabled by default)</span><span class="w"></span>
+<span class="w">    </span><span class="nx">asserts</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="cm">/* A class that can be used to dynamically fetch experiments</span>
 <span class="cm">    Examples:</span>
 <span class="cm">    - WebserverDataProvider: textarea to input URI, fetches experiments from server</span>
 <span class="cm">    - UploadDataProvider: upload CSV files in your browser</span>
-<span class="cm">    */</span>
-    <span class="nx">dataProvider</span>: <span class="kt">DataProviderClass</span><span class="p">;</span>
-<span class="p">};</span>
+<span class="cm">    */</span><span class="w"></span>
+<span class="w">    </span><span class="nx">dataProvider</span><span class="o">:</span><span class="w"> </span><span class="kt">DataProviderClass</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 <section id="an-advanced-example">
-<span id="tutojsadvanced"></span><h3>An advanced example<a class="headerlink" href="#an-advanced-example" title="Permalink to this headline">¶</a></h3>
+<span id="tutojsadvanced"></span><h3>An advanced example<a class="headerlink" href="#an-advanced-example" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span>function Custom() { // CI_BUILD
   // Create an experiment, and store it in the state
   // Otherwise, HiPlot detects that the experiment changed
@@ -269,7 +270,7 @@
         <li class="right" >
           <a href="tuto_streamlit.html" title="HiPlot component for Streamlit"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.33
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">NPM library (javascript)</a></li> 
       </ul>

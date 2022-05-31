@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -15,13 +15,14 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>Getting started &#8212; HiPlot 0.1.32
+    <title>Getting started &#8212; HiPlot 0.1.33
  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/guzzle.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
@@ -44,7 +45,7 @@
         <li class="right" >
           <a href="index.html" title="HiPlot demonstration"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.33
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Getting started</a></li> 
       </ul>
@@ -116,18 +117,18 @@
           <div class="document clearer body">
             
   <section id="getting-started">
-<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading">¶</a></h1>
 <section id="installing">
-<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this heading">¶</a></h2>
 <section id="python-version">
-<h3>Python version<a class="headerlink" href="#python-version" title="Permalink to this headline">¶</a></h3>
+<h3>Python version<a class="headerlink" href="#python-version" title="Permalink to this heading">¶</a></h3>
 <p>HiPlot requires python version 3.6 or newer (you can check your python version with <code class="code docutils literal notranslate"><span class="pre">python3</span> <span class="pre">--version</span></code>)</p>
 </section>
 <section id="python-virtualenv">
-<h3>Python virtualenv<a class="headerlink" href="#python-virtualenv" title="Permalink to this headline">¶</a></h3>
+<h3>Python virtualenv<a class="headerlink" href="#python-virtualenv" title="Permalink to this heading">¶</a></h3>
 <p>We advise that you create a virtualenv for HiPlot, if you don’t use one already.</p>
 <section id="on-linux-macos">
-<h4>On Linux/MacOS<a class="headerlink" href="#on-linux-macos" title="Permalink to this headline">¶</a></h4>
+<h4>On Linux/MacOS<a class="headerlink" href="#on-linux-macos" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a virtualenv</span>
 python3 -m venv venv_hiplot
 <span class="c1"># Activate it</span>
@@ -136,7 +137,7 @@ python3 -m venv venv_hiplot
 </div>
 </section>
 <section id="on-windows">
-<h4>On Windows<a class="headerlink" href="#on-windows" title="Permalink to this headline">¶</a></h4>
+<h4>On Windows<a class="headerlink" href="#on-windows" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">py</span> <span class="o">-</span><span class="mi">3</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">venv_hiplot</span>
 <span class="n">venv_hiplot</span>\<span class="n">Scripts</span>\<span class="n">activate</span>
 </pre></div>
@@ -144,7 +145,7 @@ python3 -m venv venv_hiplot
 </section>
 </section>
 <section id="install-hiplot">
-<h3>Install HiPlot<a class="headerlink" href="#install-hiplot" title="Permalink to this headline">¶</a></h3>
+<h3>Install HiPlot<a class="headerlink" href="#install-hiplot" title="Permalink to this heading">¶</a></h3>
 <p>Within the activated environment, use the following command to install HiPlot:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -U hiplot  <span class="c1"># Or for conda users: conda install -c conda-forge hiplot</span>
 </pre></div>
@@ -157,7 +158,7 @@ python3 -m venv venv_hiplot
 </section>
 </section>
 <section id="option-1-use-hiplot-in-an-ipython-notebook">
-<h2>Option 1: Use HiPlot in an ipython notebook<a class="headerlink" href="#option-1-use-hiplot-in-an-ipython-notebook" title="Permalink to this headline">¶</a></h2>
+<h2>Option 1: Use HiPlot in an ipython notebook<a class="headerlink" href="#option-1-use-hiplot-in-an-ipython-notebook" title="Permalink to this heading">¶</a></h2>
 <p>Here we assume that we have a list of several datapoints.
 HiPlot can only render <a class="reference internal" href="py_reference.html#hiplot.Experiment" title="hiplot.Experiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment</span></code></a> objects, so we create one with <a class="reference internal" href="py_reference.html#hiplot.Experiment.from_iterable" title="hiplot.Experiment.from_iterable"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment.from_iterable</span></code></a>.
 Once we have created this object, we can display it with <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.Experiment.display</span></code></a>.</p>
@@ -171,7 +172,7 @@ Once we have created this object, we can display it with <a class="reference int
 <iframe src="./_static/demo/demo_basic_usage.html?hip.PARALLEL_PLOT.height=300" height="700px" width="100%"></iframe><p><strong>Learn more</strong> in the tutorial: <a class="reference internal" href="tuto_notebook.html#tutonotebook"><span class="std std-ref">Advanced uses: notebooks</span></a></p>
 </section>
 <section id="option-2-use-hiplot-webserver">
-<span id="getstartedwebserver"></span><h2>Option 2: Use HiPlot webserver<a class="headerlink" href="#option-2-use-hiplot-webserver" title="Permalink to this headline">¶</a></h2>
+<span id="getstartedwebserver"></span><h2>Option 2: Use HiPlot webserver<a class="headerlink" href="#option-2-use-hiplot-webserver" title="Permalink to this heading">¶</a></h2>
 <p>Within the activated environment, use the following command to run HiPlot server:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span>
 </pre></div>
@@ -194,7 +195,7 @@ To allow anyone to connect, use</p>
 </ul>
 </section>
 <section id="option-3-create-data-apps-using-streamlit-streamlit-logo">
-<h2>Option 3: Create data-apps using Streamlit <a class="reference internal" href="_images/streamlit_logo.png"><img alt="streamlit_logo" src="_images/streamlit_logo.png" style="height: 30px;" /></a><a class="headerlink" href="#option-3-create-data-apps-using-streamlit-streamlit-logo" title="Permalink to this headline">¶</a></h2>
+<h2>Option 3: Create data-apps using Streamlit <a class="reference internal" href="_images/streamlit_logo.png"><img alt="streamlit_logo" src="_images/streamlit_logo.png" style="height: 30px;" /></a><a class="headerlink" href="#option-3-create-data-apps-using-streamlit-streamlit-logo" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.streamlit.io/">Streamlit</a> allows data scientists and machine learning engineers to create beautiful, performant apps in pure Python.</p>
 <p>This is the best way to create custom interfaces with HiPlot. For instance, you can perform dynamic actions
 based on selected rows inside HiPlot (like plotting or displaying further information), and still have a sharable/deployable interface.</p>
@@ -207,7 +208,7 @@ based on selected rows inside HiPlot (like plotting or displaying further inform
 </figure>
 </section>
 <section id="option-4-render-standalone-html-files">
-<h2>Option 4: Render standalone HTML files<a class="headerlink" href="#option-4-render-standalone-html-files" title="Permalink to this headline">¶</a></h2>
+<h2>Option 4: Render standalone HTML files<a class="headerlink" href="#option-4-render-standalone-html-files" title="Permalink to this heading">¶</a></h2>
 <p>We provide a CLI tool <code class="docutils literal notranslate"><span class="pre">hiplot-render</span></code> to render HiPlot experiments into standalone HTML files, containing all HiPlot files, and your data.
 To render a demo, or your own CSV file, use:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span><span class="o">-</span><span class="n">render</span> <span class="n">demo</span> <span class="o">&gt;</span> <span class="n">hiplot_demo</span><span class="o">.</span><span class="n">html</span>
@@ -248,7 +249,7 @@ To render a demo, or your own CSV file, use:</p>
         <li class="right" >
           <a href="index.html" title="HiPlot demonstration"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.33
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Getting started</a></li> 
       </ul>

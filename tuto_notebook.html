@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   
   <!-- Licensed under the Apache 2.0 License -->
@@ -15,13 +15,14 @@
   <link rel="stylesheet" type="text/css" href="_static/css/bootstrap-theme.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-    <title>Advanced uses: notebooks &#8212; HiPlot 0.1.32
+    <title>Advanced uses: notebooks &#8212; HiPlot 0.1.33
  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/guzzle.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/icon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
@@ -44,7 +45,7 @@
         <li class="right" >
           <a href="tuto_webserver.html" title="Advanced uses: Webserver"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.33
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Advanced uses: notebooks</a></li> 
       </ul>
@@ -113,9 +114,9 @@
           <div class="document clearer body">
             
   <section id="advanced-uses-notebooks">
-<span id="tutonotebook"></span><h1>Advanced uses: notebooks<a class="headerlink" href="#advanced-uses-notebooks" title="Permalink to this headline">¶</a></h1>
+<span id="tutonotebook"></span><h1>Advanced uses: notebooks<a class="headerlink" href="#advanced-uses-notebooks" title="Permalink to this heading">¶</a></h1>
 <section id="remembering-state-between-runs">
-<span id="tutonotebookstate"></span><h2>Remembering state between runs<a class="headerlink" href="#remembering-state-between-runs" title="Permalink to this headline">¶</a></h2>
+<span id="tutonotebookstate"></span><h2>Remembering state between runs<a class="headerlink" href="#remembering-state-between-runs" title="Permalink to this heading">¶</a></h2>
 <p>While it’s possible to change the visualization settings in python using <a class="reference internal" href="py_reference.html#hiplot.Experiment.display_data" title="hiplot.Experiment.display_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display_data()</span></code></a> and <a class="reference internal" href="py_reference.html#hiplot.ValueDef" title="hiplot.ValueDef"><code class="xref py py-class docutils literal notranslate"><span class="pre">hiplot.ValueDef</span></code></a>, it is more convenient to
 define XY plots, change column types or coloring in the user interface directly. However, all of this is reset when executing the cell a second time.</p>
 <p>If you set <code class="docutils literal notranslate"><span class="pre">store_state_key</span></code> to a unique identifier in <a class="reference internal" href="py_reference.html#hiplot.Experiment.display" title="hiplot.Experiment.display"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hiplot.Experiment.display()</span></code></a>, HiPlot’s state will be stored in the URL,
@@ -130,7 +131,7 @@ and restored when <a class="reference internal" href="py_reference.html#hiplot.E
 </div>
 </section>
 <section id="interactions-with-displayed-visualization">
-<span id="tutonotebookdisplayedexperiment"></span><h2>Interactions with displayed visualization<a class="headerlink" href="#interactions-with-displayed-visualization" title="Permalink to this headline">¶</a></h2>
+<span id="tutonotebookdisplayedexperiment"></span><h2>Interactions with displayed visualization<a class="headerlink" href="#interactions-with-displayed-visualization" title="Permalink to this heading">¶</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This feature is currently supported for Jupyter Notebooks only. In particular, it does <strong>not</strong> work with Jupyter Lab.</p>
@@ -209,7 +210,7 @@ about selected datapoints, filtering, …</p>
         <li class="right" >
           <a href="tuto_webserver.html" title="Advanced uses: Webserver"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.32
+        <li class="nav-item nav-item-0"><a href="index.html">HiPlot 0.1.33
  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Advanced uses: notebooks</a></li> 
       </ul>

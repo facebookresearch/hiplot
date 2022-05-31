@@ -335,10 +335,10 @@ var ParallelPlot = /** @class */ (function (_super) {
             }
             this.yscale[k] = this.createScale(k);
             return true;
-        }.bind(this)).sort(function (a, b) {
+        }.bind(this)).reverse().sort(function (a, b) {
             var pda = this.state.order.findIndex(function (e) { return e == a; });
             var pdb = this.state.order.findIndex(function (e) { return e == b; });
-            return (pda == -1 ? this.state.order.length : pda) - (pdb == -1 ? this.state.order.length : pdb);
+            return (pdb == -1 ? this.state.order.length : pdb) - (pda == -1 ? this.state.order.length : pda);
         }.bind(this));
         this.setState({
             width: this.state.width == 0 ? this.root_ref.current.offsetWidth : this.state.width,
@@ -449,7 +449,7 @@ var ParallelPlot = /** @class */ (function (_super) {
             }
             me.dimensions_dom = d3.select(me.svgg_ref.current).selectAll(".dimension")
                 // reverse the order so that the tooltips appear on top of the axis ticks
-                .data(me.state.dimensions.reverse())
+                .data(me.state.dimensions.slice().reverse())
                 .enter().append("svg:g")
                 .attr("class", "dimension")
                 .attr("transform", function (d) { return "translate(" + me.xscale(d) + ")"; })
