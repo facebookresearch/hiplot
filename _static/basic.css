@@ -237,16 +237,6 @@ a.headerlink {
     visibility: hidden;
 }
 
-a.brackets:before,
-span.brackets > a:before{
-    content: "[";
-}
-
-a.brackets:after,
-span.brackets > a:after {
-    content: "]";
-}
-
 h1:hover > a.headerlink,
 h2:hover > a.headerlink,
 h3:hover > a.headerlink,
@@ -334,12 +324,16 @@ aside.sidebar {
 p.sidebar-title {
     font-weight: bold;
 }
+nav.contents,
+aside.topic,
 
 div.admonition, div.topic, blockquote {
     clear: left;
 }
 
 /* -- topics ---------------------------------------------------------------- */
+nav.contents,
+aside.topic,
 
 div.topic {
     border: 1px solid #ccc;
@@ -379,6 +373,9 @@ div.body p.centered {
 
 div.sidebar > :last-child,
 aside.sidebar > :last-child,
+nav.contents > :last-child,
+aside.topic > :last-child,
+
 div.topic > :last-child,
 div.admonition > :last-child {
     margin-bottom: 0;
@@ -386,6 +383,9 @@ div.admonition > :last-child {
 
 div.sidebar::after,
 aside.sidebar::after,
+nav.contents::after,
+aside.topic::after,
+
 div.topic::after,
 div.admonition::after,
 blockquote::after {
