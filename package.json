@@ -23,7 +23,7 @@
     "bootstrap": "^4.6.0",
     "color": "^4.0.0",
     "css-loader": "^5.2.6",
-    "d3": "^5.16.0",
+    "d3": "^7.6.1",
     "datatables.net-bs4": "^1.10.23",
     "datatables.net-buttons": "^1.6.5",
     "datatables.net-buttons-bs4": "^1.6.5",
