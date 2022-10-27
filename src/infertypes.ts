@@ -152,6 +152,7 @@ function compute_val2color(pd: ParamDef) {
         }
         if (pd.distinct_values.length <= 20) {
             const scheme = ["#1f77b4", "#ff7f0e", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#1f77b4", "#aec7e8", "#ffbb78", "#ff9896", "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5", "#2ca02c"];
+            // @ts-ignore
             pd.__val2color[pd.distinct_values[i]] = color(scheme[i]).rgb().string();
             continue;
         }
@@ -229,6 +230,7 @@ export function colorScheme(pd: ParamDef, value: any, alpha: number, defaultColo
         const interpColFn = getColorMap(pd, defaultColorMap);
         try {
             const code = interpColFn(colr);
+            // @ts-ignore
             const rgb = color(code).rgb().object();
             return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
         } catch (err) {

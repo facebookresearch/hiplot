@@ -127,10 +127,10 @@ LICENSE file in the root directory of this source tree."),
               options: { inline: true, fallback: false }
           },
           {
-              // Let's pass the color* modules through the TS Loader to transpile to ES3
+              // Let's pass all third-party libraries
+              // to ensure everything is es3
               test: /\.js$/,
               loader: 'ts-loader',
-              include: /node_modules\/color/,
               options: {
                 transpileOnly: true,
               }
