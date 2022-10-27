@@ -284,6 +284,7 @@ jobs:
           paths:
             - node_modules
       - run: mkdir -p npm-build/dist npm-build/dist-dev dist
+      - run: cp .circleci/hotfixes/internmap.js node_modules/internmap/src/index.js
       - run: npm run build-dev
       - run: mv dist/* npm-build/dist-dev/
       - run: npm run build

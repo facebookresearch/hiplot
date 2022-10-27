@@ -69,7 +69,7 @@
     "seedrandom": "^3.0.5",
     "source-map-loader": "^0.2.4",
     "style-loader": "^2.0.0",
-    "ts-loader": "^6.2.2",
+    "ts-loader": "^9.4.1",
     "typed-scss-modules": "^1.4.0",
     "typescript": "^3.9.7",
     "underscore": "^1.12.0",
