@@ -88,7 +88,9 @@ export class HiPlotTester extends React.Component<{hiplotProps: HiPlotProps}, Te
 
     // Keep/restore/exclude buttons
     testButton(text: string) {
-        $(this.root.current).find(`button:contains(${text})`)[0].click();
+        const btn = $(this.root.current).find(`button:contains(${text})`)[0];
+        console.assert(btn !== undefined, `Can't find button "${text}"`);
+        btn.click();
     }
 
     testChangeColor() {
@@ -168,7 +170,8 @@ function test_pplot(this: HiPlotTester): Array<Test> {
 
     function brushIdx(pplot: ParallelPlot, colIdx: number) {
         var brush_el = d3.select(pplot.svg_ref.current).selectAll<SVGGElement, any>(".pplot-brush");
-        const size = brush_el.size();
+        const size = brush_el.nodes().length; // Why does `brush_el.size()` returns 0?!
+        console.assert(size > 0);
         brush_el = brush_el.filter(function (d, i) { return i === colIdx % size;})
         pplot.d3brush.move(brush_el, [colIdx % 3 == 0 ? 0 : 100, 200]);
     }

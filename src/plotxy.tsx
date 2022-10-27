@@ -539,7 +539,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     return (
     <ResizableH initialHeight={this.state.height} onResize={this.onResize} onRemove={this.disable.bind(this)}>
       <ContextMenu ref={this.plotXYcontextMenuRef} />
-      {this.state.width > 0 && <div onContextMenu={this.plotXYcontextMenuRef.current.onContextMenu} ref={this.root_ref} style={{"height": this.state.height}}>
+      {this.state.width > 0 && <div onContextMenu={this.plotXYcontextMenuRef.current?.onContextMenu} ref={this.root_ref} style={{"height": this.state.height}}>
           <canvas ref={this.canvas_lines_ref} className={style["plotxy-graph-lines"]} style={{position: 'absolute'}}></canvas>
           <canvas ref={this.canvas_highlighted_ref} className={style["plotxy-graph-highlights"]} style={{position: 'absolute'}}></canvas>
           <svg className={style["plotxy-graph-svg"]} style={{position: 'absolute'}}></svg>
