@@ -6,6 +6,7 @@ export interface ParamDef extends HiPlotValueDef {
     numeric: boolean;
     distinct_values: Array<any>;
     type_options: Array<ParamType>;
+    ticks_format?: string;
     __val2color?: {
         [k: string]: any;
     };

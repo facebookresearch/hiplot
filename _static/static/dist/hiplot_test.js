@@ -106,7 +106,9 @@ var HiPlotTester = /** @class */ (function (_super) {
     };
     // Keep/restore/exclude buttons
     HiPlotTester.prototype.testButton = function (text) {
-        $(this.root.current).find("button:contains(" + text + ")")[0].click();
+        var btn = $(this.root.current).find("button:contains(" + text + ")")[0];
+        console.assert(btn !== undefined, "Can't find button \"" + text + "\"");
+        btn.click();
     };
     HiPlotTester.prototype.testChangeColor = function () {
         var s = this.hiplot.current.state;
@@ -183,7 +185,8 @@ function test_pplot() {
     var pplot = this.pplot.bind(this);
     function brushIdx(pplot, colIdx) {
         var brush_el = d3.select(pplot.svg_ref.current).selectAll(".pplot-brush");
-        var size = brush_el.size();
+        var size = brush_el.nodes().length; // Why does `brush_el.size()` returns 0?!
+        console.assert(size > 0);
         brush_el = brush_el.filter(function (d, i) { return i === colIdx % size; });
         pplot.d3brush.move(brush_el, [colIdx % 3 == 0 ? 0 : 100, 200]);
     }

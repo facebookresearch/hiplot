@@ -62,6 +62,7 @@ export declare class ParallelPlot extends React.Component<ParallelPlotData, Para
     componentDidUpdate(prevProps: ParallelPlotData, prevState: ParallelPlotState): void;
     onBrushChange: any;
     onResize(height: number, width: number): void;
+    get_axis: any;
     render(): JSX.Element;
     sendBrushExtents: any;
     forceHideColumn: any;

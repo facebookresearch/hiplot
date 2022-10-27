@@ -69,6 +69,11 @@ var ParallelPlot = /** @class */ (function (_super) {
             this.sendBrushExtents();
             this.pplot.brush();
         }.bind(_this), 75);
+        _this.get_axis = function (d) {
+            var fmt = this.props.params_def[d].ticks_format;
+            var axis = this.axis.scale(this.yscale[d]).ticks(1 + this.state.height / 50, fmt);
+            return axis;
+        }.bind(_this);
         _this.sendBrushExtents = _.debounce(function () {
             this.props.sendMessage("brush_extents", function () {
                 var yscales = this.yscale;
@@ -121,7 +126,7 @@ var ParallelPlot = /** @class */ (function (_super) {
                 d3.select(this)
                     .transition()
                     .duration(720)
-                    .call(me.axis.scale(me.yscale[d]));
+                    .call(me.get_axis(d));
                 // bring lines back
                 d3.select(this).selectAll('line').transition().delay(800).style("display", null);
                 d3.select(this)
@@ -329,7 +334,7 @@ var ParallelPlot = /** @class */ (function (_super) {
                     React.createElement("g", { ref: this.svgg_ref, transform: "translate(" + this.m[3] + ", " + this.m[0] + ")" })))));
     };
     ParallelPlot.prototype.componentDidMount = function () {
-        var dimensions = d3.keys(this.props.params_def).filter(function (k) {
+        var dimensions = Object.keys(this.props.params_def).filter(function (k) {
             if (this.forceHideColumn(this.props.params_def_unfiltered[k]) || this.state.hide.has(k)) {
                 return false;
             }
@@ -354,7 +359,7 @@ var ParallelPlot = /** @class */ (function (_super) {
             return;
         }
         var restore_btn = $("<a class=\"dropdown-item\" href=\"#\">Restore in Parallel Plot</a>");
-        restore_btn.click(function (event) {
+        restore_btn.on("click", function (event) {
             this.restore_axis(column);
             event.preventDefault();
         }.bind(this));
@@ -376,7 +381,9 @@ var ParallelPlot = /** @class */ (function (_super) {
             me.xscale.domain(me.state.dimensions);
             // Add a group element for each dimension.
             function create_drag_beh() {
-                return d3.drag().on("start", function (d) {
+                return d3.drag()
+                    .container(function () { return this.parentElement.parentElement.parentElement; })
+                    .on("start", function (event, d) {
                     me.setState({
                         dragging: {
                             col: d,
@@ -387,8 +394,8 @@ var ParallelPlot = /** @class */ (function (_super) {
                     });
                     d3.select(me.foreground_ref.current).style("opacity", "0.35");
                 })
-                    .on("drag", function (d) {
-                    var eventdx = d3.event.dx;
+                    .on("drag", function (event, d) {
+                    var eventdx = event.dx;
                     var brushEl = d3.select(this).select("." + style.brush);
                     me.setState(function (prevState, _) {
                         return {
@@ -416,29 +423,32 @@ var ParallelPlot = /** @class */ (function (_super) {
                     me.dimensions_dom.attr("transform", function (d) { return "translate(" + me.position(d) + ")"; });
                     redrawAllForeignObjectsIfSafari();
                 })
-                    .on("end", function (d) {
+                    .on("end", function (event, d) {
                     if (!me.state.dragging.dragging) {
                         // no movement, invert axis
                         var extent = invert_axis(d);
+                        me.update_ticks(d, extent);
                     }
                     else {
-                        // reorder axes
-                        var drag = d3.select(this);
-                        if (!IS_SAFARI) {
-                            drag = drag.transition();
+                        // remove axis if dragged all the way left
+                        if (me.state.dragging.pos < 12 || me.state.dragging.pos > me.w - 12) {
+                            me.remove_axis(d);
                         }
-                        drag.attr("transform", "translate(" + me.xscale(d) + ")");
-                        var extents = brush_extends();
-                        extent = extents[d];
+                        else {
+                            var element_1 = this;
+                            me.setState({ order: Array.from(me.state.dimensions), dragging: null }, function () {
+                                // reorder axes
+                                var drag = d3.select(this);
+                                if (!IS_SAFARI) {
+                                    drag = drag.transition();
+                                }
+                                d3.select(element_1.parentElement.parentElement).attr("transform", "translate(" + me.xscale(d) + ")");
+                                var extents = brush_extends();
+                                extent = extents[d];
+                                me.update_ticks(d, extent);
+                            });
+                        }
                     }
-                    // remove axis if dragged all the way left
-                    if (me.state.dragging.pos < 12 || me.state.dragging.pos > me.w - 12) {
-                        me.remove_axis(d);
-                    }
-                    else {
-                        me.setState({ order: Array.from(me.state.dimensions) });
-                    }
-                    me.update_ticks(d, extent);
                     // rerender
                     d3.select(me.foreground_ref.current).style("opacity", null);
                     me.setState({ dragging: null });
@@ -452,14 +462,16 @@ var ParallelPlot = /** @class */ (function (_super) {
                 .data(me.state.dimensions.slice().reverse())
                 .enter().append("svg:g")
                 .attr("class", "dimension")
-                .attr("transform", function (d) { return "translate(" + me.xscale(d) + ")"; })
-                //@ts-ignore
-                .call(create_drag_beh());
+                .attr("transform", function (d) { return "translate(" + me.xscale(d) + ")"; });
             // Add an axis and title.
             me.dimensions_dom.append("svg:g")
                 .attr("class", style.axis)
                 .attr("transform", "translate(0,0)")
-                .each(function (d) { console.assert(me.yscale[d], d, me.yscale, this); d3.select(this).call(me.axis.scale(me.yscale[d])); })
+                .each(function (d) {
+                console.assert(me.yscale[d], d, me.yscale, this);
+                // @ts-ignore
+                d3.select(this).call(me.get_axis(d));
+            })
                 .append(function (dim) { return foCreateAxisLabel(me.props.params_def[dim], me.props.context_menu_ref, "Drag to move, right click for options"); })
                 .attr("y", -20)
                 .attr("text-anchor", "left")
@@ -470,6 +482,7 @@ var ParallelPlot = /** @class */ (function (_super) {
                 foDynamicSizeFitContent(this, [-me.xscale(d) + 5, -me.xscale(d) + me.state.width - 5]);
             }).attr("x", 0).style("width", "1px");
             me.updateAxisTitlesAnglesAndFontSize();
+            me.dimensions_dom.selectAll("foreignObject").call(create_drag_beh());
             // Add and store a brush for each axis.
             me.dimensions_dom.append("svg:g")
                 .classed(style.brush, true)
@@ -665,10 +678,10 @@ var ParallelPlot = /** @class */ (function (_super) {
             svg.selectAll("." + style.brush)
                 .each(function (d) { d3.select(this).call(me.d3brush); });
             // update axis placement
-            me.axis = me.axis.ticks(1 + me.state.height / 50);
             div.selectAll("." + style.axis)
                 .each(function (d) {
-                d3.select(this).call(me.axis.scale(me.yscale[d]));
+                // @ts-ignore
+                d3.select(this).call(me.get_axis(d));
             });
             me.updateAxisTitlesAnglesAndFontSize();
             // render data
@@ -739,7 +752,7 @@ var ParallelPlot = /** @class */ (function (_super) {
         this.w = this.state.width - this.m[1] - this.m[3];
         this.h = this.state.height - this.m[0] - this.m[2];
         //@ts-ignore
-        this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */).ticks(1 + this.state.height / 50);
+        this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */);
         this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.onBrushChange).on("end", this.onBrushChange);
         // Scale chart and canvas height
         this.div.style("height", (this.state.height) + "px");

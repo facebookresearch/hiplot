@@ -221,6 +221,13 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       this.setState({height: height, width: width});
     }
   }
+
+  get_axis = function(d: string) {
+    const fmt = this.props.params_def[d].ticks_format;
+    var axis = this.axis.scale(this.yscale[d]).ticks(1+this.state.height/50, fmt);
+    return axis;
+  }.bind(this);
+
   render() {
     return (
     <ResizableH initialHeight={this.state.height} onResize={this.onResize.bind(this)}>
@@ -253,7 +260,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       (pd.type == ParamType.CATEGORICAL && pd.distinct_values.length > this.props.categoricalMaximumValues)
   }.bind(this);
   componentDidMount() {
-    var dimensions = d3.keys(this.props.params_def).filter(function(this: ParallelPlot, k: string) {
+    var dimensions = Object.keys(this.props.params_def).filter(function(this: ParallelPlot, k: string) {
       if (this.forceHideColumn(this.props.params_def_unfiltered[k]) || this.state.hide.has(k)) {
         return false;
       }
@@ -279,7 +286,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
       return;
     }
     var restore_btn = $(`<a class="dropdown-item" href="#">Restore in Parallel Plot</a>`);
-    restore_btn.click(function(this: ParallelPlot, event) {
+    restore_btn.on("click", function(this: ParallelPlot, event) {
         this.restore_axis(column);
         event.preventDefault();
     }.bind(this));
@@ -315,7 +322,9 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
       // Add a group element for each dimension.
       function create_drag_beh() {
-        return d3.drag().on("start", function(d: string) {
+        return d3.drag()
+        .container(function() { return this.parentElement.parentElement.parentElement; })
+        .on("start", function(event, d: string) {
           me.setState({
             dragging: {
               col: d,
@@ -326,16 +335,17 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           });
           d3.select(me.foreground_ref.current).style("opacity", "0.35");
         })
-        .on("drag", function(d: string) {
-          const eventdx = d3.event.dx;
+        .on("drag", function(event, d: string) {
+          const eventdx = event.dx;
           const brushEl = d3.select(this).select("." + style.brush);
-          me.setState(function(prevState, _) { return {
-            dragging: {
-              col: d,
-              pos: Math.min(me.w, Math.max(0, prevState.dragging.pos + eventdx)),
-              origin: prevState.dragging.origin,
-              dragging: true
-            }
+          me.setState(function(prevState, _) {
+            return {
+              dragging: {
+                col: d,
+                pos: Math.min(me.w, Math.max(0, prevState.dragging.pos + eventdx)),
+                origin: prevState.dragging.origin,
+                dragging: true
+              }
           };}, function() {
             // Feedback for axis deletion if dropped
             if (me.state.dragging.pos < 12 || me.state.dragging.pos > me.w-12) {
@@ -353,29 +363,30 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           me.dimensions_dom.attr("transform", function(d) { return "translate(" + me.position(d) + ")"; });
           redrawAllForeignObjectsIfSafari();
         })
-        .on("end", function(d: string) {
+        .on("end", function(event, d: string) {
           if (!me.state.dragging.dragging) {
             // no movement, invert axis
             var extent = invert_axis(d);
+            me.update_ticks(d, extent);
           } else {
-            // reorder axes
-            var drag: any = d3.select(this);
-            if (!IS_SAFARI) {
-              drag = drag.transition();
+            // remove axis if dragged all the way left
+            if (me.state.dragging.pos < 12 || me.state.dragging.pos > me.w-12) {
+              me.remove_axis(d);
+            } else {
+              const element = this;
+              me.setState({order: Array.from(me.state.dimensions), dragging: null}, function() {
+                // reorder axes
+                var drag: any = d3.select(this);
+                if (!IS_SAFARI) {
+                  drag = drag.transition();
+                }
+                d3.select(element.parentElement.parentElement).attr("transform", "translate(" + me.xscale(d) + ")");
+                var extents = brush_extends();
+                extent = extents[d];
+                me.update_ticks(d, extent);
+              });
             }
-            drag.attr("transform", "translate(" + me.xscale(d) + ")");
-            var extents = brush_extends();
-            extent = extents[d];
           }
-
-          // remove axis if dragged all the way left
-          if (me.state.dragging.pos < 12 || me.state.dragging.pos > me.w-12) {
-            me.remove_axis(d);
-          } else {
-            me.setState({order: Array.from(me.state.dimensions)});
-          }
-
-          me.update_ticks(d, extent);
 
           // rerender
           d3.select(me.foreground_ref.current).style("opacity", null);
@@ -390,15 +401,17 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
           .data(me.state.dimensions.slice().reverse())
         .enter().append<SVGGElement>("svg:g")
           .attr("class", "dimension")
-          .attr("transform", function(d) { return "translate(" + me.xscale(d) + ")"; })
-          //@ts-ignore
-          .call(create_drag_beh());
+          .attr("transform", function(d) { return "translate(" + me.xscale(d) + ")"; });
 
       // Add an axis and title.
       me.dimensions_dom.append("svg:g")
           .attr("class", style.axis)
           .attr("transform", "translate(0,0)")
-          .each(function(d) { console.assert(me.yscale[d], d, me.yscale, this); d3.select(this).call(me.axis.scale(me.yscale[d])); })
+          .each(function(d) {
+            console.assert(me.yscale[d], d, me.yscale, this);
+            // @ts-ignore
+            d3.select(this).call(me.get_axis(d));
+        })
         .append(function(dim) { return foCreateAxisLabel(me.props.params_def[dim], me.props.context_menu_ref, "Drag to move, right click for options"); })
           .attr("y", -20)
           .attr("text-anchor", "left")
@@ -409,6 +422,8 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         foDynamicSizeFitContent(this, [-me.xscale(d) + 5, -me.xscale(d) + me.state.width - 5]);
       }).attr("x", 0).style("width", "1px");
       me.updateAxisTitlesAnglesAndFontSize();
+      me.dimensions_dom.selectAll("foreignObject").call(create_drag_beh());
+
       // Add and store a brush for each axis.
       me.dimensions_dom.append("svg:g")
           .classed(style.brush, true)
@@ -614,10 +629,10 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         .each(function(d) { d3.select(this).call(me.d3brush); })
 
       // update axis placement
-      me.axis = me.axis.ticks(1+me.state.height/50);
       div.selectAll("." + style.axis)
         .each(function(d: string) {
-          d3.select(this).call(me.axis.scale(me.yscale[d]));
+          // @ts-ignore
+          d3.select(this).call(me.get_axis(d));
       });
       me.updateAxisTitlesAnglesAndFontSize();
 
@@ -703,7 +718,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     this.w = this.state.width - this.m[1] - this.m[3];
     this.h = this.state.height - this.m[0] - this.m[2];
     //@ts-ignore
-    this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */).ticks(1+this.state.height/50);
+    this.axis = d3.axisLeft(d3.scaleLinear() /* placeholder */);
     this.d3brush.extent([[-23, 0], [15, this.h]]).on("brush", this.onBrushChange).on("end", this.onBrushChange);
     // Scale chart and canvas height
     this.div.style("height", (this.state.height) + "px")
@@ -723,7 +738,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
   // transition ticks for reordering, rescaling and inverting
   update_ticks = function(d?: string, extent?) {
     var div = d3.select(this.root_ref.current);
-    var me = this;
+    var me: ParallelPlot = this;
     // update brushes
     if (d) {
       var brush_el = d3.select(this.svg_ref.current).selectAll("." + style.brush)
@@ -749,7 +764,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
         d3.select(this)
           .transition()
           .duration(720)
-          .call(me.axis.scale(me.yscale[d]));
+          .call(me.get_axis(d));
 
         // bring lines back
         d3.select(this).selectAll('line').transition().delay(800).style("display", null);
@@ -765,7 +780,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
 
   // render a set of polylines on a canvas
   paths = function(selected: Array<Datapoint>, ctx: CanvasRenderingContext2D, count: number) {
-    var me = this;
+    var me: ParallelPlot = this;
     var n = selected.length,
         i = 0,
         opacity = d3.min([2/Math.pow(n,0.3),1]),

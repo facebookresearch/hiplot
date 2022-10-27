@@ -123,6 +123,7 @@ function compute_val2color(pd) {
         }
         if (pd.distinct_values.length <= 20) {
             var scheme = ["#1f77b4", "#ff7f0e", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf", "#1f77b4", "#aec7e8", "#ffbb78", "#ff9896", "#c5b0d5", "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5", "#2ca02c"];
+            // @ts-ignore
             pd.__val2color[pd.distinct_values[i]] = color(scheme[i]).rgb().string();
             continue;
         }
@@ -197,6 +198,7 @@ export function colorScheme(pd, value, alpha, defaultColorMap) {
         var interpColFn = getColorMap(pd, defaultColorMap);
         try {
             var code = interpColFn(colr);
+            // @ts-ignore
             var rgb = color(code).rgb().object();
             return "rgba(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ", " + alpha + ")";
         }
@@ -273,6 +275,7 @@ export function infertypes(url_states, table, hints) {
             'numeric': numeric,
             'distinct_values': distinct_values,
             'type_options': [ParamType.CATEGORICAL],
+            'ticks_format': undefined,
             'type': type,
             'colors': hint !== undefined ? hint.colors : null,
             'colormap': hint !== undefined ? hint.colormap : null,
@@ -291,6 +294,9 @@ export function infertypes(url_states, table, hints) {
             if (can_be_timestamp) {
                 info.type_options.push(ParamType.TIMESTAMP);
             }
+        }
+        if (info.type == ParamType.NUMERICLOG) {
+            info.ticks_format = d3.format(".1e");
         }
         return info;
     }

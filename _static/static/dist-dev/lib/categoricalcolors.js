@@ -31,5 +31,6 @@ export function categoricalColorScheme(value) {
     if ((h % 3) == 2) {
         c.s -= 20;
     }
+    // @ts-ignore
     return color(c).rgb().string();
 }
