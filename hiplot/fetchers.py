@@ -93,6 +93,27 @@ class MultipleFetcher:
         return len(self.MULTI_PREFIX) + current_read_offset
 
 
+class InlineJsonFetcher:
+    URI_PREFIX = "json://"
+
+    def __call__(self, uri: str) -> hip.Experiment:
+        if not uri.startswith(self.URI_PREFIX):
+            raise hip.ExperimentFetcherDoesntApply()
+        exp_rows = json.loads(uri[len(self.URI_PREFIX):])
+        assert isinstance(exp_rows, list)
+        return hip.Experiment.from_iterable(exp_rows)
+
+    def get_uri_length(self, uri: str) -> int:
+        """
+        Returns the end position of the multi block
+        """
+        if not uri.startswith(self.URI_PREFIX):
+            raise hip.ExperimentFetcherDoesntApply()
+        decoder = json.JSONDecoder()
+        _, current_read_offset = decoder.raw_decode(uri[len(self.URI_PREFIX):])
+        return len(self.URI_PREFIX) + current_read_offset
+
+
 def load_demo(uri: str) -> hip.Experiment:
     if uri in README_DEMOS:
         return README_DEMOS[uri]()
@@ -289,7 +310,7 @@ def get_fetcher(fetcher_spec: str) -> hip.ExperimentFetcher:
 
 
 def get_fetchers(add_fetchers: tp.List[str]) -> tp.List[hip.ExperimentFetcher]:
-    xp_fetchers: tp.List[hip.ExperimentFetcher] = [load_demo, load_csv, load_json, load_fairseq, load_wav2letter]
+    xp_fetchers: tp.List[hip.ExperimentFetcher] = [load_demo, load_csv, load_json, load_fairseq, load_wav2letter, InlineJsonFetcher()]
     for fetcher_spec in add_fetchers:
         xp_fetchers.append(get_fetcher(fetcher_spec))
     xp_fetchers.append(MultipleFetcher(xp_fetchers))
