@@ -3,13 +3,13 @@ mypy
 ipykernel
 wheel
 selenium
-sphinx
 mistune==0.8.4
-m2r2
 twine
-guzzle_sphinx_theme
 pre-commit
 pandas
 streamlit>=0.63
 beautifulsoup4
 optuna
+sphinx==5.2.0
+guzzle_sphinx_theme==0.7.11
+m2r2==0.3.3
