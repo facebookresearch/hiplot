@@ -21,6 +21,7 @@ export interface ParamDef extends HiPlotValueDef {
     numeric: boolean,
     distinct_values: Array<any>,
     type_options: Array<ParamType>,
+    ticks_format?: string,
     __val2color?: {[k: string]: any};
     __colorscale?: any;
     __colormap?: any;
@@ -312,6 +313,7 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             'numeric': numeric,
             'distinct_values': distinct_values,
             'type_options': [ParamType.CATEGORICAL],
+            'ticks_format': undefined,
 
             'type': type,
             'colors': hint !== undefined ? hint.colors : null,
@@ -331,6 +333,9 @@ export function infertypes(url_states: PersistentState, table: Array<Datapoint>,
             if (can_be_timestamp) {
                 info.type_options.push(ParamType.TIMESTAMP);
             }
+        }
+        if (info.type == ParamType.NUMERICLOG) {
+            info.ticks_format = d3.format(".1e");
         }
         return info;
     }
