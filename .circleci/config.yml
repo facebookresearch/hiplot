@@ -276,12 +276,15 @@ jobs:
           keys:
             - v1-npm-deps-{{ checksum "package-lock.json" }}
             - v1-npm-deps-
+      - run: npm --version
+      - run: node --version
       - run: npm install
       - save_cache:
           key: v1-npm-deps-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
       - run: mkdir -p npm-build/dist npm-build/dist-dev dist
+      - run: cp .circleci/hotfixes/internmap.js node_modules/internmap/src/index.js
       - run: npm run build-dev
       - run: mv dist/* npm-build/dist-dev/
       - run: npm run build

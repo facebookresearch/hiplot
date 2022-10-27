@@ -59,11 +59,11 @@ export function foCreateAxisLabel(pd: ParamDef, cm?: React.RefObject<ContextMenu
         .classed(style.axisLabelText, true)
         .classed("d-inline-block", true)
         .html(pd.label_html)
-        .on("contextmenu", function() {
+        .on("contextmenu", function(event: any) {
             if (cm) {
-                cm.current.show(d3.event.pageX, d3.event.pageY, pd.name);
-                d3.event.preventDefault();
-                d3.event.stopPropagation();
+                cm.current.show(event.pageX, event.pageY, pd.name);
+                event.preventDefault();
+                event.stopPropagation();
             }
         });
     if (tooltip) {

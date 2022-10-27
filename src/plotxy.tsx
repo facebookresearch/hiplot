@@ -266,8 +266,8 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
       div.selectAll("canvas").style("top", pos_top + "px").style("left", pos_left + "px");
       me.svg.style("top", pos_top + "px").style("left", pos_left + "px");
     }
-    function brushended() {
-      var s = d3.event.selection;
+    function brushended(event) {
+      var s = event.selection;
       if (!s) {
         if (x_scale === x_scale_orig && y_scale === y_scale_orig) {
           return;
@@ -312,19 +312,19 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
           .on("mouseenter", entered)
           .on("mouseleave", left);
 
-      function moved() {
-        d3.event.preventDefault();
+      function moved(event) {
+        event.preventDefault();
         var closest = null;
         var closest_dist = null;
         $.each(currently_displayed, function(_, dp) {
-          var dist = (dp['layerX'] - d3.event.layerX) ** 2 + (dp['layerY'] - d3.event.layerY) ** 2;
+          var dist = (dp['layerX'] - event.layerX) ** 2 + (dp['layerY'] - event.layerY) ** 2;
           if (closest_dist == null || dist < closest_dist) {
             closest_dist = dist;
             closest = dp;
           }
         });
         if (closest === null) {
-          dot.attr("transform", `translate(${d3.event.layerX},${d3.event.layerY})`);
+          dot.attr("transform", `translate(${event.layerX},${event.layerY})`);
           dot.select("text").text("No point found?!");
           return;
         }
@@ -539,7 +539,7 @@ export class PlotXY extends React.Component<PlotXYProps, PlotXYState> {
     return (
     <ResizableH initialHeight={this.state.height} onResize={this.onResize} onRemove={this.disable.bind(this)}>
       <ContextMenu ref={this.plotXYcontextMenuRef} />
-      {this.state.width > 0 && <div onContextMenu={this.plotXYcontextMenuRef.current.onContextMenu} ref={this.root_ref} style={{"height": this.state.height}}>
+      {this.state.width > 0 && <div onContextMenu={this.plotXYcontextMenuRef.current?.onContextMenu} ref={this.root_ref} style={{"height": this.state.height}}>
           <canvas ref={this.canvas_lines_ref} className={style["plotxy-graph-lines"]} style={{position: 'absolute'}}></canvas>
           <canvas ref={this.canvas_highlighted_ref} className={style["plotxy-graph-highlights"]} style={{position: 'absolute'}}></canvas>
           <svg className={style["plotxy-graph-svg"]} style={{position: 'absolute'}}></svg>

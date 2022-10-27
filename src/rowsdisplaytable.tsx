@@ -21,7 +21,6 @@ import dtButtons from "datatables.net-buttons";
 //@ts-ignore
 import dtButtonsBs4 from "datatables.net-buttons-bs4";
 
-dt(window, $);
 dtBs4(window, $);
 dtReorder(window, $);
 dtReorderBs4(window, $);
