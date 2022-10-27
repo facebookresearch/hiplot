@@ -5,7 +5,7 @@ wheel
 selenium
 sphinx
 mistune==0.8.4
-m2r @ git+https://github.com/miyakogi/m2r@dev#egg=m2r
+m2r2
 twine
 guzzle_sphinx_theme
 pre-commit
