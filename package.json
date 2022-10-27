@@ -74,7 +74,7 @@
     "typescript": "^3.9.7",
     "underscore": "^1.12.0",
     "url-loader": "^3.0.0",
-    "webpack": "^5.38.1",
+    "webpack": "^5.74.0",
     "webpack-bundle-analyzer": "^4.7.0",
     "webpack-cli": "^3.3.12",
     "worker-loader": "^2.0.0"
