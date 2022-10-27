@@ -120,8 +120,10 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
 
 def _should_embed_js_with_html() -> bool:
     from IPython import get_ipython
-    ipconfig = get_ipython().config
-    return "BentoApp" in ipconfig
+    ip = get_ipython()
+    if ip is None:
+        return True
+    return "BentoApp" in ip.config
 
 
 def display_exp(
