@@ -12,7 +12,7 @@
       </noscript>
     </div>
 
-    <script src="static/built/hiplot.bundle.js" type="text/javascript" ></script>
+    <script src="static/built/hiplot.bundle.js" type="text/javascript" > /*BUNDLE_FILE*/ </script>
     <script type="text/javascript">
     function _hiplot_setup() {
       if (typeof hiplot == "undefined") {
@@ -26,11 +26,12 @@
       Object.assign(window, {'hiplot_last_instance': hiplot_instance});  // For debugging
       /*AFTER_SETUP_SCRIPT_INJECT*/
     }
-    if (document.readyState == "complete") {
-      _hiplot_setup();
+    if (document.readyState == "loading") {
+      document.addEventListener("DOMContentLoaded", _hiplot_setup);
     }
     else {
-      document.addEventListener("DOMContentLoaded", _hiplot_setup);
+      // Either "complete" or "interactive"
+      _hiplot_setup();
     }
     </script>
   </body>

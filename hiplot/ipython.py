@@ -118,12 +118,22 @@ class IPythonExperimentDisplayed(exp.ExperimentDisplayed):
         return last_msg  # type: ignore
 
 
+def _should_embed_js_with_html() -> bool:
+    from IPython import get_ipython
+    ipconfig = get_ipython().config
+    return "BentoApp" in ipconfig
+
+
 def display_exp(
         xp: exp.Experiment,
         force_full_width: bool = False,
         store_state_url: t.Optional[str] = None,
+        embed_js_with_html: t.Optional[bool] = None,
         **kwargs: t.Any
 ) -> IPythonExperimentDisplayed:
+    if embed_js_with_html is None:
+        embed_js_with_html = _should_embed_js_with_html()
+
     comm_id = f"comm_{uuid.uuid4().hex[:6]}"
     displayed_xp = IPythonExperimentDisplayed(xp, comm_id)
     options: t.Dict[str, t.Any] = {
@@ -166,6 +176,12 @@ catch(err) {{
 
     if force_full_width:
         index_html = jupyter_make_full_width(index_html)
-    NotebookJSBundleInjector.ensure_injected()
+
+    if embed_js_with_html:
+        bundle = Path(__file__).parent / "static" / "built" / "hiplot.bundle.js"
+        index_html = index_html.replace("/*BUNDLE_FILE*/", bundle.read_text("utf-8"))
+    else:
+        NotebookJSBundleInjector.ensure_injected()
+
     IPython.display.display(IPython.display.HTML(index_html))
     return displayed_xp
