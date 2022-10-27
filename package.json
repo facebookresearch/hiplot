@@ -42,7 +42,7 @@
     "@types/underscore": "^1.10.24",
     "bootstrap": "^4.6.0",
     "color": "^4.0.0",
-    "css-loader": "^5.2.6",
+    "css-loader": "^6.7.1",
     "d3": "^7.6.1",
     "datatables.net-bs4": "^1.10.23",
     "datatables.net-buttons": "^1.6.5",

@@ -59,7 +59,7 @@ export function foCreateAxisLabel(pd: ParamDef, cm?: React.RefObject<ContextMenu
         .classed(style.axisLabelText, true)
         .classed("d-inline-block", true)
         .html(pd.label_html)
-        .on("contextmenu", function(event) {
+        .on("contextmenu", function(event: any) {
             if (cm) {
                 cm.current.show(event.pageX, event.pageY, pd.name);
                 event.preventDefault();
