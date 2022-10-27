@@ -2,6 +2,7 @@ import os
 import time
 from pathlib import Path
 from test_e2e import create_browser_chrome
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 
@@ -25,7 +26,7 @@ def test_jupyter_notebook() -> None:
             print(f'    {str(l)}')
 
         # Find the "Run" button
-        run_btn = driver.find_element_by_css_selector("#run_int > button[aria-label='Run']")
+        run_btn = driver.find_element(By.CSS_SELECTOR, "#run_int > button[aria-label='Run']")
         run_btn.click()
         driver.save_screenshot(str(artifacts_path / "step2.png"))
 
