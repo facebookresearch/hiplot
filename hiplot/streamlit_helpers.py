@@ -17,10 +17,10 @@ class _StreamlitHelpers:
     @staticmethod
     def is_running_within_streamlit() -> bool:
         try:
-            import streamlit as st
+            from streamlit import runtime
         except:  # pylint: disable=bare-except
             return False
-        return bool(st._is_running_with_streamlit)
+        return bool(runtime.exists())
 
     @classmethod
     def create_component(cls) -> tp.Optional[tp.Callable[..., tp.Any]]:
