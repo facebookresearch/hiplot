@@ -119,7 +119,7 @@ export class ParallelPlot extends React.Component<ParallelPlotData, ParallelPlot
     };
   }
   static defaultProps = {
-    categoricalMaximumValues: 80,
+    categoricalMaximumValues: 200,
     data: {}
   }
   componentWillUnmount() {
