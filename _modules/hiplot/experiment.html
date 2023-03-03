@@ -143,7 +143,7 @@
 
 
 <span class="k">class</span> <span class="nc">_DictSerializable</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    All classes that are transmitted to Javascript must subclass this</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -152,7 +152,7 @@
 
 
 <div class="viewcode-block" id="ValueType"><a class="viewcode-back" href="../../py_reference.html#hiplot.ValueType">[docs]</a><span class="k">class</span> <span class="nc">ValueType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines how we render a column (scaling, and color scheme)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">CATEGORICAL</span> <span class="o">=</span> <span class="s1">&#39;categorical&#39;</span>                 <span class="c1">#: Categorical value</span>
@@ -163,7 +163,7 @@
 
 
 <div class="viewcode-block" id="Displays"><a class="viewcode-back" href="../../py_reference.html#hiplot.Displays">[docs]</a><span class="k">class</span> <span class="nc">Displays</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    See :meth:`Experiment.display_data` and :ref:`frontendRenderingSettings`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">PARALLEL_PLOT</span> <span class="o">=</span> <span class="s1">&#39;PARALLEL_PLOT&#39;</span>             <span class="c1">#: Parallel plot data</span>
@@ -188,12 +188,12 @@
         <span class="k">for</span> <span class="n">modifier</span> <span class="ow">in</span> <span class="n">cm_modifiers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">modifier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">VALID_MODIFIERS</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ExperimentValidationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;Invalid colormap modifier `</span><span class="si">{</span><span class="n">modifier</span><span class="si">}</span><span class="s2">`.</span>
-<span class="s2">Valid colormaps modifiers: </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VALID_MODIFIERS</span><span class="p">)</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">Valid colormaps modifiers: </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VALID_MODIFIERS</span><span class="p">)</span><span class="si">}</span>
 <span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ValueDef"><a class="viewcode-back" href="../../py_reference.html#hiplot.ValueDef">[docs]</a><span class="k">class</span> <span class="nc">ValueDef</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provides a custom type, color, etc.. for a column.</span>
 
 <span class="sd">    :ivar type: See :attr:`hiplot.ValueType` for possible values</span>
@@ -224,7 +224,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">label_html</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ValueDef.force_range"><a class="viewcode-back" href="../../py_reference.html#hiplot.ValueDef.force_range">[docs]</a>    <span class="k">def</span> <span class="nf">force_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimum</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">maximum</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ValueDef&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Enforces the range of the column.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">force_value_min</span> <span class="o">=</span> <span class="n">minimum</span>
@@ -253,7 +253,7 @@
 
 
 <div class="viewcode-block" id="Datapoint"><a class="viewcode-back" href="../../py_reference.html#hiplot.Datapoint">[docs]</a><span class="k">class</span> <span class="nc">Datapoint</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A datapoint represents a single measurement of metrics - for instance a model checkpoint that is evaluated.</span>
 <span class="sd">    It can have a parent if it originates from another one (offspring).</span>
 
@@ -281,7 +281,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">from_uid</span> <span class="o">=</span> <span class="n">from_uid</span>
 
 <div class="viewcode-block" id="Datapoint.validate"><a class="viewcode-back" href="../../py_reference.html#hiplot.Datapoint.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes sure this object is valid - throws an :class:`hiplot.ExperimentValidationError` exception otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">reserved_kw</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;uid&quot;</span><span class="p">,</span> <span class="s2">&quot;from_uid&quot;</span><span class="p">]:</span>
@@ -299,7 +299,7 @@
 
 <span class="c1"># pylint: disable=too-many-instance-attributes</span>
 <div class="viewcode-block" id="Experiment"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment">[docs]</a><span class="k">class</span> <span class="nc">Experiment</span><span class="p">(</span><span class="n">_DictSerializable</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Object that can be rendered by HiPlot. It essential contains a list of metrics, but also some options on how to render it.</span>
 
 <span class="sd">    See :meth:`Experiment.display` to display an :class:`Experiment` in an ipython notebook.</span>
@@ -337,7 +337,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_compress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Experiment.validate"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Makes sure that this object is valid. Raises a :class:`hiplot.ExperimentValidationError` otherwise.</span>
 <span class="sd">        Experiments with circular references, non-existent parents, or without datapoints are invalid.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -362,7 +362,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Experiment.display"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_full_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">store_state_key</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentDisplayed&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays an experiment in an ipython notebook.</span>
 
 <span class="sd">        :param force_full_width: allows to force to have 100% width on Jupyter Notebooks only.</span>
@@ -399,7 +399,7 @@
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="Experiment.display_st"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.display_st">[docs]</a>    <span class="k">def</span> <span class="nf">display_st</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ret</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays an experiment in a Streamlit app - see :ref:`tutoStreamlit`</span>
 
 <span class="sd">        This function can be pretty slow, see :ref:`tutoStreamlitCache` to learn how to make it faster.</span>
@@ -422,7 +422,7 @@
     <span class="c1"># pylint: enable=function-redefined</span>
 
 <div class="viewcode-block" id="Experiment.to_streamlit"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.to_streamlit">[docs]</a>    <span class="k">def</span> <span class="nf">to_streamlit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ret</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentStreamlitComponent&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Streamlit only:</span>
 <span class="sd">        creates a copy of the Experiment that you can cache,</span>
 <span class="sd">        which only exposes the `display_st` method - see :ref:`tutoStreamlitCache`</span>
@@ -461,7 +461,7 @@
         <span class="k">return</span> <span class="n">streamlit_helpers</span><span class="o">.</span><span class="n">ExperimentStreamlitComponent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">ret</span><span class="o">=</span><span class="n">ret</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Experiment.to_html"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">TextWriterIO</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the content of a standalone .html file that displays this experiment</span>
 <span class="sd">        without any dependency to HiPlot server or static files.</span>
 
@@ -484,7 +484,7 @@
         <span class="k">return</span> <span class="n">html</span></div>
 
 <div class="viewcode-block" id="Experiment.to_csv"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">TextWriterIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dumps this Experiment as a .csv file.</span>
 <span class="sd">        Information about display_data, parameters definition will be lost.</span>
 
@@ -527,7 +527,7 @@
         <span class="k">return</span> <span class="n">data</span>
 
 <div class="viewcode-block" id="Experiment.remove_missing_parents"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.remove_missing_parents">[docs]</a>    <span class="k">def</span> <span class="nf">remove_missing_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets :attr:`hiplot.Datapoint.from_uid` to None when set to a non-existing Datapoint.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">existing_dp</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">((</span><span class="n">dp</span><span class="o">.</span><span class="n">uid</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapoints</span><span class="p">))</span>
@@ -537,7 +537,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Experiment.display_data"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.display_data">[docs]</a>    <span class="k">def</span> <span class="nf">display_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve data dictionary for a plugin, which can be modified.</span>
 
 <span class="sd">        :param plugin: Name of the plugin</span>
@@ -556,7 +556,7 @@
 
 <div class="viewcode-block" id="Experiment.from_iterable"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.from_iterable">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_iterable</span><span class="p">(</span><span class="n">it</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a HiPlot experiment from an iterable/list of dictionnaries.</span>
 <span class="sd">        This is the easiest way to generate an `hiplot.Experiment` object.</span>
 
@@ -580,7 +580,7 @@
 
 <div class="viewcode-block" id="Experiment.from_csv"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.from_csv">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_csv</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">IO</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a HiPlot experiment from a CSV file.</span>
 
 <span class="sd">        :param file: CSV file path</span>
@@ -593,7 +593,7 @@
 
 <div class="viewcode-block" id="Experiment.from_dataframe"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.from_dataframe">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">:</span> <span class="s2">&quot;pd.DataFrame&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>  <span class="c1"># No type hint to avoid having pandas as an additional dependency</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a HiPlot experiment from a pandas DataFrame.</span>
 
 <span class="sd">        :param dataframe: Pandas DataFrame</span>
@@ -622,7 +622,7 @@
 
 <div class="viewcode-block" id="Experiment.from_optuna"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.from_optuna">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_optuna</span><span class="p">(</span><span class="n">study</span><span class="p">:</span> <span class="s2">&quot;optuna.study.Study&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>  <span class="c1"># No type hint to avoid having optuna as an additional dependency</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a HiPlot experiment from a Optuna Study.</span>
 
 <span class="sd">        :param study: Optuna Study</span>
@@ -658,7 +658,7 @@
 
 <div class="viewcode-block" id="Experiment.merge"><a class="viewcode-back" href="../../py_reference.html#hiplot.Experiment.merge">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="n">xp_dict</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Experiment&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Merge several experiments into a single one</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">xp</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">(</span><span class="n">datapoints</span><span class="o">=</span><span class="p">[])</span>
@@ -686,19 +686,19 @@
 
 
 <div class="viewcode-block" id="ExperimentDisplayed"><a class="viewcode-back" href="../../py_reference.html#hiplot.ExperimentDisplayed">[docs]</a><span class="k">class</span> <span class="nc">ExperimentDisplayed</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class that allows to communicate with a displayed HiPlot visualization in a Jupyter notebook.</span>
 <span class="sd">    Read more in :ref:`tutoNotebookDisplayedExperiment`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="ExperimentDisplayed.get_selected"><a class="viewcode-back" href="../../py_reference.html#hiplot.ExperimentDisplayed.get_selected">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">Datapoint</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of currently rendered datapoints in the parallel plot</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="ExperimentDisplayed.get_brush_extents"><a class="viewcode-back" href="../../py_reference.html#hiplot.ExperimentDisplayed.get_brush_extents">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_brush_extents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Any</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a dictionary, where keys corresponds to columns currently brushed in parallel plot,</span>
 <span class="sd">        and values contain information about the current brush.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div></div>

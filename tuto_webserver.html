@@ -190,8 +190,8 @@ Let’s write a dummy one that takes a folder, and returns the content of <code 
 <h3>Step 2: Run HiPlot server with the new fetcher<a class="headerlink" href="#step-2-run-hiplot-server-with-the-new-fetcher" title="Permalink to this heading">¶</a></h3>
 <p>Our fetcher is ready, let’s simulate a dummy experiment that we can load later</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Some dummy data for the demo</span>
-mkdir xp_folder
-<span class="nb">echo</span> -e <span class="s2">&quot;col1, col2, col3\n1,2,3\n2,2,3\n4,4,2&quot;</span> &gt; xp_folder/data.csv
+mkdir<span class="w"> </span>xp_folder
+<span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;col1, col2, col3\n1,2,3\n2,2,3\n4,4,2&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>xp_folder/data.csv
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hiplot</span> <span class="n">my_fetcher</span><span class="o">.</span><span class="n">fetch_my_experiment</span>

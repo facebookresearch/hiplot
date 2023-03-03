@@ -810,7 +810,7 @@ var ParallelPlot = /** @class */ (function (_super) {
         });
     };
     ParallelPlot.defaultProps = {
-        categoricalMaximumValues: 80,
+        categoricalMaximumValues: 200,
         data: {}
     };
     return ParallelPlot;

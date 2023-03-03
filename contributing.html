@@ -124,17 +124,17 @@ provided in the git repository. The easiest solution is to download the latest v
 Those files need to be compiled and bundled into plain Javascript to generate <code class="code docutils literal notranslate"><span class="pre">hiplot.bundle.js</span></code>.
 Node/npm is required in order to build those files</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># First, install npm packages</span>
-npm install
+npm<span class="w"> </span>install
 <span class="c1"># Then either:</span>
 <span class="c1"># (1) Dev (recommended): automatically re-build when a change is detected</span>
-npm run build-dev-watch
+npm<span class="w"> </span>run<span class="w"> </span>build-dev-watch
 <span class="c1"># (2) Build in release mode (for better performance)</span>
-npm run webpack-dev-watch
+npm<span class="w"> </span>run<span class="w"> </span>webpack-dev-watch
 </pre></div>
 </div>
 <p>It’s also recommended to run a HiPlot server locally to experiment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -e .
-python -m hiplot --dev
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+python<span class="w"> </span>-m<span class="w"> </span>hiplot<span class="w"> </span>--dev
 </pre></div>
 </div>
 <p>Now open your browser and play with the code :)</p>
@@ -145,9 +145,9 @@ python -m hiplot --dev
 </section>
 <section id="building-documentation">
 <h2>Building documentation<a class="headerlink" href="#building-documentation" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements/dev.txt
-<span class="nb">cd</span> docs
-make html
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements/dev.txt
+<span class="nb">cd</span><span class="w"> </span>docs
+make<span class="w"> </span>html
 </pre></div>
 </div>
 </section>
