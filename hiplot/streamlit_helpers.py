@@ -17,22 +17,22 @@ class _StreamlitHelpers:
     @staticmethod
     def is_running_within_streamlit() -> bool:
         try:
-            import streamlit as st
+            from streamlit import runtime
         except:  # pylint: disable=bare-except
             return False
-        return bool(st._is_running_with_streamlit)
+        return bool(runtime.exists())
 
     @classmethod
     def create_component(cls) -> tp.Optional[tp.Callable[..., tp.Any]]:
         if cls.component is not None:
             return cls.component
-        import streamlit as st
+        from streamlit import runtime
         try:
             import streamlit.components.v1 as components
         except ModuleNotFoundError as e:
             raise RuntimeError(f"""Your streamlit version ({st.__version__}) is too old and does not support components.
 Please update streamlit with `pip install -U streamlit`""") from e
-        assert st._is_running_with_streamlit
+        assert runtime.exists()
 
         built_path = (Path(__file__).parent / "static" / "built" / "streamlit_component").resolve()
         assert (built_path / "index.html").is_file(), f"""HiPlot component does not appear to exist in {built_path}
